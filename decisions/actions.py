@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from dataclasses import dataclass
-from stats import Age
+
 
 class Actions(Enum):
     EAT = auto()

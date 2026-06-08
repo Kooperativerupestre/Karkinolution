@@ -6,7 +6,7 @@ from organism.creatures import Creature
 from actions import Intent, IntentActs
 from systems.pressets import MovePressets, ReproducePressets, EatPressets, AtackPressets
 from random import choice
-from identity import Id
+from organism.identity import Id
 
 COURAGE_FACTOR = {
     Temperament.PASSIVE: 0.1,

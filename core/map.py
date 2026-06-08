@@ -1,5 +1,5 @@
 from __future__ import annotations
-from cell import Cell, gen_cell, TerrainTypes
+from cell import Cell
 from coord import Coord
 from dataclasses import dataclass
 from error import (CoordinateNotFoundError, IdNotFoundError, CoordinateExistenceError, IdExistenceError,
@@ -7,8 +7,7 @@ from error import (CoordinateNotFoundError, IdNotFoundError, CoordinateExistence
 from typing import Iterable
 from random import sample
 from enum import Enum, auto
-from identity import Id, EntityTypes
-
+from organism.identity import Id
 
 class Territory:
     def __init__(self):

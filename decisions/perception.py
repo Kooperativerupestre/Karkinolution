@@ -5,15 +5,15 @@ from actions import MoveActions
 from organism.creatures import Creature, Corpse, EntitysRegistry
 from actions import MoveActions
 
-from coord import Coord
+from core.coord import Coord
 from typing import Callable, Iterable
-from stats import Energy
-from identity import Id, EntityTypes
+from organism.stats import Energy
+from organism.identity import Id, EntityTypes
 from dataclasses import dataclass
-from error import CoordinateNotFoundError
-from map import BlockData, Territory, EntityMap, Geometry
+from core.error import CoordinateNotFoundError
+from core.map import Territory, EntityMap, Geometry
 
-from cell import Cell, FoodState, Properties, MovimentCost
+from core.cell import Cell, FoodState, Properties, MovimentCost
 
 
 @dataclass(frozen=True)
