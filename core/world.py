@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from map import TerrainMotor, Territory, EntityMap
 from coord import Coord
 from organism.creatures import Creature, EntitysRegistry, Corpse
-from identity import Id
+from organism.identity import Id
 
 class WorldMotor:
     @staticmethod
