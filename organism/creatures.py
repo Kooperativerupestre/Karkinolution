@@ -1,14 +1,14 @@
 from __future__ import annotations
-from genetics import CreatureTypes, Genome, creatures_genomes
-from stats import LimitedValue, Energy, Life, Age, Fertility
-from actions import Intent, IntentActs
-from ontology import Gender, AtackedEvent
+from organism.genetics import CreatureTypes, Genome, creatures_genomes
+from organism.stats import LimitedValue, Energy, Life, Age, Fertility
+from decisions.actions import Intent, IntentActs
+from organism.ontology import Gender, AtackedEvent
 
-from error import NonPregnancyError, GenderFemaleError, IdNotFoundError, IdExistenceError
-from identity import Id, EntityTypes
+from core.error import NonPregnancyError, GenderFemaleError, IdNotFoundError, IdExistenceError
+from organism.identity import Id, EntityTypes
 from random import uniform
 from math import exp
-from typing import overload
+from dataclasses import dataclass
 
 
 MAX_STRENGTH = 35
@@ -89,9 +89,20 @@ class Uterus:
             raise NonPregnancyError('Uterus {} is not pregnant'.format(self))
         return self.pregnancy_cost / self.number_children.value # type: ignore
     
+@dataclass(frozen=True)
+class CreatureInterface:
+    name:str
+    id:Id
+    age:Age
+    energy:Energy
+    life:Life
 
-        
+    pregnant:bool
+    intent:Intent
 
+    @property
+    def hungry(self) -> float:
+        return 1 - self.energy.ratio
 
 
 class Creature:
@@ -155,6 +166,20 @@ class Creature:
     def senescence(self) -> float:
         return self.age.value/(self.age.limit**1.4)
 
+    @property
+    def interface(self) -> CreatureInterface:
+        pregnant = True if self.gender == Gender.FEMALE and self.uterus.pregnant else False # type: ignore
+        return CreatureInterface(
+            self.name,
+            self.id,
+            self.age,
+            self.energy,
+            self.life,
+            pregnant,
+            self.intent
+        )
+    
+    
     
     def __str__(self):
         return f'({self.name} | {self.id})'

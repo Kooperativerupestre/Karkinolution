@@ -1,5 +1,5 @@
 from __future__ import annotations
-from error import InsufficientEnergyError
+from core.error import InsufficientEnergyError
 
 
 class LimitedValue:

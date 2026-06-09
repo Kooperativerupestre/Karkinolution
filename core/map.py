@@ -1,12 +1,11 @@
 from __future__ import annotations
-from cell import Cell
-from coord import Coord
+from core.cell import Cell
+from core.coord import Coord
 from dataclasses import dataclass
-from error import (CoordinateNotFoundError, IdNotFoundError, CoordinateExistenceError, IdExistenceError,
+from core.error import (CoordinateNotFoundError, IdNotFoundError, CoordinateExistenceError, IdExistenceError,
                    CoordinateOccupiedError)
 from typing import Iterable
 from random import sample
-from enum import Enum, auto
 from organism.identity import Id
 
 class Territory:
@@ -15,6 +14,9 @@ class Territory:
     @property
     def coords(self) -> Iterable[Coord]:
         return self.territory.keys()
+    @property
+    def cells(self) -> Iterable[Cell]:
+        return self.territory.values()
 
 class EntityMap:
     def __init__(self):
