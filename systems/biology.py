@@ -1,22 +1,22 @@
-from identity import gen_id, EntityTypes
-from error import (NonPregnancyError, DifferentSpeciesError, AlreadyPregnantError, FinishedError,
+from organism.identity import gen_id, EntityTypes
+from core.error import (NonPregnancyError, DifferentSpeciesError, AlreadyPregnantError, FinishedError,
                    GenderFemaleError, GenderMaleError, NonReproducibleError, CoordinateOccupiedError)
 from random import choices
-from stats import LimitedValue, Energy, check_energy, Age
+from organism.stats import LimitedValue, Energy, check_energy, Age
 
 
 from organism.creatures import Uterus, Creature, EntitysRegistry, Corpse
 from organism.genetics import Genome
-from namegenerator import gen_name
+from utils.namegenerator import gen_name
 from organism.ontology import Gender, Diet
 
-from world import WorldMotor
-from map import TerrainView, EntityMap, Territory
-from coord import Coord
-from perception import Perception, Analysis, PerceivedBlock, PerceivedCell, PerceivedCreature
+from core.world import WorldMotor
+from core.map import TerrainView, EntityMap, Territory
+from core.coord import Coord
+from decisions.perception import Perception, Analysis, PerceivedBlock, PerceivedCell, PerceivedCreature
 from dataclasses import dataclass
 from enum import Enum, auto
-from physics import MovementSystem
+from systems.physics import MovementSystem
 
 class FoodHint(Enum):
     CORPSE = auto()

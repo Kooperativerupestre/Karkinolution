@@ -1,15 +1,15 @@
-from perception import PerceivedBlock, PerceivedCell
+from decisions.perception import PerceivedBlock, PerceivedCell
 
 from organism.creatures import Creature, Corpse
 from organism.ontology import AtackedEvent
 
-from error import NonMotileError, CoordinateOccupiedError
-from coord import Coord
-from map import TerrainView, TerrainMotor, EntityMap, Territory
+from core.error import NonMotileError, CoordinateOccupiedError
+from core.coord import Coord
+from core.map import TerrainView, TerrainMotor, EntityMap, Territory
 
-from stats import check_energy
-from actions import MoveActions
-from perception import Perception, Analysis
+from organism.stats import check_energy
+from decisions.actions import MoveActions
+from decisions.perception import Perception, Analysis
 
 class MovementSystem:
     @staticmethod

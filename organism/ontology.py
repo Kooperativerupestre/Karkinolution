@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from dataclasses import dataclass
 from random import choice
-from identity import Id
+from organism.identity import Id
 
 @dataclass
 class AtackedEvent:

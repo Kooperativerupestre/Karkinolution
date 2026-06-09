@@ -1,24 +1,35 @@
-from map import Territory, EntityMap, TerrainMotor, TerrainView
-from cell import TerrainTypes, gen_cell
-from coord import Coord
+from core.map import Territory, EntityMap, TerrainMotor, TerrainView
+from core.cell import TerrainTypes, gen_cell
+from core.coord import Coord
 from organism.genetics import CreatureTypes, creatures_genomes
-from organism.creatures import Creature, Corpse, EntitysRegistry
+from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface
 from organism.ontology import Gender
-from namegenerator import gen_name
-from identity import Id, gen_id, EntityTypes
-from world import WorldMotor, World
+from utils.namegenerator import gen_name
+from organism.identity import Id, gen_id, EntityTypes
+from core.world import WorldMotor, World
 from systems.biology import DeathSystem, MetabolismSystem
-from perception import perceive
+from decisions.perception import perceive
 from systems.pressets import AtackPressets, EatPressets, MovePressets
-from actions import IntentActs, Intent
-from instincts import DecideIntention, Planner
+from decisions.actions import IntentActs, Intent
+from decisions.instincts import DecideIntention, Planner
 from systems.physics import MovementSystem, AtackSystem
+
+
 # =========================================================
 # INIT WORLD
 # =========================================================
 
-class Init:
 
+def print_creature(creature:CreatureInterface, coord:Coord) -> None:
+
+
+    print('Nome: {}     | ID {} |   Energy value {}/{}'.format(creature.name, creature.id, creature.energy.value, creature.energy.limit))
+    print('Intent: {}   | life {}/{}'.format(creature.intent.intent.name, creature.life.value, creature.life.limit))
+    print('Hungry: ', creature.hungry)
+    print('-'*30, end='\n\n\n')
+    print(f'Coord creature {coord}')
+
+class Init:
     @staticmethod
     def init_territory(territory: Territory) -> None:
         size = Coord(20, 20)
@@ -68,64 +79,86 @@ class Init:
 # =========================================================
 # SIMULATION STEP
 # =========================================================
-
-
-def run_creature(creature: Creature, coord_creature:Coord, territory:Territory, entity_map:EntityMap, entitys:EntitysRegistry) -> None:
-
-
-    
-    if DeathSystem.is_dead(creature):
-        DeathSystem.resolve_death(
-            creature,
-            coord_creature,
-            entity_map,
-            territory,
-            entitys
-        )
-        return
-
-    creature.energy.sub(creature.energy.limit**(1/3))
-    creature.age.add(1)
-
-    perception = perceive(
-        creature,
-        territory,
-        entity_map, 
-        coord_creature,
-        entitys
-    )
-
-    creature.intent.time+=1
-
-    if creature.intent.intent is IntentActs.NOTHING:
-        creature.intent = DecideIntention.decide(creature)
-    
-    if creature.intent.intent is IntentActs.FIND_FOOD:
-        if creature.hungry < creature.genome.max_hungry:
-            print('abaixo!')
-            creature.intent = Intent(IntentActs.NOTHING)
-            return
-
-        act = Planner.plan_find_food_intent(perception, creature)
-        print(f'Comida próxima {MetabolismSystem.near_food(perception, creature)}')
-
-        if isinstance(act, MovePressets):
-            MovementSystem.move(
+class Runner:
+    @staticmethod
+    def run_creature(creature: Creature, coord_creature:Coord, territory:Territory, entity_map:EntityMap, entitys:EntitysRegistry) -> None:    
+        if DeathSystem.is_dead(creature):
+            DeathSystem.resolve_death(
                 creature,
                 coord_creature,
-                act.new_coord,
                 entity_map,
-                territory
+                territory,
+                entitys
             )
+            return
 
-        elif isinstance(act, EatPressets):
-            MetabolismSystem.eat(creature, act.energy)
+        creature.energy.sub(creature.energy.limit**(1/3)*1.4)
+        creature.age.add(1)
 
-        elif isinstance(act, AtackPressets):
-            AtackSystem.atack(act.atacker, act.target)
-    if creature.intent.intent is IntentActs.FIND_MATCH:
-        if creature.intent.time > 3:
-            creature.intent = Intent(IntentActs.NOTHING)
+        perception = perceive(
+            creature,
+            territory,
+            entity_map, 
+            coord_creature,
+            entitys
+        )
+
+        creature.intent.time+=1
+
+        if creature.intent.intent is IntentActs.NOTHING:
+            creature.intent = DecideIntention.decide(creature)
+        
+        if creature.intent.intent is IntentActs.FIND_FOOD:
+            if creature.hungry < creature.genome.max_hungry:
+                creature.intent = Intent(IntentActs.NOTHING)
+                return
+
+            act = Planner.plan_find_food_intent(perception, creature)
+
+
+            if isinstance(act, MovePressets):
+                MovementSystem.move(
+                    creature,
+                    coord_creature,
+                    act.new_coord,
+                    entity_map,
+                    territory
+                )
+
+            elif isinstance(act, EatPressets):
+                MetabolismSystem.eat(creature, act.energy)
+
+            elif isinstance(act, AtackPressets):
+                AtackSystem.atack(act.atacker, act.target)
+        if creature.intent.intent is IntentActs.FIND_MATCH:
+            if creature.intent.time > 3:
+                creature.intent = Intent(IntentActs.NOTHING)
+
+    @staticmethod
+    def run(world:World):
+        territory = world.territory
+        entitys = world.entitys
+        entity_map = world.entity_map
+        print(f'Time: {world.time}')
+
+        print(' '*30, end='\n\n\n')
+
+        ### RUN CELLS
+        for cell in territory.cells:
+            cell.pass_time()
+
+
+        ### RUN CREATURES
+        for coord, id in entity_map.iter:
+            creature = entitys.get_creature(id)
+
+            print_creature(creature.interface, coord)
+
+            Runner.run_creature(creature, coord, territory, entity_map, entitys)
+
+
+        
+        
 
 
 world = World(
@@ -140,25 +173,9 @@ Init.init_territory(world.territory)
 
 WorldMotor.add_entity(world.territory, world.entity_map, Init.random_creature(id), Coord(0, 0), world.entitys)
 
-def print_creature(id:Id, entity_map:EntityMap, entitys:EntitysRegistry) -> None:
-    creature = entitys.get_creature(id)
 
 
-    print('Nome: {}     | ID {} |   Energy value {}/{}'.format(creature.name, creature.id, creature.energy.value, creature.energy.limit))
-    print('Intent: {}   | life {}/{}'.format(creature.intent.intent.name, creature.life.value, creature.life.limit))
-    print('Hungry: ', creature.hungry)
-    print('-'*30, end='\n\n\n')
-    print(f'Coord creature {TerrainView.get_coord_by_id(id, entity_map)}')
 
-def run(territory:Territory, entity_map:EntityMap, entitys:EntitysRegistry):
-
-    print(f'Tempo {world.time}')
-    
-    print_creature(id, world.entity_map, world.entitys)
-
-    DecideIntention.decide(world.entitys.get_creature(id))
-
-    run_creature(entitys.get_creature(id), TerrainView.get_coord_by_id(id, world.entity_map), territory, entity_map, entitys)
-
-
-run(world.territory, world.entity_map, world.entitys)
+Runner.run(world)
+Runner.run(world)
+Runner.run(world)

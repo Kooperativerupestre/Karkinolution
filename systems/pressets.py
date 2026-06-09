@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from organism.creatures import Creature
-from actions import MoveActions
-from coord import Coord
-from stats import Energy
+from decisions.actions import MoveActions
+from core.coord import Coord
+from organism.stats import Energy
 
 @dataclass(frozen=True)
 class MovePressets:

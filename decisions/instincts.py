@@ -1,9 +1,9 @@
 from organism.ontology import Temperament, Gender
 from systems.physics import MovementSystem
 from systems.biology import MetabolismSystem, FoodHint, FoodTarget
-from perception import Perception, Analysis
+from decisions.perception import Perception, Analysis
 from organism.creatures import Creature
-from actions import Intent, IntentActs
+from decisions.actions import Intent, IntentActs
 from systems.pressets import MovePressets, ReproducePressets, EatPressets, AtackPressets
 from random import choice
 from organism.identity import Id

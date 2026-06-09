@@ -1,9 +1,9 @@
 from __future__ import annotations
 from enum import Enum, auto
 from random import choice, choices, randint, uniform
-from ontology import Temperament, Diet
-from actions import Actions, MoveActions
-from coord import Coord
+from organism.ontology import Temperament, Diet
+from decisions.actions import Actions, MoveActions
+from core.coord import Coord
 from dataclasses import dataclass
 
 

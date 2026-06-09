@@ -1,9 +1,8 @@
 from __future__ import annotations
 from organism.genetics import CreatureTypes
 from organism.ontology import Gender
-from actions import MoveActions
 from organism.creatures import Creature, Corpse, EntitysRegistry
-from actions import MoveActions
+from decisions.actions import MoveActions
 
 from core.coord import Coord
 from typing import Callable, Iterable
