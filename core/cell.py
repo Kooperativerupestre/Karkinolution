@@ -9,6 +9,11 @@ class Properties(Enum):
     EDIBLE = auto()
     DANGEROUS = auto()
 
+    def __str__(self):
+        return self.name
+    def __repr__(self):
+        return self.name
+
 #
 #
 # COMPONENTS
@@ -18,9 +23,15 @@ class Properties(Enum):
 class Component(ABC):
     pass
 
+    def __str__(self):
+        return self.__class__.__name__
+    def __repr__(self):
+        return self.__class__.__name__
+
 class Reactive(Component, ABC):
     @abstractmethod
     def pass_time(self):...
+
 
 class FoodState(Reactive):
     def __init__(self, food:Energy, regen_tax:int | float):
@@ -50,6 +61,11 @@ class TerrainTypes(Enum):
     DIRT = auto()
     ROCK = auto()
 
+    def __str__(self):
+        return self.name
+    def __repr__(self):
+        return self.name
+
 
 @dataclass(frozen=True)
 class Blueprint:
@@ -76,7 +92,7 @@ blueprints = {
 
     TerrainTypes.SAND: Blueprint(
         extra_values={
-            FoodState: lambda: FoodState(food=Energy(5, 5), regen_tax=0.7),
+            FoodState: lambda: FoodState(food=Energy(10, 10), regen_tax=1),
             MovimentCost: lambda: MovimentCost(2)
         },
         properties={Properties.EDIBLE},
@@ -100,13 +116,14 @@ blueprints = {
 
 class Cell:
     def __init__(self,
+                 type_cell:TerrainTypes,
                  extra_values:dict[type[Component], Component] | None = None,
                  properties:set[Properties] | None = None,
-                 required_capabilities:set[MoveActions] | None = None):
+                 required_capabilities:set[MoveActions] | None = None) :
         self.extra_values:dict[type[Component], Component] = dict() if extra_values is None else extra_values
         self.properties:set[Properties] = set() if properties is None else properties
         self.required_capabilities:set[MoveActions] = set() if required_capabilities is None else required_capabilities
-         
+        self.type = type_cell
     # TO FIND
     def property_is_in(self, property:Properties) -> bool:
         return property in self.properties
@@ -152,4 +169,5 @@ def gen_cell(terrain_type:TerrainTypes) -> Cell:
 
     return Cell(extra_values=blueprint.generate_components(), 
                 properties=blueprint.properties.copy(),
-                required_capabilities=blueprint.required_capabilities.copy())
+                required_capabilities=blueprint.required_capabilities.copy(),
+                type_cell=terrain_type)

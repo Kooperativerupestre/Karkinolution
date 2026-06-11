@@ -1,10 +1,10 @@
 from organism.ontology import Temperament, Gender
 from systems.physics import MovementSystem
 from systems.biology import MetabolismSystem, FoodHint, FoodTarget
-from decisions.perception import Perception, Analysis
+from decisions.perception import Perception, Analysis, PerceivedCreature, PerceivedCell
 from organism.creatures import Creature
 from decisions.actions import Intent, IntentActs
-from systems.pressets import MovePressets, ReproducePressets, EatPressets, AtackPressets
+from systems.presets import MovePreset, ReproducePreset, EatPreset, AtackPreset
 from random import choice
 from organism.identity import Id
 
@@ -30,15 +30,14 @@ def move_possibility(perception:Perception, creature:Creature) -> bool:
     return any(MovementSystem.can_move(b, creature) for b in perception.neighbors_9_blocks)
 
 def reproduce_possibility(creature: Creature) -> bool:
-    if creature.gender is Gender.FEMALE:
-        if creature.uterus.pregnant: # type: ignore
-            return False
-        elif creature.age.ratio > 0.85:
-            return False
-    return (
-        creature.reproductively_capable and
-        creature.energy.value * creature.genome.extra_reproduction_multiplier > creature.genome.reproduction_cost
-    )
+    if creature.pregnant:
+        return False
+    
+    if creature.age.ratio > 0.86:
+        return False
+    
+    return creature.reproductively_capable
+
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
     temperament = creature.genome.behavior
     coord_creature = perception.coord
@@ -73,15 +72,14 @@ def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
 class EvaluateActions:
     @staticmethod
     def score_eat(creature:Creature) -> float:
-        factor = creature.hungry * 2
+        if creature.hungry < creature.genome.max_hungry:
+            return 0.0
 
-        if creature.hungry > creature.genome.max_hungry:
-            factor += 0.5
+        factor = creature.hungry * 2
 
         if creature.gender is Gender.FEMALE:
             if creature.uterus.pregnant: # type: ignore
                 factor += creature.pregnancy_factor
-        print(f'FATOR {factor}')
         return factor
     @staticmethod
     def score_reproduce(creature:Creature) -> float:
@@ -100,9 +98,9 @@ class DecideIntention:
         acts[IntentActs.FIND_FOOD] = EvaluateActions.score_eat(creature)
         if creature.gender is Gender.MALE:
             acts[IntentActs.FIND_MATCH] =  EvaluateActions.score_reproduce(creature)
-        elif creature.gender is Gender.FEMALE:
-            if not creature.uterus.pregnant: # type: ignore
-                acts[IntentActs.FIND_MATCH] = EvaluateActions.score_reproduce(creature)
+        elif creature.gender == Gender.FEMALE and not creature.pregnant:
+            acts[IntentActs.FIND_MATCH] = EvaluateActions.score_reproduce(creature)
+        
 
 
 
@@ -114,7 +112,7 @@ class DecideIntention:
 
 class Planner:
     @staticmethod
-    def random_move_presset(perception:Perception, creature:Creature) -> MovePressets | None:
+    def random_move_presset(perception:Perception, creature:Creature) -> MovePreset | None:
         blocks = perception.neighbors_4_require
         moveble_blocks = {}
         for c, b in blocks:
@@ -128,10 +126,10 @@ class Planner:
         move_type = MovementSystem.decide_movimentation(creature, block)
         assert move_type is not None, 'Move-type must not be None'
 
-        return MovePressets(creature, perception.coord, coord, move_type) 
+        return MovePreset(coord, move_type) 
         
     @staticmethod
-    def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePressets | AtackPressets | EatPressets | None:
+    def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AtackPreset | EatPreset | None:
         food_target = MetabolismSystem.find_food_target(perception, creature)
         coord_creature = perception.coord
 
@@ -142,8 +140,8 @@ class Planner:
         food_coord = food_target.coord
 
         if food_coord == coord_creature:
-            energy:Energy = perception.get(food_coord).cell.get_component(FoodState).food # type: ignore
-            return EatPressets(creature, energy)
+            energy:Energy = perception.get(food_coord).cell.food # type: ignore
+            return EatPreset(energy)
 
         if coord_creature.distance_exceeds_one(food_coord):
             new_coord = MovementSystem.best_pos(creature, perception, food_coord)
@@ -151,7 +149,7 @@ class Planner:
                 return None
             
             move_type = MovementSystem.decide_movimentation(creature, perception.get(new_coord))
-            return MovePressets(creature, coord_creature, new_coord, move_type) # type: ignore
+            return MovePreset(creature, coord_creature, new_coord, move_type) # type: ignore
         
         block = perception.get(food_coord)
 
@@ -162,14 +160,14 @@ class Planner:
             move_type = MovementSystem.decide_movimentation(creature, block)
             if move_type is None:
                 return None
-            return MovePressets(creature, coord_creature, food_coord, move_type)
+            return MovePreset(food_coord, move_type)
         return None
 
 
         
     
     @staticmethod
-    def plan_find_match_intent(perception:Perception, creature:Creature) -> MovePressets | ReproducePressets | None:
+    def plan_find_match_intent(perception:Perception, creature:Creature) -> MovePreset | ReproducePreset | None:
         other_sex = Gender.other_sex(creature.gender)
         # other_sex() returns the opposite sex of the creature
 
@@ -180,13 +178,13 @@ class Planner:
             return None
 
         near_coord = Analysis.near_coord(sames_specie, perception.coord)
-        other_creature:Entity = perception.get(near_coord).creature # type: ignore
+        other_creature:PerceivedCreature = perception.get(near_coord).entity # type: ignore
 
         if not perception.coord.distance_exceeds_one(near_coord):
-            female = creature if creature.gender is Gender.FEMALE else other_creature
-            male = creature if creature.gender is Gender.MALE else other_creature
+            female = creature.id if creature.gender is Gender.FEMALE else other_creature.identity
+            male = creature.id if creature.gender is Gender.MALE else other_creature.identity
 
-            return ReproducePressets(female, male)
+            return ReproducePreset(female, male)
 
         new_coord = MovementSystem.best_pos(creature, perception, near_coord)
         # MovementSystem.best_pos guarantees that the coordinate is a valid destination for the creature

@@ -28,6 +28,11 @@ class FoodTarget:
     food_hint:FoodHint
     coord:Coord
 
+@dataclass(frozen=True)
+class ReproductionCost:
+    female_cost:int | float
+    male_cost:int | float
+
 
 class UterusSystem:
     @staticmethod
@@ -89,11 +94,15 @@ class UterusSystem:
         if uterus.pregnant: 
             creature.energy.sub(uterus.pregnancy_cost)
             uterus.gestation.value += 1 # type: ignore
+
+
+            if uterus.all_children_borned:
+                UterusSystem.finish(uterus)
     
 
 class ReproductiveSystem:
     @staticmethod
-    def reproduce(female:Creature, male:Creature) -> None:
+    def reproduce(female:Creature, male:Creature) -> ReproductionCost:
         check_energy(female.energy, female.genome.reproduction_cost)
         check_energy(male.energy, male.genome.reproduction_cost)
 
@@ -109,8 +118,7 @@ class ReproductiveSystem:
         
         ReproductiveSystem.conceive(female.uterus, male.genome) # type: ignore
 
-        female.energy.sub(female.genome.reproduction_cost)
-        male.energy.sub(male.genome.reproduction_cost)
+        return ReproductionCost(female.genome.reproduction_cost, male.genome.reproduction_cost)
 
     @staticmethod
     def to_birth(female:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> bool:
@@ -216,6 +224,5 @@ class DeathSystem:
     @staticmethod
     def resolve_death(creature:Creature, coord_creature:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> None:
         corpse = DeathSystem.generate_corpse(creature)
-        WorldMotor.delete_entity_by_coord(entity_map, coord_creature, creature.id, entitys)
+        WorldMotor.delete_entity(entity_map, coord_creature, creature.id, entitys)
         WorldMotor.add_entity(territory, entity_map, corpse, coord_creature, entitys)
-    
