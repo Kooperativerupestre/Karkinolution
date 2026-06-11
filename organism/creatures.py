@@ -145,7 +145,7 @@ class Creature:
         return (self.energy.value * self.genome.extra_reproduction_multiplier)/self.genome.reproduction_cost
     @property
     def reproductively_capable(self) -> bool:
-        return self.fertility.value == self.fertility.limit
+        return self.fertility.value == self.fertility.limit and self.energy.value * self.genome.extra_reproduction_multiplier >= self.genome.reproduction_cost
     @property
     def pregnancy_factor(self) -> int | float:
         if self.gender is not Gender.FEMALE:
@@ -165,6 +165,10 @@ class Creature:
     @property
     def senescence(self) -> float:
         return self.age.value/(self.age.limit**1.4)
+    
+    @property
+    def pregnant(self) -> bool:
+        return self.uterus is not None and self.uterus.pregnant
 
     @property
     def interface(self) -> CreatureInterface:
@@ -190,9 +194,6 @@ class Corpse:
         self.id = Id(id, EntityTypes.CORPSE)
         self.decomposition_time = decomposition_time
     
-    def pass_time(self) -> None:
-        self.energy.mul(0.95 - self.decomposition_time.value/100)
-        self.decomposition_time.add(1)
     @property
     def ready_to_disapear(self) -> bool:
         return self.decomposition_time.value == self.decomposition_time.limit

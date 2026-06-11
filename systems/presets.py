@@ -3,22 +3,19 @@ from organism.creatures import Creature
 from decisions.actions import MoveActions
 from core.coord import Coord
 from organism.stats import Energy
+from organism.identity import Id
 
 @dataclass(frozen=True)
-class MovePressets:
-    creature:Creature
-    coord_creature:Coord
+class MovePreset:
     new_coord:Coord
     move_act:MoveActions
 @dataclass(frozen=True)
-class ReproducePressets:
-    female:Creature
-    male:Creature
+class ReproducePreset:
+    female:Id
+    male:Id
 @dataclass(frozen=True)
-class AtackPressets:
-    atacker:Creature
-    target:Creature
-@dataclass
-class EatPressets:
-    creature:Creature
+class AtackPreset:
+    target:Id
+@dataclass(frozen=True)
+class EatPreset:
     energy:Energy

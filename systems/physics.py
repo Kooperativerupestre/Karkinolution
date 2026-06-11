@@ -23,7 +23,7 @@ class MovementSystem:
         cost = cell.movement_cost 
         return cost
     @staticmethod
-    def move(creature:Creature, coord_creature:Coord, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> None:
+    def move(creature:Creature, coord_creature:Coord, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> int:
         if TerrainView.is_occupied(new_coord, entity_map):
             raise CoordinateOccupiedError('Coord {} is occupied'.format(new_coord))
         if coord_creature == new_coord:
@@ -32,7 +32,7 @@ class MovementSystem:
         check_energy(creature.energy, 1)
         TerrainMotor.move(creature.id, new_coord, entity_map, territory)
 
-        creature.energy.sub(1)
+        return 1
 
 
         
@@ -53,7 +53,7 @@ class MovementSystem:
     
 class AtackSystem:
     @staticmethod
-    def atack(creature:Creature, target:Creature) -> None:
+    def atack(creature:Creature, target:Creature) -> float:
         check_energy(creature.energy, 1.5)
     
         atack_event = AtackedEvent(creature.id, creature.genome.strength)
@@ -61,7 +61,7 @@ class AtackSystem:
         target.life.sub(creature.genome.strength)
 
         target.last_atack = atack_event
-        creature.energy.sub(1.5)
+        return 1.5
 
     @staticmethod
     def distance_can_atack(coord_creature:Coord, coord_target:Coord) -> bool:
