@@ -22,6 +22,7 @@ class PerceivedCreature:
 
     specie_id:CreatureTypes | None
     gender:Gender | None
+    can_reproduce:bool
 
 
 @dataclass(frozen=True)
@@ -124,7 +125,8 @@ class Perceiver:
             creature.energy,
             creature.id,
             creature.genome.id,
-            creature.gender
+            creature.gender,
+            creature.reproductively_capable and Gender.other_sex(creature.gender) == creature.gender
         )
     @staticmethod
     def perceive_corpse(corpse:Corpse) -> PerceivedCreature:
@@ -132,7 +134,8 @@ class Perceiver:
             corpse.energy,
             corpse.id,
             None,
-            None
+            None,
+            False
         )
     @staticmethod
     def perceive_cell(cell:Cell) -> PerceivedCell:

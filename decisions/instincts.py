@@ -6,7 +6,11 @@ from organism.creatures import Creature
 from decisions.actions import Intent, IntentActs
 from systems.presets import MovePreset, ReproducePreset, EatPreset, AtackPreset
 from random import choice
-from organism.identity import Id
+from organism.identity import Id, EntityTypes
+from dataclasses import dataclass
+from organism.genetics import CreatureTypes
+from core.error import IdExistenceError, EntityTypeError
+
 
 COURAGE_FACTOR = {
     Temperament.PASSIVE: 0.1,
@@ -25,18 +29,35 @@ TRADE_OFF = {
 }
 
 
+@dataclass(frozen=True)
+class ReproductiveDesire:
+    creature_id:Id
+    specie_id:CreatureTypes
 
-def move_possibility(perception:Perception, creature:Creature) -> bool:
-    return any(MovementSystem.can_move(b, creature) for b in perception.neighbors_9_blocks)
+class ReproductiveBuffer:
+    def __init__(self):
+        self.desires:dict[Id, ReproductiveDesire] = {}
 
-def reproduce_possibility(creature: Creature) -> bool:
-    if creature.pregnant:
-        return False
+    def require_first_by_specie(self, specie_id:CreatureTypes) -> None | ReproductiveDesire:
+        # O(n)
+
+        for desire in self.desires.values():
+            if desire.specie_id == specie_id:
+                return desire
+    def get(self, id:Id) -> ReproductiveDesire:
+        return self.desires[id]
     
-    if creature.age.ratio > 0.86:
-        return False
-    
-    return creature.reproductively_capable
+    def try_remove(self, id:Id) -> None:
+        if id in self.desires:
+            del self.desires[id]
+    def add(self, desire:ReproductiveDesire) -> None:
+        id = desire.creature_id
+        if id in self.desires:
+            raise IdExistenceError('ID {} already exists'.format(id.id))
+        self.desires[id] = desire
+    def registry(self, desire:ReproductiveDesire) -> None:
+        if id not in self.desires:
+            self.desires[desire.creature_id] = desire
 
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
     temperament = creature.genome.behavior
@@ -92,7 +113,7 @@ class EvaluateActions:
 
 class DecideIntention:
     @staticmethod
-    def decide(creature:Creature) -> Intent:
+    def decide(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> Intent:
         acts:dict[IntentActs, float] = {}
         acts[IntentActs.NOTHING] = 0.8
         acts[IntentActs.FIND_FOOD] = EvaluateActions.score_eat(creature)
@@ -107,27 +128,12 @@ class DecideIntention:
 
         chose = max(acts, key=lambda x: acts[x])
         intent = Intent(chose)
+        if intent.intent == IntentActs.FIND_MATCH:
+            reproductive_buffer.registry(ReproductiveDesire(creature.id, creature.genome.id))
         return intent
 
 
 class Planner:
-    @staticmethod
-    def random_move_presset(perception:Perception, creature:Creature) -> MovePreset | None:
-        blocks = perception.neighbors_4_require
-        moveble_blocks = {}
-        for c, b in blocks:
-            if b is not None and MovementSystem.can_move(b, creature):
-                moveble_blocks[c] = b
-        if len(moveble_blocks) == 0:
-            return None
-        
-        block = choice(list(moveble_blocks.values()))
-        coord = choice(list(moveble_blocks.keys()))
-        move_type = MovementSystem.decide_movimentation(creature, block)
-        assert move_type is not None, 'Move-type must not be None'
-
-        return MovePreset(coord, move_type) 
-        
     @staticmethod
     def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AtackPreset | EatPreset | None:
         food_target = MetabolismSystem.find_food_target(perception, creature)
@@ -144,58 +150,34 @@ class Planner:
             return EatPreset(energy)
 
         if coord_creature.distance_exceeds_one(food_coord):
-            new_coord = MovementSystem.best_pos(creature, perception, food_coord)
-            if new_coord is None:
-                return None
-            
-            move_type = MovementSystem.decide_movimentation(creature, perception.get(new_coord))
-            return MovePreset(creature, coord_creature, new_coord, move_type) # type: ignore
+            return MovePreset(food_coord)
         
         block = perception.get(food_coord)
 
         if coord_creature.distance_to_other(food_coord) == 1:
             if creature.genome.behavior in [Temperament.AGGRESSIVE, Temperament.NEUTRAL] and food_target.food_hint is FoodHint.OTHER_SPECIE:
                 return AtackPressets(creature, block.creature) # type: ignore
-            
-            move_type = MovementSystem.decide_movimentation(creature, block)
-            if move_type is None:
-                return None
-            return MovePreset(food_coord, move_type)
+    
+            return MovePreset(food_coord)
         return None
 
 
         
     
     @staticmethod
-    def plan_find_match_intent(perception:Perception, creature:Creature) -> MovePreset | ReproducePreset | None:
+    def plan_find_match_intent(perception:Perception, creature:Creature) -> MovePreset | None:
         other_sex = Gender.other_sex(creature.gender)
         # other_sex() returns the opposite sex of the creature
 
 
-        sames_specie = Analysis.same_species(perception, predicate=lambda x: x.creature.gender is other_sex) # type: ignore
+        sames_specie = Analysis.same_species(perception, predicate=lambda x: x.entity.can_reproduce) # type: ignore
 
         if len(sames_specie) == 0:
             return None
 
         near_coord = Analysis.near_coord(sames_specie, perception.coord)
-        other_creature:PerceivedCreature = perception.get(near_coord).entity # type: ignore
-
-        if not perception.coord.distance_exceeds_one(near_coord):
-            female = creature.id if creature.gender is Gender.FEMALE else other_creature.identity
-            male = creature.id if creature.gender is Gender.MALE else other_creature.identity
-
-            return ReproducePreset(female, male)
-
-        new_coord = MovementSystem.best_pos(creature, perception, near_coord)
-        # MovementSystem.best_pos guarantees that the coordinate is a valid destination for the creature
-
-
-        if new_coord is None:
-            return None
-
-        movement_type = MovementSystem.decide_movimentation(creature, perception.get(new_coord))
-        # A valid destination has already been verified
-
-
-        return MovePressets(creature, perception.coord, new_coord, movement_type) # type: ignore
     
+        if perception.coord.distance_exceeds_one(near_coord):
+            return MovePreset(near_coord)
+
+        return None

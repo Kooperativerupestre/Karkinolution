@@ -28,3 +28,5 @@ class DifferentSpeciesError(Exception):
     pass
 class NonMotileError(Exception):
     pass
+class EntityTypeError(Exception):
+    pass

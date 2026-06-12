@@ -8,7 +8,6 @@ from organism.identity import Id
 @dataclass(frozen=True)
 class MovePreset:
     new_coord:Coord
-    move_act:MoveActions
 @dataclass(frozen=True)
 class ReproducePreset:
     female:Id

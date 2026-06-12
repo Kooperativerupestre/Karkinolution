@@ -8,13 +8,14 @@ from organism.stats import check_energy, Energy
 from utils.namegenerator import gen_name
 from organism.identity import Id, gen_id, EntityTypes
 from core.world import WorldMotor, World
-from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem
-from decisions.perception import perceive, Perception
+from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents
+from decisions.perception import perceive, Perception, PerceivedCreature
 from systems.presets import AtackPreset, EatPreset, MovePreset, ReproducePreset
 from decisions.actions import IntentActs, Intent
-from decisions.instincts import DecideIntention, Planner
+from decisions.instincts import DecideIntention, Planner, ReproductiveBuffer, ReproductiveDesire, ReproducePreset
 from systems.physics import MovementSystem, AtackSystem
-
+from random import choice
+from dataclasses import dataclass
 
 # =========================================================
 # INIT WORLD
@@ -143,33 +144,118 @@ class Init:
 # =========================================================
 # SIMULATION STEP
 # =========================================================
-class Runner:
-    # CREATURE
-    @staticmethod
-    def update_intent(creature:Creature, perception:Perception) -> (
-        MovePreset | EatPreset | AtackPreset | ReproducePreset | None):
 
-        if creature.intent.intent == IntentActs.NOTHING:
-            creature.intent = DecideIntention.decide(creature)
-        
+class ReproductiveResolver:
+    @staticmethod
+    def find_adjacent_mates(creature:Creature, perception:Perception) -> list[Id]:
+        ids = []
+
+
+        neighbors = perception.neighbors_4_require
+
+        for c, b in neighbors:
+            if b is not None and b.has_entity and b.entity.can_reproduce: # type: ignore
+                ids.append(b.entity.identity) # type: ignore
+        return ids
+    @staticmethod
+    def resolve_parents(A:Creature, B_id:Id, entitys:EntitysRegistry) -> Parents:
+        B = entitys.get_creature(B_id)
+
+
+        return ReproductiveSystem.return_parents(A, B)
+    
+    @staticmethod
+    def chose_mate(ids:list[Id]) -> Id:
+        return choice(ids)
+    
+    
+    @staticmethod
+    def mate_to_preset(parents:Parents) -> ReproducePreset:
+        return ReproducePreset(parents.female, parents.male)
+    
+
+
+
+
+class IntentResolver:
+    @staticmethod
+    def cancel_invalid_intents(creature:Creature) -> None:
         intent = creature.intent.intent
         intent_time = creature.intent.time
-        
-
         if creature.hungry < creature.genome.max_hungry and intent_time > 2 and intent == IntentActs.FIND_FOOD:
             creature.intent.intent = IntentActs.NOTHING
 
-        if intent_time > 5 and  IntentActs.FIND_MATCH:
+        if intent_time > 5 and intent ==  IntentActs.FIND_MATCH:
             creature.intent.intent = IntentActs.NOTHING
-        
-        
-        if intent == IntentActs.FIND_FOOD:
+    @staticmethod
+    def transform_to_preset(creature:Creature, perception:Perception) -> MovePreset | EatPreset | AtackPreset | None:
+        if creature.intent.intent == IntentActs.FIND_FOOD:
             act = Planner.plan_find_food_intent(perception, creature)
             return act
         
-        elif intent == IntentActs.FIND_MATCH:
+        elif creature.intent.intent == IntentActs.FIND_MATCH:
             act = Planner.plan_find_match_intent(perception, creature)
             return act
+
+    @staticmethod
+    def update_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> (
+        MovePreset | EatPreset | AtackPreset | ReproducePreset | None):
+
+        if creature.intent.intent == IntentActs.NOTHING:
+            creature.intent = DecideIntention.decide(creature, reproductive_buffer)
+    @staticmethod
+    def resolve_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer, perception:Perception) -> MovePreset | AtackPreset | EatPreset | None:
+        IntentResolver.cancel_invalid_intents(creature)
+        IntentResolver.update_intent(creature, reproductive_buffer)
+        return IntentResolver.transform_to_preset(creature, perception)
+
+class PresetExecutor:
+    @staticmethod
+    def execute_reproduction(preset:ReproducePreset, entitys:EntitysRegistry, buffer:ReproductiveBuffer) -> None:
+        female = entitys.get_creature(preset.female)
+        male = entitys.get_creature(preset.male)
+
+        
+        costs = ReproductiveSystem.reproduce(female, male)
+        female.energy.sub(costs.female_cost)
+        male.energy.sub(costs.male_cost)
+
+        buffer.try_remove(female.id)
+        buffer.try_remove(male.id)
+    @staticmethod
+    def execute_eat(preset:EatPreset, creature:Creature) -> None:
+        MetabolismSystem.eat(creature, preset.energy)
+    @staticmethod
+    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, coord_creature:Coord, world:World) -> None:
+        best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)
+
+        if best_pos is None:
+            return None
+        
+        cost = MovementSystem.move(creature, coord_creature, best_pos, world.entity_map, world.territory)
+        creature.energy.sub(cost)
+    @staticmethod
+    def execute_atack(preset:AtackPreset, entitys:EntitysRegistry, creature:Creature) -> None:
+        cost = AtackSystem.atack(creature, entitys.get_creature(preset.target))
+        creature.energy.sub(cost)
+    @staticmethod
+    def execute_preset(preset:AtackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
+        if isinstance(preset, AtackPreset):
+            PresetExecutor.execute_atack(preset, world.entitys, creature)
+        elif isinstance(preset, MovePreset):
+            PresetExecutor.execute_move(preset, creature, perception, perception.coord, world)
+        elif isinstance(preset, EatPreset):
+            PresetExecutor.execute_eat(preset, creature)
+        elif isinstance(preset, ReproducePreset):
+            PresetExecutor.execute_reproduction(preset, world.entitys, world.reproductive_buffer)
+
+class Runner:
+    # CREATURE
+
+
+
+        
+    
     @staticmethod
     def run_fisiology(creature:Creature, dt: int) -> bool:
         creature.age.add(dt)
@@ -189,7 +275,12 @@ class Runner:
 
 
     @staticmethod
-    def run_creature(creature: Creature, coord_creature:Coord, territory:Territory, entity_map:EntityMap, entitys:EntitysRegistry) -> None:    
+    def run_creature(creature: Creature, coord_creature:Coord, world:World) -> None:    
+        # ALIAS
+        entity_map = world.entity_map
+        territory = world.territory
+        entitys = world.entitys
+        # CODE
         is_dead = Runner.run_fisiology(creature, 1)
 
         if is_dead:
@@ -210,20 +301,12 @@ class Runner:
             entitys
         )
 
-        preset = Runner.update_intent(creature, perception)
+        preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
+        if preset is not None:
+            PresetExecutor.execute_preset(preset, creature, world, perception)
 
 
-        if isinstance(preset, EatPreset):
-            MetabolismSystem.eat(creature, preset.energy)
-        elif isinstance(preset, MovePreset):
-            check_energy(creature.energy, 1.4)
-            MovementSystem.move(creature, coord_creature, preset.new_coord, entity_map, territory)
-            creature.energy.sub(1.4)
-        elif isinstance(preset, ReproducePreset):
-            pass
-            # Not implemented yet
-        elif isinstance(preset, AtackPreset):
-            AtackSystem.atack(creature, entitys.get_creature(preset.target))
+
     
     # CORPSE
     
@@ -260,7 +343,7 @@ class Runner:
 
                 print_creature(creature.interface, coord, cell)
 
-                Runner.run_creature(creature, coord, territory, entity_map, entitys)
+                Runner.run_creature(creature, coord, world)
             elif id.e_type == EntityTypes.CORPSE:
                 corpse = entitys.get_corpse(id)
 
@@ -276,7 +359,8 @@ class Runner:
 world = World(
     Territory(),
     EntityMap(),
-    EntitysRegistry()
+    EntitysRegistry(),
+    ReproductiveBuffer()
 )
 
 id = Id('jotac', EntityTypes.CREATURE)
