@@ -6,9 +6,9 @@ from organism.stats import LimitedValue, Energy, check_energy, Age
 
 
 from organism.creatures import Uterus, Creature, EntitysRegistry, Corpse
-from organism.genetics import Genome
+from organism.genetics import Genome, MetabolismGenome
 from utils.namegenerator import gen_name
-from organism.ontology import Gender, Diet
+from organism.ontology import Gender, Diet, FoodHint, FoodTarget
 
 from core.world import WorldMotor
 from core.map import TerrainView, EntityMap, Territory
@@ -18,16 +18,9 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from systems.physics import MovementSystem
 
+from typing import Iterable
 
-class FoodHint(Enum):
-    CORPSE = auto()
-    OTHER_SPECIE = auto()
-    SOLO = auto()
 
-@dataclass
-class FoodTarget:
-    food_hint:FoodHint
-    coord:Coord
 
 @dataclass(frozen=True)
 class ReproductionCost:
@@ -57,8 +50,8 @@ class UterusSystem:
     
     @staticmethod
     def conceive(uterus:Uterus, male_genome:Genome) -> None:
-        if male_genome.id != uterus.female_genome.id:
-            raise DifferentSpeciesError(f'Male and Female genomes belong to different species. Male genome id {male_genome.id} != Female genome id {uterus.female_genome.id}')
+        if male_genome.core.id != uterus.female_genome.core.id:
+            raise DifferentSpeciesError(f'Male and Female genomes belong to different species. Male genome id {male_genome.core.id} != Female genome id {uterus.female_genome.core.id}')
         if uterus.pregnant:
             raise AlreadyPregnantError('Already pregnant uterus')
         uterus.male_genome = male_genome
@@ -109,8 +102,8 @@ class UterusSystem:
 class ReproductiveSystem:
     @staticmethod
     def reproduce(female:Creature, male:Creature) -> ReproductionCost:
-        check_energy(female.energy, female.genome.reproduction_cost)
-        check_energy(male.energy, male.genome.reproduction_cost)
+        check_energy(female.energy, female.genome.reproduction.reproduction_cost)
+        check_energy(male.energy, male.genome.reproduction.reproduction_cost)
 
 
         if female.gender is not Gender.FEMALE:
@@ -124,7 +117,7 @@ class ReproductiveSystem:
         
         ReproductiveSystem.conceive(female.uterus, male.genome) # type: ignore
 
-        return ReproductionCost(female.genome.reproduction_cost, male.genome.reproduction_cost)
+        return ReproductionCost(female.genome.reproduction.reproduction_cost, male.genome.reproduction.reproduction_cost)
 
     @staticmethod
     def to_birth(female:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> bool:
@@ -144,7 +137,7 @@ class ReproductiveSystem:
         return True
     @staticmethod
     def can_reproduce(A:Creature, B:Creature) -> bool:
-        return (A.genome.id == B.genome.id) and (A.reproductively_capable and B.reproductively_capable)
+        return (A.genome.core.id == B.genome.core.id) and (A.reproductively_capable and B.reproductively_capable)
     @staticmethod
     def return_parents(A:Creature, B:Creature) -> Parents:
         a_gender = A.gender
@@ -164,17 +157,62 @@ class ReproductiveSystem:
 
 
 class MetabolismSystem:
+    #   PIPELINE
+    #   evaluate -> coord = best coord
+    #   food types = decide_food_types(coord, perception)
+    #   chose best food type(coord, food types)
+
     @staticmethod
-    def is_edible(creature:Creature, block:PerceivedBlock) -> bool:
-        entity_type = block.get_entity_type()
-        if creature.genome.diet is Diet.CARNIVORE:
-            return entity_type == EntityTypes.CORPSE
-        elif creature.genome.diet is Diet.HERBIVORE:
-            return block.cell.is_edible and MovementSystem.can_move(block, creature)
-        else: # OMNIVORE
-            return entity_type == EntityTypes.CORPSE or (block.cell.is_edible and MovementSystem.can_move(block, creature))
+    def score_food(creature:Creature, coord_block:Coord, perception:Perception) -> float:
+        food_score = 0
 
+        cell_creature = perception.creature_block.cell
+        next_block = perception.get(coord_block)
+        diet_effective = 1 - creature.hungry
 
+        if next_block.get_entity_type() == EntityTypes.CREATURE and next_block.entity.specie_id != creature.genome.core.id: # type: ignore
+            food_score += (creature.genome.diet.target_score * (1 - diet_effective) - creature.hungry) * block.entity.energy # type: ignore
+        elif next_block.get_entity_type() == EntityTypes.CORPSE:
+            food_score += (creature.genome.diet.corpse_score * (1 - diet_effective) - creature.hungry) * block.entity.energy # type: ignore
+
+        if next_block.cell.is_edible:
+            food_score += (creature.genome.diet.grass_score * (1 - diet_effective) + creature.hungry) * block.cell.food # type: ignore
+        
+        food_score -= perception.coord.distance_to_other(coord_block) * MovementSystem.calculate_cost_to_move(next_block.cell, cell_creature, creature)
+        return food_score
+
+    @staticmethod
+    def evaluate(creature:Creature, perception:Perception) -> Iterable[tuple[Coord, float]]:
+        ev = {c: MetabolismSystem.score_food(creature, c, perception) for c, b in perception.iter}
+        return ev.items()
+    @staticmethod
+    def best_coord(evaluated:Iterable[tuple[Coord, float]]) -> Coord:
+        return max(evaluated, key=lambda x: x[1])[0]
+    @staticmethod
+    def decide_food_types(coord:Coord, perception:Perception) -> list[FoodHint]:
+        energies = []
+
+        block = perception.get(coord)
+
+        if block.cell.is_edible:
+            assert block.cell.food is not None
+            energies.append(FoodHint.GRASS)
+        if block.get_entity_type() == EntityTypes.CREATURE and block.entity.specie_id != perception.creature.specie_id: # type: ignore
+            energies.append(FoodHint.TARGET)
+        if block.get_entity_type() == EntityTypes.CORPSE:
+            energies.append(FoodHint.CORPSE)
+        return energies
+    @staticmethod
+    def chose_best_food_type(food_types:list[FoodHint], diet:Diet) -> FoodHint:
+        weights = {
+            FoodHint.CORPSE: diet.corpse_score,
+            FoodHint.TARGET: diet.target_score,
+            FoodHint.GRASS: diet.grass_score
+        }
+
+        return max(food_types, key=lambda x: weights[x])
+    
+        
     @staticmethod
     def eat(creature:Creature, energy:Energy) -> None:
         needed_energy = creature.needed_energy
@@ -183,43 +221,7 @@ class MetabolismSystem:
         energy.sub(cost)
         creature.energy.add(cost)
 
-    @staticmethod
-    def near_food(perception:Perception, creature:Creature) -> Coord | None:
-        foods_coords = Analysis.find_predicate(perception, predicate=lambda x: MetabolismSystem.is_edible(creature, x))
-        return min(foods_coords, key=perception.coord.distance_to_other) if len(foods_coords) > 0 else None
-    @staticmethod
-    def find_food_target(perception:Perception, creature:Creature) -> FoodTarget | None:
-        diet = creature.genome.diet
-        coord_creature = perception.coord
     
-
-        if diet in [Diet.HERBIVORE, Diet.OMNIVORE] and MetabolismSystem.is_edible(creature, perception.creature_block):
-            return FoodTarget(FoodHint.SOLO, coord_creature)
-        
-        near_food = MetabolismSystem.near_food(perception, creature)
-
-
-        if near_food is None and diet is Diet.HERBIVORE:
-            return None
-        
-        if near_food is None and diet in [Diet.OMNIVORE, Diet.CARNIVORE]:
-            other_species = Analysis.other_species(perception)
-            if len(other_species) == 0:
-                return None
-            near_food = Analysis.near_coord(other_species, coord_creature)
-            return FoodTarget(FoodHint.OTHER_SPECIE, near_food)
-        
-        assert near_food is not None
-        block = perception.get(near_food)
-
-        entity_type = block.get_entity_type()
-        if entity_type == EntityTypes.CORPSE:
-            return FoodTarget(FoodHint.CORPSE, near_food)
-        if entity_type == EntityTypes.CREATURE:
-            return FoodTarget(FoodHint.OTHER_SPECIE, near_food)
-        if block.cell.is_edible:
-            return FoodTarget(FoodHint.SOLO, near_food)
-
             
         
 class DeathSystem:
