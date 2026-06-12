@@ -1,4 +1,4 @@
-from organism.identity import gen_id, EntityTypes
+from organism.identity import gen_id, EntityTypes, Id
 from core.error import (NonPregnancyError, DifferentSpeciesError, AlreadyPregnantError, FinishedError,
                    GenderFemaleError, GenderMaleError, NonReproducibleError, CoordinateOccupiedError)
 from random import choices
@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from systems.physics import MovementSystem
 
+
 class FoodHint(Enum):
     CORPSE = auto()
     OTHER_SPECIE = auto()
@@ -32,6 +33,11 @@ class FoodTarget:
 class ReproductionCost:
     female_cost:int | float
     male_cost:int | float
+
+@dataclass(frozen=True)
+class Parents:
+    female:Id
+    male:Id
 
 
 class UterusSystem:
@@ -136,7 +142,21 @@ class ReproductiveSystem:
 
         female.fertility.zero()
         return True
+    @staticmethod
+    def can_reproduce(A:Creature, B:Creature) -> bool:
+        return (A.genome.id == B.genome.id) and (A.reproductively_capable and B.reproductively_capable)
+    @staticmethod
+    def return_parents(A:Creature, B:Creature) -> Parents:
+        a_gender = A.gender
+        b_gender = B.gender
 
+        if a_gender == b_gender:
+            raise ValueError('Parents must have two different genders')
+        
+        female = A.id if a_gender == Gender.FEMALE else B.id
+        male = B.id if b_gender == Gender.MALE else A.id
+        return Parents(female, male)
+    
 
  
 

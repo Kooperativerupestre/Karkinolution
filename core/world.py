@@ -3,6 +3,7 @@ from core.map import TerrainMotor, Territory, EntityMap
 from core.coord import Coord
 from organism.creatures import Creature, EntitysRegistry, Corpse
 from organism.identity import Id
+from decisions.instincts import ReproductiveBuffer
 
 class WorldMotor:
     @staticmethod
@@ -30,6 +31,7 @@ class World:
     territory: Territory
     entity_map: EntityMap
     entitys: EntitysRegistry
+    reproductive_buffer:ReproductiveBuffer
     time:int = 0
 
     def pass_time(self) -> None:

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from organism.genetics import CreatureTypes, Genome, creatures_genomes
+from organism.genetics import Genome
 from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AtackedEvent
@@ -145,7 +145,7 @@ class Creature:
         return (self.energy.value * self.genome.extra_reproduction_multiplier)/self.genome.reproduction_cost
     @property
     def reproductively_capable(self) -> bool:
-        return self.fertility.value == self.fertility.limit and self.energy.value * self.genome.extra_reproduction_multiplier >= self.genome.reproduction_cost
+        return self.fertility.value == self.fertility.limit and self.energy.value * self.genome.extra_reproduction_multiplier >= self.genome.reproduction_cost and not self.pregnant
     @property
     def pregnancy_factor(self) -> int | float:
         if self.gender is not Gender.FEMALE:
