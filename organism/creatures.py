@@ -118,11 +118,11 @@ class Creature:
         self.name = name
         self.id = Id(id, EntityTypes.CREATURE)
 
-        self.energy = Energy(value=initial_energy if initial_energy is not None else genome.energy_limit, limit=genome.energy_limit)
-        self.life = Life(value=genome.life_limit, limit=genome.life_limit)
-        self.fertility = Fertility(value=genome.fertility_limit, limit=genome.fertility_limit)
+        self.energy = Energy(value=initial_energy if initial_energy is not None else genome.metabolism.energy_limit, limit=genome.metabolism.energy_limit)
+        self.life = Life(value=genome.body.life_limit, limit=genome.body.life_limit)
+        self.fertility = Fertility(value=genome.reproduction.fertility_limit, limit=genome.reproduction.fertility_limit)
         self.uterus = Uterus(self.genome) if self.gender is Gender.FEMALE else None
-        self.age = Age(value=0, limit=genome.max_age)
+        self.age = Age(value=0, limit=genome.body.life_limit)
 
         self.intent: Intent = Intent(IntentActs.NOTHING)
         self.last_atack: None | AtackedEvent = None
@@ -142,10 +142,10 @@ class Creature:
         return exp(-(self.age.ratio - 0.45)**2/(0.2)**2)
     @property
     def reproductive_factor(self) -> float:
-        return (self.energy.value * self.genome.extra_reproduction_multiplier)/self.genome.reproduction_cost
+        return (self.energy.value * self.genome.reproduction.extra_reproduction_multiplier)/self.genome.reproduction.reproduction_cost
     @property
     def reproductively_capable(self) -> bool:
-        return self.fertility.value == self.fertility.limit and self.energy.value * self.genome.extra_reproduction_multiplier >= self.genome.reproduction_cost and not self.pregnant
+        return self.fertility.value == self.fertility.limit and self.energy.value * self.genome.reproduction.extra_reproduction_multiplier >= self.genome.reproduction.reproduction_cost and not self.pregnant
     @property
     def pregnancy_factor(self) -> int | float:
         if self.gender is not Gender.FEMALE:
@@ -155,7 +155,7 @@ class Creature:
         return 1 + self.uterus.gestation_time/2 # type: ignore
     @property
     def strength_factor(self) -> int | float:
-        return self.genome.strength / MAX_STRENGTH
+        return self.genome.body.strength / MAX_STRENGTH
     @property
     def physical_ratio(self) -> int | float:
         '''

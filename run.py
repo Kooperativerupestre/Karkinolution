@@ -1,7 +1,7 @@
 from core.map import Territory, EntityMap, TerrainMotor, TerrainView
 from core.cell import TerrainTypes, gen_cell, Cell, FoodState
 from core.coord import Coord
-from organism.genetics import CreatureTypes, creatures_genomes
+from organism.genetics import CreatureTypes, _creatures_genomes
 from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface
 from organism.ontology import Gender
 from organism.stats import check_energy, Energy
@@ -109,7 +109,7 @@ class Init:
 
     @staticmethod
     def random_creature(id:Id | None  = None) -> Creature:
-        genome = creatures_genomes[CreatureTypes.CRAB]
+        genome = _creatures_genomes[CreatureTypes.CRAB]
 
         return Creature(
             genome=genome,
@@ -182,7 +182,7 @@ class IntentResolver:
     def cancel_invalid_intents(creature:Creature) -> None:
         intent = creature.intent.intent
         intent_time = creature.intent.time
-        if creature.hungry < creature.genome.max_hungry and intent_time > 2 and intent == IntentActs.FIND_FOOD:
+        if creature.hungry < creature.genome.metabolism.max_hungry and intent_time > 2 and intent == IntentActs.FIND_FOOD:
             creature.intent.intent = IntentActs.NOTHING
 
         if intent_time > 5 and intent ==  IntentActs.FIND_MATCH:

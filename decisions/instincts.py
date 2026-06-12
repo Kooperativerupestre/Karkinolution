@@ -60,7 +60,7 @@ class ReproductiveBuffer:
             self.desires[desire.creature_id] = desire
 
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
-    temperament = creature.genome.behavior
+    temperament = creature.genome.core.behavior
     coord_creature = perception.coord
 
     if temperament is Temperament.NEUTRAL or temperament is Temperament.PASSIVE:
@@ -93,7 +93,7 @@ def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
 class EvaluateActions:
     @staticmethod
     def score_eat(creature:Creature) -> float:
-        if creature.hungry < creature.genome.max_hungry:
+        if creature.hungry < creature.genome.metabolism.max_hungry:
             return 0.0
 
         factor = creature.hungry * 2
@@ -129,7 +129,7 @@ class DecideIntention:
         chose = max(acts, key=lambda x: acts[x])
         intent = Intent(chose)
         if intent.intent == IntentActs.FIND_MATCH:
-            reproductive_buffer.registry(ReproductiveDesire(creature.id, creature.genome.id))
+            reproductive_buffer.registry(ReproductiveDesire(creature.id, creature.genome.core.id))
         return intent
 
 
@@ -155,7 +155,7 @@ class Planner:
         block = perception.get(food_coord)
 
         if coord_creature.distance_to_other(food_coord) == 1:
-            if creature.genome.behavior in [Temperament.AGGRESSIVE, Temperament.NEUTRAL] and food_target.food_hint is FoodHint.OTHER_SPECIE:
+            if creature.genome.core.behavior in [Temperament.AGGRESSIVE, Temperament.NEUTRAL] and food_target.food_hint is FoodHint.OTHER_SPECIE:
                 return AtackPressets(creature, block.creature) # type: ignore
     
             return MovePreset(food_coord)

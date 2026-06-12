@@ -5,7 +5,8 @@ from organism.ontology import Temperament, Diet
 from decisions.actions import Actions, MoveActions
 from core.coord import Coord
 from dataclasses import dataclass
-
+from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
 
 
 class CreatureTypes(Enum):
@@ -18,133 +19,220 @@ class CreatureTypes(Enum):
     def choice() -> CreatureTypes:
         return choice([CreatureTypes.CRAB, CreatureTypes.FISH, CreatureTypes.CROCODILE, CreatureTypes.HIPPOPOTAMUS])
     
+class GenValues:
+    @staticmethod
+    def gen_litle_disturb() -> float:
+        return uniform(0.90, 1.10)
+    @staticmethod
+    def gen_disturb(v_min:float, v_max:float) -> float:
+        return uniform(v_min, v_max)
+    @staticmethod
+    def smooth_scramble(v1:int | float, v2:int | float) -> int | float:
+        return (v1 + v2)/2 * GenValues.gen_litle_disturb()
+    @staticmethod
+    def time_scramble(v1:int, v2:int) -> int:
+        return round((v1 + v2)/2) + choice([-1, 0, 1])
+    
+
+
+class BaseGenome(ABC):
+    
+    @abstractmethod
+    def scramble(self, other) -> BaseGenome:...
 
 
 @dataclass(frozen=True)
-class Genome:
-    max_hungry:float # [0, 1] # eat if hungry_now > max_hungry
+class MetabolismGenome(BaseGenome):
+    max_hungry:float
+    diet:Diet
+    mass:int | float
+    energy_limit:int | float
+
+    def scramble(self, other:MetabolismGenome) -> MetabolismGenome:
+        return MetabolismGenome(
+            GenValues.smooth_scramble(self.max_hungry, other.max_hungry),
+            self.diet.scramble(other.diet),
+            self.mass * GenValues.gen_litle_disturb(),
+            (self.energy_limit + other.energy_limit)/2 * uniform(0.86, 1.16)
+        )
+
+@dataclass(frozen=True)
+class ReproductionGenome(BaseGenome):
     reproduction_cost:int | float
-    extra_reproduction_multiplier: int | float # reproduce if energy_now * extra_reproduction_multiplier > reproduction_cost
+    extra_reproduction_multiplier: int | float
+    fertility_limit:int
+    gestation_time:int
+    
+    def scramble(self, other:ReproductionGenome) -> ReproductionGenome:
+        return ReproductionGenome(
+            GenValues.smooth_scramble(self.reproduction_cost, other.reproduction_cost),
+            GenValues.smooth_scramble(self.extra_reproduction_multiplier, other.extra_reproduction_multiplier),
+            GenValues.time_scramble(self.fertility_limit, other.fertility_limit),
+            GenValues.time_scramble(self.gestation_time, other.gestation_time)
+        )
+    
+@dataclass(frozen=True)
+class BodyGenome(BaseGenome):
+    life_limit:int | float
+    strength: int | float
+    max_age: int
+
+    def scramble(self, other:BodyGenome) -> BodyGenome:
+        return BodyGenome(
+            GenValues.smooth_scramble(self.life_limit, other.life_limit),
+            GenValues.smooth_scramble(self.strength, other.strength),
+            GenValues.time_scramble(self.max_age, other.max_age)
+        )
+
+@dataclass(frozen=True)
+class CoreGenome:
     capabilities:set[Actions | MoveActions]
     vision_radius:Coord
     behavior:Temperament
-    fertility_limit:int
-    energy_limit:int | float
-    life_limit:int | float
-    gestation_time:int
-    max_age:int
-    strength:int | float
-    diet:Diet
     id:CreatureTypes
-    
-    def capability_is_in(self, capability:Actions) -> bool:
-        return capability in self.capabilities
-    
+  
 
-    def scramble(self, other:Genome) -> Genome:
-        return Genome(
-            max_hungry=(self.max_hungry + other.max_hungry)/2,
-            reproduction_cost=(self.reproduction_cost + other.reproduction_cost)/2,
-            extra_reproduction_multiplier=self.extra_reproduction_multiplier * other.extra_reproduction_multiplier / 2,
-            capabilities=self.capabilities | other.capabilities,
-            vision_radius=self.vision_radius.add(other.vision_radius).div(2),
-            behavior=choice([other.behavior, self.behavior]),
-            fertility_limit=choice([other.fertility_limit, self.fertility_limit]),
-            energy_limit=(self.energy_limit + other.energy_limit)/2,
-            life_limit=(self.life_limit + other.life_limit)/2,
-            gestation_time=max(1, round((self.gestation_time + other.gestation_time)/2)),
-            max_age=round((self.max_age + other.max_age)/2),
-            diet=self.diet,
-            strength=(self.strength + other.strength)/2 * uniform(0.70, 1.30),
-            id=self.id
+@dataclass(frozen=True)
+class Genome:
+    metabolism:MetabolismGenome
+    body:BodyGenome
+    reproduction:ReproductionGenome
+    core:CoreGenome
 
-        )
-    def mutate(self) -> Genome:
-        def gen_value() -> float:
-            return uniform(0.92, 1.09)
+    def crossover(self, other:Genome) -> Genome:
+        new_metabolism_g = self.metabolism.scramble(other.metabolism)
+        new_body_g = self.body.scramble(other.body)
+        new_reproduction_g = self.reproduction.scramble(other.reproduction)
+        
         return Genome(
-            min(max(self.max_hungry * gen_value(), 0), 1),
-            self.reproduction_cost,
-            self.extra_reproduction_multiplier * gen_value(),
-            self.capabilities,
-            self.vision_radius,
-            self.behavior,
-            self.fertility_limit,
-            self.energy_limit * gen_value(),
-            self.life_limit * gen_value(),
-            self.gestation_time,
-            self.max_age + choices([randint(-3, 3), 0], weights=(0.25, 0.75), k=1)[0],
-            self.strength * gen_value()**2,
-            self.diet,
-            self.id
+            new_metabolism_g,
+            new_body_g,
+            new_reproduction_g,
+            self.core
         )
 
-creatures_genomes:dict[CreatureTypes, Genome] = {
-    CreatureTypes.CROCODILE: Genome(
+_creatures_metabolism_system = {
+    CreatureTypes.CROCODILE: MetabolismGenome(
         max_hungry=0.80,
+        diet=Diet(0.4, 0.1, 0.5),
+        mass=1.25,
+        energy_limit=100
+    ),
+
+    CreatureTypes.CRAB: MetabolismGenome(
+        max_hungry=0.65,
+        diet=Diet(0.5, 0.35, 0.15),
+        mass=1.1,
+        energy_limit=40
+    ),
+
+    CreatureTypes.FISH: MetabolismGenome(
+        max_hungry=0.33,
+        diet=Diet(0.2, 0.75, 0.15),
+        mass=1.0,  # assumido inexistente antes, mantido coerente com padrão leve
+        energy_limit=10
+    ),
+
+    CreatureTypes.HIPPOPOTAMUS: MetabolismGenome(
+        max_hungry=0.70,
+        diet=Diet(0.2, 0.7, 0.1),
+        mass=1.6,  # implícito no original como criatura massiva, mas mantido proporcional
+        energy_limit=85
+    )
+}
+
+_creatures_body_system = {
+    CreatureTypes.CROCODILE: BodyGenome(
+        life_limit=100,
+        strength=27,
+        max_age=50
+    ),
+
+    CreatureTypes.CRAB: BodyGenome(
+        life_limit=30,
+        strength=7.5,
+        max_age=30
+    ),
+
+    CreatureTypes.FISH: BodyGenome(
+        life_limit=9,
+        strength=1,
+        max_age=10
+    ),
+
+    CreatureTypes.HIPPOPOTAMUS: BodyGenome(
+        life_limit=150,
+        strength=20,
+        max_age=60
+    )
+}
+
+_creatures_reproduction_system = {
+    CreatureTypes.CROCODILE: ReproductionGenome(
         reproduction_cost=40,
         extra_reproduction_multiplier=1.2,
+        fertility_limit=5,
+        gestation_time=5
+    ),
+
+    CreatureTypes.CRAB: ReproductionGenome(
+        reproduction_cost=5,
+        extra_reproduction_multiplier=1.2,
+        fertility_limit=3,
+        gestation_time=4
+    ),
+
+    CreatureTypes.FISH: ReproductionGenome(
+        reproduction_cost=1.9,
+        extra_reproduction_multiplier=1.0,
+        fertility_limit=1,
+        gestation_time=2
+    ),
+
+    CreatureTypes.HIPPOPOTAMUS: ReproductionGenome(
+        reproduction_cost=40,
+        extra_reproduction_multiplier=1.3,
+        fertility_limit=4,
+        gestation_time=5
+    )
+}
+
+_creatures_core_system = {
+    CreatureTypes.CROCODILE: CoreGenome(
         capabilities={MoveActions.WALK, MoveActions.SWIMM, Actions.ATACK},
         vision_radius=Coord(4, 4),
         behavior=Temperament.AGGRESSIVE,
-        fertility_limit=5,
-        energy_limit=100,
-        life_limit=100,
-        gestation_time=5,
-        max_age=50,
-        strength=27,
-        diet=Diet.CARNIVORE,
         id=CreatureTypes.CROCODILE
     ),
 
-    CreatureTypes.CRAB: Genome(
-        max_hungry=0.65,
-        reproduction_cost=5,
-        extra_reproduction_multiplier=1.2,
+    CreatureTypes.CRAB: CoreGenome(
         capabilities={MoveActions.WALK},
         vision_radius=Coord(3, 3),
         behavior=Temperament.NEUTRAL,
-        fertility_limit=3,
-        energy_limit=40,
-        life_limit=30,
-        gestation_time=4,
-        max_age=30,
-        strength=7.5,
-        diet=Diet.HERBIVORE,
         id=CreatureTypes.CRAB
     ),
-    
-    CreatureTypes.FISH: Genome(
-        max_hungry=0.33,
-        reproduction_cost=1.9,
-        extra_reproduction_multiplier=1,
+
+    CreatureTypes.FISH: CoreGenome(
         capabilities={MoveActions.SWIMM},
         vision_radius=Coord(2, 4),
         behavior=Temperament.PASSIVE,
-        fertility_limit=1,
-        energy_limit=10,
-        life_limit=9,
-        gestation_time=2,
-        max_age=10,
-        strength=1,
-        diet=Diet.HERBIVORE,
         id=CreatureTypes.FISH
     ),
 
-    CreatureTypes.HIPPOPOTAMUS: Genome(
-        max_hungry=0.70,
-        reproduction_cost=40,
-        extra_reproduction_multiplier=1.3,
+    CreatureTypes.HIPPOPOTAMUS: CoreGenome(
         capabilities={MoveActions.WALK, MoveActions.SWIMM},
         vision_radius=Coord(3, 3),
         behavior=Temperament.TERRITORIAL,
-        fertility_limit=4,
-        energy_limit=85,
-        life_limit=150,
-        gestation_time=5,
-        max_age=60,
-        strength=20,
-        diet=Diet.HERBIVORE,
         id=CreatureTypes.HIPPOPOTAMUS
     )
+}
+
+_creatures_genomes = {
+    ct: Genome(
+        metabolism=_creatures_metabolism_system[ct],
+        body=_creatures_body_system[ct],
+        reproduction=_creatures_reproduction_system[ct],
+        core=_creatures_core_system[ct],
+    )
+    for ct in CreatureTypes
 }
