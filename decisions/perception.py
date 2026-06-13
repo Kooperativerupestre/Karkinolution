@@ -110,7 +110,7 @@ class Analysis:
         return Analysis.find_predicate(perception, lambda x: x.get_entity_type() == EntityTypes.CORPSE)
     @staticmethod
     def same_species(perception:Perception, predicate:Callable[[PerceivedBlock], bool] = lambda x: True) -> set[Coord]:
-        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.ENTITY and x.entity.specie_id == perception.creature.specie_id) # type: ignore
+        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.ENTITY and x.entity.specie_id == perception.creature.specie_id and predicate(x)) # type: ignore
     @staticmethod
     def other_species(perception:Perception) -> set[Coord]:
         return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.ENTITY and x.entity.specie_id != perception.creature.specie_id) # type: ignore
@@ -121,13 +121,13 @@ class Analysis:
 
 class Perceiver:
     @staticmethod
-    def perceive_entity(creature:Creature) -> PerceivedCreature:
+    def perceive_entity(creature:Creature, observer_gender:Gender) -> PerceivedCreature:
         return PerceivedCreature(
             creature.energy,
             creature.id,
             creature.genome.core.id,
             creature.gender,
-            creature.reproductively_capable and Gender.other_sex(creature.gender) == creature.gender,
+            creature.reproductively_capable and Gender.other_sex(observer_gender) == creature.gender,
             creature.physical_ratio
         )
     @staticmethod
@@ -192,9 +192,9 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
         
         if id is None:
             pass
-        elif id.id is EntityTypes.CREATURE:
-            perceived_creature = Perceiver.perceive_entity(entitys.get_creature(id))
-        elif id.id is EntityTypes.CORPSE:
+        elif id.e_type is EntityTypes.CREATURE:
+            perceived_creature = Perceiver.perceive_entity(entitys.get_creature(id), creature.gender)
+        elif id.e_type is EntityTypes.CORPSE:
             perceived_creature = Perceiver.perceive_corpse(entitys.get_corpse(id))
         
 
