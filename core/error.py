@@ -1,32 +1,48 @@
-class NonPregnancyError(Exception):
+class SimulationError(Exception):
     pass
-class InsufficientEnergyError(Exception):
+
+class IdError(SimulationError):
     pass
-class CoordinateNotFoundError(Exception):
+class CoordinateError(SimulationError):
     pass
-class IdNotFoundError(Exception):
+
+class EntityError(SimulationError):
     pass
-class CoordinateExistenceError(Exception):
+
+# REPRODUCTIVE SUBDOMAIN
+
+class ReproductiveError(EntityError):
     pass
-class IdExistenceError(Exception):
+
+class GenderError(ReproductiveError):
     pass
-class CoordinateOccupiedError(Exception):
+
+class AlreadyPregnantError(ReproductiveError):
     pass
-class GenderFemaleError(Exception):
+
+class DifferentSpeciesError(ReproductiveError):
     pass
-class GenderMaleError(Exception):
+
+# ID SUBDOMAIN
+class IdNotFoundError(IdError):
     pass
-class NonTimedError(Exception):
+class IdAlreadyExistsError(IdError):
     pass
-class FinishedError(Exception):
+# COORD SUBDOMAIN
+class CoordNotFoundError(CoordinateError):
     pass
-class NonReproducibleError(Exception):
+class CoordAlreadyExistError(CoordinateError):
     pass
-class AlreadyPregnantError(Exception):
+
+# MOVEMENT SUBDOMAIN
+
+class NonMotileError(SimulationError):
     pass
-class DifferentSpeciesError(Exception):
+# ENTITY TYPE ERROR
+
+class EntityTypeError(EntityError):
     pass
-class NonMotileError(Exception):
-    pass
-class EntityTypeError(Exception):
+# ENERGY TYPE ERROR
+
+class InsufficientEnergyError(EntityError):
     pass

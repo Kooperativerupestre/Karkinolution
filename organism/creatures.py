@@ -4,7 +4,7 @@ from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AtackedEvent
 
-from core.error import NonPregnancyError, GenderFemaleError, IdNotFoundError, IdExistenceError
+from core.error import IdNotFoundError, IdAlreadyExistsError, ReproductiveError, GenderError
 from organism.identity import Id, EntityTypes
 from random import uniform
 from math import exp
@@ -75,18 +75,18 @@ class Uterus:
     @property
     def pregnancy_cost(self) -> float:
         if not self.pregnant:
-            raise NonPregnancyError('Uterus {} is not pregnant'.format(self))
+            raise ReproductiveError('Uterus {} is not pregnant'.format(self))
             
         return (1 + self.gestation_time/2)*self.number_children # type: ignore
     @property
     def pregnancy_factor(self) -> float:
         if not self.pregnant:
-            raise NonPregnancyError('Uterus {} is not pregnant'.format(self))
+            raise ReproductiveError('Uterus {} is not pregnant'.format(self))
         return (1 + self.gestation_ratio) * self.number_children.value / 6 # type: ignore
     @property
     def birth_energy(self) -> float:
         if not self.pregnant:
-            raise NonPregnancyError('Uterus {} is not pregnant'.format(self))
+            raise ReproductiveError('Uterus {} is not pregnant'.format(self))
         return self.pregnancy_cost / self.number_children.value # type: ignore
     
 @dataclass(frozen=True)
@@ -149,9 +149,9 @@ class Creature:
     @property
     def pregnancy_factor(self) -> int | float:
         if self.gender is not Gender.FEMALE:
-            raise GenderFemaleError('Creature {} is not female'.format(self))
+            raise GenderError('Creature {} is not female'.format(self))
         if not self.uterus.pregnant: # type: ignore
-            raise NonPregnancyError('Creature {} is not pregnant'.format(self))
+            raise ReproductiveError('Creature {} is not pregnant'.format(self))
         return 1 + self.uterus.gestation_time/2 # type: ignore
     @property
     def strength_factor(self) -> int | float:
@@ -210,7 +210,7 @@ class EntitysRegistry:
 
     def add(self, entity:Creature | Corpse) -> str:
         if entity.id in self.entitys:
-            raise IdExistenceError('ID {} exists'.format(entity.id))
+            raise IdAlreadyExistsError('ID {} exists'.format(entity.id))
         self.entitys[entity.id] = entity
         return entity.id.id
     def delete(self, id:Id) -> None:

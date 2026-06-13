@@ -9,7 +9,7 @@ from typing import Callable, Iterable
 from organism.stats import Energy
 from organism.identity import Id, EntityTypes
 from dataclasses import dataclass
-from core.error import CoordinateNotFoundError
+from core.error import CoordNotFoundError
 from core.map import Territory, EntityMap, Geometry
 
 from core.cell import Cell, FoodState, Properties, MovimentCost, Damage
@@ -89,7 +89,7 @@ class Perception:
 
     def get(self, coord:Coord) -> PerceivedBlock:
         if coord not in self.blocks:
-            raise CoordinateNotFoundError('Coord {} was not found'.format(coord))
+            raise CoordNotFoundError('Coord {} was not found'.format(coord))
     
         return self.blocks[coord]
     def require(self, coord:Coord) -> PerceivedBlock | None:

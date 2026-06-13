@@ -1,6 +1,5 @@
 from organism.identity import gen_id, EntityTypes, Id
-from core.error import (NonPregnancyError, DifferentSpeciesError, AlreadyPregnantError, FinishedError,
-                   GenderFemaleError, GenderMaleError, NonReproducibleError, CoordinateOccupiedError)
+from core.error import ReproductiveError, InsufficientEnergyError, AlreadyPregnantError, DifferentSpeciesError, GenderError, CoordinateError
 from random import choices
 from organism.stats import LimitedValue, Energy, check_energy, Age
 
@@ -35,7 +34,7 @@ class UterusSystem:
     @staticmethod
     def finish(uterus:Uterus) -> None:
         if not uterus.pregnant:
-            raise NonPregnancyError('Uterus {} has no pregnancy to finish'.format(uterus))
+            raise ReproductiveError('Uterus {} has no pregnancy to finish'.format(uterus))
         uterus.male_genome = None
         uterus.number_children = None
 
@@ -58,9 +57,9 @@ class UterusSystem:
     @staticmethod
     def have_child(uterus:Uterus) -> Creature | None:
         if not uterus.pregnant:
-            raise NonPregnancyError('Uterus {} is not pregnant to give birth'.format(uterus))
+            raise ReproductiveError('Uterus {} is not pregnant to give birth'.format(uterus))
         if uterus.all_children_borned:
-            raise FinishedError('Pregnancy is already finished')
+            raise ReproductiveError('Pregnancy is already finished')
         
         if ReproductiveSystem.die_a_child(uterus.gestation.death_factor): # type: ignore
             return None
@@ -105,14 +104,14 @@ class ReproductiveSystem:
 
 
         if female.gender is not Gender.FEMALE:
-            raise GenderFemaleError('Creature {} must be female to reproduce'.format(female))
+            raise GenderError('Creature {} must be female to reproduce'.format(female))
         assert female.uterus is not None
         if male.gender is not Gender.MALE:
-            raise GenderMaleError('Creature {} must be male to reproduce'.format(male))
+            raise GenderError('Creature {} must be male to reproduce'.format(male))
         
 
         if not female.fertility.reproductive_capability:
-            raise NonReproducibleError('Creature {} has no reproductive capability'.format(female))
+            raise ReproductiveError('Creature {} has no reproductive capability'.format(female))
         
         
         UterusSystem.conceive(female.uterus, male.genome)
@@ -123,12 +122,12 @@ class ReproductiveSystem:
     @staticmethod
     def to_birth(female:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> Creature | None:
         if female.gender is not Gender.FEMALE:
-            raise GenderFemaleError('Creature {} must be female to give birth'.format(female))
+            raise GenderError('Creature {} must be female to give birth'.format(female))
         assert female.uterus is not None
         if not female.pregnant: 
-            raise NonPregnancyError('Creature {} must be pregnant to give birth'.format(female))
+            raise ReproductiveError('Creature {} must be pregnant to give birth'.format(female))
         if TerrainView.is_occupied(new_coord, entity_map):
-            raise CoordinateOccupiedError('Coord {} must be unoccupied'.format(new_coord))
+            raise CoordinateError('Coord {} must be unoccupied'.format(new_coord))
 
         child = UterusSystem.have_child(female.uterus)
         
