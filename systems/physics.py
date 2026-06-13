@@ -54,13 +54,7 @@ class MovementSystem:
         TerrainMotor.move(creature.id, new_coord, entity_map, territory)
 
         return 1
-        
-    @staticmethod
-    def decide_movimentation(creature:Creature, block:PerceivedBlock) -> MoveActions | None:
-        if not SpatialSystem.can_move(block, creature.genome.core.capabilities):
-            return None
-        else:
-            return next(iter(block.cell.required_capabilities))
+
     @staticmethod
     def best_pos(creature:Creature, perception:Perception, new_coord:Coord) -> Coord | None:
         data = perception.neighbors_4_require
@@ -68,7 +62,9 @@ class MovementSystem:
         for c, b in data:
             if b is not None and SpatialSystem.can_move(b, creature.genome.core.capabilities):
                 moveble_coords.append(c)
-        return min(moveble_coords, key=lambda x: perception.coord.distance_to_other(x))
+        if len(moveble_coords) == 0:
+            return None
+        return min(moveble_coords, key=lambda x: x.distance_to_other(new_coord))
 
 
     
