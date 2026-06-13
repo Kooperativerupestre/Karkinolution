@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from core.error import CoordinateNotFoundError
 from core.map import Territory, EntityMap, Geometry
 
-from core.cell import Cell, FoodState, Properties, MovimentCost
+from core.cell import Cell, FoodState, Properties, MovimentCost, Damage
 
 
 @dataclass(frozen=True)
@@ -35,7 +35,7 @@ class PerceivedCell:
     movement_cost:int | float | None
     food:Energy | None
     required_capabilities: set[MoveActions]
-
+    damage:int | float | None
 @dataclass(frozen=True)
 class ObserverCreature:
     energy_ratio:float
@@ -153,13 +153,20 @@ class Perceiver:
         moviment_cost = None
         if is_moveble:
             moviment_cost = cell.get_component(MovimentCost).moviment_cost # type: ignore
+        
+        is_dangerous = cell.property_is_in(Properties.DANGEROUS)
+        damage = None
+        if is_dangerous:
+            damage = cell.get_component(Damage).damage # type: ignore
+        
         return PerceivedCell(
             is_moveble,
             is_edible,
             cell.property_is_in(Properties.DANGEROUS),
             moviment_cost,
             food,
-            cell.required_capabilities
+            cell.required_capabilities,
+            damage
         )
             
 def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord_creature:Coord, 

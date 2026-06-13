@@ -6,16 +6,14 @@ from organism.stats import LimitedValue, Energy, check_energy, Age
 
 
 from organism.creatures import Uterus, Creature, EntitysRegistry, Corpse
-from organism.genetics import Genome, MetabolismGenome
+from organism.genetics import Genome
 from utils.namegenerator import gen_name
 from organism.ontology import Gender, Diet, FoodHint, FoodTarget
 
-from core.world import WorldMotor
 from core.map import TerrainView, EntityMap, Territory
 from core.coord import Coord
-from decisions.perception import Perception, Analysis, PerceivedBlock, PerceivedCell, PerceivedCreature
+from decisions.perception import Perception
 from dataclasses import dataclass
-from enum import Enum, auto
 from systems.physics import MovementSystem
 
 from typing import Iterable
@@ -108,6 +106,7 @@ class ReproductiveSystem:
 
         if female.gender is not Gender.FEMALE:
             raise GenderFemaleError('Creature {} must be female to reproduce'.format(female))
+        assert female.uterus is not None
         if male.gender is not Gender.MALE:
             raise GenderMaleError('Creature {} must be male to reproduce'.format(male))
         
@@ -115,26 +114,27 @@ class ReproductiveSystem:
         if not female.fertility.reproductive_capability:
             raise NonReproducibleError('Creature {} has no reproductive capability'.format(female))
         
-        ReproductiveSystem.conceive(female.uterus, male.genome) # type: ignore
+        
+        UterusSystem.conceive(female.uterus, male.genome)
+        female.fertility.zero()
 
         return ReproductionCost(female.genome.reproduction.reproduction_cost, male.genome.reproduction.reproduction_cost)
 
     @staticmethod
-    def to_birth(female:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> bool:
+    def to_birth(female:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> Creature | None:
         if female.gender is not Gender.FEMALE:
             raise GenderFemaleError('Creature {} must be female to give birth'.format(female))
-        if not female.uterus.pregnant: # type: ignore
+        assert female.uterus is not None
+        if not female.pregnant: 
             raise NonPregnancyError('Creature {} must be pregnant to give birth'.format(female))
         if TerrainView.is_occupied(new_coord, entity_map):
             raise CoordinateOccupiedError('Coord {} must be unoccupied'.format(new_coord))
 
-        child = ReproductiveSystem.have_child(female.uterus) # type: ignore
-        if child is None:
-            return False
-        WorldMotor.add_entity(territory, entity_map, child, new_coord, entitys)
+        child = UterusSystem.have_child(female.uterus)
+        
 
         female.fertility.zero()
-        return True
+        return child
     @staticmethod
     def can_reproduce(A:Creature, B:Creature) -> bool:
         return (A.genome.core.id == B.genome.core.id) and (A.reproductively_capable and B.reproductively_capable)
@@ -249,8 +249,3 @@ class DeathSystem:
             return True
         return False
           
-    @staticmethod
-    def resolve_death(creature:Creature, coord_creature:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> None:
-        corpse = DeathSystem.generate_corpse(creature)
-        WorldMotor.delete_entity(entity_map, coord_creature, creature.id, entitys)
-        WorldMotor.add_entity(territory, entity_map, corpse, coord_creature, entitys)
