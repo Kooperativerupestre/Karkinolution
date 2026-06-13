@@ -104,6 +104,8 @@ def score_atack(creature:Creature, target:PerceivedCreature) -> float:
 
 
 
+
+
 class EvaluateActions:
     @staticmethod
     def score_eat(creature:Creature) -> float:
@@ -179,7 +181,7 @@ class Planner:
                 assert block.entity is not None
                 weights[AtackPreset(block.entity.identity)] = score_atack(creature, block.entity)
 
-            weights[MovePreset(food_coord)] = 0.8
+            weights[MovePreset(food_coord)] = 0.8 if not creature.pregnant else 0.6
         if len(weights) == 0:
             return None
         return max(weights, key=lambda x: weights[x])

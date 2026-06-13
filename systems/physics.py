@@ -11,10 +11,30 @@ from organism.stats import check_energy
 from decisions.actions import MoveActions
 from decisions.perception import Perception, Analysis
 
-class MovementSystem:
+from typing import Callable
+
+class SpatialSystem:
     @staticmethod
-    def can_move(block:PerceivedBlock, creature:Creature) -> bool:
-        return block.cell.required_capabilities.issubset(creature.genome.core.capabilities) and not block.has_entity
+    def can_move(block:PerceivedBlock, capabilitys:set[MoveActions]) -> bool:
+        return block.cell.required_capabilities.issubset(capabilitys) and not block.has_entity
+    @staticmethod
+    def get_effects(block:PerceivedBlock, creature:Creature) -> list[Callable[[Creature], None]]:
+        effects:list[Callable[[Creature], None]] = []
+        
+        if (dmg :=block.cell.damage) is not None:
+            effects.append(lambda x, dmg=dmg: x.life.sub(dmg))
+        
+        if not SpatialSystem.can_move(block, creature.genome.core.capabilities):
+            effects.append(lambda x: x.life.sub(x.life.value*0.10))
+        return effects
+    
+
+    @staticmethod
+    def apply_effects(effects:list[Callable[[Creature], None]], creature:Creature) -> None:
+        for f in effects:
+            f(creature)
+        
+class MovementSystem:
     @staticmethod
     def calculate_cost_to_move(next_cell:PerceivedCell, cell_creature:PerceivedCell, creature:Creature) -> int | float:
         if next_cell.is_moveble is False:
@@ -34,12 +54,10 @@ class MovementSystem:
         TerrainMotor.move(creature.id, new_coord, entity_map, territory)
 
         return 1
-
-
         
     @staticmethod
     def decide_movimentation(creature:Creature, block:PerceivedBlock) -> MoveActions | None:
-        if not MovementSystem.can_move(block, creature):
+        if not SpatialSystem.can_move(block, creature.genome.core.capabilities):
             return None
         else:
             return next(iter(block.cell.required_capabilities))
@@ -48,9 +66,11 @@ class MovementSystem:
         data = perception.neighbors_4_require
         moveble_coords = []
         for c, b in data:
-            if b is not None and MovementSystem.can_move(b, creature):
+            if b is not None and SpatialSystem.can_move(b, creature.genome.core.capabilities):
                 moveble_coords.append(c)
         return min(moveble_coords, key=lambda x: perception.coord.distance_to_other(x))
+
+
     
 class AtackSystem:
     @staticmethod

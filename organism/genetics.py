@@ -86,7 +86,7 @@ class BodyGenome(BaseGenome):
 
 @dataclass(frozen=True)
 class CoreGenome:
-    capabilities:set[Actions | MoveActions]
+    capabilities:set[MoveActions]
     vision_radius:Coord
     behavior:Temperament
     id:CreatureTypes
@@ -199,7 +199,7 @@ _creatures_reproduction_system = {
 
 _creatures_core_system = {
     CreatureTypes.CROCODILE: CoreGenome(
-        capabilities={MoveActions.WALK, MoveActions.SWIMM, Actions.ATACK},
+        capabilities={MoveActions.WALK, MoveActions.SWIMM},
         vision_radius=Coord(4, 4),
         behavior=Temperament.AGGRESSIVE,
         id=CreatureTypes.CROCODILE

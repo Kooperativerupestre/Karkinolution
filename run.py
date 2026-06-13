@@ -13,7 +13,7 @@ from decisions.perception import perceive, Perception, PerceivedCreature
 from systems.presets import AtackPreset, EatPreset, MovePreset, ReproducePreset
 from decisions.actions import IntentActs, Intent
 from decisions.instincts import DecideIntention, Planner, ReproductiveBuffer, ReproductiveDesire, ReproducePreset
-from systems.physics import MovementSystem, AtackSystem
+from systems.physics import MovementSystem, AtackSystem, SpatialSystem
 from random import choice
 from dataclasses import dataclass
 
@@ -175,8 +175,6 @@ class ReproductiveResolver:
     
 
 
-
-
 class IntentResolver:
     @staticmethod
     def cancel_invalid_intents(creature:Creature) -> None:
@@ -249,15 +247,17 @@ class PresetExecutor:
         elif isinstance(preset, ReproducePreset):
             PresetExecutor.execute_reproduction(preset, world.entitys, world.reproductive_buffer)
 
+def resolve_death(creature:Creature, world:World, coord_creature:Coord) -> None:
+    corpse = DeathSystem.generate_corpse(creature)
+    WorldMotor.delete_entity(world.entity_map, coord_creature, creature.id, world.entitys)
+    WorldMotor.add_entity(world.territory, world.entity_map, corpse, coord_creature, world.entitys)
+
 class Runner:
     # CREATURE
 
 
-
-        
-    
     @staticmethod
-    def run_fisiology(creature:Creature, dt: int) -> bool:
+    def run_fisiology(creature:Creature, perception:Perception, dt: int, world:World) -> None:
         creature.age.add(dt)
         
         basal_metabolism = creature.energy.limit**(1/3)*1.4 + 1
@@ -265,12 +265,22 @@ class Runner:
 
         creature.intent.time += 1
         if creature.pregnant:
+            assert creature.uterus is not None
+            assert creature.uterus.gestation is not None
             creature.energy.sub(creature.uterus.pregnancy_cost) # type: ignore
             UterusSystem.pass_time(creature.uterus) # type: ignore
 
+            if creature.uterus.gestation.is_ready_to_born:
+                four = perception.neighbors_4_require
+                possibilities = [c for c, b in four if b is not None and SpatialSystem.can_move(b, creature.genome.core.capabilities)]
+
+                if len(possibilities) > 0:
+                    new_coord = choice(possibilities)
+                    ReproductiveSystem.to_birth(creature, new_coord, world.entity_map, world.territory, world.entitys)
+
 
     
-        return DeathSystem.is_dead(creature)
+
     
 
 
@@ -281,16 +291,9 @@ class Runner:
         territory = world.territory
         entitys = world.entitys
         # CODE
-        is_dead = Runner.run_fisiology(creature, 1)
-
+        is_dead = DeathSystem.is_dead(creature)
         if is_dead:
-            DeathSystem.resolve_death(
-                creature,
-                coord_creature,
-                entity_map,
-                territory,
-                entitys
-            )
+            resolve_death(creature, world, coord_creature)
             return None
 
         perception = perceive(
@@ -300,7 +303,7 @@ class Runner:
             coord_creature,
             entitys
         )
-
+        Runner.run_fisiology(creature, perception, 1, world)
         preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
         if preset is not None:
             PresetExecutor.execute_preset(preset, creature, world, perception)
