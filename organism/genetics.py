@@ -21,14 +21,14 @@ class CreatureTypes(Enum):
     
 class GenValues:
     @staticmethod
-    def gen_litle_disturb() -> float:
+    def gen_little_disturb() -> float:
         return uniform(0.90, 1.10)
     @staticmethod
     def gen_disturb(v_min:float, v_max:float) -> float:
         return uniform(v_min, v_max)
     @staticmethod
     def smooth_scramble(v1:int | float, v2:int | float) -> int | float:
-        return (v1 + v2)/2 * GenValues.gen_litle_disturb()
+        return (v1 + v2)/2 * GenValues.gen_little_disturb()
     @staticmethod
     def time_scramble(v1:int, v2:int) -> int:
         return round((v1 + v2)/2) + choice([-1, 0, 1])
@@ -52,7 +52,7 @@ class MetabolismGenome(BaseGenome):
         return MetabolismGenome(
             GenValues.smooth_scramble(self.max_hungry, other.max_hungry),
             self.diet.scramble(other.diet),
-            self.mass * GenValues.gen_litle_disturb(),
+            self.mass * GenValues.gen_little_disturb(),
             (self.energy_limit + other.energy_limit)/2 * uniform(0.86, 1.16)
         )
 
