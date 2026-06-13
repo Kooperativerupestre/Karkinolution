@@ -39,8 +39,6 @@ class BlockData:
     cell:Cell
     id_creature: Id | None
 
-
-    
 class TerrainView:
     @staticmethod
     def exists_coord(coord:Coord, terrain:Territory | EntityMap) -> bool:
@@ -53,16 +51,9 @@ class TerrainView:
         return coord in entity_map.entity_map
     @staticmethod
     def exists_id(id:Id, entity_map:EntityMap) -> bool:
-        return id in entity_map.entity_map.values()
-    @staticmethod
-    def all_unucoppied_coords(entity_map:EntityMap, territory:Territory) -> set[Coord]:
-        return {c for c in territory.coords if not TerrainView.is_occupied(c, entity_map)}
-    @staticmethod
-    def random_free_coord(territory:Territory, entity_map:EntityMap, n:int) -> list[Coord]:
-        return sample([c for c in territory.coords if not TerrainView.is_occupied(c, entity_map)], n)
+        return id in entity_map.entity_map
     
-    
-    
+class TerrainQuery:
     @staticmethod
     def get_cell_by_coord(coord:Coord, territory:Territory) -> Cell:
         if not TerrainView.exists_coord(coord, territory):
@@ -91,13 +82,19 @@ class TerrainView:
         return new[id]
     @staticmethod
     def ligate_creature_to_cell(id:Id, entity_map:EntityMap, territory:Territory) -> LigateCellView:
-        coord = TerrainView.get_coord_by_id(id, entity_map)
-        cell = TerrainView.get_cell_by_coord(coord, territory)
+        coord = TerrainQuery.get_coord_by_id(id, entity_map)
+        cell = TerrainQuery.get_cell_by_coord(coord, territory)
 
         return LigateCellView(
             coord=coord,
             cell=cell
         )
+    @staticmethod
+    def all_unucoppied_coords(entity_map:EntityMap, territory:Territory) -> set[Coord]:
+        return {c for c in territory.coords if not TerrainView.is_occupied(c, entity_map)}
+    
+    
+
 
 
 
@@ -113,7 +110,7 @@ class TerrainMotor:
     def delete_entity(id:Id, entity_map:EntityMap) -> None:
         if not TerrainView.exists_id(id, entity_map):
             raise IdNotFoundError('ID {} was not found'.format(id.id))
-        coord = TerrainView.get_coord_by_id(id, entity_map)         # O(n)
+        coord = TerrainQuery.get_coord_by_id(id, entity_map)         # O(n)
         del entity_map.entity_map[coord]
 
     @staticmethod
@@ -154,15 +151,15 @@ class Geometry:
             for column in range(-x, x+1):
                 if row == 0 and column == 0:
                     if include_self:
-                        neighbors_dict[coord] = BlockData(TerrainView.get_cell_by_coord(coord, territory), None)
+                        neighbors_dict[coord] = BlockData(TerrainQuery.get_cell_by_coord(coord, territory), None)
                     continue
 
 
                 coord_moved = Coord(y=row + coord.y, x=column + coord.x)
 
                 if TerrainView.exists_coord(coord_moved, territory):
-                    creature = TerrainView.require_id_by_coord(coord_moved, entity_map)
-                    cell = TerrainView.get_cell_by_coord(coord_moved, territory)
+                    creature = TerrainQuery.require_id_by_coord(coord_moved, entity_map)
+                    cell = TerrainQuery.get_cell_by_coord(coord_moved, territory)
                     data = BlockData(cell, creature)
                     neighbors_dict[coord_moved] = data
         

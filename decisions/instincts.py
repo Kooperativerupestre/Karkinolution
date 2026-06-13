@@ -57,7 +57,7 @@ class ReproductiveBuffer:
             raise IdAlreadyExistsError('ID {} already exists'.format(id.id))
         self.desires[id] = desire
     def registry(self, desire:ReproductiveDesire) -> None:
-        if id not in self.desires:
+        if desire.creature_id not in self.desires:
             self.desires[desire.creature_id] = desire
 
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
@@ -191,10 +191,6 @@ class Planner:
     
     @staticmethod
     def plan_find_match_intent(perception:Perception, creature:Creature) -> MovePreset | None:
-        other_sex = Gender.other_sex(creature.gender)
-        # other_sex() returns the opposite sex of the creature
-
-
         sames_specie = Analysis.same_species(perception, predicate=lambda x: x.entity.can_reproduce) # type: ignore
 
         if len(sames_specie) == 0:
