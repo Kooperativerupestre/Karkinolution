@@ -10,6 +10,7 @@ from organism.identity import Id, EntityTypes
 from dataclasses import dataclass
 from organism.genetics import CreatureTypes
 from core.error import IdExistenceError, EntityTypeError
+from organism.stats import LimitedValue
 
 
 COURAGE_FACTOR = {
@@ -87,6 +88,19 @@ def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
                 return None
             return perception.get(Analysis.near_coord(other_species, coord_creature=coord_creature)).creature.id # type: ignore
         
+def score_atack(creature:Creature, target:PerceivedCreature) -> float:
+    physical_factor = LimitedValue((creature.hungry + creature.life.ratio + creature.energy.ratio)/3, 1) # [0, 1]
+    fear = LimitedValue(0, 1)
+    fear.sub(creature.physical_ratio - target.physical_ratio)
+
+    fear.sub(COURAGE_FACTOR[creature.genome.core.behavior])
+    physical_factor.add(TRADE_OFF[creature.genome.core.behavior])
+
+    total = (fear.value + physical_factor.value)/2 # [0, 1]
+    
+    if creature.pregnant:
+        total -= 0.2
+    return total
 
 
 
@@ -133,10 +147,11 @@ class DecideIntention:
         return intent
 
 
+
 class Planner:
     @staticmethod
     def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AtackPreset | EatPreset | None:
-        food_target = MetabolismSystem.find_food_target(perception, creature)
+        food_target = MetabolismSystem.find_food_target(creature, perception)
         coord_creature = perception.coord
 
 

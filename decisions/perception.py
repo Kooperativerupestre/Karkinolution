@@ -23,6 +23,7 @@ class PerceivedCreature:
     specie_id:CreatureTypes | None
     gender:Gender | None
     can_reproduce:bool
+    physical_ratio:float
 
 
 @dataclass(frozen=True)
@@ -124,9 +125,10 @@ class Perceiver:
         return PerceivedCreature(
             creature.energy,
             creature.id,
-            creature.genome.id,
+            creature.genome.core.id,
             creature.gender,
-            creature.reproductively_capable and Gender.other_sex(creature.gender) == creature.gender
+            creature.reproductively_capable and Gender.other_sex(creature.gender) == creature.gender,
+            creature.physical_ratio
         )
     @staticmethod
     def perceive_corpse(corpse:Corpse) -> PerceivedCreature:
@@ -135,7 +137,8 @@ class Perceiver:
             corpse.id,
             None,
             None,
-            False
+            False,
+            0
         )
     @staticmethod
     def perceive_cell(cell:Cell) -> PerceivedCell:
@@ -161,13 +164,13 @@ class Perceiver:
             
 def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord_creature:Coord, 
              entitys:EntitysRegistry) -> Perception:
-    vision_radius = creature.genome.vision_radius
+    vision_radius = creature.genome.core.vision_radius
 
     creature_observer = ObserverCreature(
         creature.energy.ratio,
         creature.life.ratio,
         creature.id,
-        creature.genome.id,
+        creature.genome.core.id,
     )
     data = Geometry.neighbors_x_y(coord_creature, territory, entity_map, vision_radius.x, vision_radius.y, True)
 
