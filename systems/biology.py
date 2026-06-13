@@ -212,7 +212,13 @@ class MetabolismSystem:
 
         return max(food_types, key=lambda x: weights[x])
     
-        
+    @staticmethod
+    def find_food_target(creature:Creature, perception:Perception) -> FoodTarget:
+        ev = MetabolismSystem.evaluate(creature, perception)
+        coord = MetabolismSystem.best_coord(ev)
+        food_type = MetabolismSystem.chose_best_food_type(MetabolismSystem.decide_food_types(coord, perception), creature.genome.metabolism.diet)
+        return FoodTarget(food_type, coord)
+    
     @staticmethod
     def eat(creature:Creature, energy:Energy) -> None:
         needed_energy = creature.needed_energy
@@ -220,7 +226,7 @@ class MetabolismSystem:
         cost = min(needed_energy, energy.value)
         energy.sub(cost)
         creature.energy.add(cost)
-
+    
     
             
         
