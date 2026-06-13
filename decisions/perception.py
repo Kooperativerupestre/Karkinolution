@@ -68,6 +68,9 @@ class Perception:
     @property
     def iter_values(self) -> Iterable[PerceivedBlock]:
         return self.blocks.values()
+    @property
+    def iter_keys(self) -> Iterable[Coord]:
+        return self.blocks.keys()
     def neighbors_x_y(self, neighbors_size:Coord) -> Iterable[tuple[Coord, PerceivedBlock]]:
         return {c: b for c, b in self.iter if c.x + self.coord.x <= neighbors_size.x and c.y + self.coord.y <= neighbors_size.y}.items()
     def neighbors_x_y_blocks(self, neighbors_size:Coord) -> Iterable[PerceivedBlock]:
