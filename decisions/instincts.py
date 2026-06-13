@@ -151,6 +151,7 @@ class DecideIntention:
 class Planner:
     @staticmethod
     def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AtackPreset | EatPreset | None:
+        weights = {}
         food_target = MetabolismSystem.find_food_target(creature, perception)
         coord_creature = perception.coord
 
@@ -162,19 +163,26 @@ class Planner:
 
         if food_coord == coord_creature:
             energy:Energy = perception.get(food_coord).cell.food # type: ignore
-            return EatPreset(energy)
+            weights[EatPreset(energy)] = 1
 
         if coord_creature.distance_exceeds_one(food_coord):
-            return MovePreset(food_coord)
+            weights[MovePreset(food_coord)] = 0.8
         
         block = perception.get(food_coord)
 
         if coord_creature.distance_to_other(food_coord) == 1:
-            if creature.genome.core.behavior in [Temperament.AGGRESSIVE, Temperament.NEUTRAL] and food_target.food_hint is FoodHint.OTHER_SPECIE:
-                return AtackPressets(creature, block.creature) # type: ignore
-    
-            return MovePreset(food_coord)
-        return None
+            if food_target.food_hint == FoodHint.CORPSE:
+                assert block.entity is not None
+                energy = block.entity.energy
+                weights[EatPreset(energy)] = 1
+            elif food_target.food_hint == FoodHint.TARGET:
+                assert block.entity is not None
+                weights[AtackPreset(block.entity.identity)] = score_atack(creature, block.entity)
+
+            weights[MovePreset(food_coord)] = 0.8
+        if len(weights) == 0:
+            return None
+        return max(weights, key=lambda x: weights[x])
 
 
         
