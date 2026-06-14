@@ -12,7 +12,7 @@ class WorldMotor:
         entitys.add(entity)
     @staticmethod
     def delete_entity_by_id(entity_map:EntityMap, id:Id, entitys:EntitysRegistry) -> None:
-        TerrainMotor.delete_entity(id=id, entity_map=entity_map) # O(n)
+        entity_map.delete(entity_map.get_key_by_value(id)) # O(n)
         entitys.delete(id)
 
 
@@ -21,7 +21,7 @@ class WorldMotor:
         # Prefer delete_entity whenever possible
     @staticmethod
     def delete_entity(entity_map:EntityMap, coord:Coord, id:Id, entitys:EntitysRegistry) -> None:
-        TerrainMotor.delete_entity_by_coord(coord, entity_map) # O(1)
+        entity_map.delete(coord) # O(1)
         entitys.delete(id)
 
 

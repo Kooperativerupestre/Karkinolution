@@ -9,7 +9,7 @@ from organism.genetics import Genome
 from utils.namegenerator import gen_name
 from organism.ontology import Gender, Diet, FoodHint, FoodTarget
 
-from map.map import TerrainView, EntityMap, Territory
+from map.map import EntityMap, Territory
 from core.coord import Coord
 from decisions.perception import Perception
 from dataclasses import dataclass
@@ -131,7 +131,7 @@ class ReproductiveSystem:
         assert female.uterus is not None
         if not female.pregnant: 
             raise ReproductiveError('Creature {} must be pregnant to give birth'.format(female))
-        if TerrainView.is_occupied(new_coord, entity_map):
+        if entity_map.exists(new_coord):
             raise CoordinateError('Coord {} must be unoccupied'.format(new_coord))
 
         child = UterusSystem.have_child(female.uterus)

@@ -186,7 +186,7 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
         creature.id,
         creature.genome.core.id,
     )
-    data = Geometry.neighbors_x_y(coord_creature, territory, entity_map, vision_radius.x, vision_radius.y, True)
+    data = Geometry.neighbors_x_y(coord_creature, territory, entity_map, vision_radius, True)
 
     perceived:dict[Coord, PerceivedBlock] = {}
 
