@@ -8,10 +8,10 @@ from organism.identity import Id
 from dataclasses import dataclass
 from organism.genetics import CreatureTypes
 from core.error import IdAlreadyExistsError
-from organism.stats import LimitedValue
+from organism.stats import LimitedValue, Energy
 
 
-COURAGE_FACTOR = {
+COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
     Temperament.NEUTRAL: 0.3,
     Temperament.AGGRESSIVE: 0.7,
@@ -20,7 +20,7 @@ COURAGE_FACTOR = {
 
 
 
-TRADE_OFF = {
+TRADE_OFF:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
     Temperament.NEUTRAL: 0.5,
     Temperament.AGGRESSIVE: 0.89,
@@ -121,7 +121,7 @@ class EvaluateActions:
         factor = creature.reproductive_maturity * creature.reproductive_factor
         
 
-        if not creature.fertility.reproductive_capability:
+        if not creature.reproductively_capable:
             factor *= 0.2
         return factor
 
@@ -151,7 +151,7 @@ class DecideIntention:
 class Planner:
     @staticmethod
     def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AtackPreset | EatPreset | None:
-        weights = {}
+        weights:dict[EatPreset | MovePreset | EatPreset | AtackPreset, float] = {}
         food_target = MetabolismSystem.find_food_target(creature, perception)
         coord_creature = perception.coord
 
@@ -188,11 +188,7 @@ class Planner:
         
     
     @staticmethod
-    def plan_find_match_intent(perception:Perception, creature:Creature) -> MovePreset | None:
-        other_sex = Gender.other_sex(creature.gender)
-        # other_sex() returns the opposite sex of the creature
-
-
+    def plan_find_match_intent(perception:Perception) -> MovePreset | None:
         sames_specie = Analysis.same_species(perception, predicate=lambda x: x.entity.can_reproduce) # type: ignore
 
         if len(sames_specie) == 0:

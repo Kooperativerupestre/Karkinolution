@@ -66,6 +66,9 @@ class Perception:
     def iter(self) -> Iterable[tuple[Coord, PerceivedBlock]]:
         return self.blocks.items()
     @property
+    def iter_keys(self) -> Iterable[Coord]:
+        return self.blocks.keys()
+    @property
     def iter_values(self) -> Iterable[PerceivedBlock]:
         return self.blocks.values()
     def neighbors_x_y(self, neighbors_size:Coord) -> Iterable[tuple[Coord, PerceivedBlock]]:
