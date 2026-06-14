@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from organism.creatures import Creature
-from decisions.actions import MoveActions
 from core.coord import Coord
 from organism.stats import Energy
 from organism.identity import Id

@@ -7,7 +7,7 @@ from systems.presets import MovePreset, EatPreset, AtackPreset
 from organism.identity import Id
 from dataclasses import dataclass
 from organism.genetics import CreatureTypes
-from core.error import IdExistenceError
+from core.error import IdAlreadyExistsError
 from organism.stats import LimitedValue
 
 
@@ -52,7 +52,7 @@ class ReproductiveBuffer:
     def add(self, desire:ReproductiveDesire) -> None:
         id = desire.creature_id
         if id in self.desires:
-            raise IdExistenceError('ID {} already exists'.format(id.id))
+            raise IdAlreadyExistsError('ID {} already exists'.format(id.id))
         self.desires[id] = desire
     def registry(self, desire:ReproductiveDesire) -> None:
         if id not in self.desires:

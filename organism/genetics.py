@@ -1,12 +1,11 @@
 from __future__ import annotations
 from enum import Enum, auto
-from random import choice, choices, randint, uniform
+from random import choice, uniform
 from organism.ontology import Temperament, Diet
-from decisions.actions import Actions, MoveActions
+from decisions.actions import  MoveActions
 from core.coord import Coord
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
 
 
 class CreatureTypes(Enum):
