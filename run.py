@@ -129,9 +129,7 @@ class Init:
 
         coords = TerrainView.random_free_coord(territory, entity_map, n)
 
-        for i in range(n):
-            creature = Init.random_creature()
-
+        for _ in range(n):
             WorldMotor.add_entity(
                 world.territory,
                 world.entity_map,
@@ -148,14 +146,15 @@ class Init:
 class ReproductiveResolver:
     @staticmethod
     def find_adjacent_mates(creature:Creature, perception:Perception) -> list[Id]:
-        ids = []
+        ids:list[Id] = []
 
 
-        neighbors = perception.neighbors_4_require
+        neighbors = perception.neighbors_4_require_blocks
 
-        for c, b in neighbors:
+        for b in neighbors:
             if b is not None and b.has_entity and b.entity.can_reproduce: # type: ignore
-                ids.append(b.entity.identity) # type: ignore
+                assert b.entity is not None
+                ids.append(b.entity.identity) 
         return ids
     @staticmethod
     def resolve_parents(A:Creature, B_id:Id, entitys:EntitysRegistry) -> Parents:
@@ -192,7 +191,7 @@ class IntentResolver:
             return act
         
         elif creature.intent.intent == IntentActs.FIND_MATCH:
-            act = Planner.plan_find_match_intent(perception, creature)
+            act = Planner.plan_find_match_intent(perception)
             return act
 
     @staticmethod
