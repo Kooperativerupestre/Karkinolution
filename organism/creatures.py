@@ -145,7 +145,9 @@ class Creature:
         return (self.energy.value * self.genome.reproduction.extra_reproduction_multiplier)/self.genome.reproduction.reproduction_cost
     @property
     def reproductively_capable(self) -> bool:
-        return self.fertility.value == self.fertility.limit and self.energy.value * self.genome.reproduction.extra_reproduction_multiplier >= self.genome.reproduction.reproduction_cost and not self.pregnant
+        energy_condition = self.energy.value * self.genome.reproduction.extra_reproduction_multiplier >= self.genome.reproduction.reproduction_cost
+        return self.fertility.reproductive_capability() and not self.pregnant and energy_condition
+    
     @property
     def pregnancy_factor(self) -> int | float:
         if self.gender is not Gender.FEMALE:

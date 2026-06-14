@@ -147,7 +147,7 @@ class TerrainMotor:
 class Geometry:
     @staticmethod
     def neighbors_x_y(coord:Coord, territory:Territory, entity_map:EntityMap, x:int, y:int, include_self:bool) -> dict[Coord, BlockData]:
-        neighbors_dict = {}
+        neighbors_dict:dict[Coord, BlockData] = {}
 
 
         for row in range(-y, y+1):

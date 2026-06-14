@@ -58,16 +58,20 @@ class UterusSystem:
     def have_child(uterus:Uterus) -> Creature | None:
         if not uterus.pregnant:
             raise ReproductiveError('Uterus {} is not pregnant to give birth'.format(uterus))
+        assert uterus.gestation is not None
+        assert uterus.male_genome is not None
+    
         if uterus.all_children_borned:
             raise ReproductiveError('Pregnancy is already finished')
+        assert uterus.number_children is not None
         
-        if ReproductiveSystem.die_a_child(uterus.gestation.death_factor): # type: ignore
+        if UterusSystem.die_a_child(uterus.gestation.death_factor):
             return None
 
     
-        uterus.number_children.add(1) # type: ignore
+        uterus.number_children.add(1)
         
-        child_genome = uterus.female_genome.scramble(uterus.male_genome) # type: ignore
+        child_genome = uterus.female_genome.crossover(uterus.male_genome)
 
         child_energy = lambda: uterus.birth_energy
 
@@ -110,10 +114,11 @@ class ReproductiveSystem:
             raise GenderError('Creature {} must be male to reproduce'.format(male))
         
 
-        if not female.fertility.reproductive_capability:
+        if not female.reproductively_capable:
             raise ReproductiveError('Creature {} has no reproductive capability'.format(female))
         
-        
+        if not male.reproductively_capable:
+            raise ReproductiveError('Creature {} has no reproductive capability'.format(male))
         UterusSystem.conceive(female.uterus, male.genome)
         female.fertility.zero()
 
@@ -182,14 +187,14 @@ class MetabolismSystem:
 
     @staticmethod
     def evaluate(creature:Creature, perception:Perception) -> Iterable[tuple[Coord, float]]:
-        ev = {c: MetabolismSystem.score_food(creature, c, perception) for c, b in perception.iter}
+        ev = {c: MetabolismSystem.score_food(creature, c, perception) for c in perception.iter_keys}
         return ev.items()
     @staticmethod
     def best_coord(evaluated:Iterable[tuple[Coord, float]]) -> Coord:
         return max(evaluated, key=lambda x: x[1])[0]
     @staticmethod
     def decide_food_types(coord:Coord, perception:Perception) -> list[FoodHint]:
-        energies = []
+        energies:list[FoodHint] = []
 
         block = perception.get(coord)
 
@@ -212,10 +217,13 @@ class MetabolismSystem:
         return max(food_types, key=lambda x: weights[x])
     
     @staticmethod
-    def find_food_target(creature:Creature, perception:Perception) -> FoodTarget:
+    def find_food_target(creature:Creature, perception:Perception) -> FoodTarget | None:
         ev = MetabolismSystem.evaluate(creature, perception)
         coord = MetabolismSystem.best_coord(ev)
-        food_type = MetabolismSystem.chose_best_food_type(MetabolismSystem.decide_food_types(coord, perception), creature.genome.metabolism.diet)
+        food_types = MetabolismSystem.decide_food_types(coord, perception)
+        if len(food_types) == 0:
+            return None
+        food_type = MetabolismSystem.chose_best_food_type(food_types, creature.genome.metabolism.diet)
         return FoodTarget(food_type, coord)
     
     @staticmethod
