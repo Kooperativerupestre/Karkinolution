@@ -2,8 +2,7 @@ from __future__ import annotations
 from core.cell import Cell
 from core.coord import Coord
 from dataclasses import dataclass
-from core.error import (CoordinateNotFoundError, IdNotFoundError, CoordinateExistenceError, IdExistenceError,
-                   CoordinateOccupiedError)
+from core.error import CoordinateError, CoordinateAlreadyExistsError, CoordinateNotFoundError, IdNotFoundError, IdAlreadyExistsError
 from typing import Iterable
 from random import sample
 from organism.identity import Id
@@ -106,7 +105,7 @@ class TerrainMotor:
     @staticmethod
     def add_entity(id:Id, coord:Coord, territory:Territory, entity_map:EntityMap) -> None:
         if TerrainView.exists_id(id, entity_map):
-            raise IdExistenceError('ID {} already exists'.format(id.id))
+            raise IdAlreadyExistsError('ID {} already exists'.format(id.id))
         if not TerrainView.exists_coord(coord, territory):
             raise CoordinateNotFoundError('Coord ({}) does not exists in territory'.format(coord))
         entity_map.entity_map[coord] = id
@@ -125,7 +124,7 @@ class TerrainMotor:
     @staticmethod
     def add_coord(coord:Coord, cell:Cell, territory:Territory) -> None:
         if TerrainView.exists_coord(coord, territory):
-            raise CoordinateExistenceError('Coord ({}) already exists'.format(coord))
+            raise CoordinateAlreadyExistsError('Coord ({}) already exists'.format(coord))
         territory.territory[coord] = cell
     @staticmethod
     def delete_coord(coord:Coord, territory:Territory, entity_map:EntityMap) -> None:
@@ -138,7 +137,7 @@ class TerrainMotor:
         if not TerrainView.exists_coord(new_coord, territory):
             raise CoordinateNotFoundError('Coord ({}) was not found'.format(new_coord))
         if TerrainView.is_occupied(new_coord, entity_map):
-            raise CoordinateOccupiedError('Coord ({}) was occupied'.format(new_coord))
+            raise CoordinateError('Coord ({}) was occupied'.format(new_coord))
         TerrainMotor.delete_entity(id, entity_map)
         TerrainMotor.add_entity(id, new_coord, territory, entity_map)
 

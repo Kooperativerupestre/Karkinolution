@@ -1,15 +1,15 @@
 from decisions.perception import PerceivedBlock, PerceivedCell
 
-from organism.creatures import Creature, Corpse
+from organism.creatures import Creature
 from organism.ontology import AtackedEvent
 
-from core.error import NonMotileError, CoordinateOccupiedError
+from core.error import NonMotileError, CoordinateError
 from core.coord import Coord
 from core.map import TerrainView, TerrainMotor, EntityMap, Territory
 
 from organism.stats import check_energy
 from decisions.actions import MoveActions
-from decisions.perception import Perception, Analysis
+from decisions.perception import Perception
 
 from typing import Callable
 
@@ -46,7 +46,7 @@ class MovementSystem:
     @staticmethod
     def move(creature:Creature, coord_creature:Coord, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> int:
         if TerrainView.is_occupied(new_coord, entity_map):
-            raise CoordinateOccupiedError('Coord {} is occupied'.format(new_coord))
+            raise CoordinateError('Coord {} is occupied'.format(new_coord))
         if coord_creature == new_coord:
             raise ValueError('Coord of creature {} == New coord {}'.format(coord_creature, new_coord))
 
