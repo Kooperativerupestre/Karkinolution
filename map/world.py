@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from core.map import TerrainMotor, Territory, EntityMap
+from map.map import TerrainMotor, Territory, EntityMap
 from core.coord import Coord
 from organism.creatures import Creature, EntitysRegistry, Corpse
 from organism.identity import Id

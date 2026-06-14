@@ -10,9 +10,9 @@ from organism.stats import Energy
 from organism.identity import Id, EntityTypes
 from dataclasses import dataclass
 from core.error import CoordinateNotFoundError
-from core.map import Territory, EntityMap, Geometry
+from map.map import Territory, EntityMap, Geometry
 
-from core.cell import Cell, FoodState, Properties, MovimentCost, Damage
+from map.cell import Cell, FoodState, Properties, MovimentCost, Damage
 
 
 @dataclass(frozen=True)
