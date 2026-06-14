@@ -1,5 +1,5 @@
-from core.map import Territory, EntityMap, TerrainMotor, TerrainView
-from core.cell import TerrainTypes, gen_cell, Cell, FoodState
+from map.map import Territory, EntityMap, TerrainMotor, TerrainView
+from map.cell import TerrainTypes, gen_cell, Cell, FoodState
 from core.coord import Coord
 from organism.genetics import CreatureTypes, _creatures_genomes
 from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface
@@ -7,7 +7,7 @@ from organism.ontology import Gender
 from organism.stats import Energy
 from utils.namegenerator import gen_name
 from organism.identity import Id, gen_id, EntityTypes
-from core.world import WorldMotor, World
+from map.world import WorldMotor, World
 from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents
 from decisions.perception import perceive, Perception
 from systems.presets import AtackPreset, EatPreset, MovePreset, ReproducePreset

@@ -5,7 +5,7 @@ from organism.ontology import AtackedEvent
 
 from core.error import NonMotileError, CoordinateError
 from core.coord import Coord
-from core.map import TerrainView, TerrainMotor, EntityMap, Territory
+from map.map import TerrainView, TerrainMotor, EntityMap, Territory
 
 from organism.stats import check_energy
 from decisions.actions import MoveActions

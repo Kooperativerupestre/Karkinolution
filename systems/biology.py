@@ -9,7 +9,7 @@ from organism.genetics import Genome
 from utils.namegenerator import gen_name
 from organism.ontology import Gender, Diet, FoodHint, FoodTarget
 
-from core.map import TerrainView, EntityMap, Territory
+from map.map import TerrainView, EntityMap, Territory
 from core.coord import Coord
 from decisions.perception import Perception
 from dataclasses import dataclass

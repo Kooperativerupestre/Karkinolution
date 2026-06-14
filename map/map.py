@@ -1,5 +1,5 @@
 from __future__ import annotations
-from core.cell import Cell
+from map.cell import Cell
 from core.coord import Coord
 from dataclasses import dataclass
 from core.error import CoordinateError, CoordinateAlreadyExistsError, CoordinateNotFoundError, IdNotFoundError, IdAlreadyExistsError
