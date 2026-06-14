@@ -5,7 +5,7 @@ from organism.ontology import AtackedEvent
 
 from core.error import NonMotileError, CoordinateError
 from core.coord import Coord
-from map.map import TerrainView, TerrainMotor, EntityMap, Territory
+from map.map import TerrainQuery, TerrainMotor, EntityMap, Territory
 
 from organism.stats import check_energy
 from decisions.actions import MoveActions
@@ -45,13 +45,11 @@ class MovementSystem:
         return cost * creature.genome.metabolism.mass
     @staticmethod
     def move(creature:Creature, coord_creature:Coord, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> int:
-        if TerrainView.is_occupied(new_coord, entity_map):
-            raise CoordinateError('Coord {} is occupied'.format(new_coord))
         if coord_creature == new_coord:
             raise ValueError('Coord of creature {} == New coord {}'.format(coord_creature, new_coord))
 
         check_energy(creature.energy, 1)
-        TerrainMotor.move(creature.id, new_coord, entity_map, territory)
+        TerrainMotor.move(creature.id, coord_creature, new_coord, entity_map, territory)
 
         return 1
         

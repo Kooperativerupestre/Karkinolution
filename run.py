@@ -1,4 +1,4 @@
-from map.map import Territory, EntityMap, TerrainMotor, TerrainView
+from map.map import Territory, EntityMap, TerrainQuery
 from map.cell import TerrainTypes, gen_cell, Cell, FoodState
 from core.coord import Coord
 from organism.genetics import CreatureTypes, _creatures_genomes
@@ -101,11 +101,8 @@ class Init:
 
         for x in range(0, size.x):
             for y in range(0, size.y):
-                TerrainMotor.add_coord(
-                    Coord(x, y),
-                    gen_cell(TerrainTypes.DIRT),
-                    territory
-                )
+                territory.add(Coord(x, y), gen_cell(TerrainTypes.DIRT))
+
 
     @staticmethod
     def random_creature(id:Id | None  = None) -> Creature:
@@ -127,7 +124,7 @@ class Init:
         n: int
     ) -> None:
 
-        coords = TerrainView.random_free_coord(territory, entity_map, n)
+        coords = TerrainQuery.random_free_coord(territory, entity_map, n)
 
         for _ in range(n):
             WorldMotor.add_entity(
@@ -333,13 +330,13 @@ class Runner:
         print(' '*30, end='\n\n\n')
 
         ### RUN CELLS
-        for cell in territory.cells:
+        for cell in territory.values:
             cell.pass_time()
 
 
         ### RUN CREATURES
         for coord, id in list(entity_map.iter):
-            cell = TerrainView.get_cell_by_coord(coord, territory)
+            cell = territory.get(coord)
             if id.e_type == EntityTypes.CREATURE:
                 creature = entitys.get_creature(id)
 
