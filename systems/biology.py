@@ -171,12 +171,12 @@ class MetabolismSystem:
         diet_effective = 1 - creature.hungry
 
         if next_block.get_entity_type() == EntityTypes.CREATURE and next_block.entity.specie_id != creature.genome.core.id: # type: ignore
-            food_score += (creature.genome.diet.target_score * (1 - diet_effective) - creature.hungry) * block.entity.energy # type: ignore
+            food_score += (creature.genome.metabolism.diet.target_score * (1 - diet_effective) - creature.hungry) * next_block.entity.energy.value # type: ignore
         elif next_block.get_entity_type() == EntityTypes.CORPSE:
-            food_score += (creature.genome.diet.corpse_score * (1 - diet_effective) - creature.hungry) * block.entity.energy # type: ignore
+            food_score += (creature.genome.metabolism.diet.corpse_score * (1 - diet_effective) - creature.hungry) * next_block.entity.energy.value # type: ignore
 
         if next_block.cell.is_edible:
-            food_score += (creature.genome.diet.grass_score * (1 - diet_effective) + creature.hungry) * block.cell.food # type: ignore
+            food_score += (creature.genome.metabolism.diet.grass_score * (1 - diet_effective) + creature.hungry) * next_block.cell.food.value # type: ignore
         
         food_score -= perception.coord.distance_to_other(coord_block) * MovementSystem.calculate_cost_to_move(next_block.cell, cell_creature, creature)
         return food_score

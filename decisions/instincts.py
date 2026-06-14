@@ -1,15 +1,13 @@
 from organism.ontology import Temperament, Gender
-from systems.physics import MovementSystem
-from systems.biology import MetabolismSystem, FoodHint, FoodTarget
-from decisions.perception import Perception, Analysis, PerceivedCreature, PerceivedCell
+from systems.biology import MetabolismSystem, FoodHint
+from decisions.perception import Perception, Analysis, PerceivedCreature
 from organism.creatures import Creature
 from decisions.actions import Intent, IntentActs
-from systems.presets import MovePreset, ReproducePreset, EatPreset, AtackPreset
-from random import choice
-from organism.identity import Id, EntityTypes
+from systems.presets import MovePreset, EatPreset, AtackPreset
+from organism.identity import Id
 from dataclasses import dataclass
 from organism.genetics import CreatureTypes
-from core.error import IdExistenceError, EntityTypeError
+from core.error import IdExistenceError
 from organism.stats import LimitedValue
 
 
