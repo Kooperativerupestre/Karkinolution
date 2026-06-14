@@ -64,11 +64,11 @@ class MovementSystem:
     @staticmethod
     def best_pos(creature:Creature, perception:Perception, new_coord:Coord) -> Coord | None:
         data = perception.neighbors_4_require
-        moveble_coords = []
+        moveble_coords:list[Coord] = []
         for c, b in data:
             if b is not None and SpatialSystem.can_move(b, creature.genome.core.capabilities):
                 moveble_coords.append(c)
-        return min(moveble_coords, key=lambda x: perception.coord.distance_to_other(x))
+        return min(moveble_coords, key=lambda x: x.distance_to_other(new_coord))
 
 
     
