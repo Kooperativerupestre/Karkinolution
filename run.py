@@ -4,18 +4,18 @@ from core.coord import Coord
 from organism.genetics import CreatureTypes, _creatures_genomes
 from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface
 from organism.ontology import Gender
-from organism.stats import check_energy, Energy
+from organism.stats import Energy
 from utils.namegenerator import gen_name
 from organism.identity import Id, gen_id, EntityTypes
 from core.world import WorldMotor, World
 from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents
-from decisions.perception import perceive, Perception, PerceivedCreature
+from decisions.perception import perceive, Perception
 from systems.presets import AtackPreset, EatPreset, MovePreset, ReproducePreset
-from decisions.actions import IntentActs, Intent
-from decisions.instincts import DecideIntention, Planner, ReproductiveBuffer, ReproductiveDesire, ReproducePreset
+from decisions.actions import IntentActs
+from decisions.instincts import DecideIntention, Planner, ReproductiveBuffer
 from systems.physics import MovementSystem, AtackSystem, SpatialSystem
 from random import choice
-from dataclasses import dataclass
+
 
 # =========================================================
 # INIT WORLD
