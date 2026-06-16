@@ -55,7 +55,7 @@ class ReproductiveBuffer:
             raise IdAlreadyExistsError('ID {} already exists'.format(id.id))
         self.desires[id] = desire
     def registry(self, desire:ReproductiveDesire) -> None:
-        if id not in self.desires:
+        if desire.creature_id not in self.desires:
             self.desires[desire.creature_id] = desire
 
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
