@@ -123,7 +123,7 @@ class ReproductiveSystem:
         return ReproductionCost(female.genome.reproduction.reproduction_cost, male.genome.reproduction.reproduction_cost)
 
     @staticmethod
-    def to_birth(female:Creature, new_coord:Coord) -> BornData | None:
+    def to_birth(female:Creature) -> BornData | None:
         if female.gender is not Gender.FEMALE:
             raise GenderError('Creature {} must be female to give birth'.format(female))
         assert female.uterus is not None
