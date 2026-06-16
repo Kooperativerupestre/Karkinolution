@@ -126,12 +126,12 @@ class Init:
 
         coords = TerrainQuery.random_free_coord(territory, entity_map, n)
 
-        for _ in range(n):
+        for coord in coords:
             WorldMotor.add_entity(
                 world.territory,
                 world.entity_map,
                 Init.random_creature(id),
-                coords[n],
+                coord,
                 entitys
             )
 
@@ -273,12 +273,6 @@ class Runner:
                 if len(possibilities) > 0:
                     new_coord = choice(possibilities)
                     ReproductiveSystem.to_birth(creature, new_coord, world.entity_map, world.territory, world.entitys)
-
-
-    
-
-    
-
 
     @staticmethod
     def run_creature(creature: Creature, coord_creature:Coord, world:World) -> None:    
