@@ -6,7 +6,7 @@ from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterf
 from organism.stats import Energy
 from organism.identity import Id, EntityTypes
 from map.world import WorldMotor, World
-from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents
+from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents, BornData
 from decisions.perception import perceive, Perception
 from systems.presets import AtackPreset, EatPreset, MovePreset, ReproducePreset
 from decisions.actions import IntentActs
@@ -234,13 +234,20 @@ def resolve_death(creature:Creature, world:World, coord_creature:Coord) -> None:
     corpse = DeathSystem.generate_corpse(creature)
     WorldMotor.delete_entity(world.entity_map, coord_creature, creature.id, world.entitys)
     WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entitys)
+def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
+    return CreatureFactory.gen_creature(
+        position=position,
+        creature_type=born_data.genome.core.id,
+        genome=born_data.genome,
+        initial_energy=born_data.initial_energy
+    )
 
 class Runner:
     # CREATURE
 
 
     @staticmethod
-    def run_fisiology(creature:Creature, perception:Perception, dt: int, world:World) -> None:
+    def run_fisiology(creature:Creature, perception:Perception, dt: int, world:World) -> None | Creature:
         creature.age.add(dt)
         
         basal_metabolism = creature.energy.limit**(1/3)*1.4 + 1
@@ -259,7 +266,12 @@ class Runner:
 
                 if len(possibilities) > 0:
                     new_coord = choice(possibilities)
-                    ReproductiveSystem.to_birth(creature, new_coord)
+                    born_data = ReproductiveSystem.to_birth(creature)
+                    if born_data is not None:
+                        new_child = born_data_to_creature(born_data, new_coord)
+                        return new_child
+        return None
+    
     @staticmethod
     def run_creature(creature: Creature, coord_creature:Coord, world:World) -> None:    
         # ALIAS
@@ -279,7 +291,9 @@ class Runner:
             coord_creature,
             entitys
         )
-        Runner.run_fisiology(creature, perception, 1, world)
+        new_child = Runner.run_fisiology(creature, perception, 1, world)
+        if new_child is not None:
+            WorldMotor.add_entity(territory, entity_map, new_child, entitys)
         preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
         if preset is not None:
             PresetExecutor.execute_preset(preset, creature, world, perception)
