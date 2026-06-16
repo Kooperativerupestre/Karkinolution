@@ -1,12 +1,10 @@
 from map.map import Territory, EntityMap, TerrainQuery
 from map.cell import TerrainTypes, gen_cell, Cell, FoodState
 from core.coord import Coord
-from organism.genetics import CreatureTypes, _creatures_genomes
-from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface
-from organism.ontology import Gender
+from organism.genetics import CreatureTypes
+from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface, CreatureFactory
 from organism.stats import Energy
-from utils.namegenerator import gen_name
-from organism.identity import Id, gen_id, EntityTypes
+from organism.identity import Id, EntityTypes
 from map.world import WorldMotor, World
 from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents
 from decisions.perception import perceive, Perception
@@ -104,17 +102,7 @@ class Init:
                 territory.add(Coord(x, y), gen_cell(TerrainTypes.DIRT))
 
 
-    @staticmethod
-    def random_creature(id:Id | None  = None) -> Creature:
-        genome = _creatures_genomes[CreatureTypes.CRAB]
 
-        return Creature(
-            genome=genome,
-            gender=Gender.choice(),
-            name=gen_name(),
-            initial_energy=None,
-            id=id.id if id is not None else gen_id()
-        )
 
     @staticmethod
     def create_creatures(
@@ -130,8 +118,7 @@ class Init:
             WorldMotor.add_entity(
                 world.territory,
                 world.entity_map,
-                Init.random_creature(id),
-                coord,
+                CreatureFactory.gen_creature(position=coord, creature_type=CreatureTypes.CRAB),
                 entitys
             )
 
@@ -226,7 +213,7 @@ class PresetExecutor:
         if best_pos is None:
             return None
         
-        cost = MovementSystem.move(creature, coord_creature, best_pos, world.entity_map, world.territory)
+        cost = MovementSystem.move(creature, best_pos, world.entity_map, world.territory)
         creature.energy.sub(cost)
     @staticmethod
     def execute_atack(preset:AtackPreset, entitys:EntitysRegistry, creature:Creature) -> None:
@@ -246,7 +233,7 @@ class PresetExecutor:
 def resolve_death(creature:Creature, world:World, coord_creature:Coord) -> None:
     corpse = DeathSystem.generate_corpse(creature)
     WorldMotor.delete_entity(world.entity_map, coord_creature, creature.id, world.entitys)
-    WorldMotor.add_entity(world.territory, world.entity_map, corpse, coord_creature, world.entitys)
+    WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entitys)
 
 class Runner:
     # CREATURE
@@ -272,8 +259,7 @@ class Runner:
 
                 if len(possibilities) > 0:
                     new_coord = choice(possibilities)
-                    ReproductiveSystem.to_birth(creature, new_coord, world.entity_map, world.territory, world.entitys)
-
+                    ReproductiveSystem.to_birth(creature, new_coord)
     @staticmethod
     def run_creature(creature: Creature, coord_creature:Coord, world:World) -> None:    
         # ALIAS
@@ -356,11 +342,19 @@ world = World(
     ReproductiveBuffer()
 )
 
-id = Id('jotac', EntityTypes.CREATURE)
+id = 'jotac'
 
 Init.init_territory(world.territory)
 
-WorldMotor.add_entity(world.territory, world.entity_map, Init.random_creature(id), Coord(0, 0), world.entitys)
+
+WorldMotor.add_entity(
+    world.territory,
+    world.entity_map,
+    CreatureFactory.gen_creature(position=Coord(0, 0),
+                                 creature_type=CreatureTypes.CRAB,
+                                id=id),
+    world.entitys    
+)
 
 
 
