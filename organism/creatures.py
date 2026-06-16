@@ -1,14 +1,17 @@
 from __future__ import annotations
-from organism.genetics import Genome
+from organism.genetics import Genome, CreatureTypes, _creatures_genomes
 from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AtackedEvent
 
 from core.error import ReproductiveError, IdNotFoundError, GenderError, IdAlreadyExistsError
-from organism.identity import Id, EntityTypes
+from organism.identity import Id, EntityTypes, gen_id
 from random import uniform
 from math import exp
 from dataclasses import dataclass
+from core.coord import Coord
+from utils.namegenerator import gen_name
+
 
 
 MAX_STRENGTH = 35
@@ -240,5 +243,35 @@ class EntitysRegistry:
             raise IdNotFoundError('ID {} does not exists'.format(id))
         return self.entitys[id]
     
+    
+class CreatureFactory:
+    @staticmethod
+    def gen_random_creature() -> Creature:
+        creature_type = CreatureTypes.choice()
+
+        genome = _creatures_genomes[creature_type]
+
+        initial_energy = uniform(0.5, 1) * genome.metabolism.energy_limit
+        return Creature(
+            genome,
+            Gender.choice(),
+            gen_name(),
+            initial_energy,
+            gen_id()
+        )
+        
+    @staticmethod
+    def gen_specie_creature(creature_type:CreatureTypes) -> Creature:
+        genome = _creatures_genomes[creature_type]
+
+        initial_energy = uniform(0.5, 1) * genome.metabolism.energy_limit
+
+        return Creature(
+            genome,
+            Gender.choice(),
+            gen_name(),
+            initial_energy,
+            gen_id()
+        )
     
     
