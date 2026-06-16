@@ -199,9 +199,9 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
         
         if id is None:
             pass
-        elif id.id is EntityTypes.CREATURE:
+        elif id.e_type == EntityTypes.CREATURE:
             perceived_creature = Perceiver.perceive_entity(entitys.get_creature(id))
-        elif id.id is EntityTypes.CORPSE:
+        elif id.e_type == EntityTypes.CORPSE:
             perceived_creature = Perceiver.perceive_corpse(entitys.get_corpse(id))
         
 
