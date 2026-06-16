@@ -1,15 +1,13 @@
 from organism.identity import gen_id, EntityTypes, Id
-from core.error import GenderError, DifferentSpeciesError, ReproductiveError, AlreadyPregnantError, CoordinateError
+from core.error import GenderError, DifferentSpeciesError, ReproductiveError, AlreadyPregnantError
 from random import choices
 from organism.stats import LimitedValue, Energy, check_energy, Age
 
 
-from organism.creatures import Uterus, Creature, EntitysRegistry, Corpse
+from organism.creatures import Uterus, Creature, Corpse
 from organism.genetics import Genome
-from utils.namegenerator import gen_name
 from organism.ontology import Gender, Diet, FoodHint, FoodTarget
 
-from map.map import EntityMap, Territory
 from core.coord import Coord
 from decisions.perception import Perception
 from dataclasses import dataclass
@@ -17,7 +15,13 @@ from systems.physics import MovementSystem
 
 from typing import Iterable
 
+@dataclass(frozen=True)
+class BornData:
+    genome:Genome
+    initial_energy:Energy
 
+
+    
 
 @dataclass(frozen=True)
 class ReproductionCost:
@@ -55,7 +59,7 @@ class UterusSystem:
         uterus.number_children = LimitedValue(0, UterusSystem.random_children_number())
 
     @staticmethod
-    def have_child(uterus:Uterus) -> Creature | None:
+    def have_child(uterus:Uterus) -> BornData | None:
         if not uterus.pregnant:
             raise ReproductiveError('Uterus {} is not pregnant to give birth'.format(uterus))
         assert uterus.gestation is not None
@@ -77,13 +81,7 @@ class UterusSystem:
 
 
         
-        child = Creature(
-            genome=child_genome,
-            gender=Gender.choice(),
-            name=gen_name(),
-            initial_energy=child_energy(),
-            id=gen_id(),
-        )
+        child = BornData(child_genome, Energy(child_energy(), child_genome.metabolism.energy_limit))
         if uterus.all_children_borned:
             UterusSystem.finish(uterus)
 
@@ -125,14 +123,13 @@ class ReproductiveSystem:
         return ReproductionCost(female.genome.reproduction.reproduction_cost, male.genome.reproduction.reproduction_cost)
 
     @staticmethod
-    def to_birth(female:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory, entitys:EntitysRegistry) -> Creature | None:
+    def to_birth(female:Creature, new_coord:Coord) -> BornData | None:
         if female.gender is not Gender.FEMALE:
             raise GenderError('Creature {} must be female to give birth'.format(female))
         assert female.uterus is not None
         if not female.pregnant: 
             raise ReproductiveError('Creature {} must be pregnant to give birth'.format(female))
-        if entity_map.exists(new_coord):
-            raise CoordinateError('Coord {} must be unoccupied'.format(new_coord))
+
 
         child = UterusSystem.have_child(female.uterus)
         
@@ -245,7 +242,7 @@ class DeathSystem:
             if creature.uterus.pregnant: # type: ignore
                 energy += creature.uterus.pregnancy_cost * 2 # type: ignore
         decomposition_time = energy/creature.energy.limit * 7.5
-        return Corpse(Energy(energy, energy), gen_id(), Age(0, decomposition_time))
+        return Corpse(Energy(energy, energy), gen_id(), Age(0, decomposition_time), creature.position)
     @staticmethod
     def is_dead(creature:Creature) -> bool:
         if creature.life.value == 0:

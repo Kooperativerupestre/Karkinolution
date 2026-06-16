@@ -7,8 +7,8 @@ from decisions.instincts import ReproductiveBuffer
 
 class WorldMotor:
     @staticmethod
-    def add_entity(territory:Territory, entity_map:EntityMap, entity:Creature | Corpse, coord:Coord, entitys:EntitysRegistry) -> None:
-        TerrainMotor.add_entity(territory=territory, entity_map=entity_map, coord=coord, id=entity.id)
+    def add_entity(territory:Territory, entity_map:EntityMap, entity:Creature | Corpse, entitys:EntitysRegistry) -> None:
+        TerrainMotor.add_entity(territory=territory, entity_map=entity_map, coord=entity.position, id=entity.id)
         entitys.add(entity)
     @staticmethod
     def delete_entity_by_id(entity_map:EntityMap, id:Id, entitys:EntitysRegistry) -> None:

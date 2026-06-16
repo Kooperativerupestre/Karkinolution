@@ -103,7 +103,7 @@ class CreatureInterface:
 
     pregnant:bool
     intent:Intent
-
+    position:Coord
     @property
     def hungry(self) -> float:
         return 1 - self.energy.ratio
@@ -114,7 +114,8 @@ class Creature:
                  genome:Genome,
                  gender:Gender,
                  name:str,
-                 initial_energy:int | float | None,
+                 initial_energy:Energy,
+                 position:Coord,
                  id:str,
                  ):
         self.genome = genome
@@ -122,7 +123,7 @@ class Creature:
         self.name = name
         self.id = Id(id, EntityTypes.CREATURE)
 
-        self.energy = Energy(value=initial_energy if initial_energy is not None else genome.metabolism.energy_limit, limit=genome.metabolism.energy_limit)
+        self.energy = initial_energy
         self.life = Life(value=genome.body.life_limit, limit=genome.body.life_limit)
         self.fertility = Fertility(value=genome.reproduction.fertility_limit, limit=genome.reproduction.fertility_limit)
         self.uterus = Uterus(self.genome) if self.gender is Gender.FEMALE else None
@@ -130,7 +131,7 @@ class Creature:
 
         self.intent: Intent = Intent(IntentActs.NOTHING)
         self.last_atack: None | AtackedEvent = None
-        
+        self.position = position
 
     @property
     def hungry(self) -> float:
@@ -186,7 +187,8 @@ class Creature:
             self.energy,
             self.life,
             pregnant,
-            self.intent
+            self.intent,
+            self.position
         )
     
     
@@ -195,10 +197,11 @@ class Creature:
         return f'({self.name} | {self.id})'
 
 class Corpse:
-    def __init__(self, energy:Energy, id:str, decomposition_time:Age):
+    def __init__(self, energy:Energy, id:str, decomposition_time:Age, position:Coord):
         self.energy = energy
         self.id = Id(id, EntityTypes.CORPSE)
         self.decomposition_time = decomposition_time
+        self.position = position
     
     @property
     def ready_to_disapear(self) -> bool:
@@ -246,32 +249,31 @@ class EntitysRegistry:
     
 class CreatureFactory:
     @staticmethod
-    def gen_random_creature() -> Creature:
-        creature_type = CreatureTypes.choice()
-
-        genome = _creatures_genomes[creature_type]
-
-        initial_energy = uniform(0.5, 1) * genome.metabolism.energy_limit
-        return Creature(
-            genome,
-            Gender.choice(),
-            gen_name(),
-            initial_energy,
-            gen_id()
-        )
+    def gen_creature(
+        position:Coord,
+        creature_type:CreatureTypes | None = None,
+        id:str | None = None,
+        initial_energy:Energy | None = None,
+        genome:Genome | None = None
+    ) -> Creature:
         
-    @staticmethod
-    def gen_specie_creature(creature_type:CreatureTypes) -> Creature:
-        genome = _creatures_genomes[creature_type]
-
-        initial_energy = uniform(0.5, 1) * genome.metabolism.energy_limit
+        if creature_type is None:
+            creature_type = CreatureTypes.choice()
+        if id is None:
+            id = gen_id()
+        if genome is None:
+            genome = _creatures_genomes[creature_type]
+        if initial_energy is None:
+            initial_energy = Energy(uniform(0.5, 1) * genome.metabolism.energy_limit, genome.metabolism.energy_limit)
 
         return Creature(
-            genome,
+            genome, 
             Gender.choice(),
             gen_name(),
             initial_energy,
-            gen_id()
+            position,
+            id
         )
     
+
     

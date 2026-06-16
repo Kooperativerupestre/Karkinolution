@@ -117,10 +117,10 @@ class Analysis:
         return Analysis.find_predicate(perception, lambda x: x.get_entity_type() == EntityTypes.CORPSE)
     @staticmethod
     def same_species(perception:Perception, predicate:Callable[[PerceivedBlock], bool] = lambda x: True) -> set[Coord]:
-        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.ENTITY and x.entity.specie_id == perception.creature.specie_id) # type: ignore
+        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.CREATURE and x.entity.specie_id == perception.creature.specie_id) # type: ignore
     @staticmethod
     def other_species(perception:Perception) -> set[Coord]:
-        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.ENTITY and x.entity.specie_id != perception.creature.specie_id) # type: ignore
+        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.CREATURE and x.entity.specie_id != perception.creature.specie_id) # type: ignore
     @staticmethod
     def near_coord(coords:Iterable[Coord], coord_creature:Coord) -> Coord:    
         return min([c for c in coords], key=lambda x: coord_creature.distance_to_other(x))
