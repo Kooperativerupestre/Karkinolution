@@ -77,12 +77,13 @@ class Uterus:
         if not self.pregnant:
             raise ReproductiveError('Uterus {} is not pregnant'.format(self))
             
-        return (1 + self.gestation_time/2)*self.number_children # type: ignore
+        return (1 + self.gestation.value/2)*self.number_children # type: ignore
     @property
     def pregnancy_factor(self) -> float:
         if not self.pregnant:
             raise ReproductiveError('Uterus {} is not pregnant'.format(self))
-        return (1 + self.gestation_ratio) * self.number_children.value / 6 # type: ignore
+        
+        return (1 + self.gestation.ratio) * self.number_children.value / 6 # type: ignore
     @property
     def birth_energy(self) -> float:
         if not self.pregnant:
