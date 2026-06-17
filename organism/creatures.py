@@ -179,14 +179,13 @@ class Creature:
 
     @property
     def interface(self) -> CreatureInterface:
-        pregnant = True if self.gender == Gender.FEMALE and self.uterus.pregnant else False # type: ignore
         return CreatureInterface(
             self.name,
             self.id,
             self.age,
             self.energy,
             self.life,
-            pregnant,
+            self.pregnant,
             self.intent,
             self.position
         )
