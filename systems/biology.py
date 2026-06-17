@@ -50,16 +50,16 @@ class UterusSystem:
         return choices([True, False], weights=[1-death_tax, death_tax], k=1)[0]
     
     @staticmethod
-    def conceive(uterus:Uterus, male_genome:Genome) -> None:
-        if male_genome.core.id != uterus.female_genome.core.id:
-            raise DifferentSpeciesError(f'Male and Female genomes belong to different species. Male genome id {male_genome.core.id} != Female genome id {uterus.female_genome.core.id}')
+    def conceive(uterus:Uterus, female_genome:Genome, male_genome:Genome) -> None:
+        if male_genome.core.id != female_genome.core.id:
+            raise DifferentSpeciesError(f'Male and Female genomes belong to different species. Male genome id {male_genome.core.id} != Female genome id {female_genome.core.id}')
         if uterus.pregnant:
             raise AlreadyPregnantError('Already pregnant uterus')
         uterus.male_genome = male_genome
         uterus.number_children = LimitedValue(0, UterusSystem.random_children_number())
 
     @staticmethod
-    def have_child(uterus:Uterus) -> BornData | None:
+    def have_child(uterus:Uterus, female_genome:Genome) -> BornData | None:
         if not uterus.pregnant:
             raise ReproductiveError('Uterus {} is not pregnant to give birth'.format(uterus))
         assert uterus.gestation is not None
@@ -75,7 +75,7 @@ class UterusSystem:
     
         uterus.number_children.add(1)
         
-        child_genome = uterus.female_genome.crossover(uterus.male_genome)
+        child_genome = female_genome.crossover(uterus.male_genome)
 
         child_energy = lambda: uterus.birth_energy
 
@@ -117,7 +117,7 @@ class ReproductiveSystem:
         
         if not male.reproductively_capable:
             raise ReproductiveError('Creature {} has no reproductive capability'.format(male))
-        UterusSystem.conceive(female.uterus, male.genome)
+        UterusSystem.conceive(female.uterus, female.genome, male.genome)
         female.fertility.zero()
 
         return ReproductionCost(female.genome.reproduction.reproduction_cost, male.genome.reproduction.reproduction_cost)
@@ -131,7 +131,7 @@ class ReproductiveSystem:
             raise ReproductiveError('Creature {} must be pregnant to give birth'.format(female))
 
 
-        child = UterusSystem.have_child(female.uterus)
+        child = UterusSystem.have_child(female.uterus, female.genome)
         
 
         female.fertility.zero()
