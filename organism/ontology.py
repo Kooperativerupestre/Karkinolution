@@ -7,8 +7,8 @@ from core.coord import Coord
 from random import uniform
 
 @dataclass
-class AtackedEvent:
-    atacker_id:Id
+class AttackedEvent:
+    attacker_id:Id
     damage:int | float
 
 class Gender(Enum):

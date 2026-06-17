@@ -11,7 +11,7 @@ class ReproducePreset:
     female:Id
     male:Id
 @dataclass(frozen=True)
-class AtackPreset:
+class AttackPreset:
     target:Id
 @dataclass(frozen=True)
 class EatPreset:

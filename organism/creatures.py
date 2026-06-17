@@ -2,7 +2,7 @@ from __future__ import annotations
 from organism.genetics import Genome, CreatureTypes, _creatures_genomes
 from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
-from organism.ontology import Gender, AtackedEvent
+from organism.ontology import Gender, AttackedEvent
 
 from core.error import ReproductiveError, IdNotFoundError, GenderError, IdAlreadyExistsError
 from organism.identity import Id, EntityTypes, gen_id
@@ -129,7 +129,7 @@ class Creature:
         self.age = Age(value=0, limit=genome.body.life_limit)
 
         self.intent: Intent = Intent(IntentActs.NOTHING)
-        self.last_atack: None | AtackedEvent = None
+        self.last_attack: None | AttackedEvent = None
         self.position = position
 
     @property
@@ -212,7 +212,7 @@ class Corpse:
 
 
 
-class EntitysRegistry:
+class EntitiesRegistry:
     def __init__(self):
         self.entitys:dict[Id, Corpse | Creature] = {}
 
