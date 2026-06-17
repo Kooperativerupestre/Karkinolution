@@ -7,6 +7,13 @@ from random import sample, randint
 from organism.identity import Id
 from core.basestorage import BaseStorage
 from noise import pnoise2
+from enum import Enum
+
+class ScaleGenValues(Enum):
+    LONG_LONG = 0.05
+    LONG = 0.15
+    MEDIUM = 0.30
+    FRAGMENTED = 0.60
 
 class Territory(BaseStorage[Coord, Cell]):
     def _already_exists_error(self, key: Coord) -> None:

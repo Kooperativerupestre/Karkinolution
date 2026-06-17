@@ -1,4 +1,4 @@
-from map.map import Territory, EntityMap, TerrainQuery
+from map.map import Territory, EntityMap, TerrainQuery, TerrainFactory, ScaleGenValues
 from map.cell import TerrainTypes, gen_cell, Cell, FoodState
 from core.coord import Coord
 from organism.genetics import CreatureTypes
@@ -93,14 +93,6 @@ def print_corpse(corpse: Corpse, coord: Coord, cell: Cell) -> None:
 
 
 class Init:
-    @staticmethod
-    def init_territory(territory: Territory) -> None:
-        size = Coord(20, 20)
-
-        for x in range(0, size.x):
-            for y in range(0, size.y):
-                territory.add(Coord(x, y), gen_cell(TerrainTypes.DIRT))
-
 
 
 
@@ -350,7 +342,7 @@ class Runner:
 
 
 world = World(
-    Territory(),
+    TerrainFactory.gen_terrain(Coord(10, 10), ScaleGenValues.LONG.value, TerrainFactory.gen_seed()),
     EntityMap(),
     EntitysRegistry(),
     ReproductiveBuffer()
@@ -358,7 +350,7 @@ world = World(
 
 id = 'jotac'
 
-Init.init_territory(world.territory)
+
 
 
 WorldMotor.add_entity(
