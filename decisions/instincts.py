@@ -3,12 +3,10 @@ from systems.biology import MetabolismSystem, FoodHint
 from decisions.perception import Perception, Analysis, PerceivedCreature
 from organism.creatures import Creature, PregnantUterus
 from decisions.actions import Intent, IntentActs
-from systems.presets import MovePreset, EatPreset, AttackPreset
+from decisions.presets import MovePreset, EatPreset, AttackPreset
 from organism.identity import Id
-from dataclasses import dataclass
-from organism.genetics import CreatureTypes
-from core.error import IdAlreadyExistsError
 from organism.stats import LimitedValue, Energy
+from systems.reproductivebuffer import ReproductiveBuffer, ReproductiveDesire
 
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
@@ -27,35 +25,7 @@ TRADE_OFF:dict[Temperament, float] = {
 }
 
 
-@dataclass(frozen=True)
-class ReproductiveDesire:
-    creature_id:Id
-    specie_id:CreatureTypes
 
-class ReproductiveBuffer:
-    def __init__(self):
-        self.desires:dict[Id, ReproductiveDesire] = {}
-
-    def require_first_by_specie(self, specie_id:CreatureTypes) -> None | ReproductiveDesire:
-        # O(n)
-
-        for desire in self.desires.values():
-            if desire.specie_id == specie_id:
-                return desire
-    def get(self, id:Id) -> ReproductiveDesire:
-        return self.desires[id]
-    
-    def try_remove(self, id:Id) -> None:
-        if id in self.desires:
-            del self.desires[id]
-    def add(self, desire:ReproductiveDesire) -> None:
-        id = desire.creature_id
-        if id in self.desires:
-            raise IdAlreadyExistsError('ID {} already exists'.format(id.id))
-        self.desires[id] = desire
-    def registry(self, desire:ReproductiveDesire) -> None:
-        if desire.creature_id not in self.desires:
-            self.desires[desire.creature_id] = desire
 
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
     temperament = creature.genome.core.behavior

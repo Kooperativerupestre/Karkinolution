@@ -6,12 +6,12 @@ from organism.creatures import Creature, Corpse, EntitiesRegistry, CreatureInter
 from organism.stats import Energy
 from organism.identity import EntityTypes
 from map.world import WorldMotor, World
-from systems.biology import DeathSystem, MetabolismSystem
+from systems.biology import DeathSystem
 from systems.reproduction import ReproductiveSystem, BornData, UterusSystem
 from decisions.perception import perceive, Perception
-from systems.presets import AttackPreset, EatPreset, MovePreset, ReproducePreset
+from decisions.presets import PresetExecutor
 from decisions.instincts import ReproductiveBuffer
-from systems.physics import MovementSystem, AttackSystem, SpatialSystem
+from systems.physics import SpatialSystem
 from random import choice
 from decisions.intent import IntentResolver
 
@@ -122,50 +122,7 @@ class Init:
 
 
 
-class PresetExecutor:
-    @staticmethod
-    def execute_reproduction(preset:ReproducePreset, entities:EntitiesRegistry, buffer:ReproductiveBuffer) -> None:
-        female = entities.get_creature(preset.female)
-        male = entities.get_creature(preset.male)
 
-        
-        costs = ReproductiveSystem.reproduce(female, male)
-        female.energy.sub(costs.female_cost)
-        male.energy.sub(costs.male_cost)
-
-        buffer.try_remove(female.id)
-        buffer.try_remove(male.id)
-    @staticmethod
-    def execute_eat(preset:EatPreset, creature:Creature) -> None:
-        MetabolismSystem.eat(creature, preset.energy)
-    @staticmethod
-    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, coord_creature:Coord, world:World) -> None:
-        best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)
-
-        if best_pos is None:
-            return None
-        
-        
-        cost = MovementSystem.calculate_cost_to_move(perception.get(preset.new_coord).cell, perception.creature_block.cell, creature)
-        if creature.energy.value < cost:
-            return None
-        MovementSystem.move(creature, perception, preset.new_coord, world.entity_map, world.territory)
-        creature.energy.sub(cost)
-
-    @staticmethod
-    def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature) -> None:
-        cost = AttackSystem.attack(creature, entities.get_creature(preset.target))
-        creature.energy.sub(cost)
-    @staticmethod
-    def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
-        if isinstance(preset, AttackPreset):
-            PresetExecutor.execute_attack(preset,world.entities, creature)
-        elif isinstance(preset, MovePreset):
-            PresetExecutor.execute_move(preset, creature, perception, perception.coord, world)
-        elif isinstance(preset, EatPreset):
-            PresetExecutor.execute_eat(preset, creature)
-        elif isinstance(preset, ReproducePreset):
-            PresetExecutor.execute_reproduction(preset, world.entities, world.reproductive_buffer)
 
 def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
