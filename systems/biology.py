@@ -4,7 +4,7 @@ from random import choices
 from organism.stats import LimitedValue, Energy, check_energy, Age
 
 
-from organism.creatures import Uterus, Creature, Corpse
+from organism.creatures import Creature, Corpse, PregnantUterus, EmptyUterus, Gestation
 from organism.genetics import Genome
 from organism.ontology import Gender, Diet, FoodHint, FoodTarget
 
@@ -13,7 +13,7 @@ from decisions.perception import Perception
 from dataclasses import dataclass
 from systems.physics import MovementSystem
 
-from typing import Iterable
+from typing import Iterable, Callable
 
 @dataclass(frozen=True)
 class BornData:
@@ -33,15 +33,41 @@ class Parents:
     female:Id
     male:Id
 
+def validate_female_gender(creature:Creature) -> None:
+    if creature.gender != Gender.FEMALE:
+        raise GenderError('Creature {} must be female'.format(creature))
+
+    assert creature.uterus is not None
+def validate_male_gender(creature:Creature) -> None:
+    if creature.gender != Gender.MALE:
+        raise GenderError('Creature {} must be male'.format(creature))
+
+def validate_same_species(A:Genome, B:Genome) -> None:
+    if A.core.id != B.core.id:
+        raise DifferentSpeciesError('Genomes ({}, {}) belong to different species'.format(A, B))
+    
 
 class UterusSystem:
+    # VALIDATIONS
     @staticmethod
-    def finish(uterus:Uterus) -> None:
-        if not uterus.pregnant:
-            raise ReproductiveError('Uterus {} has no pregnancy to finish'.format(uterus))
-        uterus.male_genome = None
-        uterus.number_children = None
+    def validate_non_pregnant(creature:Creature) -> None:
+        validate_female_gender(creature)
 
+        if type(creature.uterus) == PregnantUterus:
+            raise AlreadyPregnantError('Already pregnant uterus')
+    @staticmethod
+    def validate_pregnant(creature:Creature) -> None:
+        validate_female_gender(creature)
+
+        if not isinstance(creature.uterus, PregnantUterus):
+            raise ReproductiveError('Uterus {} must be pregnant'.format(creature.uterus))
+
+
+    # FUNCTIONS
+    @staticmethod
+    def finish(creature:Creature) -> None:
+        UterusSystem.validate_pregnant(creature)
+        creature.uterus = EmptyUterus()
     @staticmethod
     def random_children_number() -> int:
         return choices([1, 2, 3], weights=[1/2, 1/4, 1/8], k=1)[0]
@@ -50,88 +76,78 @@ class UterusSystem:
         return choices([True, False], weights=[1-death_tax, death_tax], k=1)[0]
     
     @staticmethod
-    def conceive(uterus:Uterus, female_genome:Genome, male_genome:Genome) -> None:
-        if male_genome.core.id != female_genome.core.id:
-            raise DifferentSpeciesError(f'Male and Female genomes belong to different species. Male genome id {male_genome.core.id} != Female genome id {female_genome.core.id}')
-        if uterus.pregnant:
-            raise AlreadyPregnantError('Already pregnant uterus')
-        uterus.male_genome = male_genome
-        uterus.number_children = LimitedValue(0, UterusSystem.random_children_number())
+    def conceive(creature:Creature, male_genome:Genome) -> None:
+        UterusSystem.validate_non_pregnant(creature)
+        validate_same_species(creature.genome, male_genome)
+        
+        
+        number_children = LimitedValue(0, UterusSystem.random_children_number())
+        gestation = Gestation(creature.genome.reproduction.gestation_time)
+        creature.uterus = PregnantUterus(male_genome, gestation, number_children)
+
 
     @staticmethod
-    def have_child(uterus:Uterus, female_genome:Genome) -> BornData | None:
-        if not uterus.pregnant:
-            raise ReproductiveError('Uterus {} is not pregnant to give birth'.format(uterus))
-        assert uterus.gestation is not None
-        assert uterus.male_genome is not None
-    
-        if uterus.all_children_borned:
-            raise ReproductiveError('Pregnancy is already finished')
-        assert uterus.number_children is not None
-        
-        if UterusSystem.die_a_child(uterus.gestation.death_factor):
+    def have_child(creature:Creature) -> BornData | None:
+        UterusSystem.validate_pregnant(creature)
+        assert isinstance(creature.uterus, PregnantUterus)
+
+
+        if UterusSystem.die_a_child(creature.uterus.gestation.death_factor): 
             return None
 
     
-        uterus.number_children.add(1)
+        creature.uterus.number_children.add(1)
         
-        child_genome = female_genome.crossover(uterus.male_genome)
+        child_genome = creature.genome.crossover(creature.uterus.male_genome)
 
-        child_energy = lambda: uterus.birth_energy
+        child_energy:Callable[[], float] = lambda: creature.uterus.birth_energy # type: ignore
 
 
         
         child = BornData(child_genome, Energy(child_energy(), child_genome.metabolism.energy_limit))
-        if uterus.all_children_borned:
-            UterusSystem.finish(uterus)
+        if creature.uterus.all_children_borned:
+            UterusSystem.finish(creature)
 
         return child
 
     @staticmethod
-    def pass_time(uterus:Uterus, creature:Creature):
-        if uterus.pregnant: 
-            creature.energy.sub(uterus.pregnancy_cost)
-            uterus.gestation.value += 1 # type: ignore
+    def pass_time(creature:Creature):
+        validate_female_gender(creature)
+        
+        if creature.uterus.pregnant:        # type: ignore
+            if uterus.all_children_borned: # type: ignore
+                UterusSystem.finish(creature)
+            creature.uterus.gestation.value+=1; # type: ignore
 
-
-            if uterus.all_children_borned:
-                UterusSystem.finish(uterus)
     
 
 class ReproductiveSystem:
+    @staticmethod
+    def validate_reproductive_capacity(creature:Creature) -> None:
+        if not creature.reproductively_capable:
+            raise ReproductiveError('Creature {} has no reproductive capability'.format(creature))
     @staticmethod
     def reproduce(female:Creature, male:Creature) -> ReproductionCost:
         check_energy(female.energy, female.genome.reproduction.reproduction_cost)
         check_energy(male.energy, male.genome.reproduction.reproduction_cost)
 
 
-        if female.gender is not Gender.FEMALE:
-            raise GenderError('Creature {} must be female to reproduce'.format(female))
-        assert female.uterus is not None
-        if male.gender is not Gender.MALE:
-            raise GenderError('Creature {} must be male to reproduce'.format(male))
+        validate_female_gender(female)
+        validate_male_gender(male)
         
 
-        if not female.reproductively_capable:
-            raise ReproductiveError('Creature {} has no reproductive capability'.format(female))
-        
-        if not male.reproductively_capable:
-            raise ReproductiveError('Creature {} has no reproductive capability'.format(male))
-        UterusSystem.conceive(female.uterus, female.genome, male.genome)
+        ReproductiveSystem.validate_reproductive_capacity(female)
+        ReproductiveSystem.validate_reproductive_capacity(male)
+        UterusSystem.conceive(female, male.genome)
         female.fertility.zero()
 
         return ReproductionCost(female.genome.reproduction.reproduction_cost, male.genome.reproduction.reproduction_cost)
 
     @staticmethod
     def to_birth(female:Creature) -> BornData | None:
-        if female.gender is not Gender.FEMALE:
-            raise GenderError('Creature {} must be female to give birth'.format(female))
-        assert female.uterus is not None
-        if not female.pregnant: 
-            raise ReproductiveError('Creature {} must be pregnant to give birth'.format(female))
+        UterusSystem.validate_pregnant(female)
 
-
-        child = UterusSystem.have_child(female.uterus, female.genome)
+        child = UterusSystem.have_child(female)
         
 
         female.fertility.zero()
@@ -237,10 +253,11 @@ class MetabolismSystem:
 class DeathSystem:
     @staticmethod
     def generate_corpse(creature:Creature) -> Corpse:
-        energy = creature.energy.value * 0.8
-        if creature.gender is Gender.FEMALE:
-            if creature.uterus.pregnant: # type: ignore
-                energy += creature.uterus.pregnancy_cost * 2 # type: ignore
+        energy:float = creature.energy.value * 0.8
+        if creature.pregnant:
+            assert isinstance(creature.uterus, PregnantUterus)
+            energy += creature.uterus.pregnancy_cost * 2
+
         decomposition_time = energy/creature.energy.limit * 7.5
         return Corpse(Energy(energy, energy), gen_id(), Age(0, decomposition_time), creature.position)
     @staticmethod

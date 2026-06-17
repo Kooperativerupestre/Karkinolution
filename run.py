@@ -2,7 +2,7 @@ from map.map import Territory, EntityMap, TerrainQuery, TerrainFactory, ScaleGen
 from map.cell import Cell, FoodState
 from core.coord import Coord
 from organism.genetics import CreatureTypes
-from organism.creatures import Creature, Corpse, EntitiesRegistry, CreatureInterface, CreatureFactory
+from organism.creatures import Creature, Corpse, EntitiesRegistry, CreatureInterface, CreatureFactory, PregnantUterus
 from organism.stats import Energy
 from organism.identity import Id, EntityTypes
 from map.world import WorldMotor, World
@@ -248,10 +248,9 @@ class RunnerCreature:
     @staticmethod
     def run_uterus(creature:Creature, perception:Perception) -> Creature | None:
         if creature.pregnant:
-            assert creature.uterus is not None
-            assert creature.uterus.gestation is not None
-            creature.energy.sub(creature.uterus.pregnancy_cost) # type: ignore
-            UterusSystem.pass_time(creature.uterus) # type: ignore
+            assert isinstance(creature.uterus, PregnantUterus)
+            creature.energy.sub(creature.uterus.pregnancy_cost)
+            UterusSystem.pass_time(creature)
 
             if creature.uterus.gestation.is_ready_to_born:
                 four = perception.neighbors_4_require
