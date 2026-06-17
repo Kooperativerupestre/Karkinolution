@@ -174,6 +174,9 @@ class Creature:
     @property
     def pregnant(self) -> bool:
         return isinstance(self.uterus, PregnantUterus)
+    @property
+    def basal_metabolism(self) -> float:
+        return self.energy.limit**(1/3)*1.2 + 1
 
     @property
     def interface(self) -> CreatureInterface:
