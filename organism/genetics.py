@@ -18,20 +18,21 @@ class CreatureTypes(Enum):
     def choice() -> CreatureTypes:
         return choice([CreatureTypes.CRAB, CreatureTypes.FISH, CreatureTypes.CROCODILE, CreatureTypes.HIPPOPOTAMUS])
     
-class GenValues:
-    @staticmethod
-    def gen_litle_disturb() -> float:
-        return uniform(0.90, 1.10)
-    @staticmethod
-    def gen_disturb(v_min:float, v_max:float) -> float:
-        return uniform(v_min, v_max)
-    @staticmethod
-    def smooth_scramble(v1:int | float, v2:int | float) -> int | float:
-        return (v1 + v2)/2 * GenValues.gen_litle_disturb()
-    @staticmethod
-    def time_scramble(v1:int, v2:int) -> int:
-        return round((v1 + v2)/2) + choice([-1, 0, 1])
-    
+
+
+
+def gen_disturb(v_min:float, v_max:float) -> float:
+    return uniform(v_min, v_max)
+def gen_little_disturb() -> float:
+    return gen_disturb(0.90, 1.10)
+def gen_medium_disturb() -> float:
+    return gen_disturb(0.86, 1.16)
+def smooth_scramble(v1:int | float, v2:int | float) -> int | float:
+    return (v1 + v2)/2 * gen_little_disturb()
+def time_scramble(v1:int, v2:int) -> int:
+    return round((v1 + v2)/2) + choice([-1, 0, 1])
+
+
 
 
 class BaseGenome(ABC):
@@ -49,10 +50,10 @@ class MetabolismGenome(BaseGenome):
 
     def scramble(self, other:MetabolismGenome) -> MetabolismGenome:
         return MetabolismGenome(
-            GenValues.smooth_scramble(self.max_hungry, other.max_hungry),
+            smooth_scramble(self.max_hungry, other.max_hungry),
             self.diet.scramble(other.diet),
-            self.mass * GenValues.gen_litle_disturb(),
-            (self.energy_limit + other.energy_limit)/2 * uniform(0.86, 1.16)
+            self.mass * gen_little_disturb(),
+            (self.energy_limit + other.energy_limit)/2 * gen_medium_disturb()
         )
 
 @dataclass(frozen=True)
@@ -64,10 +65,10 @@ class ReproductionGenome(BaseGenome):
     
     def scramble(self, other:ReproductionGenome) -> ReproductionGenome:
         return ReproductionGenome(
-            GenValues.smooth_scramble(self.reproduction_cost, other.reproduction_cost),
-            GenValues.smooth_scramble(self.extra_reproduction_multiplier, other.extra_reproduction_multiplier),
-            GenValues.time_scramble(self.fertility_limit, other.fertility_limit),
-            GenValues.time_scramble(self.gestation_time, other.gestation_time)
+            smooth_scramble(self.reproduction_cost, other.reproduction_cost),
+            smooth_scramble(self.extra_reproduction_multiplier, other.extra_reproduction_multiplier),
+            time_scramble(self.fertility_limit, other.fertility_limit),
+            time_scramble(self.gestation_time, other.gestation_time)
         )
     
 @dataclass(frozen=True)
@@ -78,9 +79,9 @@ class BodyGenome(BaseGenome):
 
     def scramble(self, other:BodyGenome) -> BodyGenome:
         return BodyGenome(
-            GenValues.smooth_scramble(self.life_limit, other.life_limit),
-            GenValues.smooth_scramble(self.strength, other.strength),
-            GenValues.time_scramble(self.max_age, other.max_age)
+            smooth_scramble(self.life_limit, other.life_limit),
+            smooth_scramble(self.strength, other.strength),
+            time_scramble(self.max_age, other.max_age)
         )
 
 @dataclass(frozen=True)
