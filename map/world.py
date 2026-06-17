@@ -3,7 +3,7 @@ from map.map import TerrainMotor, Territory, EntityMap
 from core.coord import Coord
 from organism.creatures import Creature, EntitiesRegistry, Corpse
 from organism.identity import Id
-from decisions.instincts import ReproductiveBuffer
+from systems.reproductivebuffer import ReproductiveBuffer
 
 class WorldMotor:
     @staticmethod

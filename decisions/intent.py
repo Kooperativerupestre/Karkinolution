@@ -2,7 +2,7 @@ from organism.creatures import Creature
 from decisions.actions import  IntentActs
 from decisions.instincts import Planner, ReproductiveBuffer, DecideIntention
 from decisions.perception import Perception
-from systems.presets import EatPreset, MovePreset, AttackPreset, ReproducePreset
+from decisions.presets import EatPreset, MovePreset, AttackPreset, ReproducePreset
 
 class IntentResolver:
     @staticmethod
