@@ -295,11 +295,7 @@ class RunnerCreature:
             WorldMotor.add_entity(territory, entity_map, new_child, entitys)
         RunnerCreature.run_intent(creature, perception, world)
         
-
-
-class Runner:
-    # CORPSE
-    
+class RunnerCorpse:
     @staticmethod
     def to_degrade_corpse(corpse:Corpse) -> None:
         corpse.energy.mul(0.95 - corpse.decomposition_time.value/100)
@@ -308,8 +304,12 @@ class Runner:
     def run_corpse(corpse:Corpse, coord_corpse:Coord, entity_map:EntityMap, entitys:EntitysRegistry) -> None:
         if corpse.ready_to_disapear:
             WorldMotor.delete_entity(entity_map, coord_corpse, corpse.id, entitys)
-        Runner.to_degrade_corpse(corpse)
+        RunnerCorpse.to_degrade_corpse(corpse)
 
+
+class Runner:
+    # CORPSE
+    
             
     @staticmethod
     def run(world:World):
@@ -339,7 +339,7 @@ class Runner:
 
                 print_corpse(corpse, coord, cell)
 
-                Runner.run_corpse(corpse, coord, entity_map, entitys)
+                RunnerCorpse.run_corpse(corpse, coord, entity_map, entitys)
 
 
         
