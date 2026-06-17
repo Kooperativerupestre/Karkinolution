@@ -1,7 +1,7 @@
 from __future__ import annotations
 from organism.genetics import CreatureTypes
 from organism.ontology import Gender
-from organism.creatures import Creature, Corpse, EntitysRegistry
+from organism.creatures import Creature, Corpse, EntitiesRegistry
 from decisions.actions import MoveActions
 
 from core.coord import Coord
@@ -28,7 +28,7 @@ class PerceivedCreature:
 
 @dataclass(frozen=True)
 class PerceivedCell:
-    is_moveble:bool
+    is_movable:bool
     is_edible:bool
     is_dangerous:bool
     
@@ -155,11 +155,11 @@ class Perceiver:
         if is_edible:
             food = cell.get_component(FoodState).food # type: ignore
         
-        is_moveble = True if len(cell.required_capabilities) > 0 else False
+        is_movable = True if len(cell.required_capabilities) > 0 else False
 
-        moviment_cost = None
-        if is_moveble:
-            moviment_cost = cell.get_component(MovimentCost).moviment_cost # type: ignore
+        movement_cost = None
+        if is_movable:
+            movement_cost = cell.get_component(MovimentCost).moviment_cost # type: ignore
         
         is_dangerous = cell.property_is_in(Properties.DANGEROUS)
         damage = None
@@ -167,17 +167,17 @@ class Perceiver:
             damage = cell.get_component(Damage).damage # type: ignore
         
         return PerceivedCell(
-            is_moveble,
+            is_movable,
             is_edible,
             cell.property_is_in(Properties.DANGEROUS),
-            moviment_cost,
+            movement_cost,
             food,
             cell.required_capabilities,
             damage
         )
             
 def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord_creature:Coord, 
-             entitys:EntitysRegistry) -> Perception:
+             entities:EntitiesRegistry) -> Perception:
     vision_radius = creature.genome.core.vision_radius
 
     creature_observer = ObserverCreature(
@@ -200,9 +200,9 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
         if id is None:
             pass
         elif id.e_type == EntityTypes.CREATURE:
-            perceived_creature = Perceiver.perceive_entity(entitys.get_creature(id))
+            perceived_creature = Perceiver.perceive_entity(entities.get_creature(id))
         elif id.e_type == EntityTypes.CORPSE:
-            perceived_creature = Perceiver.perceive_corpse(entitys.get_corpse(id))
+            perceived_creature = Perceiver.perceive_corpse(entities.get_corpse(id))
         
 
         perceived[c] = PerceivedBlock(perceived_cell, perceived_creature)

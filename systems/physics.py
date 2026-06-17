@@ -1,7 +1,7 @@
 from decisions.perception import PerceivedBlock, PerceivedCell
 
 from organism.creatures import Creature
-from organism.ontology import AtackedEvent
+from organism.ontology import AttackedEvent
 
 from core.error import NonMotileError
 from core.coord import Coord
@@ -37,7 +37,7 @@ class SpatialSystem:
 class MovementSystem:
     @staticmethod
     def calculate_cost_to_move(next_cell:PerceivedCell, cell_creature:PerceivedCell, creature:Creature) -> float:
-        if next_cell.is_moveble is False:
+        if next_cell.is_movable is False:
             raise NonMotileError('Cell {} is not motile'.format(next_cell))
         
         assert next_cell.movement_cost is not None
@@ -65,16 +65,16 @@ class MovementSystem:
 
 
     
-class AtackSystem:
+class AttackSystem:
     @staticmethod
-    def atack(creature:Creature, target:Creature) -> float:
+    def attack(creature:Creature, target:Creature) -> float:
         check_energy(creature.energy, 1.5)
     
-        atack_event = AtackedEvent(creature.id, creature.genome.body.strength)
+        attack_event = AttackedEvent(creature.id, creature.genome.body.strength)
 
         target.life.sub(creature.genome.body.strength)
 
-        target.last_atack = atack_event
+        target.last_attack = attack_event
         return 1.5
 
     @staticmethod

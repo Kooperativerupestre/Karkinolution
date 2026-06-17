@@ -3,13 +3,12 @@ from systems.biology import MetabolismSystem, FoodHint
 from decisions.perception import Perception, Analysis, PerceivedCreature
 from organism.creatures import Creature
 from decisions.actions import Intent, IntentActs
-from systems.presets import MovePreset, EatPreset, AtackPreset
+from systems.presets import MovePreset, EatPreset, AttackPreset
 from organism.identity import Id
 from dataclasses import dataclass
 from organism.genetics import CreatureTypes
 from core.error import IdAlreadyExistsError
 from organism.stats import LimitedValue, Energy
-from systems.physics import MovementSystem
 
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
@@ -63,13 +62,13 @@ def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
     coord_creature = perception.coord
 
     if temperament is Temperament.NEUTRAL or temperament is Temperament.PASSIVE:
-        if creature.last_atack is None:
+        if creature.last_attack is None:
             return None
         else:
-            return creature.last_atack.atacker_id
+            return creature.last_attack.attacker_id
     elif temperament is Temperament.AGGRESSIVE:
-        if creature.last_atack is not None:
-            return creature.last_atack.atacker_id
+        if creature.last_attack is not None:
+            return creature.last_attack.attacker_id
         else:
             other_species = Analysis.other_species(perception)
             if len(other_species) == 0:
@@ -77,8 +76,8 @@ def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
             return perception.get(Analysis.near_coord(other_species, coord_creature=coord_creature)).creature.id # type: ignore
         
     elif temperament is Temperament.TERRITORIAL:
-        if creature.last_atack is not None:
-            return creature.last_atack.atacker_id
+        if creature.last_attack is not None:
+            return creature.last_attack.attacker_id
         else:
             other_species = Analysis.other_species(perception)
             other_species = [c for c in other_species if c.x <= 2 + coord_creature.x and c.y <= 2 + coord_creature.y]
@@ -150,8 +149,8 @@ class DecideIntention:
 
 class Planner:
     @staticmethod
-    def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AtackPreset | EatPreset | None:
-        weights:dict[EatPreset | MovePreset | EatPreset | AtackPreset, float] = {}
+    def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AttackPreset | EatPreset | None:
+        weights:dict[EatPreset | MovePreset | EatPreset | AttackPreset, float] = {}
         food_target = MetabolismSystem.find_food_target(creature, perception)
         coord_creature = perception.coord
 
@@ -177,7 +176,7 @@ class Planner:
                 weights[EatPreset(energy)] = 1
             elif food_target.food_hint == FoodHint.TARGET:
                 assert block.entity is not None
-                weights[AtackPreset(block.entity.identity)] = score_atack(creature, block.entity)
+                weights[AttackPreset(block.entity.identity)] = score_atack(creature, block.entity)
 
             weights[MovePreset(food_coord)] = 0.8 if not creature.pregnant else 0.6
         if len(weights) == 0:

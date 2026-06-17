@@ -1,29 +1,29 @@
 from random import choice, choices
 
-class LeterPool:
+class LetterPool:
     def __init__(self, leters:str):
-        self.leters = leters
+        self.letters = leters
     @property
     def to_list(self) -> list[str]:
-        return [c for c in self.leters]
+        return [c for c in self.letters]
     
     
     def pick(self) -> str:
         return choice(self.to_list)
 
 
-vowels = LeterPool('aeiouy')
-long_vowels = LeterPool('āēīōūȳ')
-high_vowels = LeterPool('áéíóúý')
-geral_vowels = LeterPool('aeiouyāēīōūȳáéíóúý')
+vowels = LetterPool('aeiouy')
+long_vowels = LetterPool('āēīōūȳ')
+high_vowels = LetterPool('áéíóúý')
+geral_vowels = LetterPool('aeiouyāēīōūȳáéíóúý')
 
-plosives = LeterPool('pbtdkg')
-fricatives = LeterPool('fvszh')
-liquids = LeterPool('rl')
-nasals = LeterPool('mn')
-aproximants = LeterPool('jw')
+plosives = LetterPool('pbtdkg')
+fricatives = LetterPool('fvszh')
+liquids = LetterPool('rl')
+nasals = LetterPool('mn')
+aproximants = LetterPool('jw')
 
-consoants = LeterPool('pbtdkgfvszhrlmnjw')
+consoants = LetterPool('pbtdkgfvszhrlmnjw')
 
 
 class Pool:

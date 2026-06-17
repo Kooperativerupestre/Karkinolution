@@ -1,17 +1,17 @@
 from map.map import Territory, EntityMap, TerrainQuery, TerrainFactory, ScaleGenValues
-from map.cell import TerrainTypes, gen_cell, Cell, FoodState
+from map.cell import Cell, FoodState
 from core.coord import Coord
 from organism.genetics import CreatureTypes
-from organism.creatures import Creature, Corpse, EntitysRegistry, CreatureInterface, CreatureFactory
+from organism.creatures import Creature, Corpse, EntitiesRegistry, CreatureInterface, CreatureFactory
 from organism.stats import Energy
 from organism.identity import Id, EntityTypes
 from map.world import WorldMotor, World
 from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents, BornData
 from decisions.perception import perceive, Perception
-from systems.presets import AtackPreset, EatPreset, MovePreset, ReproducePreset
+from systems.presets import AttackPreset, EatPreset, MovePreset, ReproducePreset
 from decisions.actions import IntentActs
 from decisions.instincts import DecideIntention, Planner, ReproductiveBuffer
-from systems.physics import MovementSystem, AtackSystem, SpatialSystem
+from systems.physics import MovementSystem, AttackSystem, SpatialSystem
 from random import choice
 
 
@@ -100,7 +100,7 @@ class Init:
     def create_creatures(
         entity_map: EntityMap,
         territory: Territory,
-        entitys: EntitysRegistry,
+        entities: EntitiesRegistry,
         n: int
     ) -> None:
 
@@ -111,7 +111,7 @@ class Init:
                 world.territory,
                 world.entity_map,
                 CreatureFactory.gen_creature(position=coord, creature_type=CreatureTypes.CRAB),
-                entitys
+                entities
             )
 
 
@@ -133,8 +133,8 @@ class ReproductiveResolver:
                 ids.append(b.entity.identity) 
         return ids
     @staticmethod
-    def resolve_parents(A:Creature, B_id:Id, entitys:EntitysRegistry) -> Parents:
-        B = entitys.get_creature(B_id)
+    def resolve_parents(A:Creature, B_id:Id, entities:EntitiesRegistry) -> Parents:
+        B = entities.get_creature(B_id)
 
 
         return ReproductiveSystem.return_parents(A, B)
@@ -161,7 +161,7 @@ class IntentResolver:
         if intent_time > 5 and intent ==  IntentActs.FIND_MATCH:
             creature.intent.intent = IntentActs.NOTHING
     @staticmethod
-    def transform_to_preset(creature:Creature, perception:Perception) -> MovePreset | EatPreset | AtackPreset | None:
+    def transform_to_preset(creature:Creature, perception:Perception) -> MovePreset | EatPreset | AttackPreset | None:
         if creature.intent.intent == IntentActs.FIND_FOOD:
             act = Planner.plan_find_food_intent(perception, creature)
             return act
@@ -172,21 +172,21 @@ class IntentResolver:
 
     @staticmethod
     def update_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> (
-        MovePreset | EatPreset | AtackPreset | ReproducePreset | None):
+        MovePreset | EatPreset | AttackPreset | ReproducePreset | None):
 
         if creature.intent.intent == IntentActs.NOTHING:
             creature.intent = DecideIntention.decide(creature, reproductive_buffer)
     @staticmethod
-    def resolve_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer, perception:Perception) -> MovePreset | AtackPreset | EatPreset | None:
+    def resolve_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer, perception:Perception) -> MovePreset | AttackPreset | EatPreset | None:
         IntentResolver.cancel_invalid_intents(creature)
         IntentResolver.update_intent(creature, reproductive_buffer)
         return IntentResolver.transform_to_preset(creature, perception)
 
 class PresetExecutor:
     @staticmethod
-    def execute_reproduction(preset:ReproducePreset, entitys:EntitysRegistry, buffer:ReproductiveBuffer) -> None:
-        female = entitys.get_creature(preset.female)
-        male = entitys.get_creature(preset.male)
+    def execute_reproduction(preset:ReproducePreset, entities:EntitiesRegistry, buffer:ReproductiveBuffer) -> None:
+        female = entities.get_creature(preset.female)
+        male = entities.get_creature(preset.male)
 
         
         costs = ReproductiveSystem.reproduce(female, male)
@@ -213,24 +213,24 @@ class PresetExecutor:
         creature.energy.sub(cost)
 
     @staticmethod
-    def execute_atack(preset:AtackPreset, entitys:EntitysRegistry, creature:Creature) -> None:
-        cost = AtackSystem.atack(creature, entitys.get_creature(preset.target))
+    def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature) -> None:
+        cost = AttackSystem.attack(creature, entities.get_creature(preset.target))
         creature.energy.sub(cost)
     @staticmethod
-    def execute_preset(preset:AtackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
-        if isinstance(preset, AtackPreset):
-            PresetExecutor.execute_atack(preset, world.entitys, creature)
+    def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
+        if isinstance(preset, AttackPreset):
+            PresetExecutor.execute_attack(preset,world.entities, creature)
         elif isinstance(preset, MovePreset):
             PresetExecutor.execute_move(preset, creature, perception, perception.coord, world)
         elif isinstance(preset, EatPreset):
             PresetExecutor.execute_eat(preset, creature)
         elif isinstance(preset, ReproducePreset):
-            PresetExecutor.execute_reproduction(preset, world.entitys, world.reproductive_buffer)
+            PresetExecutor.execute_reproduction(preset, world.entities, world.reproductive_buffer)
 
 def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
-    WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entitys)
-    WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entitys)
+    WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entities)
+    WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entities)
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
     return CreatureFactory.gen_creature(
         position=position,
@@ -274,7 +274,7 @@ class RunnerCreature:
         # ALIAS
         entity_map = world.entity_map
         territory = world.territory
-        entitys = world.entitys
+        entities = world.entities
         # CODE
         is_dead = DeathSystem.is_dead(creature)
         if is_dead:
@@ -288,11 +288,11 @@ class RunnerCreature:
             territory,
             entity_map,
             creature.position,
-            entitys
+            entities
         )
         new_child = RunnerCreature.run_uterus(creature, perception)
         if new_child is not None:
-            WorldMotor.add_entity(territory, entity_map, new_child, entitys)
+            WorldMotor.add_entity(territory, entity_map, new_child, entities)
         RunnerCreature.run_intent(creature, perception, world)
         
 class RunnerCorpse:
@@ -301,20 +301,18 @@ class RunnerCorpse:
         corpse.energy.mul(0.95 - corpse.decomposition_time.value/100)
         corpse.decomposition_time.add(1)
     @staticmethod
-    def run_corpse(corpse:Corpse, coord_corpse:Coord, entity_map:EntityMap, entitys:EntitysRegistry) -> None:
+    def run_corpse(corpse:Corpse, coord_corpse:Coord, entity_map:EntityMap, entities:EntitiesRegistry) -> None:
         if corpse.ready_to_disapear:
-            WorldMotor.delete_entity(entity_map, coord_corpse, corpse.id, entitys)
+            WorldMotor.delete_entity(entity_map, coord_corpse, corpse.id, entities)
         RunnerCorpse.to_degrade_corpse(corpse)
 
 
 class Runner:
-    # CORPSE
-    
-            
+  
     @staticmethod
     def run(world:World):
         territory = world.territory
-        entitys = world.entitys
+        entitys = world.entities
         entity_map = world.entity_map
         print(f'Time: {world.time}')
 
@@ -348,7 +346,7 @@ class Runner:
 world = World(
     TerrainFactory.gen_terrain(Coord(10, 10), ScaleGenValues.LONG.value, TerrainFactory.gen_seed()),
     EntityMap(),
-    EntitysRegistry(),
+    EntitiesRegistry(),
     ReproductiveBuffer()
 )
 
@@ -363,7 +361,7 @@ WorldMotor.add_entity(
     CreatureFactory.gen_creature(position=Coord(0, 0),
                                  creature_type=CreatureTypes.CRAB,
                                 id=id),
-    world.entitys    
+    world.entities    
 )
 
 
