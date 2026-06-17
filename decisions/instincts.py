@@ -1,7 +1,7 @@
 from organism.ontology import Temperament, Gender
 from systems.biology import MetabolismSystem, FoodHint
 from decisions.perception import Perception, Analysis, PerceivedCreature
-from organism.creatures import Creature
+from organism.creatures import Creature, PregnantUterus
 from decisions.actions import Intent, IntentActs
 from systems.presets import MovePreset, EatPreset, AttackPreset
 from organism.identity import Id
@@ -111,9 +111,9 @@ class EvaluateActions:
 
         factor = creature.hungry * 2
 
-        if creature.gender is Gender.FEMALE:
-            if creature.uterus.pregnant: # type: ignore
-                factor += creature.pregnancy_factor
+        if creature.pregnant:
+            assert isinstance(creature.uterus, PregnantUterus)
+            factor += creature.uterus.pregnancy_factor
         return factor
     @staticmethod
     def score_reproduce(creature:Creature) -> float:
