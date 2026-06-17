@@ -26,15 +26,18 @@ def resolve_death(creature:Creature, world:World) -> None:
 
 class RunnerCreature:
     @staticmethod
-    def run_basal_metabolism(creature:Creature) -> None:
-        basal_metabolism = creature.energy.limit**(1/3)*1.4 + 1
-        creature.energy.sub(basal_metabolism)
+    def run_basic_fisiology(creature:Creature) -> None:
+        creature.energy.sub(creature.basal_metabolism)
+        creature.age.add(1)
+        if creature.pregnant:
+            assert isinstance(creature.uterus, PregnantUterus)
+            creature.energy.sub(creature.uterus.pregnancy_cost)
+    
 
     @staticmethod
     def run_uterus(creature:Creature, perception:Perception) -> Creature | None:
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
-            creature.energy.sub(creature.uterus.pregnancy_cost)
             UterusSystem.pass_time(creature)
 
             if creature.uterus.gestation.is_ready_to_born:
@@ -65,9 +68,8 @@ class RunnerCreature:
         if is_dead:
             resolve_death(creature, world)
             return None
-        creature.age.add(1)
 
-        RunnerCreature.run_basal_metabolism(creature)
+        RunnerCreature.run_basic_fisiology(creature)
         perception = perceive(
             creature,
             territory,
