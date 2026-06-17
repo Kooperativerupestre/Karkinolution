@@ -1,13 +1,12 @@
 from __future__ import annotations
-from map.cell import Cell
+from map.cell import Cell, TerrainTypes, gen_cell
 from core.coord import Coord
 from dataclasses import dataclass
 from core.error import CoordinateAlreadyExistsError, CoordinateNotFoundError
-from random import sample
+from random import sample, randint
 from organism.identity import Id
 from core.basestorage import BaseStorage
-
-    
+from noise import pnoise2
 
 class Territory(BaseStorage[Coord, Cell]):
     def _already_exists_error(self, key: Coord) -> None:
@@ -106,4 +105,32 @@ class Geometry:
         
         return neighbors_dict
 
+class TerrainFactory:
+    @staticmethod
+    def gen_seed() -> int:
+        return randint(0, 10000)
+    
+    @staticmethod
+    def value_to_cell_type(value:float) -> TerrainTypes:
+        if value <= -0.3:
+            return TerrainTypes.WATER
+        elif value <= -0.1:
+            return TerrainTypes.SAND
+        elif value <= 0.7:
+            return TerrainTypes.DIRT
+        else:
+            return TerrainTypes.ROCK
+    
+    @staticmethod
+    def gen_terrain(radius:Coord, scale:float, seed:int) -> Territory:
+        territory = Territory()
 
+        for x in range(radius.x):
+            for y in range(radius.y):
+                value:float = pnoise2(x * scale, y * scale, base=seed) # type: ignore
+                assert isinstance(value, float)
+                terrain_type = TerrainFactory.value_to_cell_type(value)
+                cell = gen_cell(terrain_type)
+                territory.add(Coord(x, y), cell)
+        return territory
+    
