@@ -4,17 +4,16 @@ from core.coord import Coord
 from organism.genetics import CreatureTypes
 from organism.creatures import Creature, Corpse, EntitiesRegistry, CreatureInterface, CreatureFactory, PregnantUterus
 from organism.stats import Energy
-from organism.identity import Id, EntityTypes
+from organism.identity import EntityTypes
 from map.world import WorldMotor, World
 from systems.biology import DeathSystem, MetabolismSystem
-from systems.reproduction import ReproductiveSystem, BornData, UterusSystem, Parents
+from systems.reproduction import ReproductiveSystem, BornData, UterusSystem
 from decisions.perception import perceive, Perception
 from systems.presets import AttackPreset, EatPreset, MovePreset, ReproducePreset
 from decisions.instincts import ReproductiveBuffer
 from systems.physics import MovementSystem, AttackSystem, SpatialSystem
 from random import choice
 from decisions.intent import IntentResolver
-
 
 # =========================================================
 # INIT WORLD
@@ -120,36 +119,6 @@ class Init:
 # SIMULATION STEP
 # =========================================================
 
-class ReproductiveResolver:
-    @staticmethod
-    def find_adjacent_mates(creature:Creature, perception:Perception) -> list[Id]:
-        ids:list[Id] = []
-
-
-        neighbors = perception.neighbors_4_require_blocks
-
-        for b in neighbors:
-            if b is not None and b.has_entity and b.entity.can_reproduce: # type: ignore
-                assert b.entity is not None
-                ids.append(b.entity.identity) 
-        return ids
-    @staticmethod
-    def resolve_parents(A:Creature, B_id:Id, entities:EntitiesRegistry) -> Parents:
-        B = entities.get_creature(B_id)
-
-
-        return ReproductiveSystem.return_parents(A, B)
-    
-    @staticmethod
-    def chose_mate(ids:list[Id]) -> Id:
-        return choice(ids)
-    
-    
-    @staticmethod
-    def mate_to_preset(parents:Parents) -> ReproducePreset:
-        return ReproducePreset(parents.female, parents.male)
-    
-
 
 
 
@@ -202,6 +171,7 @@ def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
     WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entities)
     WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entities)
+
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
     return CreatureFactory.gen_creature(
         position=position,
@@ -233,6 +203,7 @@ class RunnerCreature:
                     if born_data is not None:
                         new_child = born_data_to_creature(born_data, new_coord)
                         return new_child
+
     
     @staticmethod
     def run_intent(creature:Creature, perception:Perception, world:World) -> None:
