@@ -61,8 +61,7 @@ class Gestation:
 
 
 class Uterus:
-    def __init__(self, female_genome:Genome):
-        self.female_genome = female_genome
+    def __init__(self):
         self.male_genome: None | Genome = None
         self.number_children: None | LimitedValue = None
         self.gestation: None | Gestation = None
@@ -126,7 +125,7 @@ class Creature:
         self.energy = initial_energy
         self.life = Life(value=genome.body.life_limit, limit=genome.body.life_limit)
         self.fertility = Fertility(value=genome.reproduction.fertility_limit, limit=genome.reproduction.fertility_limit)
-        self.uterus = Uterus(self.genome) if self.gender is Gender.FEMALE else None
+        self.uterus = Uterus() if self.gender == Gender.FEMALE else None
         self.age = Age(value=0, limit=genome.body.life_limit)
 
         self.intent: Intent = Intent(IntentActs.NOTHING)
