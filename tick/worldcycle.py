@@ -26,3 +26,4 @@ class Runner:
                 corpse = entitys.get_corpse(id)
 
                 RunnerCorpse.run_corpse(corpse, coord, entity_map, entitys)
+        world.time+=1
