@@ -66,32 +66,33 @@ class Uterus:
         self.number_children: None | LimitedValue = None
         self.gestation: None | Gestation = None
 
+
+
+@dataclass
+class PregnantUterus:
+    male_genome:Genome
+    gestation:Gestation
+    number_children:LimitedValue
     @property
     def all_children_borned(self) -> bool:
-        return self.number_children.value == self.number_children.limit # type: ignore
-    @property
-    def pregnant(self) -> bool:
-        return self.gestation is not None
+        return self.number_children.value == self.number_children.limit 
     
     
     @property
     def pregnancy_cost(self) -> float:
-        if not self.pregnant:
-            raise ReproductiveError('Uterus {} is not pregnant'.format(self))
-            
-        return (1 + self.gestation.value/2)*self.number_children # type: ignore
+        return (1 + self.gestation.value/2)*self.number_children.value
     @property
     def pregnancy_factor(self) -> float:
-        if not self.pregnant:
-            raise ReproductiveError('Uterus {} is not pregnant'.format(self))
-        
-        return (1 + self.gestation.ratio) * self.number_children.value / 6 # type: ignore
+        return (1 + self.gestation.ratio) * self.number_children.value / 6 
     @property
     def birth_energy(self) -> float:
-        if not self.pregnant:
-            raise ReproductiveError('Uterus {} is not pregnant'.format(self))
-        return self.pregnancy_cost / self.number_children.value # type: ignore
+        return self.pregnancy_cost / self.number_children.value 
     
+@dataclass(frozen=True)
+class EmptyUterus:
+    pass
+
+
 @dataclass(frozen=True)
 class CreatureInterface:
     name:str
@@ -125,7 +126,7 @@ class Creature:
         self.energy = initial_energy
         self.life = Life(value=genome.body.life_limit, limit=genome.body.life_limit)
         self.fertility = Fertility(value=genome.reproduction.fertility_limit, limit=genome.reproduction.fertility_limit)
-        self.uterus = Uterus() if self.gender == Gender.FEMALE else None
+        self.uterus:EmptyUterus | PregnantUterus | None = EmptyUterus() if self.gender == Gender.FEMALE else None
         self.age = Age(value=0, limit=genome.body.life_limit)
 
         self.intent: Intent = Intent(IntentActs.NOTHING)
@@ -174,7 +175,7 @@ class Creature:
     
     @property
     def pregnant(self) -> bool:
-        return self.uterus is not None and self.uterus.pregnant
+        return isinstance(self.uterus, PregnantUterus)
 
     @property
     def interface(self) -> CreatureInterface:
