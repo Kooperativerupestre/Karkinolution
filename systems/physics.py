@@ -36,22 +36,22 @@ class SpatialSystem:
         
 class MovementSystem:
     @staticmethod
-    def calculate_cost_to_move(next_cell:PerceivedCell, cell_creature:PerceivedCell, creature:Creature) -> int | float:
+    def calculate_cost_to_move(next_cell:PerceivedCell, cell_creature:PerceivedCell, creature:Creature) -> float:
         if next_cell.is_moveble is False:
             raise NonMotileError('Cell {} is not motile'.format(next_cell))
+        
         assert next_cell.movement_cost is not None
         assert cell_creature.movement_cost is not None
         cost = (next_cell.movement_cost + cell_creature.movement_cost) / 2
         return cost * creature.genome.metabolism.mass
     @staticmethod
-    def move(creature:Creature, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> int:
-        if creature.position == new_coord:
-            raise ValueError('Coord of creature {} == New coord {}'.format(creature.position, new_coord))
+    def move(creature:Creature, perception:Perception, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> float:
+        cost = MovementSystem.calculate_cost_to_move(perception.get(new_coord).cell, perception.creature_block.cell, creature)
 
-        check_energy(creature.energy, 1)
+        check_energy(creature.energy, cost)
         TerrainMotor.move(creature.id, creature.position, new_coord, entity_map, territory)
         creature.position = new_coord
-        return 1
+        return cost
         
     @staticmethod
     def decide_movimentation(creature:Creature, block:PerceivedBlock) -> MoveActions | None:

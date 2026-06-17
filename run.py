@@ -205,8 +205,13 @@ class PresetExecutor:
         if best_pos is None:
             return None
         
-        cost = MovementSystem.move(creature, best_pos, world.entity_map, world.territory)
+        
+        cost = MovementSystem.calculate_cost_to_move(perception.get(preset.new_coord).cell, perception.creature_block.cell, creature)
+        if creature.energy.value < cost:
+            return None
+        MovementSystem.move(creature, perception, preset.new_coord, world.entity_map, world.territory)
         creature.energy.sub(cost)
+        
     @staticmethod
     def execute_atack(preset:AtackPreset, entitys:EntitysRegistry, creature:Creature) -> None:
         cost = AtackSystem.atack(creature, entitys.get_creature(preset.target))
