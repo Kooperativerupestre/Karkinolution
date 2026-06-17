@@ -53,12 +53,7 @@ class MovementSystem:
         creature.position = new_coord
         return cost
         
-    @staticmethod
-    def decide_movimentation(creature:Creature, block:PerceivedBlock) -> MoveActions | None:
-        if not SpatialSystem.can_move(block, creature.genome.core.capabilities):
-            return None
-        else:
-            return next(iter(block.cell.required_capabilities))
+
     @staticmethod
     def best_pos(creature:Creature, perception:Perception, new_coord:Coord) -> Coord | None:
         data = perception.neighbors_4_require
