@@ -138,9 +138,8 @@ class Creature:
         return 1 - self.energy.ratio
     @property
     def needed_energy(self) -> float:
-        if self.gender is Gender.FEMALE:
-            if self.uterus.pregnant: # type: ignore
-                return self.hungry * uniform(0.95, 1) * self.energy.limit
+        if self.pregnant:
+            return self.hungry * uniform(0.95, 1) * self.energy.limit
         return self.hungry * uniform(0.8, 1) * self.energy.limit
     @property
     def reproductive_maturity(self) -> float:

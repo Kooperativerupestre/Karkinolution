@@ -6,7 +6,8 @@ from organism.creatures import Creature, Corpse, EntitiesRegistry, CreatureInter
 from organism.stats import Energy
 from organism.identity import Id, EntityTypes
 from map.world import WorldMotor, World
-from systems.biology import DeathSystem, MetabolismSystem, ReproductiveSystem, UterusSystem, Parents, BornData
+from systems.biology import DeathSystem, MetabolismSystem
+from systems.reproduction import ReproductiveSystem, BornData, UterusSystem, Parents
 from decisions.perception import perceive, Perception
 from systems.presets import AttackPreset, EatPreset, MovePreset, ReproducePreset
 from decisions.instincts import ReproductiveBuffer
