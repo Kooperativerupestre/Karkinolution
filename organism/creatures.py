@@ -97,6 +97,7 @@ class EmptyUterus:
 class CreatureInterface:
     name:str
     id:Id
+    specie_id:CreatureTypes
     age:Age
     energy:Energy
     life:Life
@@ -104,9 +105,7 @@ class CreatureInterface:
     pregnant:bool
     intent:Intent
     position:Coord
-    @property
-    def hungry(self) -> float:
-        return 1 - self.energy.ratio
+    hungry:float
 
 
 class Creature:
@@ -181,12 +180,14 @@ class Creature:
         return CreatureInterface(
             self.name,
             self.id,
+            self.genome.core.id,
             self.age,
             self.energy,
             self.life,
             self.pregnant,
             self.intent,
-            self.position
+            self.position,
+            self.hungry
         )
     
     
