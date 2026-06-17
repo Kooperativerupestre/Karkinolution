@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from organism.genetics import CreatureTypes
 from core.error import IdAlreadyExistsError
 from organism.stats import LimitedValue, Energy
-
+from systems.physics import MovementSystem
 
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
