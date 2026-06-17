@@ -211,7 +211,7 @@ class PresetExecutor:
             return None
         MovementSystem.move(creature, perception, preset.new_coord, world.entity_map, world.territory)
         creature.energy.sub(cost)
-        
+
     @staticmethod
     def execute_atack(preset:AtackPreset, entitys:EntitysRegistry, creature:Creature) -> None:
         cost = AtackSystem.atack(creature, entitys.get_creature(preset.target))
@@ -227,9 +227,9 @@ class PresetExecutor:
         elif isinstance(preset, ReproducePreset):
             PresetExecutor.execute_reproduction(preset, world.entitys, world.reproductive_buffer)
 
-def resolve_death(creature:Creature, world:World, coord_creature:Coord) -> None:
+def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
-    WorldMotor.delete_entity(world.entity_map, coord_creature, creature.id, world.entitys)
+    WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entitys)
     WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entitys)
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
     return CreatureFactory.gen_creature(
@@ -239,18 +239,14 @@ def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
         initial_energy=born_data.initial_energy
     )
 
-class Runner:
-    # CREATURE
-
+class RunnerCreature:
+    @staticmethod
+    def run_basal_metabolism(creature:Creature) -> None:
+        basal_metabolism = creature.energy.limit**(1/3)*1.4 + 1
+        creature.energy.sub(basal_metabolism)
 
     @staticmethod
-    def run_fisiology(creature:Creature, perception:Perception, dt: int, world:World) -> None | Creature:
-        creature.age.add(dt)
-        
-        basal_metabolism = creature.energy.limit**(1/3)*1.4 + 1
-        creature.energy.sub(basal_metabolism * dt)
-
-        creature.intent.time += 1
+    def run_uterus(creature:Creature, perception:Perception) -> Creature | None:
         if creature.pregnant:
             assert creature.uterus is not None
             assert creature.uterus.gestation is not None
@@ -267,10 +263,14 @@ class Runner:
                     if born_data is not None:
                         new_child = born_data_to_creature(born_data, new_coord)
                         return new_child
-        return None
     
     @staticmethod
-    def run_creature(creature: Creature, coord_creature:Coord, world:World) -> None:    
+    def run_intent(creature:Creature, perception:Perception, world:World) -> None:
+        preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
+        if preset is not None:
+            PresetExecutor.execute_preset(preset, creature, world, perception)
+    @staticmethod
+    def run_creature(creature:Creature, world:World) -> None:
         # ALIAS
         entity_map = world.entity_map
         territory = world.territory
@@ -278,26 +278,26 @@ class Runner:
         # CODE
         is_dead = DeathSystem.is_dead(creature)
         if is_dead:
-            resolve_death(creature, world, coord_creature)
+            resolve_death(creature, world)
             return None
+        creature.age.add(1)
 
+        RunnerCreature.run_basal_metabolism(creature)
         perception = perceive(
             creature,
             territory,
-            entity_map, 
-            coord_creature,
+            entity_map,
+            creature.position,
             entitys
         )
-        new_child = Runner.run_fisiology(creature, perception, 1, world)
+        new_child = RunnerCreature.run_uterus(creature, perception)
         if new_child is not None:
             WorldMotor.add_entity(territory, entity_map, new_child, entitys)
-        preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
-        if preset is not None:
-            PresetExecutor.execute_preset(preset, creature, world, perception)
+        RunnerCreature.run_intent(creature, perception, world)
+        
 
 
-
-    
+class Runner:
     # CORPSE
     
     @staticmethod
@@ -333,7 +333,7 @@ class Runner:
 
                 print_creature(creature.interface, coord, cell)
 
-                Runner.run_creature(creature, coord, world)
+                RunnerCreature.run_creature(creature, world)
             elif id.e_type == EntityTypes.CORPSE:
                 corpse = entitys.get_corpse(id)
 
@@ -344,7 +344,6 @@ class Runner:
 
         
         
-
 
 world = World(
     TerrainFactory.gen_terrain(Coord(10, 10), ScaleGenValues.LONG.value, TerrainFactory.gen_seed()),
@@ -366,7 +365,6 @@ WorldMotor.add_entity(
                                 id=id),
     world.entitys    
 )
-
 
 
 
