@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from map.map import TerrainMotor, Territory, EntityMap
+from map.map import TerrainMotor, Territory, EntityMap, ScaleGenValues, TerrainFactory
 from core.coord import Coord
 from organism.creatures import Creature, EntitiesRegistry, Corpse
 from organism.identity import Id
@@ -24,6 +24,12 @@ class WorldMotor:
         entity_map.delete(coord) # O(1)
         entities.delete(id)
 
+@dataclass(frozen=True)
+class PresetWorld:
+    seed:int
+    size:Coord
+    scale:ScaleGenValues
+
 
 
 @dataclass
@@ -34,5 +40,12 @@ class World:
     reproductive_buffer:ReproductiveBuffer
     time:int = 0
 
-    def pass_time(self) -> None:
-        self.time += 1
+class WorldFactory:
+    @staticmethod
+    def create_world(preset:PresetWorld) -> World:
+        return World(
+            TerrainFactory.gen_terrain(preset.size, preset.scale.value, preset.seed),
+            EntityMap(),
+            EntitiesRegistry(),
+            ReproductiveBuffer()
+        )
