@@ -7,7 +7,7 @@ from organism.stats import Energy
 from organism.identity import EntityTypes
 from map.world import WorldMotor, World
 from decisions.instincts import ReproductiveBuffer
-from tick.lifecycle import RunnerCorpse, RunnerCreature
+from tick.worldcycle import Runner
 
 
 # =========================================================
@@ -115,36 +115,7 @@ class Init:
 # =========================================================
 
 
-class Runner:
-    @staticmethod
-    def run(world:World):
-        territory = world.territory
-        entitys = world.entities
-        entity_map = world.entity_map
-        print(f'Time: {world.time}')
 
-        print(' '*30, end='\n\n\n')
-
-        ### RUN CELLS
-        for cell in territory.values:
-            cell.pass_time()
-
-
-        ### RUN CREATURES
-        for coord, id in list(entity_map.iter):
-            cell = territory.get(coord)
-            if id.e_type == EntityTypes.CREATURE:
-                creature = entitys.get_creature(id)
-
-                print_creature(creature.interface, coord, cell)
-
-                RunnerCreature.run_creature(creature, world)
-            elif id.e_type == EntityTypes.CORPSE:
-                corpse = entitys.get_corpse(id)
-
-                print_corpse(corpse, coord, cell)
-
-                RunnerCorpse.run_corpse(corpse, coord, entity_map, entitys)
 
 
         
