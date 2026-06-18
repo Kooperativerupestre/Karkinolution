@@ -1,14 +1,23 @@
+"""
+🧬 Karkino Simulation Debugger
+A comprehensive GUI for simulating and debugging the Karkino ecosystem.
+
+Modular architecture with theme support, real-time visualization, and creature analytics.
+"""
+
 import sys
 import time
-from typing import Optional
+from typing import Optional, Dict, List
+from dataclasses import dataclass
+from enum import Enum
+
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QTableWidget, QTableWidgetItem, QPushButton, QLabel, QSpinBox, QCheckBox,
-    QComboBox, QScrollArea, QFrame, QTextEdit, QTabWidget, QHeaderView
+    QComboBox, QFrame, QTextEdit, QHeaderView, QStatusBar
 )
-from PySide6.QtCore import Qt, QTimer, Signal, QObject, QThread, QSize
-from PySide6.QtGui import QColor, QFont, QIcon, QTextCursor
-from enum import Enum
+from PySide6.QtCore import Qt, QTimer, QSize
+from PySide6.QtGui import QColor, QFont, QTextCursor
 
 from map.world import World, WorldFactory, WorldMotor, PresetWorld
 from map.map import ScaleGenValues, TerrainQuery
@@ -19,36 +28,131 @@ from tick.worldcycle import Runner
 
 
 class SimulationState(Enum):
+    """Enumeration for simulation states."""
     STOPPED = "Stopped"
     RUNNING = "Running"
     PAUSED = "Paused"
 
 
+@dataclass
+class ThemeColors:
+    """Theme color palette for the application."""
+    primary: str = "#1e1e2e"
+    secondary: str = "#2b2b3e"
+    accent: str = "#00ff88"
+    text_primary: str = "#e0e0e0"
+    text_secondary: str = "#a0a0a0"
+    creature: str = "#2a5a2a"
+    corpse: str = "#5a2a2a"
+    terrain_dirt: str = "#1a3a1a"
+    terrain_sand: str = "#5a4a2a"
+    terrain_water: str = "#2a3a5a"
+    terrain_rock: str = "#3a3a3a"
+    
+    def get_stylesheet(self) -> str:
+        """Generate application stylesheet."""
+        return f"""
+            QMainWindow, QWidget {{
+                background-color: {self.primary};
+                color: {self.text_primary};
+            }}
+            QFrame {{
+                background-color: {self.secondary};
+                border-radius: 5px;
+            }}
+            QPushButton {{
+                background-color: {self.accent};
+                color: {self.primary};
+                border: none;
+                border-radius: 4px;
+                padding: 8px 14px;
+                font-weight: bold;
+                min-width: 100px;
+                min-height: 35px;
+            }}
+            QPushButton:hover {{
+                background-color: #00dd77;
+            }}
+            QPushButton:pressed {{
+                background-color: #00cc66;
+            }}
+            QPushButton:disabled {{
+                background-color: {self.text_secondary};
+                color: {self.primary};
+            }}
+            QTableWidget {{
+                background-color: {self.secondary};
+                gridline-color: {self.primary};
+                border: 1px solid {self.accent};
+            }}
+            QHeaderView::section {{
+                background-color: {self.primary};
+                color: {self.accent};
+                padding: 4px;
+                border: none;
+                font-weight: bold;
+            }}
+            QTextEdit {{
+                background-color: {self.primary};
+                color: {self.text_primary};
+                border: 1px solid {self.accent};
+            }}
+            QLabel {{
+                color: {self.text_primary};
+            }}
+            QSpinBox, QComboBox {{
+                background-color: {self.primary};
+                color: {self.text_primary};
+                border: 1px solid {self.accent};
+            }}
+            QCheckBox {{
+                color: {self.text_primary};
+            }}
+            QCheckBox::indicator {{
+                border: 1px solid {self.accent};
+                width: 16px;
+                height: 16px;
+            }}
+            QCheckBox::indicator:checked {{
+                background-color: {self.accent};
+            }}
+            QStatusBar {{
+                background-color: {self.primary};
+                color: {self.accent};
+            }}
+        """
+
+
 class MapRenderer:
-    """Helper class to render world map."""
+    """Renders the world map with terrain and entities."""
+    
+    SPECIES_EMOJIS: Dict[str, str] = {
+        "CRAB": "🦀", "FISH": "🐟", "CROCODILE": "🐊", "HIPPOPOTAMUS": "🦛",
+    }
+    
+    TERRAIN_SYMBOLS: Dict[TerrainTypes, str] = {
+        TerrainTypes.DIRT: "🌱", TerrainTypes.SAND: "🏜️",
+        TerrainTypes.WATER: "💧", TerrainTypes.ROCK: "🪨",
+    }
+    
+    @classmethod
+    def get_terrain_symbol(cls, terrain_type: TerrainTypes) -> str:
+        return cls.TERRAIN_SYMBOLS.get(terrain_type, "?")
+    
+    @classmethod
+    def get_creature_emoji(cls, creature: Creature) -> str:
+        try:
+            species_name = str(creature.genome.core.id).split(".")[-1]
+            return cls.SPECIES_EMOJIS.get(species_name, "🐾")
+        except Exception:
+            return "🐾"
+    
+    @classmethod
+    def get_entity_symbol(cls, entity) -> str:
+        return cls.get_creature_emoji(entity) if isinstance(entity, Creature) else "💀"
     
     @staticmethod
-    def get_terrain_symbol(terrain_type: TerrainTypes) -> str:
-        """Get emoji symbol for terrain type."""
-        terrain_map = {
-            TerrainTypes.DIRT: "🌱",
-            TerrainTypes.SAND: "🏜",
-            TerrainTypes.WATER: "💧",
-            TerrainTypes.ROCK: "🪨",
-        }
-        return terrain_map.get(terrain_type, "?")
-    
-    @staticmethod
-    def get_entity_symbol(entity) -> str:
-        """Get symbol for entity."""
-        if isinstance(entity, Creature):
-            return "C"
-        else:
-            return "X"
-    
-    @staticmethod
-    def get_map_data(world: World) -> tuple[list[list[str]], int, int]:
-        """Generate map data as 2D grid."""
+    def get_map_data(world: World) -> tuple[List[List[str]], int, int]:
         coords = list(world.territory.keys)
         size_y = max((c.y for c in coords), default=0) + 1
         size_x = max((c.x for c in coords), default=0) + 1
@@ -60,466 +164,538 @@ class MapRenderer:
                 coord = Coord(x, y)
                 try:
                     cell = world.territory.get(coord)
-                    entity_id = None
-                    try:
-                        entity_id = world.entity_map.get(coord)
-                    except:
-                        pass
+                    entity_id = world.entity_map.get(coord) if hasattr(world, 'entity_map') else None
                     
                     if entity_id:
                         entity = world.entities.get(entity_id)
                         grid[y][x] = MapRenderer.get_entity_symbol(entity)
                     else:
                         grid[y][x] = MapRenderer.get_terrain_symbol(cell.type)
-                except:
+                except Exception:
                     grid[y][x] = "."
         
         return grid, size_x, size_y
 
 
 class CreatureInfoFormatter:
-    """Helper class to format creature information."""
+    """Formats creature information for display."""
     
     @staticmethod
     def get_intent_name(creature: Creature) -> str:
-        """Get readable intent name."""
         try:
             return creature.intent.intent.name
-        except:
+        except Exception:
             return str(creature.intent)
     
     @staticmethod
     def get_species_name(creature: Creature) -> str:
-        """Get readable species name."""
         try:
             return str(creature.genome.core.id).split(".")[-1]
-        except:
+        except Exception:
             return "Unknown"
-
-
-class SimulationWorker(QObject):
-    """Worker for simulation updates in background."""
-    update_signal = Signal()
     
-    def __init__(self, world: World):
-        super().__init__()
-        self.world = world
-        self.auto_step = False
-        self.step_interval = 2.0
-        self.last_step = time.time()
+    @staticmethod
+    def format_creature_details(creature: Creature) -> str:
+        intent_name = CreatureInfoFormatter.get_intent_name(creature)
+        species_name = CreatureInfoFormatter.get_species_name(creature)
+        
+        return f"""
+╔══════════════════════════════════════╗
+║  📋 Creature: {creature.name:<24}║
+╚══════════════════════════════════════╝
+
+📊 STATISTICS:
+  Energy:   {creature.energy.value:>8.2f} / {creature.energy.limit:<8.2f}
+  Life:     {creature.life.value:>8.2f} / {creature.life.limit:<8.2f}
+  Age:      {creature.age.value:>8} / {creature.age.limit:<8}
+  Hunger:   {creature.hungry:>8.4f}
+  Pregnant: {'✓ Yes' if creature.pregnant else '✗ No':<8}
+
+🧬 GENETICS:
+  Species:      {species_name}
+  Strength:     {creature.genome.body.strength}
+  Life Limit:   {creature.genome.body.life_limit}
+
+📍 LOCATION: ({creature.position.x}, {creature.position.y})
+
+🎯 CURRENT ACTION: {intent_name}
+        """.strip()
+
+
+class WorldStatsCalculator:
+    """Calculates and caches world statistics."""
     
-    def run_step(self):
-        """Execute a single simulation step."""
-        if self.auto_step:
-            current_time = time.time()
-            if current_time - self.last_step >= self.step_interval:
-                self.world.time += 1
-                self.last_step = current_time
-        self.update_signal.emit()
+    @staticmethod
+    def get_stats(world: World) -> Dict:
+        creatures = [e for e in world.entities.entitys.values() if isinstance(e, Creature)]
+        corpses = [e for e in world.entities.entitys.values() if isinstance(e, Corpse)]
+        
+        total_energy = sum(c.energy.value for c in creatures)
+        avg_life = sum(c.life.value for c in creatures) / len(creatures) if creatures else 0
+        avg_age = sum(c.age.value for c in creatures) / len(creatures) if creatures else 0
+        
+        return {
+            "time": world.time,
+            "creatures_count": len(creatures),
+            "corpses_count": len(corpses),
+            "total_energy": total_energy,
+            "avg_life": avg_life,
+            "avg_age": avg_age,
+            "creatures": creatures
+        }
 
 
-class SimulationDebugger(QMainWindow):
-    """PySide6 GUI for Karkino simulation debugging."""
+class ControlPanel(QFrame):
+    """Panel with simulation controls."""
     
     def __init__(self):
         super().__init__()
-        self.world: Optional[World] = None
-        self.auto_step = False
-        self.step_interval = 2.0
-        self.state = SimulationState.STOPPED
-        self.last_step_time = time.time()
-        
-        self.setWindowTitle("🧬 Karkino Simulation Debugger")
-        self.setGeometry(100, 100, 1600, 900)
-        
         self.setup_ui()
-        self.init_world()
-        self.setup_timer()
-        
-    def setup_ui(self):
-        """Setup the UI components."""
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        
-        main_layout = QHBoxLayout(central_widget)
-        
-        # Left panel: Map and stats
-        left_panel = self.create_left_panel()
-        
-        # Right panel: Controls and creatures table
-        right_panel = self.create_right_panel()
-        
-        main_layout.addWidget(left_panel, 2)
-        main_layout.addWidget(right_panel, 3)
-        
-    def create_left_panel(self) -> QFrame:
-        """Create the left panel with map and stats."""
-        frame = QFrame()
-        layout = QVBoxLayout(frame)
-        
-        # Map display as table
-        self.map_table = QTableWidget()
-        self.map_table.setMaximumHeight(400)
-        self.map_table.setStyleSheet("QTableWidget { border: 1px solid #444; }")
-        layout.addWidget(QLabel("🗺️ World Map"), 0)
-        layout.addWidget(self.map_table, 0)
-        
-        # Stats panel
-        stats_frame = QFrame()
-        stats_frame.setStyleSheet("background-color: #2b2b2b; border-radius: 5px; padding: 10px;")
-        stats_layout = QGridLayout(stats_frame)
-        
-        self.time_label = QLabel("⏱️  Time: 0")
-        self.creatures_label = QLabel("🦁 Creatures: 0")
-        self.corpses_label = QLabel("💀 Corpses: 0")
-        self.total_energy_label = QLabel("⚡ Total Energy: 0.0")
-        self.avg_life_label = QLabel("❤️  Avg Life: 0.0")
-        self.state_label = QLabel("State: STOPPED")
-        
-        for label in [self.time_label, self.creatures_label, self.corpses_label,
-                      self.total_energy_label, self.avg_life_label, self.state_label]:
-            label.setStyleSheet("color: #00ff00; font-weight: bold;")
-            label.setFont(QFont("Arial", 10))
-        
-        stats_layout.addWidget(self.time_label, 0, 0)
-        stats_layout.addWidget(self.creatures_label, 0, 1)
-        stats_layout.addWidget(self.corpses_label, 1, 0)
-        stats_layout.addWidget(self.total_energy_label, 1, 1)
-        stats_layout.addWidget(self.avg_life_label, 2, 0)
-        stats_layout.addWidget(self.state_label, 2, 1)
-        
-        layout.addWidget(QLabel("📊 World Statistics"), 0)
-        layout.addWidget(stats_frame, 0)
-        
-        # Debug panel
-        self.debug_text = QTextEdit()
-        self.debug_text.setReadOnly(True)
-        self.debug_text.setFont(QFont("Courier", 8))
-        self.debug_text.setMaximumHeight(250)
-        layout.addWidget(QLabel("🐛 Debug Log"), 0)
-        layout.addWidget(self.debug_text, 1)
-        
-        frame.setMaximumWidth(800)
-        return frame
     
-    def create_right_panel(self) -> QFrame:
-        """Create the right panel with controls and creatures table."""
-        frame = QFrame()
-        layout = QVBoxLayout(frame)
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
         
-        # Control buttons
-        control_layout = QHBoxLayout()
-        
-        self.btn_start = QPushButton("▶️ Start")
-        self.btn_start.clicked.connect(self.start_simulation)
-        
-        self.btn_pause = QPushButton("⏸️ Pause")
-        self.btn_pause.clicked.connect(self.pause_simulation)
+        self.btn_start = QPushButton("▶️  START")
+        self.btn_pause = QPushButton("⏸️  PAUSE")
         self.btn_pause.setEnabled(False)
+        self.btn_step = QPushButton("⏭️  STEP")
+        self.btn_reset = QPushButton("🔄 RESET")
         
-        self.btn_step = QPushButton("⏭️ Step")
-        self.btn_step.clicked.connect(self.step_simulation)
-        
-        self.btn_reset = QPushButton("🔄 Reset")
-        self.btn_reset.clicked.connect(self.reset_simulation)
-        
-        control_layout.addWidget(self.btn_start)
-        control_layout.addWidget(self.btn_pause)
-        control_layout.addWidget(self.btn_step)
-        control_layout.addWidget(self.btn_reset)
+        control_layout = QGridLayout()
+        control_layout.addWidget(self.btn_start, 0, 0)
+        control_layout.addWidget(self.btn_pause, 0, 1)
+        control_layout.addWidget(self.btn_step, 1, 0)
+        control_layout.addWidget(self.btn_reset, 1, 1)
         
         layout.addLayout(control_layout)
-        
-        # Settings
-        settings_layout = QHBoxLayout()
+        layout.addSpacing(15)
+        layout.addWidget(QLabel("⚙️  SETTINGS"))
         
         self.auto_step_check = QCheckBox("🔄 Auto-Step")
-        self.auto_step_check.stateChanged.connect(self.toggle_auto_step)
+        layout.addWidget(self.auto_step_check)
         
-        settings_layout.addWidget(self.auto_step_check)
-        
-        settings_layout.addWidget(QLabel("Interval (s):"))
+        interval_layout = QHBoxLayout()
+        interval_layout.addWidget(QLabel("Interval (s):"))
         self.interval_spin = QSpinBox()
         self.interval_spin.setMinimum(1)
         self.interval_spin.setMaximum(10)
         self.interval_spin.setValue(2)
-        self.interval_spin.valueChanged.connect(self.update_interval)
-        settings_layout.addWidget(self.interval_spin)
+        interval_layout.addWidget(self.interval_spin)
+        layout.addLayout(interval_layout)
         
-        settings_layout.addWidget(QLabel("View:"))
+        layout.addSpacing(15)
+        layout.addWidget(QLabel("👁️  VIEW MODE"))
+        
         self.view_combo = QComboBox()
-        self.view_combo.addItems(["Summary", "Detailed", "Genome"])
-        self.view_combo.currentTextChanged.connect(self.update_creatures_view)
-        settings_layout.addWidget(self.view_combo)
+        self.view_combo.addItems(["Summary", "Detailed", "Genome Analysis"])
+        layout.addWidget(self.view_combo)
         
-        settings_layout.addStretch()
-        
-        layout.addLayout(settings_layout)
-        
-        # Creatures table
-        self.creatures_table = QTableWidget()
-        self.creatures_table.setColumnCount(9)
-        self.creatures_table.setHorizontalHeaderLabels([
-            "Name", "Species", "Intent", "Energy", "Life", "Age", "Hungry", "Pregnant", "Position"
-        ])
-        self.creatures_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.creatures_table.itemClicked.connect(self.on_creature_selected)
-        
-        layout.addWidget(QLabel("🦁 Creatures Table"), 0)
-        layout.addWidget(self.creatures_table, 1)
-        
-        # Selected creature info
-        info_layout = QHBoxLayout()
-        self.selected_creature_text = QTextEdit()
-        self.selected_creature_text.setReadOnly(True)
-        self.selected_creature_text.setFont(QFont("Courier", 9))
-        self.selected_creature_text.setMaximumHeight(200)
-        info_layout.addWidget(self.selected_creature_text)
-        
-        layout.addLayout(info_layout)
-        
-        return frame
+        layout.addStretch()
+
+
+class StatsPanel(QFrame):
+    """Panel displaying world statistics."""
     
-    def init_world(self):
-        """Initialize the simulation world."""
-        self.log_debug("Initializing world...")
-        self.world = WorldFactory.create_world(PresetWorld(42, Coord(15, 15), ScaleGenValues.MEDIUM))
-        
-        for i in range(8):
-            try:
-                free_coords = TerrainQuery.random_free_coord(self.world.territory, self.world.entity_map, 1)
-                creature = CreatureFactory.gen_creature(position=free_coords[0])
-                WorldMotor.add_entity(self.world.territory, self.world.entity_map, creature, self.world.entities)
-                self.log_debug(f"  ✓ Created creature #{i+1}: {creature.name}")
-            except Exception as e:
-                self.log_debug(f"  ✗ Error creating creature: {e}")
-        
-        self.log_debug("World initialized!")
-        self.update_display()
+    def __init__(self, theme: ThemeColors):
+        super().__init__()
+        self.theme = theme
+        self.setup_ui()
     
-    def setup_timer(self):
-        """Setup the update timer."""
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.tick)
-        self.timer.start(500)  # Update every 500ms
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        
+        self.time_label = self._create_stat_label("⏱️  Time", "0")
+        self.creatures_label = self._create_stat_label("🦁 Creatures", "0")
+        self.corpses_label = self._create_stat_label("💀 Corpses", "0")
+        self.energy_label = self._create_stat_label("⚡ Total Energy", "0.0")
+        self.life_label = self._create_stat_label("❤️  Avg Life", "0.0")
+        self.age_label = self._create_stat_label("📅 Avg Age", "0")
+        self.state_label = self._create_stat_label("🎮 State", "STOPPED")
+        
+        layout.addWidget(self.time_label)
+        layout.addWidget(self.creatures_label)
+        layout.addWidget(self.corpses_label)
+        layout.addWidget(self.energy_label)
+        layout.addWidget(self.life_label)
+        layout.addWidget(self.age_label)
+        layout.addWidget(self.state_label)
+        layout.addStretch()
     
-    def tick(self):
-        """Main tick for simulation."""
+    def _create_stat_label(self, title: str, value: str) -> QLabel:
+        label = QLabel(f"{title}: {value}")
+        label.setFont(QFont("Courier", 11))
+        label.setStyleSheet(f"color: {self.theme.accent}; font-weight: bold;")
+        return label
+    
+    def update_stats(self, stats: Dict):
+        self.time_label.setText(f"⏱️  Time: {stats['time']}")
+        self.creatures_label.setText(f"🦁 Creatures: {stats['creatures_count']}")
+        self.corpses_label.setText(f"💀 Corpses: {stats['corpses_count']}")
+        self.energy_label.setText(f"⚡ Total Energy: {stats['total_energy']:.1f}")
+        self.life_label.setText(f"❤️  Avg Life: {stats['avg_life']:.1f}")
+        self.age_label.setText(f"📅 Avg Age: {stats['avg_age']:.0f}")
+
+
+class MapPanel(QFrame):
+    """Panel displaying the world map."""
+    
+    def __init__(self, theme: ThemeColors):
+        super().__init__()
+        self.theme = theme
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("🗺️  WORLD MAP"))
+        
+        self.map_table = QTableWidget()
+        self.map_table.setMaximumHeight(350)
+        layout.addWidget(self.map_table)
+    
+    def update_map(self, world: World):
         try:
-            if self.state == SimulationState.RUNNING and self.world is not None:
-                current_time = time.time()
-                if self.auto_step and (current_time - self.last_step_time >= self.step_interval):
-                    Runner.run(self.world)
-                    self.last_step_time = current_time
-                    self.log_debug(f"✓ Auto-step executed (Time: {self.world.time})")
-            
-            self.update_display()
-        except Exception as e:
-            self.log_debug(f"ERROR in tick: {str(e)}")
-    
-    def update_display(self):
-        """Update all display elements."""
-        if self.world is None:
-            return
-        
-        self.update_map_display()
-        self.update_stats()
-        self.update_creatures_table()
-    
-    def update_map_display(self):
-        """Update the map display as table."""
-        if self.world is None:
-            return
-        
-        try:
-            grid, size_x, size_y = MapRenderer.get_map_data(self.world)
+            grid, size_x, size_y = MapRenderer.get_map_data(world)
             
             self.map_table.setRowCount(size_y)
             self.map_table.setColumnCount(size_x)
-            
-            # Remove header
             self.map_table.horizontalHeader().setVisible(False)
             self.map_table.verticalHeader().setVisible(False)
             
-            # Set cell size
             for row in range(size_y):
-                self.map_table.setRowHeight(row, 20)
+                self.map_table.setRowHeight(row, 28)
             for col in range(size_x):
-                self.map_table.setColumnWidth(col, 20)
+                self.map_table.setColumnWidth(col, 28)
             
-            # Fill cells
             for y in range(size_y):
                 for x in range(size_x):
                     symbol = grid[y][x]
                     item = QTableWidgetItem(symbol)
-                    item.setFont(QFont("Arial", 12))
+                    item.setFont(QFont("Arial", 16))
                     item.setTextAlignment(Qt.AlignCenter)
-                    
-                    # Color code
-                    if symbol == "C":
-                        item.setBackground(QColor("#FFD700"))  # Gold for creature
-                    elif symbol == "X":
-                        item.setBackground(QColor("#FF4444"))  # Red for corpse
-                    else:
-                        item.setBackground(QColor("#333333"))  # Dark for terrain
-                    
+                    item.setBackground(QColor(self._get_cell_color(symbol)))
                     self.map_table.setItem(y, x, item)
         except Exception as e:
-            self.log_debug(f"ERROR in update_map_display: {str(e)}")
+            print(f"Error updating map: {e}")
     
-    def update_stats(self):
-        """Update statistics labels."""
-        try:
-            if self.world is None:
-                self.log_debug("ERROR: World is None in update_stats")
-                return
-            
-            creatures = [e for e in self.world.entities.entitys.values() if isinstance(e, Creature)]
-            corpses = [e for e in self.world.entities.entitys.values() if isinstance(e, Corpse)]
-            
-            total_energy = sum(c.energy.value for c in creatures)
-            avg_life = sum(c.life.value for c in creatures) / len(creatures) if creatures else 0
-            
-            self.time_label.setText(f"⏱️  Time: {self.world.time}")
-            self.creatures_label.setText(f"🦁 Creatures: {len(creatures)}")
-            self.corpses_label.setText(f"💀 Corpses: {len(corpses)}")
-            self.total_energy_label.setText(f"⚡ Total Energy: {total_energy:.1f}")
-            self.avg_life_label.setText(f"❤️  Avg Life: {avg_life:.1f}")
-            self.state_label.setText(f"State: {self.state.value.upper()}")
-        except Exception as e:
-            self.log_debug(f"ERROR in update_stats: {str(e)}")
+    def _get_cell_color(self, symbol: str) -> str:
+        color_map = {
+            "🦀": self.theme.creature, "🐟": self.theme.creature,
+            "🐊": self.theme.creature, "🦛": self.theme.creature,
+            "🐾": self.theme.creature, "💀": self.theme.corpse,
+            "🌱": self.theme.terrain_dirt, "🏜️": self.theme.terrain_sand,
+            "💧": self.theme.terrain_water, "🪨": self.theme.terrain_rock,
+        }
+        return color_map.get(symbol, self.theme.primary)
+
+
+class CreaturesTable(QFrame):
+    """Panel displaying creatures in a table."""
     
-    def update_creatures_table(self):
-        """Update the creatures table."""
-        if self.world is None:
-            return
+    def __init__(self, theme: ThemeColors):
+        super().__init__()
+        self.theme = theme
+        self.selected_creature: Optional[Creature] = None
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("🦁 CREATURES"))
         
-        creatures = [e for e in self.world.entities.entitys.values() if isinstance(e, Creature)]
-        self.creatures_table.setRowCount(len(creatures))
+        self.table = QTableWidget()
+        self.table.setColumnCount(9)
+        self.table.setHorizontalHeaderLabels([
+            "Name", "Species", "Intent", "Energy", "Life", "Age", "Hungry", "Pregnant", "Pos"
+        ])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.itemClicked.connect(self._on_creature_selected)
+        
+        layout.addWidget(self.table, 1)
+    
+    def update_creatures(self, creatures: List[Creature]):
+        self.table.setRowCount(len(creatures))
         
         for row, creature in enumerate(creatures):
             species_name = CreatureInfoFormatter.get_species_name(creature)
             intent_name = CreatureInfoFormatter.get_intent_name(creature)
             
             items = [
-                creature.name,
-                species_name,
-                intent_name,
+                creature.name, species_name, intent_name,
                 f"{creature.energy.value:.1f}/{creature.energy.limit:.1f}",
-                f"{creature.life.value:.1f}",
-                f"{creature.age.value}",
-                f"{creature.hungry:.2f}",
-                "✓" if creature.pregnant else "✗",
-                f"({creature.position.x}, {creature.position.y})"
+                f"{creature.life.value:.1f}", f"{creature.age.value}",
+                f"{creature.hungry:.2f}", "✓" if creature.pregnant else "✗",
+                f"({creature.position.x},{creature.position.y})"
             ]
             
             for col, text in enumerate(items):
                 item = QTableWidgetItem(str(text))
                 item.setData(Qt.UserRole, creature)
-                self.creatures_table.setItem(row, col, item)
+                self.table.setItem(row, col, item)
     
-    def update_creatures_view(self, view_name: str):
-        """Update creatures view based on selection."""
-        self.log_debug(f"Switched to {view_name} view")
-    
-    def on_creature_selected(self, item: QTableWidgetItem):
-        """Handle creature selection from table."""
+    def _on_creature_selected(self, item: QTableWidgetItem):
         creature = item.data(Qt.UserRole)
         if isinstance(creature, Creature):
-            intent_name = CreatureInfoFormatter.get_intent_name(creature)
-            species_name = CreatureInfoFormatter.get_species_name(creature)
-            
-            info = f"""
-Selected Creature: {creature.name}
-
-📊 Stats:
-  - Energy: {creature.energy.value:.2f}/{creature.energy.limit:.2f}
-  - Life: {creature.life.value:.2f}/{creature.life.limit:.2f}
-  - Age: {creature.age.value}/{creature.age.limit}
-  - Hungry: {creature.hungry:.4f}
-  - Pregnant: {creature.pregnant}
-
-🧬 Genome:
-  - Species: {species_name}
-  - Strength: {creature.genome.body.strength}
-  - Life Limit: {creature.genome.body.life_limit}
-
-📍 Position: ({creature.position.x}, {creature.position.y})
-
-🎯 Intent: {intent_name}
-            """
-            self.selected_creature_text.setText(info.strip())
+            self.selected_creature = creature
     
-    def start_simulation(self):
-        """Start the simulation."""
-        self.state = SimulationState.RUNNING
-        self.btn_start.setEnabled(False)
-        self.btn_pause.setEnabled(True)
-        self.log_debug("▶️ Simulation started")
-        self.auto_step = self.auto_step_check.isChecked()
+    def get_selected_creature(self) -> Optional[Creature]:
+        return self.selected_creature
+
+
+class DebugConsole(QFrame):
+    """Debug output console."""
+    
+    def __init__(self, theme: ThemeColors):
+        super().__init__()
+        self.theme = theme
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("🐛 DEBUG CONSOLE"))
+        
+        self.text_edit = QTextEdit()
+        self.text_edit.setReadOnly(True)
+        self.text_edit.setFont(QFont("Courier", 9))
+        self.text_edit.setMaximumHeight(200)
+        
+        layout.addWidget(self.text_edit)
+    
+    def log(self, message: str):
+        timestamp = time.strftime("%H:%M:%S")
+        log_entry = f"[{timestamp}] {message}"
+        self.text_edit.append(log_entry)
+        self.text_edit.moveCursor(QTextCursor.End)
+    
+    def clear(self):
+        self.text_edit.clear()
+
+
+class CreatureDetailsPanel(QFrame):
+    """Panel showing details of selected creature."""
+    
+    def __init__(self, theme: ThemeColors):
+        super().__init__()
+        self.theme = theme
+        self.setup_ui()
+    
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("📋 CREATURE DETAILS"))
+        
+        self.text_edit = QTextEdit()
+        self.text_edit.setReadOnly(True)
+        self.text_edit.setFont(QFont("Courier", 9))
+        self.text_edit.setMaximumHeight(250)
+        
+        layout.addWidget(self.text_edit)
+    
+    def update_creature(self, creature: Optional[Creature]):
+        if creature:
+            self.text_edit.setText(CreatureInfoFormatter.format_creature_details(creature))
+        else:
+            self.text_edit.setText("Select a creature to view details")
+
+
+class SimulationDebugger(QMainWindow):
+    """Main GUI for Karkino simulation debugging."""
+    
+    def __init__(self):
+        super().__init__()
+        self.theme = ThemeColors()
+        self.world: Optional[World] = None
+        self.auto_step = False
+        self.step_interval = 2.0
+        self.state = SimulationState.STOPPED
         self.last_step_time = time.time()
+        
+        self.setWindowTitle("🧬 Karkino Simulation Debugger v2.0")
+        self.setGeometry(50, 50, 1800, 1000)
+        self.setStyleSheet(self.theme.get_stylesheet())
+        
+        self._setup_ui()
+        self._init_world()
+        self._setup_timer()
+        self._setup_status_bar()
     
-    def pause_simulation(self):
-        """Pause the simulation."""
+    def _setup_ui(self):
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        main_layout = QHBoxLayout(central_widget)
+        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(10, 10, 10, 10)
+        
+        left_panel = self._create_left_panel()
+        middle_panel = self._create_middle_panel()
+        right_panel = self._create_right_panel()
+        
+        main_layout.addWidget(left_panel, 2)
+        main_layout.addWidget(middle_panel, 2)
+        main_layout.addWidget(right_panel, 3)
+    
+    def _create_left_panel(self) -> QFrame:
+        frame = QFrame()
+        layout = QVBoxLayout(frame)
+        
+        self.map_panel = MapPanel(self.theme)
+        layout.addWidget(self.map_panel, 2)
+        
+        self.control_panel = ControlPanel()
+        self.control_panel.btn_start.clicked.connect(self._start_simulation)
+        self.control_panel.btn_pause.clicked.connect(self._pause_simulation)
+        self.control_panel.btn_step.clicked.connect(self._step_simulation)
+        self.control_panel.btn_reset.clicked.connect(self._reset_simulation)
+        self.control_panel.auto_step_check.stateChanged.connect(self._toggle_auto_step)
+        self.control_panel.interval_spin.valueChanged.connect(self._update_interval)
+        
+        layout.addWidget(self.control_panel, 1)
+        return frame
+    
+    def _create_middle_panel(self) -> QFrame:
+        frame = QFrame()
+        layout = QVBoxLayout(frame)
+        
+        self.stats_panel = StatsPanel(self.theme)
+        layout.addWidget(self.stats_panel, 1)
+        
+        self.debug_console = DebugConsole(self.theme)
+        layout.addWidget(self.debug_console, 1)
+        
+        return frame
+    
+    def _create_right_panel(self) -> QFrame:
+        frame = QFrame()
+        layout = QVBoxLayout(frame)
+        
+        self.creatures_table = CreaturesTable(self.theme)
+        self.creatures_table.table.itemClicked.connect(self._on_creature_selected)
+        layout.addWidget(self.creatures_table, 2)
+        
+        self.details_panel = CreatureDetailsPanel(self.theme)
+        layout.addWidget(self.details_panel, 1)
+        
+        return frame
+    
+    def _setup_status_bar(self):
+        self.statusBar().showMessage("🟢 Ready")
+    
+    def _init_world(self):
+        self._log("Initializing world...")
+        try:
+            self.world = WorldFactory.create_world(
+                PresetWorld(42, Coord(15, 15), ScaleGenValues.MEDIUM)
+            )
+            
+            for i in range(8):
+                try:
+                    free_coords = TerrainQuery.random_free_coord(
+                        self.world.territory, self.world.entity_map, 1
+                    )
+                    creature = CreatureFactory.gen_creature(position=free_coords[0])
+                    WorldMotor.add_entity(
+                        self.world.territory, self.world.entity_map, 
+                        creature, self.world.entities
+                    )
+                    self._log(f"✓ Created creature #{i+1}: {creature.name}")
+                except Exception as e:
+                    self._log(f"✗ Error creating creature: {str(e)[:40]}")
+            
+            self._log("✓ World initialized successfully!")
+            self._update_display()
+        except Exception as e:
+            self._log(f"✗ ERROR initializing world: {str(e)[:40]}")
+    
+    def _setup_timer(self):
+        self.timer = QTimer()
+        self.timer.timeout.connect(self._tick)
+        self.timer.start(500)
+    
+    def _tick(self):
+        try:
+            if self.state == SimulationState.RUNNING and self.world is not None:
+                current_time = time.time()
+                if self.auto_step and (current_time - self.last_step_time >= self.step_interval):
+                    Runner.run(self.world)
+                    self.last_step_time = current_time
+                    self._log(f"✓ Auto-step (T={self.world.time})")
+            
+            self._update_display()
+        except Exception as e:
+            self._log(f"✗ ERROR in tick: {str(e)[:40]}")
+    
+    def _update_display(self):
+        if self.world is None:
+            return
+        
+        try:
+            stats = WorldStatsCalculator.get_stats(self.world)
+            self.stats_panel.update_stats(stats)
+            self.map_panel.update_map(self.world)
+            self.creatures_table.update_creatures(stats["creatures"])
+            self.statusBar().showMessage(
+                f"⏱️ T:{self.world.time} | 🦁:{stats['creatures_count']} | "
+                f"⚡:{stats['total_energy']:.0f} | 🎮:{self.state.value}"
+            )
+        except Exception as e:
+            self._log(f"✗ ERROR in update_display: {str(e)[:40]}")
+    
+    def _on_creature_selected(self, item: QTableWidgetItem):
+        creature = self.creatures_table.get_selected_creature()
+        self.details_panel.update_creature(creature)
+    
+    def _start_simulation(self):
+        self.state = SimulationState.RUNNING
+        self.control_panel.btn_start.setEnabled(False)
+        self.control_panel.btn_pause.setEnabled(True)
+        self.auto_step = self.control_panel.auto_step_check.isChecked()
+        self.last_step_time = time.time()
+        self._log("▶️ SIMULATION STARTED")
+    
+    def _pause_simulation(self):
         self.state = SimulationState.PAUSED
-        self.btn_start.setEnabled(True)
-        self.btn_pause.setEnabled(False)
-        self.log_debug("⏸️ Simulation paused")
+        self.control_panel.btn_start.setEnabled(True)
+        self.control_panel.btn_pause.setEnabled(False)
+        self._log("⏸️ SIMULATION PAUSED")
     
-    def step_simulation(self):
-        """Execute a single step."""
+    def _step_simulation(self):
         try:
             if self.world is not None:
                 Runner.run(self.world)
-                self.log_debug(f"⏭️ Step executed (Time: {self.world.time})")
-                self.update_display()
-                self.log_debug(f"   Display updated")
+                self._log(f"⏭️ Step executed (T={self.world.time})")
+                self._update_display()
             else:
-                self.log_debug("ERROR: World is None!")
+                self._log("✗ ERROR: World is None!")
         except Exception as e:
-            self.log_debug(f"ERROR in step_simulation: {str(e)}")
+            self._log(f"✗ ERROR in step: {str(e)[:40]}")
     
-    def reset_simulation(self):
-        """Reset the simulation."""
+    def _reset_simulation(self):
         self.state = SimulationState.STOPPED
-        self.btn_start.setEnabled(True)
-        self.btn_pause.setEnabled(False)
+        self.control_panel.btn_start.setEnabled(True)
+        self.control_panel.btn_pause.setEnabled(False)
         self.auto_step = False
-        self.auto_step_check.setChecked(False)
-        self.debug_text.clear()
-        self.selected_creature_text.clear()
-        self.init_world()
-        self.log_debug("🔄 Simulation reset")
+        self.control_panel.auto_step_check.setChecked(False)
+        self.debug_console.clear()
+        self.details_panel.update_creature(None)
+        self._init_world()
+        self._log("🔄 SIMULATION RESET")
     
-    def toggle_auto_step(self, state: int):
-        """Toggle auto-step mode."""
+    def _toggle_auto_step(self, state: int):
         self.auto_step = state == Qt.Checked
         if self.state == SimulationState.RUNNING:
-            self.log_debug(f"🔄 Auto-step {'enabled' if self.auto_step else 'disabled'}")
+            self._log(f"🔄 Auto-step {'ENABLED' if self.auto_step else 'DISABLED'}")
     
-    def update_interval(self, value: int):
-        """Update auto-step interval."""
+    def _update_interval(self, value: int):
         self.step_interval = value
-        self.log_debug(f"⏱️ Step interval set to {value}s")
+        self._log(f"⏱️ Interval set to {value}s")
     
-    def log_debug(self, message: str):
-        """Log a debug message."""
-        timestamp = time.strftime("%H:%M:%S")
-        log_entry = f"[{timestamp}] {message}\n"
-        self.debug_text.append(log_entry)
-        self.debug_text.moveCursor(QTextCursor.End)
+    def _log(self, message: str):
+        self.debug_console.log(message)
 
 
 def main():
     """Main entry point."""
     app = QApplication(sys.argv)
-    
-    # Set dark theme
-    app.setStyle('Fusion')
-    
     debugger = SimulationDebugger()
     debugger.show()
-    
     sys.exit(app.exec())
 
 
