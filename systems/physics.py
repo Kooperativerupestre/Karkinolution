@@ -1,4 +1,4 @@
-from decisions.perception import PerceivedBlock, PerceivedCell
+from decisions.perception import PerceivedBlock
 
 from organism.creatures import Creature
 from organism.ontology import AttackedEvent
@@ -18,6 +18,9 @@ class SpatialSystem:
     def can_move(block:PerceivedBlock, capabilitys:set[MoveActions]) -> bool:
         return block.cell.required_capabilities.issubset(capabilitys) and not block.has_entity
     @staticmethod
+    def can_go(block:PerceivedBlock, capabilitys:set[MoveActions]) -> bool:
+        return block.cell.required_capabilities.issubset(capabilitys)
+    @staticmethod
     def get_effects(block:PerceivedBlock, creature:Creature) -> list[Callable[[Creature], None]]:
         effects:list[Callable[[Creature], None]] = []
         
@@ -36,17 +39,20 @@ class SpatialSystem:
         
 class MovementSystem:
     @staticmethod
-    def calculate_cost_to_move(next_cell:PerceivedCell, cell_creature:PerceivedCell, creature:Creature) -> float:
+    def calculate_cost_to_move(perception:Perception, new_coord:Coord, creature:Creature) -> float:
+        # ALIAS
+        next_cell = perception.get(new_coord).cell
+        cell_creature = perception.creature_block.cell
         if next_cell.is_movable is False:
             raise NonMotileError('Cell {} is not motile'.format(next_cell))
         
         assert next_cell.movement_cost is not None
         assert cell_creature.movement_cost is not None
         cost = (next_cell.movement_cost + cell_creature.movement_cost) / 2
-        return cost * creature.genome.metabolism.mass
+        return cost * creature.genome.metabolism.mass * perception.coord.distance_to_other(new_coord)
     @staticmethod
     def move(creature:Creature, perception:Perception, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> float:
-        cost = MovementSystem.calculate_cost_to_move(perception.get(new_coord).cell, perception.creature_block.cell, creature)
+        cost = MovementSystem.calculate_cost_to_move(perception, new_coord, creature)
 
         check_energy(creature.energy, cost)
         TerrainMotor.move(creature.id, creature.position, new_coord, entity_map, territory)
