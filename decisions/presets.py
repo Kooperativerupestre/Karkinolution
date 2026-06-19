@@ -48,7 +48,7 @@ class PresetExecutor:
             return None
         
         
-        cost = MovementSystem.calculate_cost_to_move(perception.get(preset.new_coord).cell, perception.creature_block.cell, creature)
+        cost = MovementSystem.calculate_cost_to_move(perception, best_pos, creature)
         if creature.energy.value < cost:
             return None
         MovementSystem.move(creature, perception, preset.new_coord, world.entity_map, world.territory)
