@@ -4,7 +4,7 @@ from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AttackedEvent
 
-from core.error import ReproductiveError, IdNotFoundError, GenderError, IdAlreadyExistsError
+from core.error import ReproductiveError, IdNotFoundError, GenderError, IdAlreadyExistsError, EntityError
 from organism.identity import Id, EntityTypes, gen_id
 from random import uniform
 from math import exp
@@ -78,8 +78,8 @@ class PregnantUterus:
     def pregnancy_cost(self) -> float:
         return (1 + self.gestation.value/2)*self.number_children.value
     @property
-    def pregnancy_factor(self) -> float:
-        return (1 + self.gestation.ratio) * self.number_children.value / 6 
+    def gravity(self) -> float:
+        return ((self.number_children.ratio + self.gestation.ratio)/2)**1.4
     @property
     def birth_energy(self) -> float:
         return self.pregnancy_cost / self.number_children.value 
@@ -140,20 +140,18 @@ class Creature:
     def reproductive_maturity(self) -> float:
         return exp(-(self.age.ratio - 0.45)**2/(0.2)**2)
     @property
-    def reproductive_factor(self) -> float:
-        return (self.energy.value * self.genome.reproduction.extra_reproduction_multiplier)/self.genome.reproduction.reproduction_cost
-    @property
     def reproductively_capable(self) -> bool:
         energy_condition = self.energy.value * self.genome.reproduction.extra_reproduction_multiplier >= self.genome.reproduction.reproduction_cost
         return self.fertility.reproductive_capability() and not self.pregnant and energy_condition
-    
     @property
-    def pregnancy_factor(self) -> int | float:
-        if self.gender is not Gender.FEMALE:
-            raise GenderError('Creature {} is not female'.format(self))
-        if not self.uterus.pregnant: # type: ignore
-            raise ReproductiveError('Creature {} is not pregnant'.format(self))
-        return 1 + self.uterus.gestation_time/2 # type: ignore
+    def reproductive_fitness(self) -> float:
+        '''
+        < 1 -> not so good
+        = 1 -> at point
+        > 1 -> good
+        '''
+        return self.energy.value * self.genome.reproduction.extra_reproduction_multiplier  / self.genome.reproduction.reproduction_cost
+    
     @property
     def strength_factor(self) -> int | float:
         return self.genome.body.strength / MAX_STRENGTH

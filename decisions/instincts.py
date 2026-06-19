@@ -83,11 +83,11 @@ class EvaluateActions:
 
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
-            factor += creature.uterus.pregnancy_factor
+            factor += creature.uterus.gravity
         return factor
     @staticmethod
     def score_reproduce(creature:Creature) -> float:
-        factor = creature.reproductive_maturity * creature.reproductive_factor
+        factor = creature.reproductive_maturity * creature.reproductive_fitness
         
 
         if not creature.reproductively_capable:
