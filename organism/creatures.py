@@ -60,11 +60,7 @@ class Gestation:
         return abs(self.overdue)
 
 
-class Uterus:
-    def __init__(self):
-        self.male_genome: None | Genome = None
-        self.number_children: None | LimitedValue = None
-        self.gestation: None | Gestation = None
+
 
 
 
