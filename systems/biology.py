@@ -27,8 +27,6 @@ class MetabolismSystem:
     @staticmethod
     def score_food(creature:Creature, coord_block:Coord, perception:Perception) -> float:
         food_score = 0
-
-        cell_creature = perception.creature_block.cell
         next_block = perception.get(coord_block)
         diet_effective = 1 - creature.hungry
 
@@ -40,7 +38,7 @@ class MetabolismSystem:
         if next_block.cell.is_edible:
             food_score += (creature.genome.metabolism.diet.grass_score * (1 - diet_effective) + creature.hungry) * next_block.cell.food.value # type: ignore
         
-        food_score -= perception.coord.distance_to_other(coord_block) * MovementSystem.calculate_cost_to_move(next_block.cell, cell_creature, creature)
+        food_score -= perception.coord.distance_to_other(coord_block) * MovementSystem.calculate_cost_to_move(perception, coord_block, creature)
         return food_score
 
     @staticmethod
