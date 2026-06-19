@@ -8,6 +8,9 @@ from organism.identity import Id
 from organism.stats import LimitedValue, Energy
 from systems.reproductivebuffer import ReproductiveBuffer, ReproductiveDesire
 
+
+from core.error import EntityError
+
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
     Temperament.NEUTRAL: 0.3,
@@ -24,9 +27,51 @@ TRADE_OFF:dict[Temperament, float] = {
     Temperament.TERRITORIAL: 1
 }
 
+class FactorsCalc:
+    '''
+    1 -> All outputs must be in the interval [0, 1]
+    2 -> All factors here must accept a creature as their only argument
+    3 -> All antonyms cannot always be computed using a simple 1 - constant formula; most will require their own specific formulas.
+    '''
+    @staticmethod
+    def get_pregnancy_risk(creature:Creature) -> float:
+        factor = LimitedValue(0, 1)
 
+        if not creature.pregnant:
+            raise EntityError('Only pregnant creatures have pregnancy risk constant')
+        assert isinstance(creature.uterus, PregnantUterus)
 
+        factor.add(creature.uterus.gravity * 0.75)
+        factor.sub(creature.uterus.number_children.ratio * 0.35)
 
+        return factor.value
+    @staticmethod
+    def get_fear(creature:Creature) -> float:
+        factor = LimitedValue(0, 1)
+
+        ph_r = creature.physical_ratio
+
+        if ph_r < 0.30:
+            factor.add(ph_r - 0.05)
+
+        if creature.pregnant:
+            assert isinstance(creature.uterus, PregnantUterus)
+            factor.add(creature.uterus.gravity)
+        
+        factor.add(creature.senescence/1.7)
+        return factor.value
+    @staticmethod
+    def get_courage(creature:Creature) -> float:
+        basal = LimitedValue(COURAGE_FACTOR[creature.genome.core.behavior], 1)
+
+        basal.sub(creature.senescence)
+
+        basal.add(creature.genome.metabolism.mass/3)
+
+        return basal.value
+    
+
+    
 def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
     temperament = creature.genome.core.behavior
     coord_creature = perception.coord
@@ -68,6 +113,7 @@ def score_atack(creature:Creature, target:PerceivedCreature) -> float:
     if creature.pregnant:
         total -= 0.2
     return total
+
 
 
 
