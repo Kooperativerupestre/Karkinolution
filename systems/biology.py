@@ -42,9 +42,9 @@ class MetabolismSystem:
         return food_score
 
     @staticmethod
-    def evaluate(creature:Creature, perception:Perception) -> Iterable[tuple[Coord, float]]:
+    def evaluate(creature:Creature, perception:Perception) -> list[tuple[Coord, float]]:
         ev = {c: MetabolismSystem.score_food(creature, c, perception) for c in perception.iter_keys}
-        return ev.items()
+        return list(ev.items())
     @staticmethod
     def best_coord(evaluated:Iterable[tuple[Coord, float]]) -> Coord:
         return max(evaluated, key=lambda x: x[1])[0]
