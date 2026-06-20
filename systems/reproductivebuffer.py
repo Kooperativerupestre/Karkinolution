@@ -20,6 +20,10 @@ class ReproductiveBuffer:
                 return desire
     def get(self, id:Id) -> ReproductiveDesire:
         return self.desires[id]
+    def require(self, id:Id) -> ReproductiveDesire | None:
+        if id not in self.desires:
+            return None
+        return self.desires[id]
     
     def try_remove(self, id:Id) -> None:
         if id in self.desires:
