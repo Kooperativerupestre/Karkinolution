@@ -1,8 +1,9 @@
 from organism.creatures import Creature
 from decisions.actions import  IntentActs
-from decisions.instincts import Planner, ReproductiveBuffer, DecideIntention
+from decisions.instincts import PlannerFindFood, PlannerFindMatch, Instincts, try_call_reproductive_buffer
 from decisions.perception import Perception
 from decisions.presets import EatPreset, MovePreset, AttackPreset, ReproducePreset
+from systems.reproductivebuffer import ReproductiveBuffer
 
 class IntentResolver:
     @staticmethod
@@ -17,11 +18,11 @@ class IntentResolver:
     @staticmethod
     def transform_to_preset(creature:Creature, perception:Perception) -> MovePreset | EatPreset | AttackPreset | None:
         if creature.intent.intent == IntentActs.FIND_FOOD:
-            act = Planner.plan_find_food_intent(perception, creature)
+            act = PlannerFindFood.plan_intent(perception, creature)
             return act
         
         elif creature.intent.intent == IntentActs.FIND_MATCH:
-            act = Planner.plan_find_match_intent(perception)
+            act = PlannerFindMatch.plan_intent(perception, creature)
             return act
 
     @staticmethod
@@ -29,7 +30,16 @@ class IntentResolver:
         MovePreset | EatPreset | AttackPreset | ReproducePreset | None):
 
         if creature.intent.intent == IntentActs.NOTHING:
-            creature.intent = DecideIntention.decide(creature, reproductive_buffer)
+            acts = Instincts.take(creature, reproductive_buffer)
+            Instincts.apply_noise(acts)
+
+            act = Instincts.chose(acts)
+
+            try_call_reproductive_buffer(act, creature, reproductive_buffer)
+
+
+
+
     @staticmethod
     def resolve_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer, perception:Perception) -> MovePreset | AttackPreset | EatPreset | None:
         IntentResolver.cancel_invalid_intents(creature)

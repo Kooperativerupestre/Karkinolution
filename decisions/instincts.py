@@ -1,4 +1,4 @@
-from organism.ontology import Temperament, Gender
+from organism.ontology import Temperament
 from systems.biology import MetabolismSystem, FoodHint
 from decisions.perception import Perception, Analysis, PerceivedCreature
 from organism.creatures import Creature, PregnantUterus
@@ -7,9 +7,10 @@ from decisions.presets import MovePreset, EatPreset, AttackPreset
 from organism.identity import Id
 from organism.stats import LimitedValue, Energy
 from systems.reproductivebuffer import ReproductiveBuffer, ReproductiveDesire
-
-
+from dataclasses import dataclass
 from core.error import EntityError
+from random import uniform
+
 
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
@@ -26,6 +27,13 @@ TRADE_OFF:dict[Temperament, float] = {
     Temperament.AGGRESSIVE: 0.89,
     Temperament.TERRITORIAL: 1
 }
+
+@dataclass(frozen=True)
+class Config:
+    noise:float
+
+
+GLOBAL_CONFIG = Config(0.1)
 
 class FactorsCalc:
     '''
@@ -71,147 +79,136 @@ class FactorsCalc:
         return basal.value
     
 
-    
-def resolve_atack(perception:Perception, creature:Creature) -> Id | None:
-    temperament = creature.genome.core.behavior
-    coord_creature = perception.coord
-
-    if temperament is Temperament.NEUTRAL or temperament is Temperament.PASSIVE:
-        if creature.last_attack is None:
-            return None
-        else:
-            return creature.last_attack.attacker_id
-    elif temperament is Temperament.AGGRESSIVE:
-        if creature.last_attack is not None:
-            return creature.last_attack.attacker_id
-        else:
-            other_species = Analysis.other_species(perception)
-            if len(other_species) == 0:
-                return None
-            return perception.get(Analysis.near_coord(other_species, coord_creature=coord_creature)).creature.id # type: ignore
-        
-    elif temperament is Temperament.TERRITORIAL:
-        if creature.last_attack is not None:
-            return creature.last_attack.attacker_id
-        else:
-            other_species = Analysis.other_species(perception)
-            other_species = [c for c in other_species if c.x <= 2 + coord_creature.x and c.y <= 2 + coord_creature.y]
-            if len(other_species) == 0:
-                return None
-            return perception.get(Analysis.near_coord(other_species, coord_creature=coord_creature)).creature.id # type: ignore
-        
-def score_atack(creature:Creature, target:PerceivedCreature) -> float:
-    physical_factor = LimitedValue((creature.hungry + creature.life.ratio + creature.energy.ratio)/3, 1) # [0, 1]
-    fear = LimitedValue(0, 1)
-    fear.sub(creature.physical_ratio - target.physical_ratio)
-
-    fear.sub(COURAGE_FACTOR[creature.genome.core.behavior])
-    physical_factor.add(TRADE_OFF[creature.genome.core.behavior])
-
-    total = (fear.value + physical_factor.value)/2 # [0, 1]
-    
-    if creature.pregnant:
-        total -= 0.2
-    return total
 
 
 
 
 
-
-class EvaluateActions:
+class ScorerIntents:
     @staticmethod
-    def score_eat(creature:Creature) -> float:
-        if creature.hungry < creature.genome.metabolism.max_hungry:
-            return 0.0
+    def score_find_food(creature:Creature) -> float:
+        factor = LimitedValue(0, 1)
 
-        factor = creature.hungry * 2
-
+        factor.add(creature.hungry * 0.80)
+        
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
-            factor += creature.uterus.gravity
-        return factor
+            factor.add(creature.uterus.gravity/9)
+        return factor.value
+    
     @staticmethod
-    def score_reproduce(creature:Creature) -> float:
-        factor = creature.reproductive_maturity * creature.reproductive_fitness
+    def score_find_match(creature:Creature) -> float:
+        factor = LimitedValue(0, 1)
+
+        factor.add(creature.reproductive_maturity*0.73)
         
+        factor.mul(creature.reproductive_fitness)
 
-        if not creature.reproductively_capable:
-            factor *= 0.2
-        return factor
-
-class DecideIntention:
+        return factor.value
     @staticmethod
-    def decide(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> Intent:
-        acts:dict[IntentActs, float] = {}
-        acts[IntentActs.NOTHING] = 0.8
-        acts[IntentActs.FIND_FOOD] = EvaluateActions.score_eat(creature)
-        if creature.gender is Gender.MALE:
-            acts[IntentActs.FIND_MATCH] =  EvaluateActions.score_reproduce(creature)
-        elif creature.gender == Gender.FEMALE and not creature.pregnant:
-            acts[IntentActs.FIND_MATCH] = EvaluateActions.score_reproduce(creature)
-        
+    def score_nothing(creature:Creature) -> float:
+        base = 0.6
+
+        factor = LimitedValue(base, 1)
 
 
+        factor.add(creature.senescence/4)
+        return factor.value
+    
+@dataclass
+class IntentScored:
+    act:IntentActs
+    score:float
 
 
-        chose = max(acts, key=lambda x: acts[x])
-        intent = Intent(chose)
-        if intent.intent == IntentActs.FIND_MATCH:
-            reproductive_buffer.registry(ReproductiveDesire(creature.id, creature.genome.core.id))
-        return intent
+    def mul(self, value:float | int) -> None:
+        self.score *= value
 
-
-
-class Planner:
+class Instincts:
     @staticmethod
-    def plan_find_food_intent(perception:Perception, creature:Creature) -> MovePreset | AttackPreset | EatPreset | None:
-        weights:dict[EatPreset | MovePreset | EatPreset | AttackPreset, float] = {}
+    def take(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> list[IntentScored]:
+        acts:list[IntentScored] = []
+        # FIND_FOOD
+        acts.append(IntentScored(
+            IntentActs.FIND_FOOD,
+            ScorerIntents.score_find_food(creature)
+        ))
+        # NOTHING
+        acts.append(IntentScored(
+            IntentActs.NOTHING,
+            ScorerIntents.score_nothing(creature)
+        ))
+        # FIND MATCH
+        if creature.reproductively_capable and reproductive_buffer.require(creature.id) is None:
+            acts.append(IntentScored(
+                IntentActs.FIND_MATCH,
+                ScorerIntents.score_find_match(creature)
+            ))
+
+        return acts
+    @staticmethod
+    def apply_noise(acts:list[IntentScored]) -> None:
+        for act in acts:
+            act.mul(uniform(1, 1+GLOBAL_CONFIG.noise))
+    
+    @staticmethod
+    def chose(acts:list[IntentScored]) -> Intent:
+        chosen = max(acts, key=lambda a: a.score)
+
+        return Intent(chosen.act)
+
+
+def try_call_reproductive_buffer(intent:Intent, creature:Creature, reproductive_buffer:ReproductiveBuffer) -> None:
+    if intent.intent == IntentActs.FIND_MATCH:
+        reproductive_buffer.registry(ReproductiveDesire(creature.id, creature.genome.core.id))
+    
+
+
+@dataclass(frozen=True)
+class ScoredPreset:
+    preset:EatPreset | MovePreset | AttackPreset
+    score:float
+
+class PlannerFindFood:
+    @staticmethod
+    def plan_intent(perception: Perception, creature: Creature) -> MovePreset | EatPreset | AttackPreset | None:
         food_target = MetabolismSystem.find_food_target(creature, perception)
-        coord_creature = perception.coord
-
 
         if food_target is None:
             return None
-        
-        food_coord = food_target.coord
 
-        if food_coord == coord_creature:
-            energy:Energy = perception.get(food_coord).cell.food # type: ignore
-            weights[EatPreset(energy)] = 1
+        options:list[ScoredPreset] = []
+        distance = perception.coord.distance_to_other(food_target.coord)
+        block = perception.get(food_target.coord)
 
-        if coord_creature.distance_exceeds_one(food_coord):
-            weights[MovePreset(food_coord)] = 0.8
-        
-        block = perception.get(food_coord)
-
-        if coord_creature.distance_to_other(food_coord) == 1:
+        if distance == 1:
             if food_target.food_hint == FoodHint.CORPSE:
-                assert block.entity is not None
-                energy = block.entity.energy
-                weights[EatPreset(energy)] = 1
+                assert isinstance(block.entity, PerceivedCreature)
+                corpse = block.entity # type: ignore
+                options.append(ScoredPreset(EatPreset(corpse.energy), 1))
             elif food_target.food_hint == FoodHint.TARGET:
-                assert block.entity is not None
-                weights[AttackPreset(block.entity.identity)] = score_atack(creature, block.entity)
-
-            weights[MovePreset(food_coord)] = 0.8 if not creature.pregnant else 0.6
-        if len(weights) == 0:
-            return None
-        return max(weights, key=lambda x: weights[x])
-
-
+                assert isinstance(block.entity, PerceivedCreature)
+                options.append(ScoredPreset(AttackPreset(block.entity.identity), 0.7)) # type: ignore
         
-    
-    @staticmethod
-    def plan_find_match_intent(perception:Perception) -> MovePreset | None:
-        sames_specie = Analysis.same_species(perception, predicate=lambda x: x.entity.can_reproduce) # type: ignore
+        if distance == 0 and food_target.food_hint == FoodHint.GRASS:
+            assert isinstance(perception.creature_block.cell.food, Energy)
+            options.append(ScoredPreset(EatPreset(perception.creature_block.cell.food), 0.5))
 
-        if len(sames_specie) == 0:
+        options.append(ScoredPreset(MovePreset(food_target.coord), 0.7))
+        if len(options) == 0:
             return None
+        return max(options, key=lambda f_t: f_t.score).preset
 
-        near_coord = Analysis.near_coord(sames_specie, perception.coord)
-    
+class PlannerFindMatch:
+    @staticmethod
+    def plan_intent(perception:Perception, creature:Creature) -> MovePreset | None:
+        same_specie = Analysis.same_species(perception, predicate=lambda x: x.entity.can_reproduce) # type: ignore
+
+        if len(same_specie) == 0:
+            return None
+        
+        near_coord = Analysis.near_coord(same_specie, perception.coord)
+
         if perception.coord.distance_exceeds_one(near_coord):
             return MovePreset(near_coord)
 
-        return None
