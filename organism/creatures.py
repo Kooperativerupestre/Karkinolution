@@ -4,7 +4,7 @@ from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AttackedEvent
 
-from core.error import ReproductiveError, IdNotFoundError, GenderError, IdAlreadyExistsError, EntityError
+from core.error import IdNotFoundError, IdAlreadyExistsError
 from organism.identity import Id, EntityTypes, gen_id
 from random import uniform
 from math import exp
@@ -133,9 +133,8 @@ class Creature:
         return 1 - self.energy.ratio
     @property
     def needed_energy(self) -> float:
-        if self.pregnant:
-            return self.hungry * uniform(0.95, 1) * self.energy.limit
-        return self.hungry * uniform(0.8, 1) * self.energy.limit
+        return self.energy.limit - self.energy.value
+
     @property
     def reproductive_maturity(self) -> float:
         return exp(-(self.age.ratio - 0.45)**2/(0.2)**2)

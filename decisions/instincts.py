@@ -1,15 +1,15 @@
 from organism.ontology import Temperament
-from systems.biology import MetabolismSystem, FoodHint
+from systems.metabolism_system import FoodOption, FoodHint, MetabolismSystem
 from decisions.perception import Perception, Analysis, PerceivedCreature
 from organism.creatures import Creature, PregnantUterus
 from decisions.actions import Intent, IntentActs
 from decisions.presets import MovePreset, EatPreset, AttackPreset
-from organism.identity import Id
-from organism.stats import LimitedValue, Energy
+from organism.stats import LimitedValue
 from systems.reproductivebuffer import ReproductiveBuffer, ReproductiveDesire
 from dataclasses import dataclass
 from core.error import EntityError
 from random import uniform
+
 
 
 COURAGE_FACTOR:dict[Temperament, float] = {
@@ -171,33 +171,33 @@ class ScoredPreset:
 
 class PlannerFindFood:
     @staticmethod
-    def plan_intent(perception: Perception, creature: Creature) -> MovePreset | EatPreset | AttackPreset | None:
-        food_target = MetabolismSystem.find_food_target(creature, perception)
-
-        if food_target is None:
-            return None
-
-        options:list[ScoredPreset] = []
+    def decide_preset(food_target:FoodOption, perception:Perception) -> MovePreset | EatPreset | AttackPreset:
+        # ALIAS
         distance = perception.coord.distance_to_other(food_target.coord)
+        food_type = food_target.food_hint
         block = perception.get(food_target.coord)
+        # CODE
+        
+        if distance == 0 and food_type == FoodHint.GRASS:
+            assert block.cell.food is not None
+            return EatPreset(block.cell.food, food_type)
 
         if distance == 1:
-            if food_target.food_hint == FoodHint.CORPSE:
+            if food_type == FoodHint.CORPSE:
                 assert isinstance(block.entity, PerceivedCreature)
-                corpse = block.entity # type: ignore
-                options.append(ScoredPreset(EatPreset(corpse.energy), 1))
-            elif food_target.food_hint == FoodHint.TARGET:
+                return EatPreset(block.entity.energy, food_type)
+            elif food_type == FoodHint.TARGET:
                 assert isinstance(block.entity, PerceivedCreature)
-                options.append(ScoredPreset(AttackPreset(block.entity.identity), 0.7)) # type: ignore
-        
-        if distance == 0 and food_target.food_hint == FoodHint.GRASS:
-            assert isinstance(perception.creature_block.cell.food, Energy)
-            options.append(ScoredPreset(EatPreset(perception.creature_block.cell.food), 0.5))
-
-        options.append(ScoredPreset(MovePreset(food_target.coord), 0.7))
-        if len(options) == 0:
+                return AttackPreset(block.entity.identity)
+        return MovePreset(food_target.coord)
+    @staticmethod
+    def plan_intent(perception: Perception, creature: Creature) -> MovePreset | EatPreset | AttackPreset | None:
+        chosen = MetabolismSystem.choose_best(perception, creature)
+        if chosen is None:
             return None
-        return max(options, key=lambda f_t: f_t.score).preset
+        
+        return PlannerFindFood.decide_preset(chosen, perception)
+    
 
 class PlannerFindMatch:
     @staticmethod
