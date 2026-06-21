@@ -6,7 +6,7 @@ from organism.creatures import EntitiesRegistry, Creature
 from systems.reproduction import ReproductiveSystem
 from systems.physics import MovementSystem, AttackSystem
 from decisions.perception import Perception
-from systems.biology import MetabolismSystem
+from systems.metabolism_system import MetabolismSystem, FoodHint
 from map.world import World
 from systems.reproductivebuffer import ReproductiveBuffer
 
@@ -20,9 +20,10 @@ class ReproducePreset:
 @dataclass(frozen=True)
 class AttackPreset:
     target:Id
-@dataclass(frozen=True)
+@dataclass
 class EatPreset:
     energy:Energy
+    food_hint:FoodHint
 
 class PresetExecutor:
     @staticmethod
@@ -39,7 +40,7 @@ class PresetExecutor:
         buffer.try_remove(male.id)
     @staticmethod
     def execute_eat(preset:EatPreset, creature:Creature) -> None:
-        MetabolismSystem.eat(creature, preset.energy)
+        MetabolismSystem.eat(creature, preset.energy, preset.food_hint)
     @staticmethod
     def execute_move(preset:MovePreset, creature:Creature, perception:Perception, coord_creature:Coord, world:World) -> None:
         best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)

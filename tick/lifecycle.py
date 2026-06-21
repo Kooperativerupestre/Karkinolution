@@ -8,7 +8,7 @@ from core.coord import Coord
 from map.world import World, WorldMotor
 from map.map import EntityMap
 from decisions.presets import PresetExecutor
-from systems.biology import DeathSystem
+from systems.death_system import DeathSystem
 
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
     return CreatureFactory.gen_creature(

@@ -3,7 +3,6 @@ from organism.genetics import CreatureTypes
 from organism.ontology import Gender
 from organism.creatures import Creature, Corpse, EntitiesRegistry
 from decisions.actions import MoveActions
-
 from core.coord import Coord
 from typing import Callable, Iterable
 from organism.stats import Energy
@@ -11,14 +10,15 @@ from organism.identity import Id, EntityTypes
 from dataclasses import dataclass
 from core.error import CoordinateNotFoundError
 from map.map import Territory, EntityMap, Geometry
-
 from map.cell import Cell, FoodState, Properties, MovimentCost, Damage
+
 
 
 @dataclass(frozen=True)
 class PerceivedCreature:
     energy:Energy
     identity:Id
+    life:int | float | None
 
     specie_id:CreatureTypes | None
     gender:Gender | None
@@ -132,16 +132,18 @@ class Perceiver:
         return PerceivedCreature(
             creature.energy,
             creature.id,
+            creature.life.value,
             creature.genome.core.id,
             creature.gender,
             creature.reproductively_capable and Gender.other_sex(creature.gender) == creature.gender,
-            creature.physical_ratio
+            creature.physical_ratio,
         )
     @staticmethod
     def perceive_corpse(corpse:Corpse) -> PerceivedCreature:
         return PerceivedCreature(
             corpse.energy,
             corpse.id,
+            None,
             None,
             None,
             False,

@@ -1,16 +1,13 @@
-from decisions.perception import PerceivedBlock
-
+from decisions.perception import PerceivedBlock, PerceivedCreature
 from organism.creatures import Creature
 from organism.ontology import AttackedEvent
-
+from math import ceil
 from core.error import NonMotileError
 from core.coord import Coord
 from map.map import TerrainMotor, EntityMap, Territory
-
 from organism.stats import check_energy
 from decisions.actions import MoveActions
 from decisions.perception import Perception
-
 from typing import Callable
 
 class SpatialSystem:
@@ -74,6 +71,21 @@ class MovementSystem:
 
     
 class AttackSystem:
+    # CALCS
+    @staticmethod
+    def calculate_cost_to_attack(creature:Creature) -> float:
+        return 1.7 * creature.genome.metabolism.mass
+    @staticmethod
+    def calculate_attacks_to_kill(creature_strength:int | float, target_life:int | float) -> int:
+        return ceil(target_life/creature_strength)
+
+    @staticmethod
+    def calculate_cost_to_kill(creature:Creature, target:PerceivedCreature) -> float:
+        assert target.life is not None
+        cost_atk = AttackSystem.calculate_cost_to_attack(creature)
+        atks = AttackSystem.calculate_attacks_to_kill(creature.genome.body.strength, target.life)
+        return cost_atk * atks
+    # FUNCTIONS
     @staticmethod
     def attack(creature:Creature, target:Creature) -> float:
         check_energy(creature.energy, 1.5)
