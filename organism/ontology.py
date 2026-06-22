@@ -3,7 +3,6 @@ from enum import Enum, auto
 from dataclasses import dataclass
 from random import choice
 from organism.identity import Id
-from core.coord import Coord
 from random import uniform
 
 @dataclass
@@ -30,10 +29,7 @@ class FoodHint(Enum):
     TARGET = auto()
     GRASS = auto()
 
-@dataclass
-class FoodTarget:
-    food_hint:FoodHint
-    coord:Coord
+
 
 @dataclass(frozen=True)
 class Diet:
