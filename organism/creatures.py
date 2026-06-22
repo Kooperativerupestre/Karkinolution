@@ -169,7 +169,7 @@ class Creature:
         return isinstance(self.uterus, PregnantUterus)
     @property
     def basal_metabolism(self) -> float:
-        return self.energy.limit**(1/3)*1.2 + 1
+        return self.genome.metabolism.mass
 
     @property
     def interface(self) -> CreatureInterface:
