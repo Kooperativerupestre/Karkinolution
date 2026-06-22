@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from map.map import TerrainMotor, Territory, EntityMap, ScaleGenValues, TerrainFactory
+from map.map import TerrainMotor, Territory, EntityMap, ScaleGenValues, TerrainFactory, TerrainQuery
 from core.coord import Coord
-from organism.creatures import Creature, EntitiesRegistry, Corpse
+from organism.creatures import Creature, EntitiesRegistry, Corpse, CreatureFactory
 from organism.identity import Id
 from systems.reproductivebuffer import ReproductiveBuffer
 
@@ -20,9 +20,16 @@ class Log:
 
 class WorldMotor:
     @staticmethod
-    def add_entity(territory:Territory, entity_map:EntityMap, entity:Creature | Corpse, entities:EntitiesRegistry) -> None:
-        TerrainMotor.add_entity(territory=territory, entity_map=entity_map, coord=entity.position, id=entity.id)
-        entities.add(entity)
+    def add_entity(world:World, entity:Corpse | Creature) -> None:
+        TerrainMotor.add_entity(territory=world.territory, entity_map=world.entity_map, coord=entity.position, id=entity.id)
+        world.entities.add(entity)
+    @staticmethod
+    def add_random_creatures(world:World, k:int) -> None:
+        coords = TerrainQuery.random_free_coord(world.territory, world.entity_map, k)
+
+        for _ in range(k):
+            random_creature = CreatureFactory.gen_creature(position=coords.pop())
+            WorldMotor.add_entity(world, random_creature)
     @staticmethod
     def delete_entity_by_id(entity_map:EntityMap, id:Id, entities:EntitiesRegistry) -> None:
         entity_map.delete(entity_map.get_key_by_value(id)) # O(n)
