@@ -21,7 +21,7 @@ def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
 def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
     WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entities)
-    WorldMotor.add_entity(world.territory, world.entity_map, corpse, world.entities)
+    WorldMotor.add_entity(world, corpse)
 
 
 class RunnerCreature:
@@ -79,7 +79,7 @@ class RunnerCreature:
         )
         new_child = RunnerCreature.run_uterus(creature, perception)
         if new_child is not None:
-            WorldMotor.add_entity(territory, entity_map, new_child, entities)
+            WorldMotor.add_entity(world, new_child)
         RunnerCreature.run_intent(creature, perception, world)
         
 class RunnerCorpse:
