@@ -5,6 +5,19 @@ from organism.creatures import Creature, EntitiesRegistry, Corpse
 from organism.identity import Id
 from systems.reproductivebuffer import ReproductiveBuffer
 
+
+class Log:
+    def __init__(self):
+        self.log_registry:list[str] = []
+    def __str__(self) -> str:
+        return str(self.log_registry)
+    def __repr__(self) -> str:
+        return str(self.log_registry)
+    def add(self, message:str):
+        self.log_registry.append(message)
+    def clear(self):
+        self.log_registry = []
+
 class WorldMotor:
     @staticmethod
     def add_entity(territory:Territory, entity_map:EntityMap, entity:Creature | Corpse, entities:EntitiesRegistry) -> None:
@@ -38,6 +51,7 @@ class World:
     entity_map: EntityMap
     entities: EntitiesRegistry
     reproductive_buffer:ReproductiveBuffer
+    log:Log
     time:int = 0
 
 class WorldFactory:
@@ -47,5 +61,6 @@ class WorldFactory:
             TerrainFactory.gen_terrain(preset.size, preset.scale.value, preset.seed),
             EntityMap(),
             EntitiesRegistry(),
-            ReproductiveBuffer()
+            ReproductiveBuffer(),
+            Log()
         )

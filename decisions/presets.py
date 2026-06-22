@@ -7,7 +7,7 @@ from systems.reproduction import ReproductiveSystem
 from systems.physics import MovementSystem, AttackSystem
 from decisions.perception import Perception
 from systems.metabolism_system import MetabolismSystem, FoodHint
-from map.world import World
+from map.world import World, Log
 from systems.reproductivebuffer import ReproductiveBuffer
 
 @dataclass(frozen=True)
@@ -27,7 +27,7 @@ class EatPreset:
 
 class PresetExecutor:
     @staticmethod
-    def execute_reproduction(preset:ReproducePreset, entities:EntitiesRegistry, buffer:ReproductiveBuffer) -> None:
+    def execute_reproduction(preset:ReproducePreset, entities:EntitiesRegistry, buffer:ReproductiveBuffer, log:Log) -> None:
         female = entities.get_creature(preset.female)
         male = entities.get_creature(preset.male)
 
@@ -38,11 +38,14 @@ class PresetExecutor:
 
         buffer.try_remove(female.id)
         buffer.try_remove(male.id)
+        log.add(f'Creatures {female} & {male} reproduced')
+
     @staticmethod
-    def execute_eat(preset:EatPreset, creature:Creature) -> None:
+    def execute_eat(preset:EatPreset, creature:Creature, log:Log) -> None:
         MetabolismSystem.eat(creature, preset.energy, preset.food_hint)
+        log.add(f'Creature {creature} ate')
     @staticmethod
-    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, coord_creature:Coord, world:World) -> None:
+    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, coord_creature:Coord, world:World, log:Log) -> None:
         best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)
 
         if best_pos is None:
@@ -52,20 +55,24 @@ class PresetExecutor:
         cost = MovementSystem.calculate_cost_to_move(perception, best_pos, creature)
         if creature.energy.value < cost:
             return None
-        MovementSystem.move(creature, perception, preset.new_coord, world.entity_map, world.territory)
+        MovementSystem.move(creature, perception, best_pos, world.entity_map, world.territory)
         creature.energy.sub(cost)
+        log.add(f'Creature {creature} moved to {best_pos} ')
 
     @staticmethod
-    def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature) -> None:
-        cost = AttackSystem.attack(creature, entities.get_creature(preset.target))
+    def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature, log:Log) -> None:
+        target = entities.get_creature(preset.target)
+
+        cost = AttackSystem.attack(creature, target)
         creature.energy.sub(cost)
+        log.add(f'Creature {creature} attacked {target}')
     @staticmethod
     def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
         if isinstance(preset, AttackPreset):
-            PresetExecutor.execute_attack(preset,world.entities, creature)
+            PresetExecutor.execute_attack(preset,world.entities, creature, world.log)
         elif isinstance(preset, MovePreset):
-            PresetExecutor.execute_move(preset, creature, perception, perception.coord, world)
+            PresetExecutor.execute_move(preset, creature, perception, perception.coord, world, world.log)
         elif isinstance(preset, EatPreset):
-            PresetExecutor.execute_eat(preset, creature)
+            PresetExecutor.execute_eat(preset, creature, world.log)
         elif isinstance(preset, ReproducePreset):
-            PresetExecutor.execute_reproduction(preset, world.entities, world.reproductive_buffer)
+            PresetExecutor.execute_reproduction(preset, world.entities, world.reproductive_buffer, world.log)
