@@ -107,8 +107,8 @@ class UterusSystem:
     def pass_time(creature:Creature):
         validate_female_gender(creature)
         
-        if creature.uterus.pregnant:        # type: ignore
-            if uterus.all_children_borned: # type: ignore
+        if creature.pregnant:        
+            if creature.uterus.all_children_borned: # type: ignore
                 UterusSystem.finish(creature)
             creature.uterus.gestation.value+=1; # type: ignore
 
