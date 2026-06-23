@@ -45,7 +45,7 @@ class PresetExecutor:
         MetabolismSystem.eat(creature, preset.energy, preset.food_hint)
         log.add(f'Creature {creature} ate')
     @staticmethod
-    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, coord_creature:Coord, world:World, log:Log) -> None:
+    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, world:World) -> None:
         best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)
 
         if best_pos is None:
@@ -57,7 +57,7 @@ class PresetExecutor:
             return None
         MovementSystem.move(creature, perception, best_pos, world.entity_map, world.territory)
         creature.energy.sub(cost)
-        log.add(f'Creature {creature} moved to {best_pos} ')
+        world.log.add(f'Creature {creature} moved to {best_pos} ')
 
     @staticmethod
     def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature, log:Log) -> None:
@@ -69,9 +69,9 @@ class PresetExecutor:
     @staticmethod
     def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
         if isinstance(preset, AttackPreset):
-            PresetExecutor.execute_attack(preset,world.entities, creature, world.log)
+            PresetExecutor.execute_attack(preset, world.entities, creature, world.log)
         elif isinstance(preset, MovePreset):
-            PresetExecutor.execute_move(preset, creature, perception, perception.coord, world, world.log)
+            PresetExecutor.execute_move(preset, creature, perception, world)
         elif isinstance(preset, EatPreset):
             PresetExecutor.execute_eat(preset, creature, world.log)
         elif isinstance(preset, ReproducePreset):
