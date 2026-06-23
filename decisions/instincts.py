@@ -89,7 +89,12 @@ class ScorerIntents:
     def score_find_food(creature:Creature) -> float:
         factor = LimitedValue(0, 1)
 
-        factor.add(creature.hungry * 0.80)
+        hungry = creature.hungry
+
+        if hungry > creature.genome.metabolism.max_hungry:
+            factor.add(hungry * 1.3)
+        else:
+            factor.add(hungry * 1.05)
         
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
@@ -144,7 +149,6 @@ class Instincts:
                 IntentActs.FIND_MATCH,
                 ScorerIntents.score_find_match(creature)
             ))
-
         return acts
     @staticmethod
     def apply_noise(acts:list[IntentScored]) -> None:
@@ -154,6 +158,7 @@ class Instincts:
     @staticmethod
     def chose(acts:list[IntentScored]) -> Intent:
         chosen = max(acts, key=lambda a: a.score)
+
 
         return Intent(chosen.act)
 
