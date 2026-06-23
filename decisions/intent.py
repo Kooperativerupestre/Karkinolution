@@ -34,7 +34,7 @@ class IntentResolver:
             Instincts.apply_noise(acts)
 
             act = Instincts.chose(acts)
-
+            creature.intent = act
             try_call_reproductive_buffer(act, creature, reproductive_buffer)
 
 
