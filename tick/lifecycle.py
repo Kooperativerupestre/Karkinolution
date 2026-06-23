@@ -59,6 +59,8 @@ class RunnerCreature:
         chosen = choices(actions, weights=weights, k=1)[0]
         if chosen is True:
             four_coords = MovementSystem.four_movable_coords(perception, creature)
+            if len(four_coords) == 0:
+                return None
             preset = MovePreset(choice(four_coords))
             PresetExecutor.execute_move(preset, creature, perception, world)
 
