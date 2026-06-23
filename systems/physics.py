@@ -33,6 +33,7 @@ class SpatialSystem:
     def apply_effects(effects:list[Callable[[Creature], None]], creature:Creature) -> None:
         for f in effects:
             f(creature)
+
         
 class MovementSystem:
     @staticmethod
@@ -67,7 +68,15 @@ class MovementSystem:
         if len(moveble_coords) == 0:
             return None
         return min(moveble_coords, key=lambda x: x.distance_to_other(new_coord))
+    @staticmethod
+    def four_movable_coords(perception:Perception, creature:Creature) -> list[Coord]:
+        four_neighbors = perception.neighbors_4_require
 
+        valids:list[Coord] = []
+        for c, b in four_neighbors:
+            if b is not None and SpatialSystem.can_move(b, creature.genome.core.capabilities):
+                valids.append(c)
+        return valids
 
     
 class AttackSystem:

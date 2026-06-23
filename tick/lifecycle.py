@@ -1,13 +1,13 @@
 from organism.creatures import Creature, EntitiesRegistry, PregnantUterus, CreatureFactory, Corpse
 from decisions.perception import Perception, perceive
-from random import choice
+from random import choice, choices
 from systems.reproduction import ReproductiveSystem, UterusSystem, BornData
-from systems.physics import SpatialSystem
+from systems.physics import SpatialSystem, MovementSystem
 from decisions.intent import IntentResolver
 from core.coord import Coord
 from map.world import World, WorldMotor
 from map.map import EntityMap
-from decisions.presets import PresetExecutor
+from decisions.presets import PresetExecutor, MovePreset
 from systems.death_system import DeathSystem
 
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
@@ -51,12 +51,24 @@ class RunnerCreature:
                         new_child = born_data_to_creature(born_data, new_coord)
                         return new_child
 
-    
+    @staticmethod
+    def run_idle_comportament(creature:Creature, perception:Perception, world:World) -> None:
+        actions = [True, False] # MOVE OR NO
+        weights = [1 - creature.hungry, creature.hungry]
+
+        chosen = choices(actions, weights=weights, k=1)[0]
+        if chosen is True:
+            four_coords = MovementSystem.four_movable_coords(perception, creature)
+            preset = MovePreset(choice(four_coords))
+            PresetExecutor.execute_move(preset, creature, perception, world)
+
     @staticmethod
     def run_intent(creature:Creature, perception:Perception, world:World) -> None:
         preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
         if preset is not None:
             PresetExecutor.execute_preset(preset, creature, world, perception)
+        else:
+            RunnerCreature.run_idle_comportament(creature, perception, world)
     @staticmethod
     def run_creature(creature:Creature, world:World) -> None:
         # ALIAS
