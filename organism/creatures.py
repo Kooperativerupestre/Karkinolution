@@ -197,7 +197,9 @@ class Corpse:
         self.id = Id(id, EntityTypes.CORPSE)
         self.decomposition_time = decomposition_time
         self.position = position
-    
+    @property
+    def time_left(self) -> int:
+        return self.decomposition_time.limit - self.decomposition_time.value
     @property
     def ready_to_disapear(self) -> bool:
         return self.decomposition_time.value == self.decomposition_time.limit

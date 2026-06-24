@@ -12,7 +12,7 @@ class DeathSystem:
             assert isinstance(creature.uterus, PregnantUterus)
             energy += creature.uterus.pregnancy_cost * 2
 
-        decomposition_time = energy/creature.energy.limit * 7.5
+        decomposition_time = round(energy/creature.energy.limit * 7.5)
         return Corpse(Energy(energy, energy), gen_id(), Age(0, decomposition_time), creature.position)
     @staticmethod
     def is_dead(creature:Creature) -> bool:
