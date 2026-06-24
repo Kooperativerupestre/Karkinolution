@@ -95,7 +95,7 @@ class ScorerIntents:
         if hungry > creature.genome.metabolism.max_hungry:
             factor.add(hungry * 1.3)
         else:
-            factor.add(hungry * 1.05)
+            factor.add(hungry * 1.12)
         
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
