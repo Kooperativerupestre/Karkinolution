@@ -3,6 +3,7 @@ from map.map import TerrainMotor, Territory, EntityMap, ScaleGenValues, TerrainF
 from core.coord import Coord
 from organism.creatures import Creature, EntitiesRegistry, Corpse, CreatureFactory
 from organism.identity import Id
+from organism.genetics import CreatureTypes
 from systems.reproductivebuffer import ReproductiveBuffer
 
 @dataclass(frozen=True)
@@ -37,8 +38,15 @@ class WorldMotor:
     def add_random_creatures(world:World, k:int) -> None:
         coords = TerrainQuery.random_free_coord(world.territory, world.entity_map, k)
 
-        for _ in range(k):
+        for _ in range(len(coords)):
             random_creature = CreatureFactory.gen_creature(position=coords.pop())
+            WorldMotor.add_entity(world, random_creature)
+    @staticmethod
+    def add_specie_random_creature(world:World, k:int, specie:CreatureTypes) -> None:
+        coords = TerrainQuery.random_free_coord(world.territory, world.entity_map, k)
+        
+        for _ in range(len(coords)):
+            random_creature = CreatureFactory.gen_creature(position=coords.pop(), creature_type=specie)
             WorldMotor.add_entity(world, random_creature)
     @staticmethod
     def delete_entity_by_id(entity_map:EntityMap, id:Id, entities:EntitiesRegistry) -> None:
