@@ -189,7 +189,7 @@ class Creature:
     
     
     def __str__(self):
-        return f'({self.name} | {self.id})'
+        return f'{self.name}'
 
 class Corpse:
     def __init__(self, energy:Energy, id:str, decomposition_time:Age, position:Coord):
