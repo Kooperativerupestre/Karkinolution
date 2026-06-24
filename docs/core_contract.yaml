@@ -1,0 +1,33 @@
+core_contract:
+  version: 1
+
+  death:
+    rule: "life == 0 OR energy == 0 OR age >= max_age"
+    note: "Any of these conditions is sufficient for death"
+
+  idle_behavior:
+    rule: "no_valid_action => random_movement"
+    note: "Random movement is expected default behavior"
+
+  intent_basics:
+    hunger:
+      affects: "priority_only"
+      constraint: "does_not_block_actions"
+      note: "Hunger changes intent ranking only, not eligibility"
+
+  biological_rules:
+    sex_differentiation:
+      rule: "only female entities have uterus"
+      constraint: "male entities must not have uterus"
+      note: "Reproductive anatomy is sex-dependent"
+
+  genetics:
+    genome_core:
+      rule: "immutable"
+      constraint: "genome_core never changes after initialization"
+      note: "All variation must come from derived/genetic expression layers"
+
+  analysis_guidelines:
+    - "Do not flag random movement as anomaly"
+    - "Do not flag idle random movement as bug"
+    - "Only flag behavior that violates explicit rules above"
