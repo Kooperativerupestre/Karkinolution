@@ -9,6 +9,8 @@ from systems.reproductivebuffer import ReproductiveBuffer
 class LogEntry:
     time:int
     message:str
+    def __str__(self):
+        return f"{self.time}: {self.message}"
 
 class Log:
     def __init__(self):
