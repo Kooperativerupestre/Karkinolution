@@ -5,7 +5,7 @@ from systems.reproduction import ReproductiveSystem, UterusSystem, BornData
 from systems.physics import SpatialSystem, MovementSystem
 from decisions.intent import IntentResolver
 from core.coord import Coord
-from map.world import World, WorldMotor
+from map.world import World, WorldMotor, LogEntry
 from map.map import EntityMap
 from decisions.presets import PresetExecutor, MovePreset
 from systems.death_system import DeathSystem
@@ -21,7 +21,11 @@ def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
 def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
     WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entities)
+    world.log.add(LogEntry(world.time, "Creature {} died".format(creature)))
+    if corpse.time_left == 0:
+        return None
     WorldMotor.add_entity(world, corpse)
+
 
 
 class RunnerCreature:
