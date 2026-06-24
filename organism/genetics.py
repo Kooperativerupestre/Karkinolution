@@ -129,14 +129,14 @@ _creatures_metabolism_system = {
     CreatureTypes.FISH: MetabolismGenome(
         max_hungry=0.33,
         diet=Diet(0.2, 0.75, 0.15),
-        mass=1.0,  # assumido inexistente antes, mantido coerente com padrão leve
+        mass=1.0,  
         energy_limit=10
     ),
 
     CreatureTypes.HIPPOPOTAMUS: MetabolismGenome(
         max_hungry=0.70,
         diet=Diet(0.2, 0.7, 0.1),
-        mass=1.6,  # implícito no original como criatura massiva, mas mantido proporcional
+        mass=1.6,
         energy_limit=85
     )
 }
