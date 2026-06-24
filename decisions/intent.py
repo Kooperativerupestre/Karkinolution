@@ -28,7 +28,7 @@ class IntentResolver:
     @staticmethod
     def update_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> (
         MovePreset | EatPreset | AttackPreset | ReproducePreset | None):
-
+        creature.intent.time += 1
         if creature.intent.intent == IntentActs.NOTHING:
             acts = Instincts.take(creature, reproductive_buffer)
             Instincts.apply_noise(acts)
