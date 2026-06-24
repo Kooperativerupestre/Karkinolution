@@ -5,16 +5,24 @@ from organism.creatures import Creature, EntitiesRegistry, Corpse, CreatureFacto
 from organism.identity import Id
 from systems.reproductivebuffer import ReproductiveBuffer
 
+@dataclass(frozen=True)
+class LogEntry:
+    time:int
+    message:str
 
 class Log:
     def __init__(self):
-        self.log_registry:list[str] = []
+        self.log_registry:list[LogEntry] = []
     def __str__(self) -> str:
         return str(self.log_registry)
     def __repr__(self) -> str:
         return str(self.log_registry)
-    def add(self, message:str):
-        self.log_registry.append(message)
+    def add(self, log_entry:LogEntry):
+        self.log_registry.append(log_entry)
+    def get_by_time(self, time:int) -> list[LogEntry]:
+        # O(n)
+        log_entries = [l for l in self.log_registry if l.time == time]
+        return log_entries
     def clear(self):
         self.log_registry = []
 
