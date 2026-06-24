@@ -7,6 +7,7 @@ from organism.stats import Energy, LimitedValue, check_energy
 from core.error import GenderError, DifferentSpeciesError, AlreadyPregnantError, ReproductiveError
 from random import choices
 from typing import Callable
+from decisions.perception import PerceivedCreature
 
 @dataclass(frozen=True)
 class BornData:
@@ -146,8 +147,9 @@ class ReproductiveSystem:
         female.fertility.zero()
         return child
     @staticmethod
-    def can_reproduce(A:Creature, B:Creature) -> bool:
-        return (A.genome.core.id == B.genome.core.id) and (A.reproductively_capable and B.reproductively_capable)
+    def can_reproduce(A:Creature, B:PerceivedCreature) -> bool:
+        assert B.gender is not None
+        return A.reproductively_capable and A.gender == Gender.other_sex(B.gender)
     @staticmethod
     def return_parents(A:Creature, B:Creature) -> Parents:
         a_gender = A.gender

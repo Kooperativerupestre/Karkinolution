@@ -22,7 +22,6 @@ class PerceivedCreature:
 
     specie_id:CreatureTypes | None
     gender:Gender | None
-    can_reproduce:bool
     physical_ratio:float
 
 
@@ -115,9 +114,7 @@ class Analysis:
     @staticmethod
     def corpses(perception:Perception) -> set[Coord]:
         return Analysis.find_predicate(perception, lambda x: x.get_entity_type() == EntityTypes.CORPSE)
-    @staticmethod
-    def same_species(perception:Perception, predicate:Callable[[PerceivedBlock], bool] = lambda x: True) -> set[Coord]:
-        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.CREATURE and x.entity.specie_id == perception.creature.specie_id) # type: ignore
+
     @staticmethod
     def other_species(perception:Perception) -> set[Coord]:
         return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.CREATURE and x.entity.specie_id != perception.creature.specie_id) # type: ignore
@@ -135,7 +132,6 @@ class Perceiver:
             creature.life.value,
             creature.genome.core.id,
             creature.gender,
-            creature.reproductively_capable and Gender.other_sex(creature.gender) == creature.gender,
             creature.physical_ratio,
         )
     @staticmethod
@@ -146,7 +142,6 @@ class Perceiver:
             None,
             None,
             None,
-            False,
             0
         )
     @staticmethod
