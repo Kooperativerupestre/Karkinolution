@@ -9,7 +9,8 @@ from systems.reproductivebuffer import ReproductiveBuffer, ReproductiveDesire
 from dataclasses import dataclass
 from core.error import EntityError
 from random import uniform
-
+from organism.identity import EntityTypes
+from systems.reproduction import ReproductiveSystem
 
 
 COURAGE_FACTOR:dict[Temperament, float] = {
@@ -207,8 +208,9 @@ class PlannerFindFood:
 class PlannerFindMatch:
     @staticmethod
     def plan_intent(perception:Perception, creature:Creature) -> MovePreset | None:
-        same_specie = Analysis.same_species(perception, predicate=lambda x: x.entity.can_reproduce) # type: ignore
-
+        same_specie = Analysis.find_predicate(perception, predicate=
+                                              lambda b: b.get_entity_type() == EntityTypes.CREATURE and
+                                                ReproductiveSystem.can_reproduce(creature, b.entity)) # type: ignore
         if len(same_specie) == 0:
             return None
         
