@@ -76,11 +76,9 @@ class Perception:
         return {c: b for c, b in self.iter if c.x + self.coord.x <= neighbors_size.x and c.y + self.coord.y <= neighbors_size.y}.values()
     
     @property
-    def neighbors_9(self) -> Iterable[tuple[Coord, PerceivedBlock]]:
-        return self.neighbors_x_y(Coord(3, 3))
-    @property
-    def neighbors_9_blocks(self) -> Iterable[PerceivedBlock]:
-        return self.neighbors_x_y_blocks(Coord(3, 3))
+    def neighbors_8_blocks(self) -> Iterable[PerceivedBlock | None]:
+        coords = self.coord.eight_movements()
+        return [self.require(c) for c in coords]
     @property
     def neighbors_4_require(self) -> Iterable[tuple[Coord, PerceivedBlock | None]]:
         coords = self.coord.four_movements()
