@@ -84,11 +84,11 @@ class Perception:
     @property
     def neighbors_4_require(self) -> Iterable[tuple[Coord, PerceivedBlock | None]]:
         coords = self.coord.four_movements()
-        return {c: self.require(c) for c in coords}.items()
+        return ((c, self.require(c)) for c in coords)
     @property
     def neighbors_4_require_blocks(self) -> Iterable[PerceivedBlock | None]:
         coords = self.coord.four_movements()
-        return {self.require(c) for c in coords}
+        return [self.require(c) for c in coords]
     @property
     def creature_block(self) -> PerceivedBlock:
         return self.blocks[self.coord]
