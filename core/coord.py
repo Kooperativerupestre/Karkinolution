@@ -15,6 +15,13 @@ class Coord:
         return self.distance_to_other(other) > 1
     def four_movements(self) -> set[Coord]:
         return {Coord(self.x+1, self.y), Coord(self.x, self.y + 1), Coord(self.x - 1, self.y), Coord(self.x, self.y - 1)}
+    def eight_movements(self) -> set[Coord]:
+        return {
+            Coord(self.x + dx, self.y + dy)
+            for dx in (-1, 0, 1)
+            for dy in (-1, 0, 1)
+            if not (dx == 0 and dy == 0)
+        }
     def sub(self, other:Coord) -> Coord:
         return Coord(x=self.x - other.x, y=self.y - other.y)
     def add(self, other:Coord) -> Coord:
