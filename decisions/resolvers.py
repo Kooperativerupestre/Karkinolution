@@ -11,12 +11,13 @@ class ReproductiveResolver:
         ids:list[Id] = []
 
 
-        neighbors = perception.neighbors_4_require_blocks
+        neighbors = perception.neighbors_8_blocks
+
 
         for b in neighbors:
-            if b is not None and b.has_entity and b.entity.can_reproduce: # type: ignore
+            if b is not None and b.has_entity and ReproductiveSystem.can_reproduce(creature, b.entity): # type: ignore
                 assert b.entity is not None
-                ids.append(b.entity.identity) 
+                ids.append(b.entity.identity)
         return ids
     @staticmethod
     def resolve_parents(A:Creature, B_id:Id, entities:EntitiesRegistry) -> Parents:

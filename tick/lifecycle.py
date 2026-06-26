@@ -9,6 +9,7 @@ from map.world import World, WorldMotor, LogEntry
 from map.map import EntityMap
 from decisions.presets import PresetExecutor, MovePreset
 from systems.death_system import DeathSystem
+from decisions.resolvers import ReproductiveResolver
 
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
     return CreatureFactory.gen_creature(
@@ -98,6 +99,11 @@ class RunnerCreature:
         new_child = RunnerCreature.run_uterus(creature, perception)
         if new_child is not None:
             WorldMotor.add_entity(world, new_child)
+        if creature.id in world.reproductive_buffer.desires:
+            reproductive_preset = ReproductiveResolver.resolve_reproduction(creature, perception, entities)
+            if reproductive_preset is not None:
+                PresetExecutor.execute_reproduction(reproductive_preset, world)
+                IntentResolver.to_nothing_intent(creature)
         RunnerCreature.run_intent(creature, perception, world)
         
 class RunnerCorpse:

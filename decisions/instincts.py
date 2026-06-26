@@ -106,7 +106,7 @@ class ScorerIntents:
     def score_find_match(creature:Creature) -> float:
         factor = LimitedValue(0, 1)
 
-        factor.add(creature.reproductive_maturity*0.73)
+        factor.add(creature.reproductive_maturity*0.9)
         
         factor.mul(creature.reproductive_fitness)
 

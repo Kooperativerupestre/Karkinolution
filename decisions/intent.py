@@ -1,5 +1,5 @@
 from organism.creatures import Creature
-from decisions.actions import  IntentActs
+from decisions.actions import  IntentActs, Intent
 from decisions.instincts import PlannerFindFood, PlannerFindMatch, Instincts, try_call_reproductive_buffer
 from decisions.perception import Perception
 from decisions.presets import EatPreset, MovePreset, AttackPreset, ReproducePreset
@@ -7,14 +7,16 @@ from systems.reproductivebuffer import ReproductiveBuffer
 
 class IntentResolver:
     @staticmethod
+    def to_nothing_intent(creature:Creature) -> None:
+        creature.intent = Intent(IntentActs.NOTHING)
+    @staticmethod
     def cancel_invalid_intents(creature:Creature) -> None:
         intent = creature.intent.intent
         intent_time = creature.intent.time
         if creature.hungry < creature.genome.metabolism.max_hungry and intent_time > 2 and intent == IntentActs.FIND_FOOD:
-            creature.intent.intent = IntentActs.NOTHING
-
+            IntentResolver.to_nothing_intent(creature)
         if intent_time > 5 and intent ==  IntentActs.FIND_MATCH:
-            creature.intent.intent = IntentActs.NOTHING
+            IntentResolver.to_nothing_intent(creature)
     @staticmethod
     def transform_to_preset(creature:Creature, perception:Perception) -> MovePreset | EatPreset | AttackPreset | None:
         if creature.intent.intent == IntentActs.FIND_FOOD:
