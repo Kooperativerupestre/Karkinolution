@@ -2,12 +2,12 @@ from organism.creatures import Creature, EntitiesRegistry, PregnantUterus, Creat
 from decisions.perception import Perception, perceive
 from random import choice, choices
 from systems.reproduction import ReproductiveSystem, UterusSystem, BornData
-from systems.physics import SpatialSystem, MovementSystem
+from systems.physics import MovementSystem
 from decisions.intent import IntentResolver
 from core.coord import Coord
 from map.world import World, WorldMotor, LogEntry
 from map.map import EntityMap
-from decisions.presets import PresetExecutor, MovePreset
+from decisions.presets import PresetExecutor, MovePreset, EatPreset, AttackPreset, ReproducePreset
 from systems.death_system import DeathSystem
 from decisions.resolvers import ReproductiveResolver
 
@@ -46,9 +46,7 @@ class RunnerCreature:
             UterusSystem.pass_time(creature)
 
             if creature.uterus.gestation.is_ready_to_born:
-                four = perception.neighbors_4_require
-                possibilities = [c for c, b in four if b is not None and SpatialSystem.can_move(b, creature.genome.core.capabilities)]
-
+                possibilities = MovementSystem.four_movable_coords(perception, creature)
                 if len(possibilities) > 0:
                     new_coord = choice(possibilities)
                     born_data = ReproductiveSystem.to_birth(creature)
@@ -57,7 +55,7 @@ class RunnerCreature:
                         return new_child
 
     @staticmethod
-    def run_idle_comportament(creature:Creature, perception:Perception, world:World) -> None:
+    def get_idle_preset(creature:Creature, perception:Perception, world:World) -> MovePreset | None:
         actions = [True, False] # MOVE OR NO
         weights = [1 - creature.hungry, creature.hungry]
 
@@ -67,15 +65,26 @@ class RunnerCreature:
             if len(four_coords) == 0:
                 return None
             preset = MovePreset(choice(four_coords))
-            PresetExecutor.execute_move(preset, creature, perception, world)
+            return preset
 
     @staticmethod
-    def run_intent(creature:Creature, perception:Perception, world:World) -> None:
+    def try_to_get_reproduce_preset(creature: Creature, perception:Perception, world:World) -> ReproducePreset | None:
+        if creature.id in world.reproductive_buffer.desires:
+            return ReproductiveResolver.resolve_reproduction(creature, perception, world.entities)
+    @staticmethod
+    def get_presets(creature:Creature, perception:Perception, world:World) -> list[MovePreset | EatPreset | AttackPreset | ReproducePreset]:
+        presets:list[MovePreset | EatPreset | AttackPreset | ReproducePreset] = []
         preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
+        if preset is None:
+            preset = RunnerCreature.get_idle_preset(creature, perception, world)
         if preset is not None:
-            PresetExecutor.execute_preset(preset, creature, world, perception)
-        else:
-            RunnerCreature.run_idle_comportament(creature, perception, world)
+            presets.append(preset)
+        
+        preset = RunnerCreature.try_to_get_reproduce_preset(creature, perception, world)
+        if preset is not None:
+            presets.append(preset)
+        return presets
+    
     @staticmethod
     def run_creature(creature:Creature, world:World) -> None:
         # ALIAS
@@ -97,17 +106,21 @@ class RunnerCreature:
             creature.position,
             entities
         )
+  
+        presets = RunnerCreature.get_presets(creature, perception, world)
         new_child = RunnerCreature.run_uterus(creature, perception)
 
-        if creature.id in world.reproductive_buffer.desires:
-            reproductive_preset = ReproductiveResolver.resolve_reproduction(creature, perception, entities)
-            if reproductive_preset is not None:
-                PresetExecutor.execute_reproduction(reproductive_preset, world)
-                IntentResolver.to_nothing_intent(creature)
-                
-        RunnerCreature.run_intent(creature, perception, world)
+
+
         if new_child is not None:
             WorldMotor.add_entity(world, new_child)
+            for preset in presets:
+                if not isinstance(preset, MovePreset):
+                    PresetExecutor.execute_preset(preset, creature, world, perception)
+        else:
+            for preset in presets:
+                PresetExecutor.execute_preset(preset, creature, world, perception)
+
         
 class RunnerCorpse:
     @staticmethod
