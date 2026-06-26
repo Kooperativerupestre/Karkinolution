@@ -8,6 +8,7 @@ from systems.physics import MovementSystem, AttackSystem
 from decisions.perception import Perception
 from systems.metabolism_system import MetabolismSystem, FoodHint
 from map.world import World, Log, LogEntry
+from core.error import InsufficientEnergyError
 
 
 @dataclass(frozen=True)
@@ -73,7 +74,7 @@ class PresetExecutor:
         creature.energy.sub(cost)
         log.add(LogEntry(time, f'Creature {creature} attacked {target}'))
     @staticmethod
-    def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
+    def _unsafe_execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
         if isinstance(preset, AttackPreset):
             PresetExecutor.execute_attack(preset, world.entities, creature, world.log, world.time)
         elif isinstance(preset, MovePreset):
@@ -82,3 +83,10 @@ class PresetExecutor:
             PresetExecutor.execute_eat(preset, creature, world.time, world.log)
         elif isinstance(preset, ReproducePreset):
             PresetExecutor.execute_reproduction(preset, world)
+    @staticmethod
+    def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
+        try:
+            PresetExecutor._unsafe_execute_preset(preset, creature, world, perception)
+        except InsufficientEnergyError:
+            pass
+        

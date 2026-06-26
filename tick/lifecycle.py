@@ -83,6 +83,7 @@ class RunnerCreature:
         territory = world.territory
         entities = world.entities
         # CODE
+        new_child:Creature | None = None
         is_dead = DeathSystem.is_dead(creature)
         if is_dead:
             resolve_death(creature, world)
@@ -97,14 +98,16 @@ class RunnerCreature:
             entities
         )
         new_child = RunnerCreature.run_uterus(creature, perception)
-        if new_child is not None:
-            WorldMotor.add_entity(world, new_child)
+
         if creature.id in world.reproductive_buffer.desires:
             reproductive_preset = ReproductiveResolver.resolve_reproduction(creature, perception, entities)
             if reproductive_preset is not None:
                 PresetExecutor.execute_reproduction(reproductive_preset, world)
                 IntentResolver.to_nothing_intent(creature)
+                
         RunnerCreature.run_intent(creature, perception, world)
+        if new_child is not None:
+            WorldMotor.add_entity(world, new_child)
         
 class RunnerCorpse:
     @staticmethod
