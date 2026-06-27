@@ -114,7 +114,7 @@ class Genome:
 _creatures_metabolism_system = {
     CreatureTypes.CROCODILE: MetabolismGenome(
         max_hungry=0.80,
-        diet=Diet(0.4, 0.1, 0.5),
+        diet=Diet(0.58, 0.085, 0.85),
         mass=1.25,
         energy_limit=100
     ),
