@@ -9,7 +9,7 @@ from decisions.perception import Perception, PerceivedCreature
 from systems.physics import MovementSystem, AttackSystem
 
 
-ENTITY_FOOD_YIELD = 1 / 4.5
+CORPSE_FOOD_YIELD = 0.8
 
 
 @dataclass(frozen=True)
@@ -25,8 +25,8 @@ class MetabolismSystem:
 
     @staticmethod
     def get_food_yield(energy: float, food_type: FoodHint) -> float:
-        if food_type in (FoodHint.TARGET, FoodHint.CORPSE):
-            return energy * ENTITY_FOOD_YIELD
+        if food_type == FoodHint.CORPSE:
+            return energy * CORPSE_FOOD_YIELD
         return energy
 
     @staticmethod
