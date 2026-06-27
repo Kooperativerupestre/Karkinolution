@@ -148,8 +148,9 @@ class ReproductiveSystem:
         return child
     @staticmethod
     def can_reproduce(A:Creature, B:PerceivedCreature) -> bool:
-        assert B.gender is not None
-        return A.reproductively_capable and A.gender == Gender.other_sex(B.gender) and B.reproductive_capacity and B.specie_id == A.genome.core.id
+        if B.gender is not None:
+            return A.reproductively_capable and A.gender == Gender.other_sex(B.gender) and B.reproductive_capacity and B.specie_id == A.genome.core.id
+        return False
     @staticmethod
     def return_parents(A:Creature, B:Creature) -> Parents:
         a_gender = A.gender
