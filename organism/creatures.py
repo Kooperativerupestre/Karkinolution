@@ -89,19 +89,7 @@ class EmptyUterus:
     pass
 
 
-@dataclass(frozen=True)
-class CreatureInterface:
-    name:str
-    id:Id
-    specie_id:CreatureTypes
-    age:Age
-    energy:Energy
-    life:Life
 
-    pregnant:bool
-    intent:Intent
-    position:Coord
-    hungry:float
 
 
 class Creature:
@@ -171,22 +159,6 @@ class Creature:
     def basal_metabolism(self) -> float:
         return self.genome.metabolism.mass
 
-    @property
-    def interface(self) -> CreatureInterface:
-        return CreatureInterface(
-            self.name,
-            self.id,
-            self.genome.core.id,
-            self.age,
-            self.energy,
-            self.life,
-            self.pregnant,
-            self.intent,
-            self.position,
-            self.hungry
-        )
-    
-    
     
     def __str__(self):
         return f'{self.name}'
@@ -198,7 +170,7 @@ class Corpse:
         self.decomposition_time = decomposition_time
         self.position = position
     @property
-    def time_left(self) -> int:
+    def time_left(self) -> float:
         return self.decomposition_time.limit - self.decomposition_time.value
     @property
     def ready_to_disapear(self) -> bool:
