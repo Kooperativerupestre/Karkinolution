@@ -223,7 +223,8 @@ class CreatureFactory:
         creature_type:CreatureTypes | None = None,
         id:str | None = None,
         initial_energy:Energy | None = None,
-        genome:Genome | None = None
+        genome:Genome | None = None,
+        gender:Gender | None = None
     ) -> Creature:
         
         if creature_type is None:
@@ -235,9 +236,11 @@ class CreatureFactory:
         if initial_energy is None:
             initial_energy = Energy(uniform(0.5, 1) * genome.metabolism.energy_limit, genome.metabolism.energy_limit)
 
+        if gender is None:
+            gender = Gender.choice()
         return Creature(
             genome, 
-            Gender.choice(),
+            gender,
             gen_name(),
             initial_energy,
             position,
