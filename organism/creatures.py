@@ -1,5 +1,5 @@
 from __future__ import annotations
-from organism.genetics import Genome, CreatureTypes, _creatures_genomes
+from organism.genetics import Genome, CreatureTypes, creatures_genomes
 from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AttackedEvent
@@ -232,7 +232,7 @@ class CreatureFactory:
         if id is None:
             id = gen_id()
         if genome is None:
-            genome = _creatures_genomes[creature_type]
+            genome = creatures_genomes.get_type_genome(creature_type)
         if initial_energy is None:
             initial_energy = Energy(uniform(0.5, 1) * genome.metabolism.energy_limit, genome.metabolism.energy_limit)
 
