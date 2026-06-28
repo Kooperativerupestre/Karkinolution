@@ -1,12 +1,11 @@
 from organism.creatures import CreatureFactory
-from core.coord import Coord
 from systems.death_system import DeathSystem
 
 
 def test_verify_creature_death() -> None:
     # INIT
 
-    creature = CreatureFactory.gen_creature(position=Coord(1, 1))
+    creature = CreatureFactory.gen_creature()
     # ENERGY VERIFICATION
     creature.energy.value = 0
 
