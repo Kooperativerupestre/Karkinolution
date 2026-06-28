@@ -219,7 +219,7 @@ class EntitiesRegistry:
 class CreatureFactory:
     @staticmethod
     def gen_creature(
-        position:Coord,
+        position:Coord | None = None,
         creature_type:CreatureTypes | None = None,
         id:str | None = None,
         initial_energy:Energy | None = None,
@@ -238,6 +238,8 @@ class CreatureFactory:
 
         if gender is None:
             gender = Gender.choice()
+        if position is None:
+            position = Coord(0, 0)
         return Creature(
             genome, 
             gender,
