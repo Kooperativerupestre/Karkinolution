@@ -16,6 +16,12 @@ class ScaleGenValues(Enum):
     FRAGMENTED = 0.60
 
 class Territory(BaseStorage[Coord, Cell]):
+    def __init__(self, size_x:int, size_y:int):
+        super().__init__()
+        self.size_x = size_x
+        self.size_y = size_y
+
+
     def _already_exists_error(self, key: Coord) -> None:
         raise CoordinateAlreadyExistsError('Coord {} already exists'.format(key))
     def _not_found_error(self, key: Coord) -> None:
@@ -130,7 +136,7 @@ class TerrainFactory:
     
     @staticmethod
     def gen_terrain(radius:Coord, scale:float, seed:int) -> Territory:
-        territory = Territory()
+        territory = Territory(radius.x, radius.y)
 
         for x in range(radius.x):
             for y in range(radius.y):
