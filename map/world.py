@@ -89,3 +89,33 @@ class WorldFactory:
             ReproductiveBuffer(),
             Log()
         )
+class WorldPresets:
+    @staticmethod
+    def crab_chaos() -> World:
+        world_preset = PresetWorld(TerrainFactory.gen_seed(), Coord(7, 7), ScaleGenValues.LONG)
+        world = WorldFactory.create_world(world_preset)
+
+        WorldMotor.add_specie_random_creature(world, 10, CreatureTypes.CRAB)
+        return world
+    
+    @staticmethod
+    def paranoic() -> World:
+        world_preset = PresetWorld(TerrainFactory.gen_seed(), Coord(5, 5), ScaleGenValues.LONG_LONG)
+        world = WorldFactory.create_world(world_preset)
+
+        WorldMotor.add_specie_random_creature(world, 5, CreatureTypes.HIPPOPOTAMUS)
+        return world
+    @staticmethod
+    def titanic() -> World:
+        world_preset = PresetWorld(TerrainFactory.gen_seed(), Coord(10, 11), ScaleGenValues.MEDIUM)
+        world = WorldFactory.create_world(world_preset)
+
+        WorldMotor.add_random_creatures(world, 10)
+        return world
+    @staticmethod
+    def normal() -> World:
+        world_preset = PresetWorld(TerrainFactory.gen_seed(), Coord(9, 9), ScaleGenValues.MEDIUM)
+        world = WorldFactory.create_world(world_preset)
+
+        WorldMotor.add_random_creatures(world, 10)
+        return world
