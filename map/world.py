@@ -49,17 +49,9 @@ class WorldMotor:
             random_creature = CreatureFactory.gen_creature(position=coords.pop(), creature_type=specie)
             WorldMotor.add_entity(world, random_creature)
     @staticmethod
-    def delete_entity_by_id(entity_map:EntityMap, id:Id, entities:EntitiesRegistry) -> None:
-        entity_map.delete(entity_map.get_key_by_value(id)) # O(n)
-        entities.delete(id)
-
-
-        # Slow path O(n)
-        # Use only creature's coordinate is unknow
-        # Prefer delete_entity whenever possible
-    @staticmethod
-    def delete_entity(entity_map:EntityMap, coord:Coord, id:Id, entities:EntitiesRegistry) -> None:
-        entity_map.delete(coord) # O(1)
+    def delete_entity(entity_map:EntityMap, id:Id, entities:EntitiesRegistry) -> None:
+        position = entities.get(id).position
+        entity_map.delete(position) 
         entities.delete(id)
 
 @dataclass(frozen=True)
