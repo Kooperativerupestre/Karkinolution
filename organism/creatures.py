@@ -224,7 +224,8 @@ class CreatureFactory:
         id:str | None = None,
         initial_energy:Energy | None = None,
         genome:Genome | None = None,
-        gender:Gender | None = None
+        gender:Gender | None = None,
+        name:str | None = None
     ) -> Creature:
         
         if creature_type is None:
@@ -240,10 +241,12 @@ class CreatureFactory:
             gender = Gender.choice()
         if position is None:
             position = Coord(0, 0)
+        if name is None:
+            name = gen_name()
         return Creature(
             genome, 
             gender,
-            gen_name(),
+            name,
             initial_energy,
             position,
             id
