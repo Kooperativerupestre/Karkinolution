@@ -95,7 +95,7 @@ class AttackResolver:
 
     @staticmethod
     def get_reactive_attack(creature:Creature, entities:EntitiesRegistry) -> AttackOutput | None:
-        if creature.last_attack is not None:
+        if creature.last_attack is not None and creature.last_attack.attacker_id in entities.entitys:
             target_id = creature.last_attack.attacker_id
             score = AttackResolver.score_attack(creature, entities.get_creature(target_id))
 
