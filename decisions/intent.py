@@ -1,9 +1,10 @@
 from organism.creatures import Creature
 from decisions.actions import  IntentActs, Intent
-from decisions.instincts import PlannerFindFood, PlannerFindMatch, Instincts, try_call_reproductive_buffer
+from decisions.instincts import Planner, Instincts, try_call_reproductive_buffer
 from decisions.perception import Perception
 from decisions.presets import EatPreset, MovePreset, AttackPreset, ReproducePreset
 from systems.reproductivebuffer import ReproductiveBuffer
+from map.world import World
 
 class IntentResolver:
     @staticmethod
@@ -17,15 +18,7 @@ class IntentResolver:
             IntentResolver.to_nothing_intent(creature)
         if intent_time > 5 and intent ==  IntentActs.FIND_MATCH:
             IntentResolver.to_nothing_intent(creature)
-    @staticmethod
-    def transform_to_preset(creature:Creature, perception:Perception) -> MovePreset | EatPreset | AttackPreset | None:
-        if creature.intent.intent == IntentActs.FIND_FOOD:
-            act = PlannerFindFood.plan_intent(perception, creature)
-            return act
-        
-        elif creature.intent.intent == IntentActs.FIND_MATCH:
-            act = PlannerFindMatch.plan_intent(perception, creature)
-            return act
+
 
     @staticmethod
     def update_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer) -> (
@@ -43,7 +36,11 @@ class IntentResolver:
 
 
     @staticmethod
-    def resolve_intent(creature:Creature, reproductive_buffer:ReproductiveBuffer, perception:Perception) -> MovePreset | AttackPreset | EatPreset | None:
+    def resolve_intent(creature:Creature, world:World, perception:Perception) -> MovePreset | AttackPreset | EatPreset | None:
         IntentResolver.cancel_invalid_intents(creature)
+        # ALIAS
+        reproductive_buffer = world.reproductive_buffer
+        entities = world.entities
+        # CODE
         IntentResolver.update_intent(creature, reproductive_buffer)
-        return IntentResolver.transform_to_preset(creature, perception)
+        return Planner.plan(perception, creature, entities)
