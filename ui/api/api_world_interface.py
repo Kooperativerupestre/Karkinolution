@@ -51,7 +51,7 @@ class APIWorld:
     @staticmethod
     def get_cell_interface(coord:Coord, world:World) -> CellInterface | None:
         try:
-            cell = World.territory.get(coord)
+            cell = world.territory.get(coord)
         except Exception:
             return None
         return InterfaceFactory.create_cell_interface(cell)
