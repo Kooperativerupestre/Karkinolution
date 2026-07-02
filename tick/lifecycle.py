@@ -21,7 +21,7 @@ def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
 
 def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
-    WorldMotor.delete_entity(world.entity_map, creature.position,creature.id, world.entities)
+    WorldMotor.delete_entity(world.entity_map, creature.id, world.entities)
     world.log.add(LogEntry(world.time, "Creature {} died".format(creature)))
     if corpse.time_left == 0:
         return None
@@ -74,7 +74,7 @@ class RunnerCreature:
     @staticmethod
     def get_presets(creature:Creature, perception:Perception, world:World) -> list[MovePreset | EatPreset | AttackPreset | ReproducePreset]:
         presets:list[MovePreset | EatPreset | AttackPreset | ReproducePreset] = []
-        preset = IntentResolver.resolve_intent(creature, world.reproductive_buffer, perception)
+        preset = IntentResolver.resolve_intent(creature, world, perception)
         if preset is None:
             preset = RunnerCreature.get_idle_preset(creature, perception, world)
         if preset is not None:
@@ -128,7 +128,7 @@ class RunnerCorpse:
         corpse.energy.mul(0.95 - corpse.decomposition_time.value/100)
         corpse.decomposition_time.add(1)
     @staticmethod
-    def run_corpse(corpse:Corpse, coord_corpse:Coord, entity_map:EntityMap, entities:EntitiesRegistry) -> None:
+    def run_corpse(corpse:Corpse, entity_map:EntityMap, entities:EntitiesRegistry) -> None:
         if corpse.ready_to_disapear:
-            WorldMotor.delete_entity(entity_map, coord_corpse, corpse.id, entities)
+            WorldMotor.delete_entity(entity_map, corpse.id, entities)
         RunnerCorpse.to_degrade_corpse(corpse)
