@@ -107,7 +107,7 @@ class ViewTab:
         if cell is None:
             StandardMessages.cannot_execute("Get cell")
             return None
-        console.print(render_cell)
+        console.print(render_cell(cell))
 
     @staticmethod
     def live_view_for_10_times(world: World) -> None:
