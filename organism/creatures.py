@@ -11,6 +11,7 @@ from math import exp
 from dataclasses import dataclass
 from core.coord import Coord
 from utils.namegenerator import gen_name
+from typing import Iterable
 
 
 
@@ -185,7 +186,9 @@ class Corpse:
 class EntitiesRegistry:
     def __init__(self):
         self.entitys:dict[Id, Corpse | Creature] = {}
-
+    @property
+    def entities(self) -> Iterable[Corpse | Creature]:
+        return self.entitys.values()
     def add(self, entity:Creature | Corpse) -> str:
         if entity.id in self.entitys:
             raise IdAlreadyExistsError('ID {} exists'.format(entity.id))
