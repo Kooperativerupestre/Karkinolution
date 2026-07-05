@@ -249,6 +249,12 @@ def populate_default_genomes(creatures_genomes: CreatureGenomes) -> None:
         id=CreatureTypes.HIPPOPOTAMUS
     ), CreatureTypes.HIPPOPOTAMUS)
 
+sociability_species = {
+    CreatureTypes.CRAB: 0.7,
+    CreatureTypes.FISH: 0.5,
+    CreatureTypes.CROCODILE: 0.3,
+    CreatureTypes.HIPPOPOTAMUS: -0.67
+}
 
 creatures_genomes = CreatureGenomes()
 populate_default_genomes(creatures_genomes)

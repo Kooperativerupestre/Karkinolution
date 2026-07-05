@@ -1,5 +1,5 @@
 from __future__ import annotations
-from organism.genetics import Genome, CreatureTypes, creatures_genomes
+from organism.genetics import Genome, CreatureTypes, creatures_genomes, sociability_species
 from organism.stats import LimitedValue, Energy, Life, Age, Fertility
 from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AttackedEvent
@@ -101,6 +101,7 @@ class Creature:
                  initial_energy:Energy,
                  position:Coord,
                  id:str,
+                 sociability:int | float
                  ):
         self.genome = genome
         self.gender = gender
@@ -117,6 +118,7 @@ class Creature:
         self.last_attack: None | AttackedEvent = None
         self.position = position
 
+        self.sociability = LimitedValue(sociability, 1, -1)
     @property
     def hungry(self) -> float:
         return 1 - self.energy.ratio
@@ -228,7 +230,8 @@ class CreatureFactory:
         initial_energy:Energy | None = None,
         genome:Genome | None = None,
         gender:Gender | None = None,
-        name:str | None = None
+        name:str | None = None,
+        sociability:int | float | None = None
     ) -> Creature:
         
         if creature_type is None:
@@ -246,13 +249,16 @@ class CreatureFactory:
             position = Coord(0, 0)
         if name is None:
             name = gen_name()
+        if sociability is None:
+            sociability = sociability_species[creature_type]
         return Creature(
             genome, 
             gender,
             name,
             initial_energy,
             position,
-            id
+            id,
+            sociability
         )
     
 

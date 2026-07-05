@@ -10,13 +10,15 @@ from map.map import EntityMap
 from decisions.presets import PresetExecutor, MovePreset, EatPreset, AttackPreset, ReproducePreset
 from systems.death_system import DeathSystem
 from decisions.resolvers import ReproductiveResolver
+from decisions.instincts import PlannerNothing
 
 def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
     return CreatureFactory.gen_creature(
         position=position,
         creature_type=born_data.genome.core.id,
         genome=born_data.genome,
-        initial_energy=born_data.initial_energy
+        initial_energy=born_data.initial_energy,
+        sociability=born_data.sociability
     )
 
 def resolve_death(creature:Creature, world:World) -> None:
@@ -53,20 +55,6 @@ class RunnerCreature:
                     if born_data is not None:
                         new_child = born_data_to_creature(born_data, new_coord)
                         return new_child
-
-    @staticmethod
-    def get_idle_preset(creature:Creature, perception:Perception, world:World) -> MovePreset | None:
-        actions = [True, False] # MOVE OR NO
-        weights = [1 - creature.hungry, creature.hungry]
-
-        chosen = choices(actions, weights=weights, k=1)[0]
-        if chosen is True:
-            four_coords = MovementSystem.four_movable_coords(perception, creature)
-            if len(four_coords) == 0:
-                return None
-            preset = MovePreset(choice(four_coords))
-            return preset
-
     @staticmethod
     def try_to_get_reproduce_preset(creature: Creature, perception:Perception, world:World) -> ReproducePreset | None:
         if creature.id in world.reproductive_buffer.desires:
@@ -76,7 +64,7 @@ class RunnerCreature:
         presets:list[MovePreset | EatPreset | AttackPreset | ReproducePreset] = []
         preset = IntentResolver.resolve_intent(creature, world, perception)
         if preset is None:
-            preset = RunnerCreature.get_idle_preset(creature, perception, world)
+            preset = PlannerNothing.plan_intent(perception, creature)
         if preset is not None:
             presets.append(preset)
         

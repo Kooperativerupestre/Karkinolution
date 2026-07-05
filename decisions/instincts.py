@@ -16,6 +16,7 @@ from core.coord import Coord
 from typing import Callable
 from random import choices
 
+
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
     Temperament.NEUTRAL: 0.3,
@@ -34,10 +35,11 @@ TRADE_OFF:dict[Temperament, float] = {
 
 @dataclass(frozen=True)
 class Config:
-    noise:float
+    noise_instincts:float
+    noise_nothing_intent:float
 
 
-GLOBAL_CONFIG = Config(0.1)
+GLOBAL_CONFIG = Config(0.1, 0.619)
 
 class FactorsCalc:
     '''
@@ -81,6 +83,12 @@ class FactorsCalc:
         basal.add(creature.genome.metabolism.mass/3)
 
         return basal.value
+    @staticmethod
+    def get_territorial_social_indifference_factor(creature:Creature) -> float:
+        return 0.54 if creature.genome.core.behavior == Temperament.TERRITORIAL else 1
+    @staticmethod
+    def get_pregnant_social_interest_factor(creature:Creature) -> float:
+        return 1.2 if creature.pregnant else 1
     
 @dataclass(frozen=True)
 class AttackOutput:
@@ -227,7 +235,7 @@ class Instincts:
     @staticmethod
     def apply_noise(acts:list[IntentScored]) -> None:
         for act in acts:
-            act.mul(uniform(1, 1+GLOBAL_CONFIG.noise))
+            act.mul(uniform(1, 1+GLOBAL_CONFIG.noise_instincts))
     
     @staticmethod
     def chose(acts:list[IntentScored]) -> Intent:
@@ -301,6 +309,54 @@ class PlannerAttack:
             return MovePreset(target_coord)
         return AttackPreset(attack_output.target_id)
 
+class PlannerNothing:
+    @dataclass(frozen=True)
+    class CoordScored:
+        coord:Coord
+        score:float
+    @staticmethod
+    def score_coord(perception:Perception, coord:Coord, creature:Creature) -> float:
+        block = perception.get(coord)
+
+        has_same_specie = block.get_entity_type() == EntityTypes.CREATURE and block.entity.specie_id == creature.genome.core.id
+        has_creature = block.get_entity_type() == EntityTypes.CREATURE
+        distance = creature.position.distance_to_other(coord)/perception.max_distance
+
+
+        affinity = 1 if has_same_specie else (0.4 if has_creature else 0)
+        factors = FactorsCalc.get_territorial_social_indifference_factor(creature) * FactorsCalc.get_pregnant_social_interest_factor(creature)
+        
+        return affinity * factors * creature.sociability.value - distance
+    
+
+
+
+    @staticmethod
+    def plan_intent(perception:Perception, creature:Creature) -> MovePreset | None:
+        actions = [True, False] # MOVE [yes or no]
+        weights = [1 - creature.hungry, creature.hungry]
+        
+        chosen = choices(actions, weights=weights, k=1)[0]
+
+        if not chosen:
+            return None
+        
+        coords_s:list[PlannerNothing.CoordScored] = []
+        
+        for c in perception.iter_keys:
+            if c != creature.position and c.distance_to_other(creature.position) < perception.max_distance*0.7:
+                coords_s.append(
+                    PlannerNothing.CoordScored(
+                        c,
+                        PlannerNothing.score_coord(perception, c, creature) *  uniform(1, 1+GLOBAL_CONFIG.noise_nothing_intent)
+                    )
+                )
+
+        return MovePreset(max(coords_s, key=lambda x: x.score).coord)
+    
+        
+        
+
 @dataclass(frozen=True)
 class PlannerScored:
     score:float
@@ -313,6 +369,8 @@ class Planner:
             return PlannerFindFood.plan_intent(perception, creature)
         elif intent == IntentActs.FIND_MATCH:
             return PlannerFindMatch.plan_intent(perception, creature)
+        elif intent == IntentActs.NOTHING:
+            return PlannerNothing.plan_intent(perception, creature)
         return None
     @staticmethod
     def plan(perception:Perception, creature:Creature, entities:EntitiesRegistry) -> MovePreset | EatPreset | AttackPreset | None:

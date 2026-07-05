@@ -5,7 +5,7 @@ from organism.identity import Id
 from organism.genetics import Genome
 from organism.stats import Energy, LimitedValue, check_energy
 from core.error import GenderError, DifferentSpeciesError, AlreadyPregnantError, ReproductiveError
-from random import choices
+from random import choices, uniform
 from typing import Callable
 from decisions.perception import PerceivedCreature
 
@@ -13,6 +13,7 @@ from decisions.perception import PerceivedCreature
 class BornData:
     genome:Genome
     initial_energy:Energy
+    sociability:int | float
 
 
     
@@ -96,9 +97,9 @@ class UterusSystem:
 
         child_energy:Callable[[], float] = lambda: creature.uterus.birth_energy # type: ignore
 
-
+        sociability = creature.sociability.value * uniform(0.7, 1.3)
         
-        child = BornData(child_genome, Energy(child_energy(), child_genome.metabolism.energy_limit))
+        child = BornData(child_genome, Energy(child_energy(), child_genome.metabolism.energy_limit), sociability)
         if creature.uterus.all_children_borned:
             UterusSystem.finish(creature)
 
