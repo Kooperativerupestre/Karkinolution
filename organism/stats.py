@@ -3,9 +3,10 @@ from core.error import InsufficientEnergyError
 
 
 class LimitedValue:
-    def __init__(self, value:int | float, limit:int | float):
+    def __init__(self, value:int | float, limit: int | float, floor:int | float = 0):
         self.value = value
         self.limit = limit
+        self.floor = floor
     @property
     def ratio(self) -> int | float:
         '''
@@ -15,9 +16,9 @@ class LimitedValue:
     def add(self, value:int | float) -> None:
         self.value = min(self.limit, self.value + value)
     def sub(self, value:int | float) -> None:
-        self.value = max(0, self.value - value)
+        self.value = max(self.floor, self.value - value)
     def set(self, value:int | float) -> None:
-        self.value = min(max(0, value), self.limit)
+        self.value = min(max(self.floor, value), self.limit)
     def mul(self, value:int | float) -> None:
         self.set(self.value * value)
 

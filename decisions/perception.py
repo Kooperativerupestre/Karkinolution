@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from core.error import CoordinateNotFoundError
 from map.map import Territory, EntityMap, Geometry
 from map.cell import Cell, FoodState, Properties, MovimentCost, Damage
+from math import sqrt
 
 
 
@@ -61,6 +62,7 @@ class Perception:
     blocks:dict[Coord, PerceivedBlock]
     creature:ObserverCreature
     coord:Coord
+    max_distance:float
 
     @property
     def iter(self) -> Iterable[tuple[Coord, PerceivedBlock]]:
@@ -205,6 +207,6 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
 
         perceived[c] = PerceivedBlock(perceived_cell, perceived_creature)
 
-    return Perception(perceived, creature_observer, coord_creature)
+    return Perception(perceived, creature_observer, coord_creature, sqrt(creature.genome.core.vision_radius.x**2 + creature.genome.core.vision_radius.y**2))
 
         

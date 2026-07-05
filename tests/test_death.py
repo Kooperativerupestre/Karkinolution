@@ -19,5 +19,3 @@ def test_verify_creature_death() -> None:
     # AGE VERIFICATION
     creature.age.value=creature.age.limit
     assert DeathSystem.is_dead(creature) == True, "Creature with age = max age must die"
-
-    
