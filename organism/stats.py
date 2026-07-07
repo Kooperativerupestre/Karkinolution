@@ -4,7 +4,7 @@ from core.error import InsufficientEnergyError
 
 class LimitedValue:
     def __init__(self, value:int | float, limit: int | float, floor:int | float = 0):
-        self.value = value
+        self.value = min(max(floor, value), limit)
         self.limit = limit
         self.floor = floor
     @property
@@ -21,6 +21,10 @@ class LimitedValue:
         self.value = min(max(self.floor, value), self.limit)
     def mul(self, value:int | float) -> None:
         self.set(self.value * value)
+    def zero(self) -> None:
+        self.set(0)
+    def full(self) -> None:
+        self.value=self.limit
 
 class Energy(LimitedValue):
     pass
@@ -29,8 +33,6 @@ class Life(LimitedValue):
 class Fertility(LimitedValue):
     def regen(self) -> None:
         self.add(1)
-    def zero(self) -> None:
-        self.set(0)
     def reproductive_capability(self) -> bool:
         return self.value == self.limit
 
