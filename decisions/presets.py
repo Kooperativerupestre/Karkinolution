@@ -9,7 +9,8 @@ from decisions.perception import Perception
 from systems.metabolism_system import MetabolismSystem, FoodHint
 from map.world import World, Log, LogEntry
 from core.error import InsufficientEnergyError
-
+from map.map import TerrainMotor
+from enum import Enum, auto
 
 @dataclass(frozen=True)
 class MovePreset:
@@ -25,6 +26,12 @@ class AttackPreset:
 class EatPreset:
     energy:Energy
     food_hint:FoodHint
+
+class MoveOutputs(Enum):
+    OK = auto()
+    INSUFFICIENT_ENERGY = auto()
+    CANNOT_GET_BEST_POSITION = auto()
+
 
 class PresetExecutor:
     @staticmethod
@@ -52,21 +59,21 @@ class PresetExecutor:
         MetabolismSystem.eat(creature, preset.energy, preset.food_hint)
         log.add(LogEntry(time, f'Creature {creature} ate'))
     @staticmethod
-    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, world:World) -> None:
+    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, world:World) -> MoveOutputs:
         best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)
 
         if best_pos is None:
-            return None
+            return MoveOutputs.CANNOT_GET_BEST_POSITION
         
         
         cost = MovementSystem.calculate_cost_to_move(perception, best_pos, creature)
         if creature.energy.value < cost:
-            return None
+            return MoveOutputs.INSUFFICIENT_ENERGY
         TerrainMotor.move(creature.position, best_pos, world.entity_map, world.territory)
         creature.energy.sub(cost)
         creature.position = best_pos
         world.log.add(LogEntry(world.time, f'Creature {creature} moved to {best_pos} '))
-  
+        return MoveOutputs.OK
 
     @staticmethod
     def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature, log:Log, time:int) -> None:
