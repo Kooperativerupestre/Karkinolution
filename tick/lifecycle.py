@@ -91,7 +91,6 @@ class RunnerCreature:
             creature,
             territory,
             entity_map,
-            creature.position,
             entities
         )
   

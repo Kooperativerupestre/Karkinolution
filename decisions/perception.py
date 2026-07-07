@@ -176,7 +176,7 @@ class Perceiver:
             damage
         )
             
-def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord_creature:Coord, 
+def perceive(creature:Creature, territory:Territory, entity_map:EntityMap,
              entities:EntitiesRegistry) -> Perception:
     vision_radius = creature.genome.core.vision_radius
 
@@ -186,7 +186,7 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
         creature.id,
         creature.genome.core.id,
     )
-    data = Geometry.neighbors_x_y(coord_creature, territory, entity_map, vision_radius, True)
+    data = Geometry.neighbors_x_y(creature.position, territory, entity_map, vision_radius, True)
 
     perceived:dict[Coord, PerceivedBlock] = {}
 
@@ -207,6 +207,6 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap, coord
 
         perceived[c] = PerceivedBlock(perceived_cell, perceived_creature)
 
-    return Perception(perceived, creature_observer, coord_creature, sqrt(creature.genome.core.vision_radius.x**2 + creature.genome.core.vision_radius.y**2))
+    return Perception(perceived, creature_observer, creature.position, sqrt(creature.genome.core.vision_radius.x**2 + creature.genome.core.vision_radius.y**2))
 
         
