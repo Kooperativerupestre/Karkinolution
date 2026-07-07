@@ -62,9 +62,11 @@ class PresetExecutor:
         cost = MovementSystem.calculate_cost_to_move(perception, best_pos, creature)
         if creature.energy.value < cost:
             return None
-        MovementSystem.move(creature, perception, best_pos, world.entity_map, world.territory)
+        TerrainMotor.move(creature.position, best_pos, world.entity_map, world.territory)
         creature.energy.sub(cost)
+        creature.position = best_pos
         world.log.add(LogEntry(world.time, f'Creature {creature} moved to {best_pos} '))
+  
 
     @staticmethod
     def execute_attack(preset:AttackPreset, entities:EntitiesRegistry, creature:Creature, log:Log, time:int) -> None:
