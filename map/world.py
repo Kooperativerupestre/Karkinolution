@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from map.map import TerrainMotor, Territory, EntityMap, ScaleGenValues, TerrainFactory, TerrainQuery
 from core.coord import Coord
