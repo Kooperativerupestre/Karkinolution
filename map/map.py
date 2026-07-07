@@ -82,9 +82,10 @@ class TerrainMotor:
             entity_map.delete(coord)
         
     @staticmethod
-    def move(id:Id, old_coord:Coord, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> None:
+    def move(old_coord:Coord, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> None:
         if not territory.exists(new_coord):
             raise CoordinateNotFoundError('Coord {} was not found in territory'.format(new_coord))
+        id = entity_map.get(old_coord)
         entity_map.delete(old_coord)
         entity_map.add(new_coord, id)
 
