@@ -4,7 +4,6 @@ from organism.ontology import AttackedEvent
 from math import ceil
 from core.error import NonMotileError
 from core.coord import Coord
-from map.map import TerrainMotor, EntityMap, Territory
 from organism.stats import check_energy
 from decisions.actions import MoveActions
 from decisions.perception import Perception
@@ -48,16 +47,6 @@ class MovementSystem:
         assert cell_creature.movement_cost is not None
         cost = (next_cell.movement_cost + cell_creature.movement_cost) / 2
         return cost * creature.genome.metabolism.mass * perception.coord.distance_to_other(new_coord)
-    @staticmethod
-    def move(creature:Creature, perception:Perception, new_coord:Coord, entity_map:EntityMap, territory:Territory) -> float:
-        cost = MovementSystem.calculate_cost_to_move(perception, new_coord, creature)
-
-        check_energy(creature.energy, cost)
-        TerrainMotor.move(creature.id, creature.position, new_coord, entity_map, territory)
-        creature.position = new_coord
-        return cost
-        
-
     @staticmethod
     def best_pos(creature:Creature, perception:Perception, new_coord:Coord) -> Coord | None:
         data = perception.neighbors_4_require
