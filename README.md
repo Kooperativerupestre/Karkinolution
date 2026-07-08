@@ -54,4 +54,4 @@ Data-oriented design with independent, composable modules:
 - `tick/` — Lifecycle and world cycle orchestration
 - `ui/` — Rich-based terminal visualization and entry points
 
-See [architecture.md](docs/architeture.md) for design decisions and rationale.
+See [architecture.md](docs/architecture.md) for design decisions and rationale.
