@@ -1,8 +1,12 @@
 from ui.global_console import console
 from rich.style import Style
 from core.coord import Coord
+from ui.api.api import BasicAPI
+from map.world import World
+from time import sleep
 
-
+def stand_by() -> None:
+    sleep(0.5)
 
 # STYLES
 
@@ -39,7 +43,8 @@ class StandardMessages:
             console.print('ERROR!', style=Styles.RED_EXTREME)
         else:
             console.print('ERROR: {}'.format(message), style=Styles.RED_EXTREME)
-        StandardMessages.pr(n=2)
+            StandardMessages.pr(0)
+        sleep(0.35)
     @staticmethod
     def show_presets() -> None:
         console.print('Crab chaos 🦀 [1]', style=Styles.ORANGE)
@@ -53,12 +58,19 @@ class StandardMessages:
     @staticmethod
     def enter_await() -> None:
         console.input('\nPress enter to continue >>>')
+    @staticmethod
+    def passed_time(time:int) -> None:
+        console.input('{} times has passed...'.format(format))
+        sleep(0.3)
+    @staticmethod
+    def enter_coordinate() -> None:
+        console.print('Enter coordinate')
 class Inputs:
     @staticmethod
     def question(options:list[str]) -> str:
         while True:
             try:
-                option = input(">>>  ")
+                option = console.input(">>>  ").strip()
                 if option not in options:
                     raise ValueError
                 return option
@@ -80,16 +92,57 @@ class Inputs:
     def get_coord() -> Coord:
         while True:
             try:
-                x = int(input("x: "))
+                x = int(console.input("x:"))
                 break
             except TypeError:
                 StandardMessages.error("x must be integer")
                 continue
+        StandardMessages.pr(0)
         while True:
             try:
-                y = int(input("y: "))
+                y = int(console.input("y: "))
                 break
             except TypeError:
                 StandardMessages.error("y must be integer too")
                 continue
         return Coord(x, y)
+    @staticmethod
+    def get_gender() -> str:
+        while True:
+            gender = console.input('Gender (female or male): ').lower().strip()
+
+            if gender not in ['female', 'male']:
+                StandardMessages.error('Genders are female & male')
+                continue
+            return gender
+    @staticmethod
+    def get_specie() -> str:
+        while True:
+            specie = console.input('Specie (crab, crocodile, hippopotamus, fish): ').lower().strip()
+
+            if specie not in ['crab', 'hippopotamus', 'crocodile', 'fish']:
+                StandardMessages.error('Invalid specie')
+                continue
+            return specie
+    @staticmethod
+    def get_id(world:World) -> None | str:
+        id = console.input('ID: ').strip()
+
+        if not BasicAPI.exists(id, world):
+            StandardMessages.error('ID not exists')
+            return None
+        return id
+    
+    @staticmethod
+    def get_int(positive:bool = True) -> int:
+        while True:
+            try:
+                i = int(input(': '))
+
+                if positive:
+                    if i < 0:
+                        StandardMessages.error('Must be positive')
+                return i
+            except TypeError:
+                StandardMessages.error()
+                continue

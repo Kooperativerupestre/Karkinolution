@@ -1,4 +1,4 @@
-from organism.creatures import Creature, Corpse
+from organism.creatures import Creature, Corpse, PregnantUterus
 from dataclasses import dataclass
 from organism.stats import Energy, Life, Age, LimitedValue
 from core.coord import Coord
@@ -6,9 +6,10 @@ from map.cell import TerrainTypes, Cell, Properties, FoodState, MovimentCost, Da
 from organism.genetics import CreatureTypes
 from map.world import World
 from organism.identity import EntityTypes
+from decisions.actions import Intent
 
 @dataclass(frozen=True)
-class FullCreatureInterface:
+class CreatureInterface:
     name:str
     id:str
     gender:str
@@ -19,19 +20,10 @@ class FullCreatureInterface:
     age:Age
     hungry:float
     
+    intent:Intent
     position:Coord
-    
     gestation:LimitedValue | None
 
-@dataclass(frozen=True)
-class SimplyCreatureInterface:
-    name:str
-    id:str
-    hungry:float
-    life:int | float
-    age:int | float
-    specie:CreatureTypes
-    pregnant:bool
 
 @dataclass(frozen=True)
 class CorpseInterface:
@@ -42,7 +34,7 @@ class CorpseInterface:
 
 @dataclass(frozen=True)
 class CellInterface:
-    food:int | float | None
+    food:LimitedValue | None
     damage: int | float | None
     movement_cost: int | float | None
     solo_type: TerrainTypes
@@ -51,7 +43,7 @@ class CellInterface:
 class BlockInterface:
     coord:Coord
     cell:CellInterface
-    creature:SimplyCreatureInterface
+    creature:CreatureInterface
 
 @dataclass(frozen=True)
 class WorldInterface:
@@ -70,8 +62,14 @@ class WorldInterface:
     
 class InterfaceFactory:
     @staticmethod
-    def create_full_creature_interface(creature:Creature) -> FullCreatureInterface:
-        return FullCreatureInterface(
+    def create_creature_interface(creature:Creature) -> CreatureInterface:
+        if creature.pregnant:
+            assert isinstance(creature.uterus, PregnantUterus)
+            gestation = LimitedValue(creature.uterus.gestation.value, creature.uterus.gestation.limit)
+        else:
+            gestation = None
+        
+        return CreatureInterface(
             creature.name,
             creature.id.id,
             creature.gender.name.lower().capitalize(),
@@ -81,20 +79,9 @@ class InterfaceFactory:
             creature.life,
             creature.age,
             creature.hungry,
+            creature.intent,
             creature.position,
-            creature.uterus.gestation if creature.pregnant else None # type: ignore
-        )
-    
-    @staticmethod
-    def create_simply_creature_interface(creature:Creature) -> SimplyCreatureInterface:
-        return SimplyCreatureInterface(
-            creature.name,
-            creature.id.id,
-            creature.hungry,
-            creature.life.value,
-            creature.age.value,
-            creature.genome.core.id,
-            creature.pregnant
+            gestation
         )
     @staticmethod
     def create_corpse_interface(corpse:Corpse) -> CorpseInterface:
@@ -125,7 +112,7 @@ class InterfaceFactory:
         return BlockInterface(
             coord, 
             InterfaceFactory.create_cell_interface(cell),
-            InterfaceFactory.create_simply_creature_interface(creature)
+            InterfaceFactory.create_creature_interface(creature)
         ) 
     @staticmethod
     def create_world_interface(world:World) -> WorldInterface:
