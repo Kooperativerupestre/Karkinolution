@@ -1,6 +1,6 @@
-from organism.creatures import CreatureFactory
-from systems.metabolism_system import MetabolismSystem, FoodHint
-from organism.stats import Energy
+from karkinolution.organism.creatures import CreatureFactory
+from karkinolution.systems.metabolism import MetabolismSystem, FoodHint
+from karkinolution.organism.stats import Energy
 
 def test_non_negative_energy() -> None:
     creature = CreatureFactory.gen_creature()

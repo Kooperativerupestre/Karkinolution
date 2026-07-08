@@ -1,12 +1,33 @@
-from organism.creatures import CreatureFactory, Creature
-from core.coord import Coord
-from decisions.presets import MovePreset, PresetExecutor, MoveOutputs
 from dataclasses import dataclass
-from map.map import ScaleGenValues
-from decisions.perception import perceive, Perception
-from map.world import WorldMotor, WorldFactory,PresetWorld, World
+
 from hypothesis import given, strategies as st
-from systems.physics import MovementSystem
+
+from karkinolution.core.coord import Coord
+
+from karkinolution.decisions.perception import (
+    Perception,
+    perceive,
+)
+from karkinolution.decisions.presets import (
+    MoveOutputs,
+    MovePreset,
+    PresetExecutor,
+)
+
+from karkinolution.organism.creatures import (
+    Creature,
+    CreatureFactory,
+)
+
+from karkinolution.systems.physics import MovementSystem
+
+from karkinolution.terrain.map import ScaleGenValues
+from karkinolution.terrain.world import (
+    PresetWorld,
+    World,
+    WorldFactory,
+    WorldMotor,
+)
 
 @dataclass
 class Basic:

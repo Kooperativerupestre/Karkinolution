@@ -1,7 +1,7 @@
-from organism.creatures import CreatureFactory, PregnantUterus, EmptyUterus, Gender
-from systems.reproduction import UterusSystem, ReproductiveSystem
-from organism.genetics import creatures_genomes, CreatureTypes
-from decisions.perception import Perceiver
+from karkinolution.organism.creatures import CreatureFactory, PregnantUterus, EmptyUterus, Gender
+from karkinolution.systems.reproduction import UterusSystem, ReproductiveSystem
+from karkinolution.organism.genetics import creatures_genomes, CreatureTypes
+from karkinolution.decisions.perception import Perceiver
 def test_uterus_female() -> None:
     female = CreatureFactory.gen_creature(gender=Gender.FEMALE)
 
