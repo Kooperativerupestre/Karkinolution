@@ -23,7 +23,8 @@ class Intent:
     def __init__(self, intent:IntentActs):
         self.intent = intent
         self.time = 0
-
+    def __str__(self):
+        return f'{self.intent}: time {self.time}'
 
 
 
