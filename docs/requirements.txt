@@ -1,4 +1,0 @@
-rich
-noise
-pytest
-hypothesis

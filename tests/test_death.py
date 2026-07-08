@@ -1,5 +1,5 @@
-from organism.creatures import CreatureFactory
-from systems.death_system import DeathSystem
+from karkinolution.organism.creatures import CreatureFactory
+from karkinolution.systems.death import DeathSystem
 
 
 def test_energy_death() -> None:
