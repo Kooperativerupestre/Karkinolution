@@ -13,3 +13,8 @@ class Id:
 
 def gen_id() -> str:
     return str(uuid4().hex)[16:]
+
+def create_creature_id(id:str) -> Id:
+    return Id(id, EntityTypes.CREATURE)
+def create_corpse_id(id:str) -> Id:
+    return Id(id, EntityTypes.CORPSE)

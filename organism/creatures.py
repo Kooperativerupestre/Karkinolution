@@ -5,7 +5,7 @@ from decisions.actions import Intent, IntentActs
 from organism.ontology import Gender, AttackedEvent
 
 from core.error import IdNotFoundError, IdAlreadyExistsError
-from organism.identity import Id, EntityTypes, gen_id
+from organism.identity import Id, EntityTypes, gen_id, create_corpse_id, create_creature_id
 from random import uniform
 from math import exp
 from dataclasses import dataclass
@@ -191,6 +191,8 @@ class EntitiesRegistry:
     @property
     def entities(self) -> Iterable[Corpse | Creature]:
         return self.entitys.values()
+    def exists_generic(self, id:str) -> bool:
+        return create_creature_id(id) in self.entitys or create_corpse_id(id) in self.entitys
     def add(self, entity:Creature | Corpse) -> str:
         if entity.id in self.entitys:
             raise IdAlreadyExistsError('ID {} exists'.format(entity.id))
