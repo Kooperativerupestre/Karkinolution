@@ -9,7 +9,7 @@ from karkinolution.core.error import (
 
 from karkinolution.decisions.actions import Intent, IntentActs
 
-from karkinolution.organism.creatures import CreatureFactory
+from karkinolution.organism.creatures import CreatureFactory, EmptyUterus
 from karkinolution.organism.genetics import (
     CreatureTypes,
     creatures_genomes,
@@ -180,6 +180,7 @@ class HardApiWorld:
         except IdNotFoundError:
             return Outputs.CREATURE_NOT_FOUND
         creature.gender=Gender.other_sex(creature.gender)
+        creature.uterus = EmptyUterus()
         return Outputs.OK
     @staticmethod
     def turn_pregnant(world:World, e_id:str) -> Outputs:
