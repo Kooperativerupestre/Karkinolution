@@ -133,6 +133,7 @@ class Renders:
         table_left.add_row("Gender", creature.gender)
         table_left.add_row("Species", creature.specie.name.lower().capitalize())
         table_left.add_row("Position", f"({creature.position.x}, {creature.position.y})")
+        table_left.add_row("Current intent", f'{creature.intent.intent.name.capitalize()} -> {creature.intent.time} time(s)')
 
         table_right = Table(show_header=False, box=None)
         table_right.add_column(style="dim")
@@ -159,6 +160,7 @@ class Renders:
         table.add_row("Hungry", f"{creature.hungry:.1f}%")
         table.add_row("Life", str(creature.life.value))
         table.add_row("Age", str(creature.age.value))
+        table.add_row("Gender", creature.gender.capitalize())
         table.add_row("Pregnant", "Yes" if creature.pregnant else "No")
 
         return Panel(table, title=creature.name)
