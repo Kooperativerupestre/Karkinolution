@@ -16,6 +16,7 @@ from karkinolution.organism.creatures import (
 )
 from karkinolution.organism.genetics import CreatureTypes
 from karkinolution.organism.identity import EntityTypes
+from karkinolution.organism.ontology import Gender
 
 from karkinolution.terrain.cell import TerrainTypes
 from karkinolution.terrain.map import (
@@ -125,30 +126,45 @@ class Renders:
 
     @staticmethod
     def render_full_creature(creature: CreatureInterface) -> Panel:
-        table_left = Table(show_header=False, box=None)
-        table_left.add_column(style="dim")
-        table_left.add_column()
+        table_1 = Table(show_header=False, box=None)
+        table_1.add_column(style="dim")
+        table_1.add_column()
 
-        table_left.add_row("ID", creature.id)
-        table_left.add_row("Gender", creature.gender)
-        table_left.add_row("Species", creature.specie.name.lower().capitalize())
-        table_left.add_row("Position", f"({creature.position.x}, {creature.position.y})")
-        table_left.add_row("Current intent", f'{creature.intent.intent.name.capitalize()} -> {creature.intent.time} time(s)')
 
-        table_right = Table(show_header=False, box=None)
-        table_right.add_column(style="dim")
-        table_right.add_column()
+        table_1.add_row("ID", creature.id)
+        table_1.add_row("Gender", creature.gender)
+        table_1.add_row("Species", creature.specie.name.lower().capitalize())
+        table_1.add_row("Position", f"({creature.position.x}, {creature.position.y})")
+        table_1.add_row("Current intent", f'{creature.intent.intent.name.capitalize()} -> {creature.intent.time} time(s)')
 
-        table_right.add_row("Energy", f"{creature.energy.value}/{creature.energy.limit}")
-        table_right.add_row("Life", f"{creature.life.value}/{creature.life.limit}")
-        table_right.add_row("Age", f"{creature.age.value}/{creature.age.limit}")
-        table_right.add_row("Hungry", f"{creature.hungry:.2f}")
-        table_right.add_row("Pregnant", "Yes" if creature.pregnant else "No")
+        table_2 = Table(show_header=False, box=None)
+        table_2.add_column(style="dim")
+        table_2.add_column()
 
-        if creature.gestation is not None:
-            table_right.add_row("Gestation", f"{creature.gestation.value}/{creature.gestation.limit}")
+        table_2.add_row("Energy", f"{creature.energy.value}/{creature.energy.limit}")
+        table_2.add_row("Life", f"{creature.life.value}/{creature.life.limit}")
+        table_2.add_row("Age", f"{creature.age.value}/{creature.age.limit}")
+        table_2.add_row("Hungry", f"{creature.hungry:.2f}")
+        if creature.gender == Gender.FEMALE:
+            table_2.add_row("Pregnant", f"{'yes' if creature.pregnant else 'no'}")
 
-        return Panel(Columns([table_left, table_right]), title=f"{creature.name}")
+        table_gestation: None | Table = None
+        if creature.pregnant:
+            table_gestation = Table(show_header=False, box=None)
+            table_gestation.add_column(style="dim")
+            table_gestation.add_column()
+
+            if creature.gestation is not None:
+                table_gestation.add_row("Gestation time", f"{creature.gestation.time}/{creature.gestation.limit}")
+                table_gestation.add_row("Time left", str(creature.gestation.limit - creature.gestation.time))
+                table_gestation.add_row("Childrens", f"{creature.gestation.children_number}/{creature.gestation.total_children}")
+                table_gestation.add_row("Children left", str(creature.gestation.children_left))
+                table_gestation.add_row("Death chance", f"{creature.gestation.death_tax*100}%")
+
+        columns = [table_1, table_2]
+        if table_gestation is not None:
+            columns.append(table_gestation)
+        return Panel(Columns(columns), title=f"{creature.name}")
     @staticmethod
     def render_simply_creature(creature: CreatureInterface) -> Panel:
         table = Table(show_header=False, box=None)
@@ -161,7 +177,8 @@ class Renders:
         table.add_row("Life", str(creature.life.value))
         table.add_row("Age", str(creature.age.value))
         table.add_row("Gender", creature.gender.capitalize())
-        table.add_row("Pregnant", "Yes" if creature.pregnant else "No")
+        if creature.gender == Gender.FEMALE:
+            table.add_row("Pregnant", "Yes" if creature.pregnant else "No")
 
         return Panel(table, title=creature.name)
     @staticmethod

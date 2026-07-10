@@ -29,6 +29,18 @@ from karkinolution.terrain.cell import (
 from karkinolution.terrain.world import World
 
 @dataclass(frozen=True)
+class GestationInterface:
+    time:int
+    limit:int
+    children_number:int
+    total_children:int
+    death_tax:float
+
+    @property
+    def children_left(self) -> int:
+        return self.total_children - self.children_number
+
+@dataclass(frozen=True)
 class CreatureInterface:
     name:str
     id:str
@@ -42,7 +54,7 @@ class CreatureInterface:
     
     intent:Intent
     position:Coord
-    gestation:LimitedValue | None
+    gestation:GestationInterface | None
 
 
 @dataclass(frozen=True)
@@ -87,10 +99,20 @@ class WorldInterface:
             return 0    
 class InterfaceFactory:
     @staticmethod
+    def _create_gestation_interface(pregnant_uterus:PregnantUterus) -> GestationInterface:
+        return GestationInterface(
+            pregnant_uterus.gestation.value,
+            pregnant_uterus.gestation.limit,
+            pregnant_uterus.number_children.value, # type: ignore LimitedValue (int | float -> int)
+            pregnant_uterus.number_children.limit, # type: the same
+            pregnant_uterus.gestation.death_factor
+
+        )
+    @staticmethod
     def create_creature_interface(creature:Creature) -> CreatureInterface:
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
-            gestation = LimitedValue(creature.uterus.gestation.value, creature.uterus.gestation.limit)
+            gestation = InterfaceFactory._create_gestation_interface(creature.uterus)
         else:
             gestation = None
         
