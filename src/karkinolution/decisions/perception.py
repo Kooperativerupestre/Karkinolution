@@ -102,6 +102,10 @@ class Perception:
         coords = self.coord.eight_movements()
         return [self.require(c) for c in coords]
     @property
+    def neighbors_8_coords(self) -> Iterable[Coord]:
+        coords = self.coord.eight_movements()
+        return [c for c in coords if c in self.blocks]
+    @property
     def neighbors_4_require(self) -> Iterable[tuple[Coord, PerceivedBlock | None]]:
         coords = self.coord.four_movements()
         return ((c, self.require(c)) for c in coords)

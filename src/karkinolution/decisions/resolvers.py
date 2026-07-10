@@ -1,17 +1,22 @@
 from random import choice
 
+from karkinolution.core.coord import Coord
+from karkinolution.terrain.world import World, LogEntry
+
 from karkinolution.decisions.perception import Perception
 from karkinolution.decisions.presets import ReproducePreset
 
 from karkinolution.organism.creatures import (
     Creature,
     EntitiesRegistry,
+    CreatureFactory
 )
 from karkinolution.organism.identity import Id
 
 from karkinolution.systems.reproduction import (
     Parents,
     ReproductiveSystem,
+    BornData
 )
 
 class ReproductiveResolver:
@@ -54,5 +59,23 @@ class ReproductiveResolver:
         return ReproductiveResolver.mate_to_preset(parents)
     
 
-
-
+class BornResolver:
+    @staticmethod
+    def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
+        return CreatureFactory.gen_creature(
+            position=position,
+            creature_type=born_data.genome.core.id,
+            genome=born_data.genome,
+            initial_energy=born_data.initial_energy,
+            sociability=born_data.sociability
+        )
+    @staticmethod
+    def resolve_born_data(born_data:BornData | None, position:Coord, world:World, mother_name:str) -> Creature | None:
+        if born_data is None: # died: yes
+            world.log.add(LogEntry(world.time, "one child of creature {} has died".format(mother_name)))
+            return None
+        # died: no
+        new_child = BornResolver.born_data_to_creature(born_data, position)
+        world.log.add(LogEntry(world.time, "creature {} child of {}, was born".format(new_child.name, mother_name)))
+        return new_child
+           
