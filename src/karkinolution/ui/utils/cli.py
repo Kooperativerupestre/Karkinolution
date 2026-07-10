@@ -147,6 +147,6 @@ class Inputs:
                     if i < 0:
                         StandardMessages.error('Must be positive')
                 return i
-            except TypeError:
+            except Exception:
                 StandardMessages.error()
                 continue
