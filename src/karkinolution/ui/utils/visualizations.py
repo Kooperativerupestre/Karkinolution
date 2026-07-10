@@ -267,6 +267,7 @@ class Viewer:
             for _ in range(time):
                 BasicAPI.run_n_time(world, n=1)
                 live.update(RenderGroups.render_map_log_stats(world), refresh=True)
+                sleep(2)
     @staticmethod
     def cascade_view(world:World, n:int = 10) -> None:
         for _ in range(0, n):
