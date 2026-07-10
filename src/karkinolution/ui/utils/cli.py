@@ -64,7 +64,7 @@ class StandardMessages:
         console.input('\nPress enter to continue >>>')
     @staticmethod
     def passed_time(time:int) -> None:
-        console.input('{} times has passed...'.format(format))
+        console.input('{} times has passed...'.format(time))
         sleep(0.3)
     @staticmethod
     def enter_coordinate() -> None:
