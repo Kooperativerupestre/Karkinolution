@@ -75,11 +75,16 @@ class WorldInterface:
 
     @property
     def creatures_percent(self) -> float:
-        return self.creatures/self.entities*100
+        try:
+            return self.creatures/self.entities*100
+        except ZeroDivisionError:
+            return 0
     @property
     def corpses_percent(self) -> float:
-        return self.corpses/self.entities*100
-    
+        try:
+            return self.corpses/self.entities*100
+        except ZeroDivisionError:
+            return 0    
 class InterfaceFactory:
     @staticmethod
     def create_creature_interface(creature:Creature) -> CreatureInterface:
