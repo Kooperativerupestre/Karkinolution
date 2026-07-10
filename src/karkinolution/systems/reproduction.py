@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from random import choices, uniform
 from typing import Callable
 
+from karkinolution.utils.k_random import choice_bool
+
 from karkinolution.core.error import (
     AlreadyPregnantError,
     DifferentSpeciesError,
@@ -85,7 +87,8 @@ class UterusSystem:
         return choices([1, 2, 3], weights=[1/2, 1/4, 1/8], k=1)[0]
     @staticmethod
     def die_a_child(death_tax:float) -> bool:
-        return choices([True, False], weights=[1-death_tax, death_tax], k=1)[0]
+        return choice_bool(death_tax, 1 - death_tax)
+    
     
     @staticmethod
     def conceive(creature:Creature, male_genome:Genome) -> None:

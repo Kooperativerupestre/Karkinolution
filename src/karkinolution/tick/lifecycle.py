@@ -1,8 +1,8 @@
+
 from karkinolution.organism.creatures import (
     Creature,
     EntitiesRegistry,
     PregnantUterus,
-    CreatureFactory,
     Corpse,
 )
 from karkinolution.decisions.perception import Perception, perceive
@@ -10,11 +10,9 @@ from random import choice
 from karkinolution.systems.reproduction import (
     ReproductiveSystem,
     UterusSystem,
-    BornData,
 )
 from karkinolution.systems.physics import MovementSystem
 from karkinolution.decisions.intent import IntentResolver
-from karkinolution.core.coord import Coord
 from karkinolution.terrain.world import World, WorldMotor, LogEntry
 from karkinolution.terrain.map import EntityMap
 from karkinolution.decisions.presets import (
@@ -25,17 +23,11 @@ from karkinolution.decisions.presets import (
     ReproducePreset,
 )
 from karkinolution.systems.death import DeathSystem
-from karkinolution.decisions.resolvers import ReproductiveResolver
+from karkinolution.decisions.resolvers import ReproductiveResolver, BornResolver
 from karkinolution.decisions.instincts import PlannerNothing
 
-def born_data_to_creature(born_data:BornData, position:Coord) -> Creature:
-    return CreatureFactory.gen_creature(
-        position=position,
-        creature_type=born_data.genome.core.id,
-        genome=born_data.genome,
-        initial_energy=born_data.initial_energy,
-        sociability=born_data.sociability
-    )
+from karkinolution.utils.k_random import choice_bool
+
 
 def resolve_death(creature:Creature, world:World) -> None:
     corpse = DeathSystem.generate_corpse(creature)
@@ -44,6 +36,29 @@ def resolve_death(creature:Creature, world:World) -> None:
     if corpse.time_left == 0:
         return None
     WorldMotor.add_entity(world, corpse)
+
+
+
+def resolve_born(creature:Creature, perception:Perception, world:World) -> Creature | None:
+    assert isinstance(creature.uterus, PregnantUterus)
+    possibilities = MovementSystem.four_movable_coords(perception, creature)
+
+    if len(possibilities) == 0:
+        r = choice_bool(yes_weight=creature.uterus.gravity, no_weight= 1 - creature.uterus.gravity)
+
+        if r:
+            born_data = ReproductiveSystem.to_birth(creature)
+            possibilities = list(perception.neighbors_8_coords)
+            if len(possibilities) == 0:
+                return None
+            
+            new_coord = choice(possibilities)
+            return BornResolver.resolve_born_data(born_data, new_coord, world, creature.name)
+        return None
+    
+    born_data = ReproductiveSystem.to_birth(creature)
+    new_coord = choice(possibilities)
+    return BornResolver.resolve_born_data(born_data, new_coord, world, creature.name)
 
 
 
@@ -58,19 +73,14 @@ class RunnerCreature:
     
 
     @staticmethod
-    def run_uterus(creature:Creature, perception:Perception) -> Creature | None:
+    def run_uterus(creature:Creature, perception:Perception, world:World) -> Creature | None:
         if creature.pregnant:
             assert isinstance(creature.uterus, PregnantUterus)
             UterusSystem.pass_time(creature)
 
             if creature.uterus.gestation.is_ready_to_born:
-                possibilities = MovementSystem.four_movable_coords(perception, creature)
-                if len(possibilities) > 0:
-                    new_coord = choice(possibilities)
-                    born_data = ReproductiveSystem.to_birth(creature)
-                    if born_data is not None:
-                        new_child = born_data_to_creature(born_data, new_coord)
-                        return new_child
+                return resolve_born(creature, perception, world)
+            
     @staticmethod
     def try_to_get_reproduce_preset(creature: Creature, perception:Perception, world:World) -> ReproducePreset | None:
         if creature.id in world.reproductive_buffer.desires:
@@ -111,7 +121,7 @@ class RunnerCreature:
         )
   
         presets = RunnerCreature.get_presets(creature, perception, world)
-        new_child = RunnerCreature.run_uterus(creature, perception)
+        new_child = RunnerCreature.run_uterus(creature, perception, world)
 
 
 
