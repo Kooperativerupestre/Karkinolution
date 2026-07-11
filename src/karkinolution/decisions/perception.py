@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import sqrt
 from typing import Callable, Iterable
 
@@ -67,84 +67,134 @@ class ObserverCreature:
 class PerceivedBlock:
     cell:PerceivedCell
     entity:PerceivedCreature | None
+    distance:float
 
     @property
     def has_entity(self) -> bool:
         return self.entity is not None
     
+    
     def get_entity_type(self) -> EntityTypes | None:
         return None if not self.has_entity else self.entity.identity.e_type # type: ignore
-
-
+    @property
+    def has_creature(self) -> bool:
+        return self.get_entity_type() == EntityTypes.CREATURE
+    @property
+    def has_corpse(self) -> bool:
+        return self.get_entity_type() == EntityTypes.CORPSE
+    
 @dataclass(frozen=True)
 class Perception:
-    blocks:dict[Coord, PerceivedBlock]
+    pieces:dict[Coord, PerceivedBlock]
     creature:ObserverCreature
     coord:Coord
     max_distance:float
 
+    def __iter__(self) -> Iterable[Coord]:
+        return iter(self.pieces.keys())
+
     @property
     def iter(self) -> Iterable[tuple[Coord, PerceivedBlock]]:
-        return self.blocks.items()
+        return self.pieces.items()
     @property
-    def iter_keys(self) -> Iterable[Coord]:
-        return self.blocks.keys()
+    def blocks(self) -> Iterable[PerceivedBlock]:
+        return self.pieces.values()
     @property
-    def iter_values(self) -> Iterable[PerceivedBlock]:
-        return self.blocks.values()
-    def neighbors_x_y(self, neighbors_size:Coord) -> Iterable[tuple[Coord, PerceivedBlock]]:
-        return {c: b for c, b in self.iter if c.x + self.coord.x <= neighbors_size.x and c.y + self.coord.y <= neighbors_size.y}.items()
-    def neighbors_x_y_blocks(self, neighbors_size:Coord) -> Iterable[PerceivedBlock]:
-        return {c: b for c, b in self.iter if c.x + self.coord.x <= neighbors_size.x and c.y + self.coord.y <= neighbors_size.y}.values()
+    def coords(self) -> Iterable[Coord]:
+        return self.pieces.keys()
+    @property
+    def size(self) -> int:
+        return len(self.pieces)
     
-    @property
-    def neighbors_8_blocks(self) -> Iterable[PerceivedBlock | None]:
-        coords = self.coord.eight_movements()
-        return [self.require(c) for c in coords]
-    @property
-    def neighbors_8_coords(self) -> Iterable[Coord]:
-        coords = self.coord.eight_movements()
-        return [c for c in coords if c in self.blocks]
-    @property
-    def neighbors_4_require(self) -> Iterable[tuple[Coord, PerceivedBlock | None]]:
-        coords = self.coord.four_movements()
-        return ((c, self.require(c)) for c in coords)
-    @property
-    def neighbors_4_require_blocks(self) -> Iterable[PerceivedBlock | None]:
-        coords = self.coord.four_movements()
-        return [self.require(c) for c in coords]
+    
+    def get(self, coord:Coord) -> PerceivedBlock:
+        try:
+            return self.pieces[coord]
+        except KeyError:
+            raise CoordinateNotFoundError("coord {} was not found".format(coord))
+    def try_get(self, coord:Coord) -> PerceivedBlock | None:
+        return self.pieces.get(coord)
     @property
     def creature_block(self) -> PerceivedBlock:
-        return self.blocks[self.coord]
+        return self.get(self.coord)
 
-    def get(self, coord:Coord) -> PerceivedBlock:
-        if coord not in self.blocks:
-            raise CoordinateNotFoundError('Coord {} was not found'.format(coord))
+
+class PerceptionAnalyser:
+    @staticmethod
+    def build_another_perception(old_perception:Perception, new_pieces:dict[Coord, PerceivedBlock]) -> Perception:
+        return replace(old_perception, pieces=new_pieces)
+    @staticmethod
+    def find_predicate(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool]) -> Perception:
+        pieces:dict[Coord, PerceivedBlock] = {}
+
+        for coord, block in perception.iter:
+            if predicate(block, coord):
+                pieces[coord] = block
+        return PerceptionAnalyser.build_another_perception(perception, pieces)
+    @staticmethod
+    def find_predicate_coords(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool]) -> set[Coord]:
+        pieces:set[Coord] = set()
+
+        for coord, block in perception.iter:
+            if predicate(block, coord):
+                pieces.add(coord)
+        return pieces
+    @staticmethod
+    def build(perception:Perception, coords:set[Coord] | list[Coord] | tuple[Coord], predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
+        pieces:dict[Coord, PerceivedBlock] = {}
+
+        for coord in coords:
+            perceived_block = perception.try_get(coord)
+            
+            if perceived_block is not None and predicate(perceived_block, coord):
+                pieces[coord] = perceived_block
+        return PerceptionAnalyser.build_another_perception(perception, pieces)
     
-        return self.blocks[coord]
-    def require(self, coord:Coord) -> PerceivedBlock | None:
-        if coord not in self.blocks:
-            return None
-        return self.blocks[coord]
+    @staticmethod
+    def neighbors_4(perception:Perception, include_self_coord:bool = False) -> Perception:
+        coords = perception.coord.four_movements()
 
-class Analysis:
+        if include_self_coord:
+            coords.add(perception.coord)
+        return PerceptionAnalyser.build(perception, coords)
+    
     @staticmethod
-    def find_predicate(perception:Perception, predicate:Callable[[PerceivedBlock], bool]) -> set[Coord]:
-        return {c for c, b in perception.iter if predicate(b)}
+    def neighbors_8(perception:Perception, include_self_coord:bool = False) -> Perception:
+        coords = perception.coord.eight_movements()
 
-    @staticmethod
-    def empty_spaces(perception:Perception) -> set[Coord]:
-        return Analysis.find_predicate(perception, predicate=lambda x: not x.has_entity)
-    @staticmethod
-    def corpses(perception:Perception) -> set[Coord]:
-        return Analysis.find_predicate(perception, lambda x: x.get_entity_type() == EntityTypes.CORPSE)
+        if include_self_coord:
+            coords.add(perception.coord)
+        return PerceptionAnalyser.build(perception, coords)
 
     @staticmethod
-    def other_species(perception:Perception) -> set[Coord]:
-        return Analysis.find_predicate(perception, predicate=lambda x: x.get_entity_type() == EntityTypes.CREATURE and x.entity.specie_id != perception.creature.specie_id) # type: ignore
+    def neighbors_x_y(perception:Perception, x_radius:int, y_radius:int) -> Perception: 
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda _, c:  c.x - perception.coord.x > x_radius or c.y - perception.coord.y > y_radius or c == perception.coord)
     @staticmethod
-    def near_coord(coords:Iterable[Coord], coord_creature:Coord) -> Coord:    
-        return min([c for c in coords], key=lambda x: coord_creature.distance_to_other(x))
+    def near_coord(coord_creature:Coord, coords:set[Coord] | list[Coord] | tuple[Coord]) -> Coord:
+        return min(coords, key=lambda x: coord_creature.distance_to_other(x))
+    @staticmethod
+    def get_area_in_radius_ratio(perception:Perception, radius_ratio:float) -> Perception:
+        assert 0 <= radius_ratio<= 1
+        return PerceptionAnalyser.find_predicate(perception, lambda _, c: c.distance_to_other(perception.coord) < radius_ratio * perception.max_distance )
+    
+    
+class PerceptionPatterns:
+    @staticmethod
+    def empty_spaces(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: not b.has_entity and predicate(b, c))
+    @staticmethod
+    def corpses(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_corpse and predicate(b, c))
+    
+    @staticmethod
+    def creatures(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and predicate(b, c))
+    @staticmethod
+    def same_species(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and b.entity.specie_id == perception.creature.specie_id and predicate(b, c))
+    @staticmethod
+    def other_species(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and b.entity.specie_id != perception.creature.specie_id and predicate(b, c))
 
 
 class Perceiver:
@@ -228,7 +278,7 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap,
             perceived_creature = Perceiver.perceive_corpse(entities.get_corpse(id))
         
 
-        perceived[c] = PerceivedBlock(perceived_cell, perceived_creature)
+        perceived[c] = PerceivedBlock(perceived_cell, perceived_creature, creature.position.distance_to_other(c))
 
     return Perception(perceived, creature_observer, creature.position, sqrt(creature.genome.core.vision_radius.x**2 + creature.genome.core.vision_radius.y**2))
 

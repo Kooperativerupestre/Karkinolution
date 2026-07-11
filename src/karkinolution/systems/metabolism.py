@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from karkinolution.core.coord import Coord
+from karkinolution.terrain.map import Territory
 
 from karkinolution.decisions.perception import (
     PerceivedCreature,
@@ -39,13 +40,13 @@ class MetabolismSystem:
         return energy
 
     @staticmethod
-    def collect_options(perception: Perception, creature: Creature) -> list[FoodOption]:
+    def collect_options(perception: Perception, creature: Creature, territory:Territory) -> list[FoodOption]:
         options: list[FoodOption] = []
         diet = creature.genome.metabolism.diet
 
-        for coord in perception.iter_keys:
+        for coord in perception.coords:
             block = perception.get(coord)
-            energy_cost = MovementSystem.calculate_cost_to_move(perception, coord, creature)
+            energy_cost = MovementSystem.calculate_cost_to_move(coord, creature, territory)
             
             # corpse
             if block.get_entity_type() == EntityTypes.CORPSE:
@@ -103,8 +104,8 @@ class MetabolismSystem:
         return effective_gain - option.energy_cost
 
     @staticmethod
-    def choose_best(perception: Perception, creature: Creature) -> FoodOption | None:
-        options = MetabolismSystem.collect_options(perception, creature)
+    def choose_best(perception: Perception, creature: Creature, territory:Territory) -> FoodOption | None:
+        options = MetabolismSystem.collect_options(perception, creature, territory)
 
         if not options:
             return None
