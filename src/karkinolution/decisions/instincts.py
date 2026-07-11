@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from random import choices, uniform
+from random import choices, uniform, choice
 from typing import Callable
 
 from karkinolution.core.coord import Coord
@@ -7,10 +7,11 @@ from karkinolution.core.error import EntityError
 
 from karkinolution.decisions.actions import Intent, IntentActs
 from karkinolution.decisions.perception import (
-    Analysis,
     PerceivedBlock,
     PerceivedCreature,
     Perception,
+    PerceptionAnalyser,
+    PerceptionPatterns
 )
 from karkinolution.decisions.presets import (
     AttackPreset,
@@ -23,7 +24,7 @@ from karkinolution.organism.creatures import (
     EntitiesRegistry,
     PregnantUterus,
 )
-from karkinolution.organism.identity import EntityTypes, Id
+from karkinolution.organism.identity import Id
 from karkinolution.organism.ontology import Temperament
 from karkinolution.organism.stats import LimitedValue
 
@@ -37,6 +38,9 @@ from karkinolution.systems.reproductivebuffer import (
     ReproductiveBuffer,
     ReproductiveDesire,
 )
+
+from karkinolution.utils.k_random import choice_bool
+from karkinolution.terrain.map import Territory
 
 COURAGE_FACTOR:dict[Temperament, float] = {
     Temperament.PASSIVE: 0.1,
@@ -110,6 +114,11 @@ class FactorsCalc:
     @staticmethod
     def get_pregnant_social_interest_factor(creature:Creature) -> float:
         return 1.2 if creature.pregnant else 1
+    @staticmethod
+    def get_pregnant_territorial_avoidance_attack_factor(creature:Creature) -> float:
+        assert isinstance(creature.uterus, PregnantUterus)
+        return 0.2 * (creature.uterus.gravity + 1)
+    
     
 @dataclass(frozen=True)
 class AttackOutput:
@@ -136,38 +145,41 @@ class AttackResolver:
     def resolve_predicate_attack(creature:Creature,
                                 radius:Coord,
                                 perception:Perception,
-                                predicate:Callable[[PerceivedBlock], bool]) -> Coord | None:
-        area = perception.neighbors_x_y(radius)
-        targets_coords:list[Coord] = []
+                                predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Coord | None:
+        area = PerceptionAnalyser.neighbors_x_y(perception, radius.x, radius.y)
 
-        for c, b in area:
-            if b.get_entity_type() == EntityTypes.CREATURE and predicate(b):
-                targets_coords.append(c)
-        if len(targets_coords) == 0:
+        coords = list(PerceptionPatterns.creatures(area, predicate).coords)
+
+        if len(coords) == 0:
             return None
-        target_coord = Analysis.near_coord(targets_coords, creature.position)
+        target_coord = PerceptionAnalyser.near_coord(creature.position, coords)
         return target_coord
+
     
     @staticmethod
     def resolve_aggressive_attack(creature:Creature, perception:Perception, entities:EntitiesRegistry) -> AttackOutput | None:
-        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(3, 2), perception, lambda b: b.entity.specie_id == creature.genome.core.id) # type: ignore
-        if target_coord is None:
-            return None
-        target_id = perception.get(target_coord).entity.identity # type: ignore
-        score = AttackResolver.score_attack(creature, entities.get_creature(target_id))
-        return AttackOutput(
-            score,
-            target_id
-        )
+        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(3, 2), perception, predicate=lambda b, _: b.entity.specie_id != perception.creature.specie_id)
+        if target_coord is not None:
+            target_id = perception.get(target_coord).entity.identity
+            score = AttackResolver.score_attack(creature, entities.get_creature(target_id))
+            return AttackOutput(
+                score,
+                target_id
+            )
+        
+    
     @staticmethod
     def resolve_territorial_attack(creature:Creature, perception:Perception, entities:EntitiesRegistry) -> AttackOutput | None:
-        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(2, 2), perception, lambda b: True)
+        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(2, 2), perception, predicate=lambda b, _: b.entity.specie_id != perception.creature.specie_id)
         if target_coord is None:
             return None
         target_id = perception.get(target_coord).entity.identity # type: ignore
-        score = choices([0, 1], weights=[1/2, 2/3], k=1)[0]
+        score = LimitedValue(choice([1/2, 2/3]), 1)
+
+        if creature.pregnant:
+            score.sub(FactorsCalc.get_pregnant_territorial_avoidance_attack_factor(creature))
         return AttackOutput(
-            score,
+            score.value,
             target_id
         )
 
@@ -299,8 +311,8 @@ class PlannerFindFood:
                 return AttackPreset(block.entity.identity)
         return MovePreset(food_target.coord)
     @staticmethod
-    def plan_intent(perception: Perception, creature: Creature) -> MovePreset | EatPreset | AttackPreset | None:
-        chosen = MetabolismSystem.choose_best(perception, creature)
+    def plan_intent(perception: Perception, creature: Creature, territory:Territory) -> MovePreset | EatPreset | AttackPreset | None:
+        chosen = MetabolismSystem.choose_best(perception, creature, territory)
         if chosen is None:
             return None
         
@@ -310,13 +322,11 @@ class PlannerFindFood:
 class PlannerFindMatch:
     @staticmethod
     def plan_intent(perception:Perception, creature:Creature) -> MovePreset | None:
-        same_specie = Analysis.find_predicate(perception, predicate=
-                                              lambda b: b.get_entity_type() == EntityTypes.CREATURE and
-                                                ReproductiveSystem.can_reproduce(creature, b.entity)) # type: ignore
-        if len(same_specie) == 0:
+        possibly_matches = list(PerceptionPatterns.same_species(perception, predicate=lambda b, _: ReproductiveSystem.can_reproduce(creature, b.entity)).coords)
+        if len(possibly_matches) == 0:
             return None
         
-        near_coord = Analysis.near_coord(same_specie, perception.coord)
+        near_coord = PerceptionAnalyser.near_coord(creature.position, possibly_matches)
 
         if perception.coord.distance_exceeds_one(near_coord):
             return MovePreset(near_coord)
@@ -339,8 +349,8 @@ class PlannerNothing:
     def score_coord(perception:Perception, coord:Coord, creature:Creature) -> float:
         block = perception.get(coord)
 
-        has_same_specie = block.get_entity_type() == EntityTypes.CREATURE and block.entity.specie_id == creature.genome.core.id
-        has_creature = block.get_entity_type() == EntityTypes.CREATURE
+        has_same_specie = block.has_creature and block.entity.specie_id == creature.genome.core.id
+        has_creature = block.has_creature
         distance = creature.position.distance_to_other(coord)/perception.max_distance
 
 
@@ -364,8 +374,8 @@ class PlannerNothing:
         
         coords_s:list[PlannerNothing.CoordScored] = []
         
-        for c in perception.iter_keys:
-            if c != creature.position and c.distance_to_other(creature.position) < perception.max_distance*0.7:
+        new_perception = PerceptionAnalyser.get_area_in_radius_ratio(perception, 0.7)
+        for c in new_perception.coords:
                 coords_s.append(
                     PlannerNothing.CoordScored(
                         c,
@@ -384,24 +394,24 @@ class PlannerScored:
 
 class Planner:
     @staticmethod
-    def resolve_intent(perception:Perception, creature:Creature) -> MovePreset | EatPreset | AttackPreset | None:
+    def resolve_intent(perception:Perception, creature:Creature, territory:Territory) -> MovePreset | EatPreset | AttackPreset | None:
         intent = creature.intent.intent
         if intent == IntentActs.FIND_FOOD:
-            return PlannerFindFood.plan_intent(perception, creature)
+            return PlannerFindFood.plan_intent(perception, creature, territory)
         elif intent == IntentActs.FIND_MATCH:
             return PlannerFindMatch.plan_intent(perception, creature)
         elif intent == IntentActs.NOTHING:
             return PlannerNothing.plan_intent(perception, creature)
         return None
     @staticmethod
-    def plan(perception:Perception, creature:Creature, entities:EntitiesRegistry) -> MovePreset | EatPreset | AttackPreset | None:
+    def plan(perception:Perception, creature:Creature, entities:EntitiesRegistry, territory:Territory) -> MovePreset | EatPreset | AttackPreset | None:
         result_attack = AttackResolver.resolve_attack(creature, perception, entities)
         
 
 
         
         if result_attack is None:
-            return Planner.resolve_intent(perception, creature)
+            return Planner.resolve_intent(perception, creature, territory)
         
 
 
@@ -414,5 +424,4 @@ class Planner:
         
         if result_attack.score > planner_scored.score:
             return PlannerAttack.plan_intent(result_attack, perception, entities)
-        return Planner.resolve_intent(perception, creature)
-    
+        return Planner.resolve_intent(perception, creature, territory)

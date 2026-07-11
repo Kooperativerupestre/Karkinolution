@@ -55,4 +55,4 @@ class IntentResolver:
         entities = world.entities
         # CODE
         IntentResolver.update_intent(creature, reproductive_buffer)
-        return Planner.plan(perception, creature, entities)
+        return Planner.plan(perception, creature, entities, world.territory)

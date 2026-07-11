@@ -3,7 +3,10 @@ from random import choice
 from karkinolution.core.coord import Coord
 from karkinolution.terrain.world import World, LogEntry
 
-from karkinolution.decisions.perception import Perception
+from karkinolution.decisions.perception import (
+    Perception,
+    PerceptionAnalyser
+) 
 from karkinolution.decisions.presets import ReproducePreset
 
 from karkinolution.organism.creatures import (
@@ -25,11 +28,11 @@ class ReproductiveResolver:
         ids:list[Id] = []
 
 
-        neighbors = perception.neighbors_8_blocks
+        neighbors = PerceptionAnalyser.neighbors_8(perception)
 
 
-        for b in neighbors:
-            if b is not None and b.has_entity and ReproductiveSystem.can_reproduce(creature, b.entity): # type: ignore
+        for b in neighbors.blocks:
+            if b.has_creature and ReproductiveSystem.can_reproduce(creature, b.entity):
                 assert b.entity is not None
                 ids.append(b.entity.identity)
         return ids

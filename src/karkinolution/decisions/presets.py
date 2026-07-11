@@ -84,7 +84,7 @@ class PresetExecutor:
             return MoveOutputs.CANNOT_GET_BEST_POSITION
         
         
-        cost = MovementSystem.calculate_cost_to_move(perception, best_pos, creature)
+        cost = MovementSystem.calculate_cost_to_move(best_pos, creature, world.territory)
         if creature.energy.value < cost:
             return MoveOutputs.INSUFFICIENT_ENERGY
         TerrainMotor.move(creature.position, best_pos, world.entity_map, world.territory)

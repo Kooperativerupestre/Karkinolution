@@ -5,7 +5,11 @@ from karkinolution.organism.creatures import (
     PregnantUterus,
     Corpse,
 )
-from karkinolution.decisions.perception import Perception, perceive
+from karkinolution.decisions.perception import (
+    Perception,
+    perceive,
+    PerceptionAnalyser
+)
 from random import choice
 from karkinolution.systems.reproduction import (
     ReproductiveSystem,
@@ -48,11 +52,11 @@ def resolve_born(creature:Creature, perception:Perception, world:World) -> Creat
 
         if r:
             born_data = ReproductiveSystem.to_birth(creature)
-            possibilities = list(perception.neighbors_8_coords)
-            if len(possibilities) == 0:
+            possibilities = PerceptionAnalyser.neighbors_8(perception)
+            if possibilities.size == 0:
                 return None
             
-            new_coord = choice(possibilities)
+            new_coord = choice(list(possibilities.coords))
             return BornResolver.resolve_born_data(born_data, new_coord, world, creature.name)
         return None
     
