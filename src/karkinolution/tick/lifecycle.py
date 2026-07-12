@@ -28,7 +28,7 @@ from karkinolution.decisions.presets import (
 )
 from karkinolution.systems.death import DeathSystem
 from karkinolution.decisions.resolvers import ReproductiveResolver, BornResolver
-from karkinolution.decisions.instincts import PlannerNothing
+from karkinolution.decisions.brain.planners import PlannerNothing
 
 from karkinolution.utils.k_random import choice_bool
 

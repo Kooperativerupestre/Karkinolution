@@ -1,9 +1,9 @@
 from karkinolution.decisions.actions import Intent, IntentActs
-from karkinolution.decisions.instincts import (
+from karkinolution.decisions.brain.instincts import (
     Instincts,
-    Planner,
     try_call_reproductive_buffer,
 )
+from karkinolution.decisions.brain.planners import Planner
 from karkinolution.decisions.perception import Perception
 from karkinolution.decisions.presets import (
     AttackPreset,
