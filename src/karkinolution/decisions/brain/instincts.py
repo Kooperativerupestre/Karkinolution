@@ -53,9 +53,9 @@ class AttackResolver:
     
     @staticmethod
     def resolve_aggressive_attack(creature:Creature, perception:Perception, entities:EntitiesRegistry) -> AttackOutput | None:
-        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(3, 2), perception, predicate=lambda b, _: b.entity.specie_id != perception.creature.specie_id)
+        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(3, 2), perception, predicate=lambda b, _: b.entity.ontology.specie != perception.creature.specie) # type: ignore
         if target_coord is not None:
-            target_id = perception.get(target_coord).entity.identity
+            target_id = perception.get(target_coord).entity.id # type: ignore
             score = AttackResolver.score_attack(creature, entities.get_creature(target_id))
             return AttackOutput(
                 score,
@@ -65,10 +65,10 @@ class AttackResolver:
     
     @staticmethod
     def resolve_territorial_attack(creature:Creature, perception:Perception, entities:EntitiesRegistry) -> AttackOutput | None:
-        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(2, 2), perception, predicate=lambda b, _: b.entity.specie_id != perception.creature.specie_id)
+        target_coord = AttackResolver.resolve_predicate_attack(creature, Coord(2, 2), perception, predicate=lambda b, _: b.entity.ontology.specie != perception.creature.specie) # type: ignore
         if target_coord is None:
             return None
-        target_id = perception.get(target_coord).entity.identity # type: ignore
+        target_id = perception.get(target_coord).entity.id # type: ignore
         score = LimitedValue(choice([1/2, 2/3]), 1)
 
         if creature.pregnant:

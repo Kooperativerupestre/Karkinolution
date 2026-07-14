@@ -16,8 +16,8 @@ from karkinolution.organism.creatures import (
 )
 from karkinolution.organism.genetics import CreatureTypes
 from karkinolution.organism.identity import EntityTypes, Id
-from karkinolution.organism.ontology import Gender
-from karkinolution.organism.stats import Energy
+from karkinolution.organism.ontology import Gender, Temperament
+from karkinolution.organism.stats import Energy, LimitedValue
 
 from karkinolution.terrain.cell import (
     Cell,
@@ -32,19 +32,29 @@ from karkinolution.terrain.map import (
     Territory,
 )
 
+@dataclass(frozen=True)
+class PerceivedBody:
+    energy:Energy
+    life:int | float
+    physical_ratio:float
+    reproductiv_capacity:bool
 
+@dataclass(frozen=True)
+class PerceivedOntology:
+    specie:CreatureTypes
+    temperament:Temperament
+    gender:Gender | None
 
 @dataclass(frozen=True)
 class PerceivedCreature:
+    body:PerceivedBody
+    ontology:PerceivedOntology
+    id:Id
+
+@dataclass(frozen=True)
+class PerceivedCorpse:
     energy:Energy
-    identity:Id
-    life:int | float | None
-
-    specie_id:CreatureTypes | None
-    gender:Gender | None
-    physical_ratio:float
-    reproductive_capacity:bool
-
+    id:Id
 
 @dataclass(frozen=True)
 class PerceivedCell:
@@ -56,17 +66,18 @@ class PerceivedCell:
     food:Energy | None
     required_capabilities: set[MoveActions]
     damage:int | float | None
+
 @dataclass(frozen=True)
 class ObserverCreature:
     energy_ratio:float
     life_ratio:float
     id:Id
-    specie_id:CreatureTypes
+    specie:CreatureTypes
 
 @dataclass(frozen=True)
 class PerceivedBlock:
     cell:PerceivedCell
-    entity:PerceivedCreature | None
+    entity:PerceivedCreature | PerceivedCorpse | None
     distance:float
 
     @property
@@ -75,13 +86,39 @@ class PerceivedBlock:
     
     
     def get_entity_type(self) -> EntityTypes | None:
-        return None if not self.has_entity else self.entity.identity.e_type # type: ignore
+        return None if not self.has_entity else self.entity.id.e_type # type: ignore
     @property
     def has_creature(self) -> bool:
         return self.get_entity_type() == EntityTypes.CREATURE
+        
     @property
     def has_corpse(self) -> bool:
         return self.get_entity_type() == EntityTypes.CORPSE
+    # Alias
+    # Creature = PerceivedCreature
+    # Corpse = PerceivedCorpse
+
+    # has_entity = true -> isinstance(entity, Creature) = true | isinstance(entity, Corpse) = true
+    # has_creature = true -> isinstance(entity, Creature) = true
+    # has_corpse = true -> isinstance(entity, Corpse) = true
+
+    
+class BlockProperties:
+    @staticmethod
+    def has_aggressive_creature(block:PerceivedBlock) -> bool:
+        return block.has_creature and block.entity.ontology.temperament == Temperament.AGGRESSIVE # type: ignore
+    @staticmethod
+    def has_territorial_creature(block:PerceivedBlock) -> bool:
+        return block.has_creature and block.entity.ontology.temperament == Temperament.TERRITORIAL # type: ignore
+    @staticmethod
+    def is_same_specie(other_creature:PerceivedCreature, creature:ObserverCreature) -> bool:
+        return other_creature.specie == creature.specie  # type: ignore
+    @staticmethod
+    def is_different_specie(other:PerceivedCreature, creature:ObserverCreature) -> bool:
+        return other.specie != creature.specie # type: ignore
+    @staticmethod
+    def is_more_strong(other:PerceivedCreature, creature:Creature) -> bool:
+        return other.body.physical_ratio > creature.physical_ratio
     
 @dataclass(frozen=True)
 class Perception:
@@ -191,35 +228,39 @@ class PerceptionPatterns:
         return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and predicate(b, c))
     @staticmethod
     def same_species(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
-        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and b.entity.specie_id == perception.creature.specie_id and predicate(b, c))
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and b.entity.ontology.specie == perception.creature.specie and predicate(b, c)) # type: ignore
     @staticmethod
     def other_species(perception:Perception, predicate:Callable[[PerceivedBlock, Coord], bool] = lambda b, c: True) -> Perception:
-        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and b.entity.specie_id != perception.creature.specie_id and predicate(b, c))
+        return PerceptionAnalyser.find_predicate(perception, predicate=lambda b, c: b.has_creature and b.entity.ontology.specie != perception.creature.specie and predicate(b, c)) # type: ignore
 
 
 class Perceiver:
     @staticmethod
     def perceive_entity(creature:Creature) -> PerceivedCreature:
-        return PerceivedCreature(
+        body = PerceivedBody(
             creature.energy,
-            creature.id,
             creature.life.value,
-            creature.genome.core.id,
-            creature.gender,
             creature.physical_ratio,
             creature.reproductively_capable
         )
-    @staticmethod
-    def perceive_corpse(corpse:Corpse) -> PerceivedCreature:
-        return PerceivedCreature(
-            corpse.energy,
-            corpse.id,
-            None,
-            None,
-            None,
-            0,
-            False
+        ontology = PerceivedOntology(
+            creature.genome.core.specie,
+            creature.genome.core.temperament,
+            creature.gender
         )
+
+        return PerceivedCreature(
+            body,
+            ontology,
+            creature.id
+        )
+    @staticmethod
+    def perceive_corpse(corpse:Corpse) -> PerceivedCorpse:
+        return PerceivedCorpse(
+            corpse.energy,
+            corpse.id
+        )
+    
     @staticmethod
     def perceive_cell(cell:Cell) -> PerceivedCell:
         is_edible = cell.property_is_in(Properties.EDIBLE)
@@ -282,4 +323,109 @@ def perceive(creature:Creature, territory:Territory, entity_map:EntityMap,
 
     return Perception(perceived, creature_observer, creature.position, sqrt(creature.genome.core.vision_radius.x**2 + creature.genome.core.vision_radius.y**2))
 
+@dataclass
+class Dangers:
+    cell_danger:float
+    creature_danger:float
+
+    @property
+    def accumulated_danger(self) -> float:
+        return (self.cell_danger * 0.85 + self.creature_danger * 1.15)/2
+    
+
+
+TERRITORIAL_DANGER = 0.25
+AGGRESSIVE_DANGER = 0.3
+DANGEROUS_CELL_FACTOR = 0.18
+ADJACENT_DANGER_WEIGHT = 0.4
+
+
+@dataclass(frozen=True)
+class DangerIndex:
+    index:dict[Coord, Dangers]
+    
+    def get(self, coord:Coord) -> Dangers:
+        return self.index[coord]
+
+    def try_get(self, coord:Coord) -> Dangers | None:
+        return self.index.get(coord)
+    def add(self, coord:Coord, dangers:Dangers) -> None:
+        if not coord in self.index:
+            self.index[coord] = dangers
+
+class DangerFactory:
+    # all values must be in [0, 1]
+    @staticmethod
+    def get_creature_danger(block:PerceivedBlock, creature:Creature) -> float:
+        score = LimitedValue(0, 1, -1)
+
+        if block.has_creature:
+            other:PerceivedCreature = block.entity # type: ignore
+            if BlockProperties.has_territorial_creature(block):
+                score.add(TERRITORIAL_DANGER)
+            elif BlockProperties.has_aggressive_creature(block):
+                score.add(AGGRESSIVE_DANGER)
         
+            score.sub((creature.physical_ratio - other.body.physical_ratio)/2)
+        return score.value
+    @staticmethod
+    def get_cell_danger(block:PerceivedBlock) -> float:
+        score = LimitedValue(0, 1, -1)
+
+        if block.cell.is_dangerous:
+            score.add(DANGEROUS_CELL_FACTOR)
+        return score.value
+    @staticmethod
+    def get_dangers(block:PerceivedBlock, creature:Creature) -> Dangers:
+        return Dangers(
+            DangerFactory.get_cell_danger(block),
+            DangerFactory.get_creature_danger(block, creature)
+        )
+    @staticmethod
+    def create_danger_index(perception:Perception, creature:Creature) -> DangerIndex:
+        cache = DangerIndex({})
+        danger_index = DangerIndex({})
+        new_perception = PerceptionAnalyser.get_area_in_radius_ratio(perception, 0.75)
+
+
+        for c, b in new_perception.iter:
+            if c in cache.index:
+                actual_dangers = cache.get(c)
+            else:
+                actual_dangers = DangerFactory.get_dangers(b, creature)
+                cache.add(c, actual_dangers)
+            
+            four_coords = c.four_movements()
+
+            average_dangers = Dangers(0, 0)
+            count = 0
+            for f_c in four_coords:
+                if f_c not in perception.pieces:
+                    continue
+
+                if f_c not in cache.index:
+                    dangers = DangerFactory.get_dangers(perception.get(f_c), creature)
+                    cache.add(f_c, dangers)
+                else:
+                    dangers = cache.get(f_c)
+                
+                count += 1
+
+
+                # sums
+                average_dangers.cell_danger += dangers.cell_danger
+                average_dangers.creature_danger += dangers.creature_danger
+
+            if count > 0:
+                average_dangers.cell_danger/=count
+                average_dangers.creature_danger/=count
+
+                average_dangers.cell_danger*=ADJACENT_DANGER_WEIGHT
+                average_dangers.creature_danger*=ADJACENT_DANGER_WEIGHT
+
+            new_dangers = Dangers(
+                average_dangers.cell_danger + actual_dangers.cell_danger,
+                average_dangers.creature_danger + actual_dangers.creature_danger
+            )
+            danger_index.add(c, new_dangers)
+        return danger_index

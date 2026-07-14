@@ -8,7 +8,9 @@ from karkinolution.organism.creatures import (
 from karkinolution.decisions.perception import (
     Perception,
     perceive,
-    PerceptionAnalyser
+    PerceptionAnalyser,
+    DangerFactory,
+    DangerIndex
 )
 from random import choice
 from karkinolution.systems.reproduction import (
@@ -90,9 +92,9 @@ class RunnerCreature:
         if creature.id in world.reproductive_buffer.desires:
             return ReproductiveResolver.resolve_reproduction(creature, perception, world.entities)
     @staticmethod
-    def get_presets(creature:Creature, perception:Perception, world:World) -> list[MovePreset | EatPreset | AttackPreset | ReproducePreset]:
+    def get_presets(creature:Creature, perception:Perception, danger_index:DangerIndex, world:World) -> list[MovePreset | EatPreset | AttackPreset | ReproducePreset]:
         presets:list[MovePreset | EatPreset | AttackPreset | ReproducePreset] = []
-        preset = IntentResolver.resolve_intent(creature, world, perception)
+        preset = IntentResolver.resolve_intent(creature, world, perception, danger_index)
         if preset is None:
             preset = PlannerNothing.plan_intent(perception, creature)
         if preset is not None:
@@ -123,8 +125,9 @@ class RunnerCreature:
             entity_map,
             entities
         )
+        danger_index = DangerFactory.create_danger_index(perception, creature)
   
-        presets = RunnerCreature.get_presets(creature, perception, world)
+        presets = RunnerCreature.get_presets(creature, perception, danger_index, world)
         new_child = RunnerCreature.run_uterus(creature, perception, world)
 
 
@@ -133,10 +136,10 @@ class RunnerCreature:
             WorldMotor.add_entity(world, new_child)
             for preset in presets:
                 if not isinstance(preset, MovePreset):
-                    PresetExecutor.execute_preset(preset, creature, world, perception)
+                    PresetExecutor.execute_preset(preset, creature, world, perception, danger_index)
         else:
             for preset in presets:
-                PresetExecutor.execute_preset(preset, creature, world, perception)
+                PresetExecutor.execute_preset(preset, creature, world, perception, danger_index)
 
         
 class RunnerCorpse:

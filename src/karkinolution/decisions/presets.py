@@ -4,7 +4,10 @@ from enum import Enum, auto
 from karkinolution.core.coord import Coord
 from karkinolution.core.error import InsufficientEnergyError
 
-from karkinolution.decisions.perception import Perception
+from karkinolution.decisions.perception import (
+    Perception,
+    DangerIndex
+)
 
 from karkinolution.organism.creatures import (
     Creature,
@@ -77,8 +80,8 @@ class PresetExecutor:
         MetabolismSystem.eat(creature, preset.energy, preset.food_hint)
         log.add(LogEntry(time, f'Creature {creature} ate'))
     @staticmethod
-    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, world:World) -> MoveOutputs:
-        best_pos = MovementSystem.best_pos(creature, perception, preset.new_coord)
+    def execute_move(preset:MovePreset, creature:Creature, perception:Perception, danger_index:DangerIndex, world:World) -> MoveOutputs:
+        best_pos = MovementSystem.best_pos(perception, danger_index, creature, preset.new_coord)
 
         if best_pos is None:
             return MoveOutputs.CANNOT_GET_BEST_POSITION
@@ -101,19 +104,19 @@ class PresetExecutor:
         creature.energy.sub(cost)
         log.add(LogEntry(time, f'Creature {creature} attacked {target}'))
     @staticmethod
-    def _unsafe_execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
+    def _unsafe_execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception, danger_index:DangerIndex) -> None:
         if isinstance(preset, AttackPreset):
             PresetExecutor.execute_attack(preset, world.entities, creature, world.log, world.time)
         elif isinstance(preset, MovePreset):
-            PresetExecutor.execute_move(preset, creature, perception, world)
+            PresetExecutor.execute_move(preset, creature, perception, danger_index, world)
         elif isinstance(preset, EatPreset):
             PresetExecutor.execute_eat(preset, creature, world.time, world.log)
         elif isinstance(preset, ReproducePreset):
             PresetExecutor.execute_reproduction(preset, world)
     @staticmethod
-    def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception) -> None:
+    def execute_preset(preset:AttackPreset | ReproducePreset | EatPreset | MovePreset, creature:Creature, world:World, perception:Perception, danger_index:DangerIndex) -> None:
         try:
-            PresetExecutor._unsafe_execute_preset(preset, creature, world, perception)
+            PresetExecutor._unsafe_execute_preset(preset, creature, world, perception, danger_index)
         except InsufficientEnergyError:
             pass
         

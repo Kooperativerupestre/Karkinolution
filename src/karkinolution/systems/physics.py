@@ -1,5 +1,6 @@
 from math import ceil
 from typing import Callable
+from dataclasses import dataclass
 
 from karkinolution.core.coord import Coord
 from karkinolution.core.error import NonMotileError
@@ -9,18 +10,24 @@ from karkinolution.decisions.perception import (
     PerceivedBlock,
     PerceivedCreature,
     Perception,
-    PerceptionAnalyser
+    PerceptionAnalyser,
+    DangerIndex
 )
 
 from karkinolution.organism.creatures import Creature
 from karkinolution.organism.ontology import AttackedEvent
-from karkinolution.organism.stats import check_energy
+from karkinolution.organism.stats import check_energy, LimitedValue
 
 from karkinolution.terrain.map import Territory
 from karkinolution.terrain.cell import (
     Damage,
     MovimentCost
 )
+
+@dataclass(frozen=True)
+class ScoredCoord:
+    coord:Coord
+    score:float
 
 class SpatialSystem:
     @staticmethod
@@ -61,20 +68,24 @@ class MovementSystem:
 
         cost:int | float = cell.get_component(MovimentCost).moviment_cost * creature.genome.metabolism.mass # type: ignore
 
-        return cost * creature.genome.metabolism.mass # type: ignore
-    
-
-        
+        return cost
     @staticmethod
-    def best_pos(creature:Creature, perception:Perception, new_coord:Coord) -> Coord | None:
-        data = PerceptionAnalyser.neighbors_4(perception).iter
-        moveble_coords:list[Coord] = []
-        for c, b in data:
-            if SpatialSystem.can_move(b, creature.genome.core.capabilities):
-                moveble_coords.append(c)
-        if len(moveble_coords) == 0:
-            return None
-        return min(moveble_coords, key=lambda x: x.distance_to_other(new_coord))
+    def calculate_cost_distance_to_move(distance:float, creature:Creature) -> float:
+        return creature.genome.metabolism.mass * distance
+    @staticmethod
+    def score_pos(perception:Perception, danger_index:DangerIndex, init_coord:Coord, end_coord:Coord) -> float:
+        normalized_distance = init_coord.distance_to_other(end_coord)/perception.max_distance
+
+        value = LimitedValue(normalized_distance, 1, -1)
+        
+        danger = danger_index.try_get(end_coord)
+        if danger is None:
+            value.sub(0.17)
+        else:
+            value.sub(danger.accumulated_danger)
+        value.sub(perception.coord.distance_to_other(end_coord))
+        
+        return value.value
     @staticmethod
     def four_movable_coords(perception:Perception, creature:Creature) -> list[Coord]:
         four_neighbors = PerceptionAnalyser.neighbors_4(perception).iter
@@ -84,6 +95,18 @@ class MovementSystem:
             if SpatialSystem.can_move(b, creature.genome.core.capabilities):
                 valids.append(c)
         return valids
+    @staticmethod
+    def best_pos(perception:Perception, danger_index:DangerIndex, creature:Creature, coord:Coord) -> Coord | None:
+        four_coords = MovementSystem.four_movable_coords(perception, creature)
+
+        if len(four_coords) == 0:
+            return None
+        
+        options:list[ScoredCoord] = []
+
+        for f_c in four_coords:
+            options.append(ScoredCoord(f_c, MovementSystem.score_pos(perception, danger_index, f_c, coord)))
+        return max(options, key=lambda x: x.score).coord
 
     
 class AttackSystem:
@@ -97,9 +120,8 @@ class AttackSystem:
 
     @staticmethod
     def calculate_cost_to_kill(creature:Creature, target:PerceivedCreature) -> float:
-        assert target.life is not None
         cost_atk = AttackSystem.calculate_cost_to_attack(creature)
-        atks = AttackSystem.calculate_attacks_to_kill(creature.genome.body.strength, target.life)
+        atks = AttackSystem.calculate_attacks_to_kill(creature.genome.body.strength, target.body.life)
         return cost_atk * atks
     # FUNCTIONS
     @staticmethod
