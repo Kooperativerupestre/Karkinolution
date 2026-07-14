@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, InitVar, field
 from enum import Enum, auto
 from random import choice, uniform
+from types import MappingProxyType
 
 from karkinolution.organism.identity import Id
 
@@ -34,20 +35,37 @@ class FoodHint(Enum):
 
 @dataclass(frozen=True)
 class Diet:
-    corpse_score:float
-    grass_score:float
-    target_score:float
+    corpse_score:InitVar[float]
+    grass_score:InitVar[float]
+    target_score:InitVar[float]
+
+    scores:dict[FoodHint, float] = field(default_factory=dict)
+
+    def __post_init__(self, corpse_score:float, grass_score:float, target_score:float):
+        max_score = max([corpse_score, grass_score, target_score])
+        corpse_score/=max_score
+        grass_score/=max_score
+        target_score/=max_score
+        d = {
+            FoodHint.CORPSE: corpse_score,
+            FoodHint.GRASS: grass_score,
+            FoodHint.TARGET: target_score
+        }
+        proxy = MappingProxyType(d)
+        object.__setattr__(self, 'scores', proxy)
+    def __getitem__(self, food_hint:FoodHint) -> float:
+        return self.scores[food_hint]
+    
 
     def scramble(self, other_diet:Diet) -> Diet:
         def mini_scramble(v1:int | float, v2:int | float) -> int | float:
             return (v1 + v2)/2 * uniform(0.90, 1.10)
         
         return Diet(
-            mini_scramble(self.corpse_score, other_diet.corpse_score),
-            mini_scramble(self.grass_score, other_diet.grass_score),
-            mini_scramble(self.target_score, other_diet.target_score)
+            mini_scramble(self[FoodHint.CORPSE], other_diet[FoodHint.CORPSE]),
+            mini_scramble(self[FoodHint.GRASS], other_diet[FoodHint.GRASS]),
+            mini_scramble(self[FoodHint.TARGET], other_diet[FoodHint.TARGET])
         )
-
 
     
 

@@ -4,7 +4,10 @@ from karkinolution.decisions.brain.instincts import (
     try_call_reproductive_buffer,
 )
 from karkinolution.decisions.brain.planners import Planner
-from karkinolution.decisions.perception import Perception
+from karkinolution.decisions.perception import (
+    Perception,
+    DangerIndex
+)
 from karkinolution.decisions.presets import (
     AttackPreset,
     EatPreset,
@@ -48,11 +51,7 @@ class IntentResolver:
 
 
     @staticmethod
-    def resolve_intent(creature:Creature, world:World, perception:Perception) -> MovePreset | AttackPreset | EatPreset | None:
+    def resolve_intent(creature:Creature, world:World, perception:Perception, danger_index:DangerIndex) -> MovePreset | AttackPreset | EatPreset | None:
         IntentResolver.cancel_invalid_intents(creature)
-        # ALIAS
-        reproductive_buffer = world.reproductive_buffer
-        entities = world.entities
-        # CODE
-        IntentResolver.update_intent(creature, reproductive_buffer)
-        return Planner.plan(perception, creature, entities, world.territory)
+        IntentResolver.update_intent(creature, world.reproductive_buffer)
+        return Planner.plan(perception, danger_index, creature, world.entities)

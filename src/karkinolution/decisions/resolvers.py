@@ -5,7 +5,8 @@ from karkinolution.terrain.world import World, LogEntry
 
 from karkinolution.decisions.perception import (
     Perception,
-    PerceptionAnalyser
+    PerceptionAnalyser,
+    PerceivedCreature
 ) 
 from karkinolution.decisions.presets import ReproducePreset
 
@@ -33,8 +34,8 @@ class ReproductiveResolver:
 
         for b in neighbors.blocks:
             if b.has_creature and ReproductiveSystem.can_reproduce(creature, b.entity):
-                assert b.entity is not None
-                ids.append(b.entity.identity)
+                assert isinstance(b.entity, PerceivedCreature)
+                ids.append(b.entity.id)
         return ids
     @staticmethod
     def resolve_parents(A:Creature, B_id:Id, entities:EntitiesRegistry) -> Parents:

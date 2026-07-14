@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from random import uniform
 
 from karkinolution.core.coord import Coord
 from karkinolution.terrain.map import Territory
@@ -6,11 +7,16 @@ from karkinolution.terrain.map import Territory
 from karkinolution.decisions.perception import (
     PerceivedCreature,
     Perception,
+    PerceivedBlock,
+    PerceivedCorpse
 )
 
 from karkinolution.organism.creatures import Creature
 from karkinolution.organism.identity import EntityTypes
-from karkinolution.organism.ontology import FoodHint
+from karkinolution.organism.ontology import (
+    Diet,
+    FoodHint
+)
 from karkinolution.organism.stats import Energy
 
 from karkinolution.systems.physics import (
@@ -27,8 +33,7 @@ class FoodOption:
     coord: Coord
     food_hint: FoodHint
     energy_gain: float
-    energy_cost: int  | float
-    diet_bias: float
+    distance: float
 
 
 class MetabolismSystem:
@@ -38,86 +43,59 @@ class MetabolismSystem:
         if food_type == FoodHint.CORPSE:
             return energy * CORPSE_FOOD_YIELD
         return energy
+    @staticmethod
+    def get_food_options(perception:Perception, coord:Coord) -> list[FoodOption]:
+        food_options:list[FoodOption] = []
+        block = perception.get(coord)
+
+        distance = perception.coord.distance_to_other(coord)
+        if block.cell.is_edible:
+            assert block.cell.food is not None
+
+            food_options.append(
+                FoodOption(
+                    coord,
+                    FoodHint.GRASS,
+                    energy_gain=block.cell.food.value,
+                    distance=distance
+                )
+            )
+        
+        if block.has_corpse:
+            assert isinstance(block.entity, PerceivedCorpse)
+            food_options.append(
+                FoodOption(
+                    coord,
+                    FoodHint.CORPSE,
+                    energy_gain=block.entity.energy.value,
+                    distance=distance
+                )
+            )
+        if block.has_creature:
+            assert isinstance(block.entity, PerceivedCreature)
+            food_options.append(
+                FoodOption(
+                    coord,
+                    FoodHint.TARGET,
+                    energy_gain=block.entity.body.energy.value,
+                    distance=distance
+                )
+            )
+        return food_options
 
     @staticmethod
-    def collect_options(perception: Perception, creature: Creature, territory:Territory) -> list[FoodOption]:
-        options: list[FoodOption] = []
-        diet = creature.genome.metabolism.diet
+    def diet_effective(diet_bias:float | int, hungry:float) -> float:
+        return 1 + (1 - hungry) * (diet_bias - 1)
 
-        for coord in perception.coords:
-            block = perception.get(coord)
-            energy_cost = MovementSystem.calculate_cost_to_move(coord, creature, territory)
-            
-            # corpse
-            if block.get_entity_type() == EntityTypes.CORPSE:
-                assert isinstance(block.entity, PerceivedCreature)
-
-                raw_energy = block.entity.energy.value
-                energy_gain = MetabolismSystem.get_food_yield(raw_energy, FoodHint.CORPSE)
-
-                options.append(FoodOption(
-                    coord=coord,
-                    food_hint=FoodHint.CORPSE,
-                    energy_gain=energy_gain,
-                    energy_cost=energy_cost,
-                    diet_bias=diet.corpse_score
-                ))
-
-            # grass
-            if block.cell.food is not None:
-                raw_energy = block.cell.food.value
-                energy_gain = MetabolismSystem.get_food_yield(raw_energy, FoodHint.GRASS)
-
-                options.append(FoodOption(
-                    coord=coord,
-                    food_hint=FoodHint.GRASS,
-                    energy_gain=energy_gain,
-                    energy_cost=energy_cost,
-                    diet_bias=diet.grass_score
-                ))
-
-            # creature target
-            if block.get_entity_type() == EntityTypes.CREATURE:
-                assert isinstance(block.entity, PerceivedCreature)
-
-                energy_cost += AttackSystem.calculate_cost_to_kill(creature, block.entity)
-
-                raw_energy = block.entity.energy.value
-                energy_gain = MetabolismSystem.get_food_yield(raw_energy, FoodHint.TARGET)
-
-                options.append(FoodOption(
-                    coord=coord,
-                    food_hint=FoodHint.TARGET,
-                    energy_gain=energy_gain,
-                    energy_cost=energy_cost,
-                    diet_bias=diet.target_score
-                ))
-
-        return options
-
-    @staticmethod
-    def score(option: FoodOption, hungry: float) -> float:
-        # hunger low = neutral prefference
-        diet_effective = 1 + (1 - hungry) * (option.diet_bias - 1)
-
-        effective_gain = option.energy_gain * diet_effective
-        return effective_gain - option.energy_cost
-
-    @staticmethod
-    def choose_best(perception: Perception, creature: Creature, territory:Territory) -> FoodOption | None:
-        options = MetabolismSystem.collect_options(perception, creature, territory)
-
-        if not options:
-            return None
-
-        return max(
-            options,
-            key=lambda opt: MetabolismSystem.score(opt, creature.hungry)
-        )
 
     @staticmethod
     def eat(creature: Creature, energy: Energy, food_hint:FoodHint) -> None:
         needed = creature.needed_energy
+
+        if creature.pregnant:
+            needed *= uniform(0.95, 1.05)
+        else:
+            needed *= uniform(0.90, 1.10)
         extracted = MetabolismSystem.get_food_yield(energy.value, food_hint)
         amount = min(needed, extracted)
 

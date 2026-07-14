@@ -92,6 +92,26 @@ class CoreGenome:
     vision_radius:Coord
     behavior:Temperament
     id:CreatureTypes
+
+    @property
+    def specie(self) -> CreatureTypes:
+        """Alias for `id` with a clearer name for the simulation domain.
+
+        Transitional: `id` is still the canonical field. Usage of `specie`
+        should gradually replace `id` until full migration, at which point
+        `id` will be removed and `specie` promoted to a real field.
+        """
+        return self.id
+    @property
+    def temperament(self) -> Temperament:
+        """Alias for `behavior` with a clearer name for the simulation domain.
+
+        Transitional: `behavior` is still the canonical field. Usage of
+        `temperament` should gradually replace `behavior` until full
+        migration, at which point `behavior` will be removed and
+        `temperament` promoted to a real field.
+        """
+        return self.behavior
   
 
 @dataclass(frozen=True)
@@ -260,3 +280,4 @@ sociability_species = {
 
 creatures_genomes = CreatureGenomes()
 populate_default_genomes(creatures_genomes)
+
