@@ -1,28 +1,31 @@
-name: Python package
+name: Karkinolution Tests
 
-on: [push]
+on:
+  push:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: ["3.13"]
-
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Cache FetchContent dependencies
+        uses: actions/cache@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          path: build/_deps
+          key: ${{ runner.os }}-deps-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-      - name: Install project
-        run: pip install -e .[dev]
+      - name: Build
+        run: cmake --build build --config Release
 
       - name: Run tests
-        run: pytest
+        working-directory: build
+        run: ctest --output-on-failure

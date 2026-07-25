@@ -22,15 +22,17 @@ I decided to make the genome core immutable based on a set of design decisions:
 
 ### Identity
 
-I decided that the `Id` class should carry the entity type because IDs do not exist in isolation in this project. Every ID is always associated with a specific entity type (Creature or Body).
+I decided that the `Id` class should carry the entity type because IDs do not exist in isolation in this project. Every ID is always associated with a specific entity type (Creature or Corpse).
 
 Specifically:
 
-* Entity → Creature or Body
+* Entity → Creature or Corpse
+
+For the underlying identifier type, I chose `uint64_t` instead of a UUID, due to the lack of an available UUID library at the time.
 
 # Creatures
 
-* **Uterus** — I considered creating a dedicated class to manage uterus states, but discarded the idea because there were no more than two states at the time (YAGNI).
+* **Uterus** — Uterus state is modeled with `std::variant`, using `std::monostate` to represent the absence of a uterus.
 
 #### Data Model
 
@@ -76,6 +78,10 @@ Each intent is then passed to its corresponding planner, which determines the co
 
 Defensive attacks are implemented as an interruption that is evaluated independently to determine whether attacking is worthwhile.
 
+*Note: `Instincts` and `Factors` now live together under `brain/instincts/`, as part of the broader `brain` module.*
+
 # Perception
 
 I created a dedicated perception class to standardize the perception API and interaction patterns, avoiding direct dependence on dictionaries while keeping perception logic consistent throughout the project.
+
+*Note: `Perception` now lives under the `brain` module, alongside `Planners` and `Instincts`.*
