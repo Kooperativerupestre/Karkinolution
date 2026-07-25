@@ -1,0 +1,60 @@
+name: C++ Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  asan:
+    name: Address Sanitizer
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake g++ ninja-build
+
+      - name: Configure
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Run tests
+        run: ./build/karkinolution_test
+
+
+  valgrind:
+    name: Valgrind Memory Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake g++ ninja-build valgrind
+
+      - name: Configure
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-g -O0"
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Run Valgrind
+        run: |
+          valgrind \
+            --leak-check=full \
+            --track-origins=yes \
+            --error-exitcode=1 \
+            ./build/karkinolution_test

@@ -1,34 +1,56 @@
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environments
-.venv/
-venv/
-env/
-
-# Environment variables
-.env
-.env.*
-
-# Build / packaging
-*.egg-info/
-dist/
+# --- Build directories ---
 build/
+cmake-build-*/
+out/
+build-valgrind
 
-# Test / coverage
-.pytest_cache/
-.coverage
-htmlcov/
+# --- CMake generated files ---
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+DartConfiguration.tcl
+compile_commands.json
+Testing/
 
-# Type checkers
-.mypy_cache/
-.pyright/
+# --- FetchContent / dependency downloads ---
+_deps/
 
-# IDEs
+# --- Compiled objects, binaries ---
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# --- Debug symbols ---
+*.pdb
+*.dSYM/
+
+# --- clangd / language server caches ---
+.cache/
+.clangd/
+.ccls-cache/
+
+# --- IDE / editor ---
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
+*.swp
+*~
 
-# Others
-.hypothesis/
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+
+# --- ccache (caso ative depois, pro GitHub Actions) ---
+.ccache/
