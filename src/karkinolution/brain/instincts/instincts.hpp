@@ -32,9 +32,13 @@ namespace AttackResolver {
         Predicate predicate = [](const PerceivedBlock&block, Vec2 coord){ return true; }
     ) {
         auto area = PerceptionAnalyser::neighbors_x_y(perception, radius,
-             [predicate](const PerceivedBlock&block, Vec2 coord){ return std::holds_alternative<PerceivedCreature>(block.entity) && predicate(block, coord); });
+            [predicate](const PerceivedBlock&block, Vec2 coord){ return std::holds_alternative<PerceivedCreature>(block.entity) && predicate(block, coord); });
         
-        return PerceptionAnalyser::near_coord(perception);
+        if (area.empty()) {
+            return std::nullopt;
+        }
+
+        return PerceptionAnalyser::near_coord(area);   // usa o filtrado
     }
 
     std::optional<AttackOutput> resolve_aggressive_attack(
