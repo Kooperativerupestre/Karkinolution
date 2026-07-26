@@ -226,7 +226,7 @@ PerceivedCorpse Perceiver::perceive_corpse(const Corpse &corpse) {
     };
 }
 
-PerceivedCell Perceiver::perceive_soil(const SoilPiece &soil_piece) {
+PerceivedSoil Perceiver::perceive_soil(const SoilPiece &soil_piece) {
     bool is_movable = false;
     bool is_edible = false;
     bool is_dangerous = false;
@@ -254,7 +254,7 @@ PerceivedCell Perceiver::perceive_soil(const SoilPiece &soil_piece) {
     if (is_movable) {
         movement_cost = soil_piece.components.try_get<MovementCost>()->cost;
     }
-    return PerceivedCell{
+    return PerceivedSoil{
         .is_movable = is_movable,
         .is_edible = is_edible,
         .is_dangerous = is_dangerous,
@@ -275,28 +275,32 @@ Perception Perceiver::perceive(const Creature &creature, const Territory &territ
         .id = IDF::create_creature_id(creature.id),
     };
 
-    std::unordered_map<Vec2, BlockData> data = Geometry::neighbors_x_y(creature.position, territory, entity_map, vision_radius, true);
-
     std::unordered_map<Vec2, PerceivedBlock> perceived{};
+    perceived.reserve((2*creature.genome.core.vision_radius.x + 1) * (2*creature.genome.core.vision_radius.y + 1));
 
-    for (const auto& [coord, block] : data) {
-        PerceivedCell perceived_cell = Perceiver::perceive_soil(*block.soil);
-
-        PerceivedEntity perceived_entity = std::monostate();
-
-        if (block.id.has_value()) {
-            if (block.id->entity_type == EntityTypes::CREATURE) {
-                perceived_entity = PerceivedCreature{Perceiver::perceive_creature(std::get<Creature>(entities.at(block.id.value())))};
-            } else if (block.id->entity_type == EntityTypes::CORPSE) {
-                perceived_entity = PerceivedCorpse{Perceiver::perceive_corpse(std::get<Corpse>(entities.at(block.id.value())))};
+    for (int x = -creature.genome.core.vision_radius.x; x <= creature.genome.core.vision_radius.x; x++) {
+        for (int y = -creature.genome.core.vision_radius.y; y <= creature.genome.core.vision_radius.y; y++) {
+            const Vec2 coord{x + creature.position.x, y + creature.position.y};
+            if (territory.exists(coord)) {
+                PerceivedSoil perceived_soil = Perceiver::perceive_soil(territory.at(coord));
+                
+                const Id* id = entity_map.try_at(coord);
+                const Entity* entity = nullptr;
+                PerceivedEntity perceived_entity = std::monostate();
+                if (id) {
+                    entity = &entities.at(*id);
+                    if (id->entity_type == EntityTypes::CREATURE) {
+                        perceived_entity = PerceivedCreature{Perceiver::perceive_creature(std::get<Creature>(*entity))};
+                    } else if (id->entity_type == EntityTypes::CORPSE) {
+                        perceived_entity = PerceivedCorpse{Perceiver::perceive_corpse(std::get<Corpse>(*entity))};
+                    }
+                }
+                perceived.emplace(coord,
+                    PerceivedBlock{.cell=perceived_soil, .entity=perceived_entity, .distance=Vec2F::distance(creature.position, coord)});
             }
         }
-        perceived[coord] = PerceivedBlock{
-            .cell=perceived_cell,
-            .entity=perceived_entity,
-            .distance=Vec2F::distance(creature.position, coord)
-        };
     }
+    
     return Perception{
     perceived,
     observer_creature,

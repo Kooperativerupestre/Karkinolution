@@ -38,7 +38,7 @@ struct PerceivedCorpse {
     Id id;
 };
 
-struct PerceivedCell {
+struct PerceivedSoil {
     bool is_movable, is_edible, is_dangerous;
 
     std::optional<float> movement_cost, damage;
@@ -57,7 +57,7 @@ using PerceivedEntity = std::variant<std::monostate, PerceivedCreature, Perceive
 
 
 struct PerceivedBlock {
-    PerceivedCell cell;
+    PerceivedSoil cell;
     PerceivedEntity entity;
     float distance;
 
@@ -257,7 +257,7 @@ namespace PerceptionPatterns {
 namespace Perceiver {
     PerceivedCreature perceive_creature(const Creature& creature);
     PerceivedCorpse perceive_corpse(const Corpse& corpse);
-    PerceivedCell perceive_soil(const SoilPiece& soil_piece);
+    PerceivedSoil perceive_soil(const SoilPiece& soil_piece);
 
     Perception perceive(const Creature& creature, const Territory& territory,
     const EntityMap& entity_map, const EntitiesRegistry& entities);

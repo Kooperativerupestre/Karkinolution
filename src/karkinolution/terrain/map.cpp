@@ -64,38 +64,7 @@ namespace TerrainMotor {
         entity_map.add(new_coord, id);
     }
 }
-namespace Geometry {
-    std::unordered_map<Vec2, BlockData> neighbors_x_y(Vec2 position, const Territory& territory, const EntityMap& entity_map, Vec2 radius, bool include_self) {
-        std::unordered_map<Vec2, BlockData> neighbors{};
-        int x_r = radius.x;
-        int y_r = radius.y;
-        
-        for (int row = -y_r; row < y_r + 1; row++) {
-            for (int column = -x_r; column < x_r + 1; column++) {
-                if (row == 0 && column == 0 && include_self) {
-                    const SoilPiece* piece = &territory.at(position);
-                    neighbors[position] = BlockData(piece, std::nullopt); 
-                    continue;
-                }
 
-                Vec2 coord_moved = Vec2(column + position.x, row + position.y);
-
-                if (territory.exists(coord_moved)) {
-                    const Id* id = entity_map.try_at(coord_moved);
-                    const SoilPiece* piece = &territory.at(coord_moved);
-                    std::optional<Id> creature_id;
-
-                    if (id) {
-                        creature_id = *id;
-                    }
-                    neighbors[coord_moved] = BlockData{piece, creature_id};
-                }
-            }
-        }
-        return neighbors;
-    }   
-
-}
 // 
 namespace TerrainFactory {
 

@@ -56,10 +56,6 @@ namespace TerrainMotor {
     void move(Vec2 old_coord, Vec2 new_coord, EntityMap&entity_map, Territory&territory);
 };
 
-namespace Geometry {
-    std::unordered_map<Vec2, BlockData> neighbors_x_y(Vec2 position, const Territory&territory, const EntityMap&entity_map, Vec2 radius, bool include_self);
-}
-
 namespace TerrainFactory {
     int gen_seed();
     SoilTypes value_to_soil_type(float value);
