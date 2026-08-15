@@ -1,6 +1,6 @@
 #pragma once
 #include <karkinolution/math/stats/compile_values.hpp>
-
+#include <format>
 template <typename Derived, typename T>
 class RuntimeLimitedValue {
 private:
@@ -18,14 +18,15 @@ protected:
     }
 
 public:
+
     RuntimeLimitedValue(T value, T max, T min = T(0))
         : _value(value),
           _min(min),
           _max(max)
     {
         if (_min > _max) {
-            throw std::invalid_argument(
-                "Invalid RuntimeLimitedValue range"
+            throw std::invalid_argument(std::format(
+                "Invalid RuntimeLimitedValue range. Min() > Max()", _min, _max)
             );
         }
 
@@ -359,4 +360,10 @@ public:
     {
         return _value == Approx<T>(T(0));
     }
+};
+
+// Generic runtime value
+template <typename T>
+class RuntimeFactor : public RuntimeLimitedValue<RuntimeFactor<T>, T> {
+    using RuntimeLimitedValue<RuntimeFactor, T>::RuntimeLimitedValue;
 };
