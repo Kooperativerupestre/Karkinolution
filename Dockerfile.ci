@@ -1,0 +1,20 @@
+FROM ubuntu:25.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    clang-20 \
+    gcc-15 \
+    g++-15 \
+    cmake \
+    ninja-build \
+    ccache \
+    valgrind \
+    git \
+    ca-certificates \
+    libc6-dbg \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CC=clang-20
+ENV CXX=clang++-20
+WORKDIR /workspace
