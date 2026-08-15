@@ -15,8 +15,8 @@ namespace GeometryForms {
     class Radius : public Meter {
         using Meter::Meter;
 
-        [[nodiscard]] constexpr Circumference circumference() const noexcept;
-        [[nodiscard]] constexpr Diameter diameter() const noexcept;
-        [[nodiscard]] constexpr Area area() const noexcept;
+        [[nodiscard]] Circumference circumference() const noexcept;
+        [[nodiscard]] Diameter diameter() const noexcept;
+        [[nodiscard]] Area area() const noexcept;
     };
 }
