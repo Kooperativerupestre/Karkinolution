@@ -1,5 +1,8 @@
 # Karkinolution
+# core-update
 An individual-based artificial ecosystem simulator built in C++ with a data-oriented design.
+
+(core-update)
 ## Overview
 Karkinolution is a simulator focused on individual organisms, where creatures with unique genomes interact with the environment, reproduce, compete, and develop emergent behaviors.
 Instead of modeling ecosystems only through populations or abstract mathematical models, Karkinolution focuses on the behavior and relationships of individual creatures.
@@ -30,7 +33,6 @@ The goal is not to script every action, but to create conditions where behaviors
 
 ## Tech Stack
 * Modern C++ (C++20)
-* Catch2 (unit testing)
 * FastNoiseLite.h (Perlin noise terrain generation)
 * GitHub Actions (CI)
 ## Architecture
@@ -46,11 +48,9 @@ For architectural decisions and design rationale, see [architecture.md](docs/arc
 ## Credits
 This project uses the following third-party libraries:
 * [FastNoiseLite](https://github.com/Auburn/FastNoiseLite) — Copyright (c) 2020 Jordan Peck and Contributors. MIT License.
-* [Catch2](https://github.com/catchorg/Catch2) — Copyright (c) Catch2 Authors. Boost Software License 1.0.
-* [IXWebSocket](https://github.com/machinezone/IXWebSocket) — Copyright (c) Machine Zone, Inc. BSD 3-Clause License.
-* [nlohmann/json](https://github.com/nlohmann/json) — Copyright (c) 2013-2026 Niels Lohmann. MIT License.
 
 ## License
 
 Karkinolution is licensed under the Apache License 2.0.
 See [LICENSE](LICENSE) for details.
+

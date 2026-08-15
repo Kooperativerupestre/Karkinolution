@@ -1,5 +1,7 @@
 #pragma once
-#include <cmath>
+#include <concepts>
+#include <karkinolution/math/stats/compile_values.hpp>
+#include <cmath> 
 #include <random>
 #include <vector>
 #include <iterator>
@@ -88,41 +90,104 @@ namespace Choices {
     } 
 
     template <typename T>
-    bool choice_bool(const std::vector<T>&weights) {
+    bool choice_bool(const std::array<T, 2>&weights) {
         return Choices::choices(std::array<bool, 2>{true, false}, weights, 1)[0];
     }
 
+    template <typename T>
+    bool choice_bool(T true_weight) {
+        return Choices::choices(std::array<bool, 2>{true, false}, std::array<T, 2>{true_weight, 1 - true_weight}, 1)[0];
+    }
+
+    template <typename T>
+    bool choice_bool(const NormalizedValue<float>&true_weight, const NormalizedValue<float>&v2) {
+        return Choices::choices(std::array<bool, 2>{true, false}, std::array<float, 2>{true_weight.value(), v2.value()}, 1)[0];
+    }
+
+    template <typename T>
+    bool choice_bool(const NormalizedValue<float>&true_weight) {
+        return Choices::choices(std::array<bool, 2>{true, false}, std::array<float, 2>{true_weight.value(), 1.0f - true_weight.value()}, 1)[0];
+    }
 }
+ 
+struct SuppressContext {
+    NormalizedValue<float> chance_of_v1_being_suppressed;
+    NormalizedValue<float> chance_of_v2_being_suppressed;
+    
+    float suppressed_multiplier;
+};
 
-namespace Disturbs {
+enum class SupressOneOutput : uint8_t {
+    V1_HAS_SUPRESSED,
+    V2_HAS_SUPPRESSED,
+    NOTHING_HAS_SUPPRESSED
+};
 
-    template <typename T, typename U>
-    float mini_scramble(T v1, U v2) {
-        std::uniform_real_distribution<float> dist{0.9f, 1.1f};
-        return (v2 + v1)/2 * dist(gen);
+enum class SuppressTwoOutput : uint8_t {
+    V1_HAS_SUPRESSED,
+    V2_HAS_SUPPRESSED,
+    NOTHING_HAS_SUPPRESSED,
+    ALL_VALUES_HAS_SUPRESSED
+};
+
+namespace RandomGenerators {
+    template <std::floating_point T>
+    T generate(T min, T max) {
+        return std::uniform_real_distribution<T>{min, max}(gen);
+    }
+
+    template <std::integral T>
+    T generate(T min, T max) {
+        return std::uniform_int_distribution<T>{min, max}(gen);
     }
 
     template <typename T, typename U>
-    auto gen_disturb(T v1, U v2) {
-        return std::uniform_real_distribution<float>{static_cast<float>(v1), static_cast<float>(v2)}(gen);
-    }
-
-    inline float gen_little_disturb() {
-        return gen_disturb(0.90f, 1.10f);
-    }
-
-    inline float gen_medium_disturb() {
-        return gen_disturb(0.86f, 1.16f);
+    float inheritance(T v1, U v2) {
+        float bias = generate(0.0f, 1.0f);
+        return v1 + (v2 - v1) * bias;
     }
 
     template <typename T, typename U>
-    float smooth_scramble(T v1, U v2) {
-        return (static_cast<float>(v1) + static_cast<float>(v2))/2 * gen_little_disturb();
+    float inheritance(T v1, U v2, float bias) {
+        return v1 + (v2 - v1) * bias;
     }
 
     template <typename T, typename U>
-    int time_scramble(T v1, U v2) {
-        return std::round((v1 + v2)/2) + Choices::choice({-1, 0, 1});
+    SupressOneOutput suppress_one(T& v1, U& v2, const SuppressContext&context) {
+        if (Choices::choice_bool(context.chance_of_v1_being_suppressed)) {
+            v1 *= context.suppressed_multiplier;
+            return SupressOneOutput::V1_HAS_SUPRESSED;
+        } else if (Choices::choice_bool(context.chance_of_v2_being_suppressed)) {
+            v2 *= context.suppressed_multiplier;
+            return SupressOneOutput::V2_HAS_SUPPRESSED;
+        } else {
+            return SupressOneOutput::NOTHING_HAS_SUPPRESSED;
+        }
     }
+
+    template <typename T, typename U>
+    SuppressTwoOutput suppress_two(T& v1, U& v2, const SuppressContext&context) {
+        bool v1_has_suppressed = Choices::choice_bool(context.chance_of_v1_being_suppressed);
+        bool v2_has_suppressed = Choices::choice_bool(context.chance_of_v2_being_suppressed);
+
+        if (v1_has_suppressed) {
+            v1 *= context.suppressed_multiplier;
+        }
+
+        if (v2_has_suppressed) {
+            v2 *= context.suppressed_multiplier;
+        }
+
+        if (v1_has_suppressed && v2_has_suppressed) {
+            return SuppressTwoOutput::ALL_VALUES_HAS_SUPRESSED;
+        } else if (v1_has_suppressed) {
+            return SuppressTwoOutput::V1_HAS_SUPRESSED;
+        } else if (v2_has_suppressed) {
+            return SuppressTwoOutput::V2_HAS_SUPPRESSED;
+        } else {
+            return SuppressTwoOutput::NOTHING_HAS_SUPPRESSED;
+        }
+    }
+
 
 }

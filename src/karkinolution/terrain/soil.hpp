@@ -3,10 +3,13 @@
 #include <typeindex>
 #include <memory>
 #include <cstdint>
-#include <karkinolution/core/stats.hpp>
+#include <karkinolution/math/stats/compile_values.hpp>
 #include <vector>
-#include <karkinolution/actions/actions.hpp>
 #include <functional>
+#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/organism/entities/properties/properties.hpp>
+
+using OrganismStats::Energy;
 
 struct Component {
     virtual ~Component() = default;
@@ -77,7 +80,7 @@ enum class SoilTypes : uint8_t {
     WATER
 };
 
-enum class Properties : uint8_t {
+enum class SoilProperties : uint8_t {
     EDIBLE,
     DANGEROUS
 };
@@ -113,8 +116,8 @@ struct MovementCost : Component {
 
 struct Blueprint {
     std::vector<std::function<std::unique_ptr<Component>()>> default_components;
-    std::vector<Properties> properties;
-    std::vector<MoveActions> required_capabilities;
+    std::vector<SoilProperties> properties;
+    std::vector<GenericProperty> required_properties;
 
     Components gen_components() const;
 };
@@ -122,48 +125,48 @@ struct Blueprint {
 inline const std::unordered_map<SoilTypes, Blueprint> blueprints = {
     {SoilTypes::DIRT, Blueprint{
                     .default_components = {
-                        []() -> std::unique_ptr<Component>{ return std::make_unique<FoodState>(Energy(10, 10), 1); },
+                        []() -> std::unique_ptr<Component>{ return std::make_unique<FoodState>(Energy(10.0f, 10.0f), 1); },
                         []() -> std::unique_ptr<Component>{ return std::make_unique<MovementCost>(1); }
                     },
-                    .properties = {Properties::EDIBLE},
-                    .required_capabilities = {MoveActions::WALK}
+                    .properties = {SoilProperties::EDIBLE},
+                    .required_properties = {Properties::Capabilities::Move::WALK}
 
     }},
 
     {SoilTypes::SAND, Blueprint{
         .default_components = {
-            []() -> std::unique_ptr<Component>{ return std::make_unique<FoodState>(Energy(10, 10), 1);},
+            []() -> std::unique_ptr<Component>{ return std::make_unique<FoodState>(Energy(10.0f, 10.0f), 1);},
             []() -> std::unique_ptr<Component>{ return std::make_unique<MovementCost>(2);}
         },
-        .properties = {Properties::EDIBLE}
+        .properties = {SoilProperties::EDIBLE}
     }},
 
     {SoilTypes::ROCK, Blueprint{
         .default_components = {
             []() -> std::unique_ptr<Component>{ return std::make_unique<MovementCost>(1); }
         },
-        .properties = {Properties::DANGEROUS},
-        .required_capabilities = {MoveActions::WALK}
+        .properties = {SoilProperties::DANGEROUS},
+        .required_properties = {Properties::Capabilities::Move::WALK}
     }},
 
     {SoilTypes::WATER, Blueprint{
         .default_components = {
-            []() -> std::unique_ptr<Component>{ return std::make_unique<FoodState>(Energy(10, 10), 1); },
+            []() -> std::unique_ptr<Component>{ return std::make_unique<FoodState>(Energy(10.0f, 10.0f), 1); },
             []() -> std::unique_ptr<Component>{ return std::make_unique<MovementCost>(1); }
         },
-        .properties = {Properties::EDIBLE},
-        .required_capabilities = {MoveActions::SWIMM}
+        .properties = {SoilProperties::EDIBLE},
+        .required_properties = {Properties::Capabilities::Move::SWIMM}
     }}
 };
 
 struct SoilPiece {
     SoilTypes type;
-    std::vector<Properties> properties;
-    std::vector<MoveActions> required_capabilities;
+    std::vector<SoilProperties> properties;
+    std::vector<GenericProperty> required_capabilities;
     Components components;
 
-    SoilPiece(SoilTypes type, std::vector<Properties> properties,
-    std::vector<MoveActions> required_capabilities, Components components):
+    SoilPiece(SoilTypes type, std::vector<SoilProperties> properties,
+    std::vector<GenericProperty> required_capabilities, Components components):
     type(type), properties(properties), required_capabilities(required_capabilities), components(std::move(components)) {}
 };
 
