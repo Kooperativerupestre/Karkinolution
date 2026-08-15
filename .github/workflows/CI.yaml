@@ -1,0 +1,168 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: karkinolution-ci:latest
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Configure
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake \
+              -S /workspace \
+              -B /workspace/build-ci \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake --build /workspace/build-ci
+
+      - name: Test
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            ctest \
+              --test-dir /workspace/build-ci \
+              --output-on-failure
+
+  sanitizers:
+    name: Sanitizers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: karkinolution-ci:latest
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Configure
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake \
+              -S /workspace \
+              -B /workspace/build-sanitizers \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+              -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+
+      - name: Build
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake --build /workspace/build-sanitizers
+
+      - name: Test with sanitizers
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -e ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 \
+            -e UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 \
+            karkinolution-ci:latest \
+            ctest \
+              --test-dir /workspace/build-sanitizers \
+              --output-on-failure
+
+  valgrind:
+    name: Valgrind
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: karkinolution-ci:latest
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Configure
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake \
+              -S /workspace \
+              -B /workspace/build-valgrind \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=gcc-15 \
+              -DCMAKE_CXX_COMPILER=g++-15 \
+              -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake --build /workspace/build-valgrind
+
+      - name: Run Valgrind
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            valgrind \
+              --leak-check=full \
+              --show-leak-kinds=all \
+              --track-origins=yes \
+              --error-exitcode=1 \
+              /workspace/build-valgrind/tests/karkinolution_tests
