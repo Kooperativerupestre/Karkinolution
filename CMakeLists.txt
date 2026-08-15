@@ -9,6 +9,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 
 
+enable_testing()
+
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
@@ -31,3 +33,7 @@ target_link_libraries(karkinolution_app PRIVATE
     karkinolution
 )
 
+
+# ---------------- Tests ----------------
+
+add_subdirectory(tests)
