@@ -20,9 +20,8 @@ SoilPiece gen_soil_piece(SoilTypes s_t) {
     const Blueprint* blueprint = &blueprints.at(s_t);
 
     return SoilPiece{
-        s_t, blueprint->properties, blueprint->required_capabilities,
+        s_t, blueprint->properties, blueprint->required_properties,
         blueprint->gen_components()
     };
 }
-
 } 
