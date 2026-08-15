@@ -1,0 +1,29 @@
+services:
+  development:
+    build:
+      context: .
+      target: development
+    image: karkinolution-dev
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/workspace
+      - karkinolution-build:/workspace/build
+      - karkinolution-ccache:/ccache
+    environment:
+      CC: clang
+      CXX: clang++
+      CCACHE_DIR: /ccache
+    command: bash
+
+  test:
+    build:
+      context: .
+      target: test
+    image: karkinolution-test
+    command: ctest --test-dir /workspace/build --output-on-failure
+
+volumes:
+  karkinolution-build:
+  karkinolution-ccache:
