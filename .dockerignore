@@ -1,0 +1,10 @@
+build/
+.git/
+.vscode/
+.clangd
+.cache/
+*.o
+*.a
+.vscode
+.build-valgrind
+cmake-build-debug
