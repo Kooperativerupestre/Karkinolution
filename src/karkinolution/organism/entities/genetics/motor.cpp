@@ -26,6 +26,52 @@ using MuscleStructureGrowthRates = Genomes::CreatureGenomes::MuscleStructure::Gr
 using SkeletonStructureGrowthRates = Genomes::CreatureGenomes::SkeletonStructure::GrowthRates;
 
 
+CreatureSkeletonGenome
+GenomeMotor::scramble(
+    const CreatureSkeletonGenome& g1,
+    const CreatureSkeletonGenome& g2
+) {
+    auto new_transformations = GeneticDisturbs::mix_transformations(g1.transformations, g2.transformations,
+        [](
+            const Efficiency& v1,
+            const Efficiency& v2
+        ) {
+            return Efficiency{
+                GeneticDisturbs::scramble(v1.value(), v2.value(), GeneticDisturbs::StandardContexts::transformations_scramble)
+            };
+        }
+    );
+
+    return CreatureSkeletonGenome{
+        .shared_volume = GeneticDisturbs::scramble(
+            g1.shared_volume.value(),
+            g2.shared_volume.value(),
+            GeneticDisturbs::StandardContexts::morphology_scramble
+        ),
+        .average_bones = GeneticDisturbs::scramble(
+            g1.average_bones.value,
+            g2.average_bones.value,
+            GeneticDisturbs::StandardContexts::morphology_scramble
+        ),
+        .average_bone_quality = GeneticDisturbs::scramble(
+            g1.average_bone_quality.value(),
+            g2.average_bone_quality.value(),
+            ScrambleContext{
+                .max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
+                .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
+                .distance_multiplier = GeneticDisturbs::LOW_DISTANCE_MULTIPLIER
+            }
+        ),
+        .growth = GeneticDisturbs::scramble(
+            g1.growth.value,
+            g2.growth.value,
+            GeneticDisturbs::StandardContexts::metabolism_growth_rates
+        ),
+        .transformations = new_transformations
+    };
+}
+
+
 CreatureMorphologyGenome
 GenomeMotor::scramble(
     const CreatureMorphologyGenome& g1,
