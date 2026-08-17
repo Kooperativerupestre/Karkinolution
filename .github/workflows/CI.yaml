@@ -40,7 +40,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-ci \
               -G Ninja \
-              -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
               -DCMAKE_BUILD_TYPE=Debug
 
       - name: Build
@@ -89,7 +90,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-sanitizers \
               -G Ninja \
-              -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
               -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
               -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
@@ -142,7 +144,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-valgrind \
               -G Ninja \
-              -DCMAKE_CXX_COMPILER=g++ \
+              -DCMAKE_C_COMPILER=gcc-15 \
+              -DCMAKE_CXX_COMPILER=g++-15 \
               -DCMAKE_BUILD_TYPE=Debug
 
       - name: Build
