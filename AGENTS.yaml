@@ -1,0 +1,24 @@
+main:
+  - any change must strictly follow currently_architecture.md
+
+actions:
+  refactor:
+    what to check:
+      - optimization must not change observable behavior (without permission)
+      - DRY principle (repetition of logic, not code)
+      - cohesion
+      - encapsulation
+      - API clarity
+    what not to do:
+      - do not remove code that affects behavior without asking
+
+  building:
+    what to check:
+      - code must respect the existing file separation
+      - test every change that may or does alter the structure
+      - do not modify the core directory without permission
+      - clarity
+
+for things such as biology:
+  - changes based on biological facts are acceptable for implementation
+  - changes to the simulator that compromise biological accuracy must ask for permission
