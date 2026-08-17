@@ -64,6 +64,23 @@ MuscleTransformations muscle_transformations(float muscle) {
     return transformations;
 }
 
+using SkeletonTransformations = Genomes::CreatureGenomes::SkeletonStructure::Transformations;
+
+SkeletonTransformations skeleton_transformations(float bone) {
+    SkeletonTransformations transformations;
+
+    transformations.add(
+        Genomes::Resource::RESERVED_ENERGY,
+        {
+            Genomes::Resource::RESERVED_ENERGY,
+            Genomes::CreatureGenomes::SkeletonStructure::Trait::BONES,
+            Efficiency{bone}
+        }
+    );
+
+    return transformations;
+}
+
 PropertiesContainer movement_properties(bool can_walk, bool can_swim) {
     PropertiesContainer properties;
 
@@ -167,7 +184,9 @@ void Populate::populate_crocodile(CreatureGenomes& creature_genomes) {
         .skeleton = SkeletonStructure::SkeletonGenome{
             .shared_volume = SharedVolume{0.60f},
             .average_bones = Bone{30.0f},
-            .average_bone_quality = SkeletonQuality{0.85f}
+            .average_bone_quality = SkeletonQuality{0.85f},
+            .growth = GrowthRate{0.30f},
+            .transformations = skeleton_transformations(0.80f)
         },
         .morphology = Morphology::MorphologyGenome{
             .average_lateral = Lateral{2.20f}, .average_back = Back{1.10f},
@@ -211,7 +230,9 @@ void Populate::populate_fish(CreatureGenomes& creature_genomes) {
         },
         .skeleton = SkeletonStructure::SkeletonGenome{
             .shared_volume = SharedVolume{0.15f}, .average_bones = Bone{0.80f},
-            .average_bone_quality = SkeletonQuality{0.35f}
+            .average_bone_quality = SkeletonQuality{0.35f},
+            .growth = GrowthRate{0.50f},
+            .transformations = skeleton_transformations(0.65f)
         },
         .morphology = Morphology::MorphologyGenome{
             .average_lateral = Lateral{1.20f}, .average_back = Back{0.50f},
@@ -253,7 +274,9 @@ void Populate::populate_crab(CreatureGenomes& creature_genomes) {
         },
         .skeleton = SkeletonStructure::SkeletonGenome{
             .shared_volume = SharedVolume{0.30f}, .average_bones = Bone{5.0f},
-            .average_bone_quality = SkeletonQuality{0.65f}
+            .average_bone_quality = SkeletonQuality{0.65f},
+            .growth = GrowthRate{0.40f},
+            .transformations = skeleton_transformations(0.70f)
         },
         .morphology = Morphology::MorphologyGenome{
             .average_lateral = Lateral{1.40f}, .average_back = Back{1.00f},
@@ -296,7 +319,9 @@ void Populate::populate_hippopotamus(CreatureGenomes& creature_genomes) {
         },
         .skeleton = SkeletonStructure::SkeletonGenome{
             .shared_volume = SharedVolume{0.90f}, .average_bones = Bone{35.0f},
-            .average_bone_quality = SkeletonQuality{0.90f}
+            .average_bone_quality = SkeletonQuality{0.90f},
+            .growth = GrowthRate{0.25f},
+            .transformations = skeleton_transformations(0.75f)
         },
         .morphology = Morphology::MorphologyGenome{
             .average_lateral = Lateral{1.80f}, .average_back = Back{1.40f},
