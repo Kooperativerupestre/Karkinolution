@@ -229,6 +229,8 @@ namespace Genomes {
                 SharedVolume shared_volume;
                 Bone average_bones;
                 SkeletonQuality average_bone_quality;
+                GrowthRate growth;
+                Transformations transformations;
             };
 
         } 
