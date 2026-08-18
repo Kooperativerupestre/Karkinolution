@@ -7,5 +7,4 @@
 
 namespace UterusMotor {
     void transfer_energy_to_uterus(Creature&creature);
-    void run(Creature&creature);
 }
