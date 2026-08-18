@@ -7,7 +7,7 @@
 using OrganismStats::Energy;
 using OrganismStats::Life;
 using OrganismStats::Health::Health;
-
+using PhysicsStats::Volume;
 
 class EmbryonicEnergy : public FloatValue{
     public:
@@ -29,7 +29,7 @@ struct Embryo {
     Energy energy;
     Life life;
     Health health;
-    Size volume;
+    Volume volume;
     Genome genome;
     int age;
 

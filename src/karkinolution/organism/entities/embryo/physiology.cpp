@@ -1,3 +1,4 @@
+#include "karkinolution/organism/stats.hpp"
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/embryo/physiology.hpp>
 #include <karkinolution/utils/k_random.hpp>
@@ -60,6 +61,22 @@ ResourceTrade EmbryoGrowingPhysiology::get_new_energy_increment(const Embryo& em
 
 ResourceTrade EmbryoGrowingPhysiology::get_new_health_increment(const Embryo& embryo, const Energy& energy) {
     NormalizedValue<float> cost = EmbryoGrowingPhysiology::get_increment(embryo.health.value(), std::min(BASE_VALUE_HEALTH_INCREMENT.value(), embryo.remaining_growth_capacity().value()));
+    float gain = cost.value() * energy.value();
+    return ResourceTrade{
+        .cost = cost,
+        .gain = gain
+    };
+}
+
+ResourceTrade EmbryoGrowingPhysiology::get_new_volume_increment(const Embryo &embryo, const Energy&energy) {
+    NormalizedValue<float> cost = EmbryoGrowingPhysiology::get_increment(
+        embryo.volume.value/embryo.genome.embryo_genome.morphology.average_volume.value()
+        * Size::volume(
+            embryo.genome.creature_genome.morphology.average_lateral,
+            embryo.genome.creature_genome.morphology.average_height,
+            embryo.genome.creature_genome.morphology.average_back
+        ).value, BASE_VALUE_VOLUME_INCREMENT);
+
     float gain = cost.value() * energy.value();
     return ResourceTrade{
         .cost = cost,
