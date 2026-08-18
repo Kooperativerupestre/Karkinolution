@@ -33,8 +33,14 @@ struct Embryo {
     Genome genome;
     int age;
 
-    NormalizedValue<float> remaining_growth_capacity() const;
-    EmbryoHungry hungry() const;
+    [[nodiscard]] EmbryoHungry hungry() const;
+
+
+    [[nodiscard]] float specie_relative_volume() const;
+    [[nodiscard]] float specie_relative_energy_max() const;
+    [[nodiscard]] float specie_relative_life() const;
+    
+    
 };
 
 using EmbryoFunction = void (*)(Embryo&);
