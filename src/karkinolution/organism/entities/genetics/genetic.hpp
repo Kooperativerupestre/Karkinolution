@@ -17,7 +17,7 @@
 #include <karkinolution/organism/stats.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
-
+#include <karkinolution/organism/reproduction/state/ontology.hpp>
 
 using OrganismStats::Life;
 using OrganismStats::Health::Health;
@@ -258,7 +258,7 @@ namespace Genomes {
 
         namespace Reproduction {
 
-            struct GestatingOrganismGenome {
+            struct ViviparousOrganismGenome {
                 NormalizedValue<float> reproduction_cost;
                 int fertility_limit;
                 int gestation_limit;
@@ -267,12 +267,12 @@ namespace Genomes {
 
             struct OviparousOrganismGenome {
             };
-
-            using ReproductiveGenome = std::variant<
-                GestatingOrganismGenome,
-                OviparousOrganismGenome
-            >;
-
+            
+            struct ReproductiveGenome {
+                std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> reproductive_way_genome;
+                int average_children_count;
+                ReproductiveWays reproductive_way;
+            };
         }
 
     } 
