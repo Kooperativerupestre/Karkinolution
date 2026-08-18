@@ -8,6 +8,7 @@
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/math/units.hpp>
+#include <karkinolution/organism/reproduction/state/state.hpp>
 
 
 using OrganismStats::Health::Health;
@@ -126,6 +127,7 @@ struct Creature {
     Brain brain;
     Ontology ontology;
     Body body;
+    ReproductionOrgan reproduction;
 
     Creature(const Creature&) = delete;
     Creature& operator=(const Creature&) = delete;
