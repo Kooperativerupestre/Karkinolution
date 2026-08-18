@@ -334,6 +334,20 @@ struct Genome {
     EmbryoGenome embryo_genome;
     CoreGenome core_genome;
     BrainGenome brain_genome;
+
+    [[nodiscard]] constexpr float calculate_embryo_average_max_energy() const{
+        return embryo_genome.body.average_max_energy.value() * creature_genome.metabolism.max_energy;
+    }
+
+    [[nodiscard]] constexpr Volume calculate_embryo_average_volume() const {
+        return embryo_genome.morphology.average_volume.value() * 
+        Size::volume(creature_genome.morphology.average_lateral,
+                    creature_genome.morphology.average_height,
+                    creature_genome.morphology.average_back).value;
+    }
+    [[nodiscard]] constexpr float calculate_embryo_average_life() const {
+        return embryo_genome.body.average_max_life.value() * creature_genome.vital.max_life;
+    }
 };
 
 
