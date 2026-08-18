@@ -45,6 +45,14 @@ public:
         return _max;
     }
 
+    T& max_ref() noexcept {
+        return _max;
+    }
+
+    T& min_ref() noexcept {
+        return _min;
+    }
+
     void clamp() noexcept {
         if (_value < _min) {
             _value = _min;
