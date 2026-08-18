@@ -31,14 +31,6 @@ class EntitiesRegistry : public BaseStorage<Id, Entity> {
     const Egg& at_egg(Id id) const;
 };
 
-class PathogenRegistry : public BaseStorage<PathogenId, GenericPathogenContainer> {
-    public:
-
-    PathogenRegistry() : BaseStorage<PathogenId, GenericPathogenContainer>() {}
-
-    VirusContainer& at_virus(PathogenId id);
-    const VirusContainer& at_virus(PathogenId id) const;
-};
 
 namespace EntityGetters {
     Id get_id(const Entity& entity);
