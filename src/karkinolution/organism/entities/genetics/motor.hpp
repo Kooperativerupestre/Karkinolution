@@ -13,7 +13,8 @@ using EmbryoBodyGenome = Genomes::EmbryoGenomes::BodyGenome;
 using EmbryoMorphologyGenome = Genomes::EmbryoGenomes::Morphology;
 
 using ReproductionOviparous = Genomes::CreatureGenomes::Reproduction::OviparousOrganismGenome;
-using ReproductionGestating = Genomes::CreatureGenomes::Reproduction::GestatingOrganismGenome;
+using ReproductionViviparous = Genomes::CreatureGenomes::Reproduction::ViviparousOrganismGenome;
+using ReproductiveGenome = Genomes::CreatureGenomes::Reproduction::ReproductiveGenome;
 
 namespace GenomeMotor {
 
@@ -52,9 +53,14 @@ namespace GenomeMotor {
     );
     
 
-    ReproductionGestating scramble(
-        const ReproductionGestating& g1,
-        const ReproductionGestating& g2
+    ReproductionViviparous scramble(
+        const ReproductionViviparous& g1,
+        const ReproductionViviparous& g2
+    );
+
+    ReproductiveGenome scramble(
+        const ReproductiveGenome&g1,
+        const ReproductiveGenome&g2
     );
 
     BrainGenome
