@@ -193,7 +193,11 @@ void Populate::populate_crocodile(CreatureGenomes& creature_genomes) {
             .average_height = Height{0.80f}, .average_mass = Mass{1.25f},
             .transformations = {}
         },
-        .reproductive = Reproduction::OviparousOrganismGenome{}
+        .reproductive = Reproduction::ReproductiveGenome{
+            .reproductive_way_genome = Reproduction::OviparousOrganismGenome{},
+            .average_children_count = 40,
+            .reproductive_way = ReproductiveWays::OVIPAROUS
+        }
     });
     creature_genomes.add(CreatureSpecies::CROCODILE, EmbryoGenome{
         .body = Genomes::EmbryoGenomes::BodyGenome{.average_max_energy = 0.55f, .average_max_life = 0.45f, .average_health = 0.60f},
@@ -238,7 +242,11 @@ void Populate::populate_fish(CreatureGenomes& creature_genomes) {
             .average_lateral = Lateral{1.20f}, .average_back = Back{0.50f},
             .average_height = Height{0.45f}, .average_mass = Mass{1.0f}, .transformations = {}
         },
-        .reproductive = Reproduction::OviparousOrganismGenome{}
+        .reproductive = Reproduction::ReproductiveGenome{
+            .reproductive_way_genome = Reproduction::OviparousOrganismGenome{},
+            .average_children_count = 1000,
+            .reproductive_way = ReproductiveWays::OVIPAROUS
+        }
     });
     creature_genomes.add(CreatureSpecies::FISH, EmbryoGenome{
         .body = Genomes::EmbryoGenomes::BodyGenome{.average_max_energy = 0.35f, .average_max_life = 0.30f, .average_health = 0.40f},
@@ -282,7 +290,11 @@ void Populate::populate_crab(CreatureGenomes& creature_genomes) {
             .average_lateral = Lateral{1.40f}, .average_back = Back{1.00f},
             .average_height = Height{0.55f}, .average_mass = Mass{1.10f}, .transformations = {}
         },
-        .reproductive = Reproduction::OviparousOrganismGenome{}
+        .reproductive = Reproduction::ReproductiveGenome{
+            .reproductive_way_genome = Reproduction::OviparousOrganismGenome{},
+            .average_children_count = 1000000,
+            .reproductive_way = ReproductiveWays::OVIPAROUS
+        }
     });
     creature_genomes.add(CreatureSpecies::CRAB, EmbryoGenome{
         .body = Genomes::EmbryoGenomes::BodyGenome{.average_max_energy = 0.45f, .average_max_life = 0.35f, .average_health = 0.50f},
@@ -327,9 +339,13 @@ void Populate::populate_hippopotamus(CreatureGenomes& creature_genomes) {
             .average_lateral = Lateral{1.80f}, .average_back = Back{1.40f},
             .average_height = Height{1.30f}, .average_mass = Mass{1.60f}, .transformations = {}
         },
-        .reproductive = Reproduction::GestatingOrganismGenome{
-            .reproduction_cost = 0.35f, .fertility_limit = 1,
-            .gestation_limit = 5, .average_children_count = 1
+        .reproductive = Reproduction::ReproductiveGenome{
+            .reproductive_way_genome = Reproduction::ViviparousOrganismGenome{
+                .reproduction_cost = 0.35f, .fertility_limit = 1,
+                .gestation_limit = 8, .average_children_count = 1
+            },
+            .average_children_count = 1,
+            .reproductive_way = ReproductiveWays::VIVIPAROUS
         }
     });
     creature_genomes.add(CreatureSpecies::HIPPOPOTAMUS, EmbryoGenome{

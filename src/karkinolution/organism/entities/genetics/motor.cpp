@@ -1,6 +1,8 @@
 #include <karkinolution/organism/stats.hpp>
 #include <karkinolution/utils/k_random.hpp>
 #include <karkinolution/organism/entities/genetics/motor.hpp>
+#include <algorithm>
+#include <cmath>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/entities/genetics/disturbs.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -18,7 +20,7 @@ using EmbryoBodyGenome = Genomes::EmbryoGenomes::BodyGenome;
 using EmbryoMorphologyGenome = Genomes::EmbryoGenomes::Morphology;
 
 using ReproductionOviparous = Genomes::CreatureGenomes::Reproduction::OviparousOrganismGenome;
-using ReproductionGestating = Genomes::CreatureGenomes::Reproduction::GestatingOrganismGenome;
+using ReproductionViviparous = Genomes::CreatureGenomes::Reproduction::ViviparousOrganismGenome;
 
 using MetabolismGrowthRates = Genomes::CreatureGenomes::Metabolism::GrowthRates;
 using VitalGrowthRates = Genomes::CreatureGenomes::Vital::GrowthRates;
@@ -228,11 +230,48 @@ Genomes::CreatureGenomes::Metabolism::MetabolismGenome GenomeMotor::scramble(
         .growth_rates = new_growth_rates
     };
 }
-ReproductionGestating GenomeMotor::scramble(
-    const ReproductionGestating& g1,
-    const ReproductionGestating& g2
+ReproductionViviparous GenomeMotor::scramble(
+    const ReproductionViviparous& g1,
+    const ReproductionViviparous& g2
 ) {
-    return {};
+    return ReproductionViviparous{
+        .reproduction_cost = GeneticDisturbs::scramble(
+            g1.reproduction_cost.value(),
+            g2.reproduction_cost.value(),
+            ScrambleContext{
+                .max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
+                .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
+                .distance_multiplier = GeneticDisturbs::LOW_DISTANCE_MULTIPLIER
+            }
+        ),
+        .fertility_limit = std::max(1, static_cast<int>(std::lround(GeneticDisturbs::scramble(
+            g1.fertility_limit,
+            g2.fertility_limit,
+            ScrambleContext{
+                .max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
+                .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
+                .distance_multiplier = GeneticDisturbs::LOW_DISTANCE_MULTIPLIER
+            }
+        )))),
+        .gestation_limit = std::max(1, static_cast<int>(std::lround(GeneticDisturbs::scramble(
+            g1.gestation_limit,
+            g2.gestation_limit,
+            ScrambleContext{
+                .max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
+                .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
+                .distance_multiplier = GeneticDisturbs::LOW_DISTANCE_MULTIPLIER
+            }
+        )))),
+        .average_children_count = std::max(1, static_cast<int>(std::lround(GeneticDisturbs::scramble(
+            g1.average_children_count,
+            g2.average_children_count,
+            ScrambleContext{
+                .max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
+                .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
+                .distance_multiplier = GeneticDisturbs::LOW_DISTANCE_MULTIPLIER
+            }
+        ))))
+    };
 }
 
 Genomes::CreatureGenomes::Reproduction::OviparousOrganismGenome 
@@ -241,6 +280,52 @@ GenomeMotor::scramble(
     const Genomes::CreatureGenomes::Reproduction::OviparousOrganismGenome& g2
 ) {
     return {};
+}
+
+ReproductiveGenome GenomeMotor::scramble(
+    const ReproductiveGenome& g1,
+    const ReproductiveGenome& g2
+) {
+    const auto children = std::max(1, static_cast<int>(std::lround(GeneticDisturbs::scramble(
+        g1.average_children_count,
+        g2.average_children_count,
+        ScrambleContext{
+            .max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
+            .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
+            .distance_multiplier = GeneticDisturbs::LOW_DISTANCE_MULTIPLIER
+        }
+    ))));
+
+    if (std::holds_alternative<ReproductionViviparous>(g1.reproductive_way_genome) &&
+        std::holds_alternative<ReproductionViviparous>(g2.reproductive_way_genome)) {
+        return ReproductiveGenome{
+            .reproductive_way_genome = scramble(
+                std::get<ReproductionViviparous>(g1.reproductive_way_genome),
+                std::get<ReproductionViviparous>(g2.reproductive_way_genome)
+            ),
+            .average_children_count = children,
+            .reproductive_way = ReproductiveWays::VIVIPAROUS
+        };
+    }
+
+    if (std::holds_alternative<ReproductionOviparous>(g1.reproductive_way_genome) &&
+        std::holds_alternative<ReproductionOviparous>(g2.reproductive_way_genome)) {
+        return ReproductiveGenome{
+            .reproductive_way_genome = ReproductionOviparous{},
+            .average_children_count = children,
+            .reproductive_way = ReproductiveWays::OVIPAROUS
+        };
+    }
+
+    // Reproductive strategy is species-level; when unlike strategies are
+    // crossed, retain one complete parental strategy instead of creating an
+    // invalid variant/enum combination.
+    const auto& selected = Choices::choice({&g1, &g2});
+    return ReproductiveGenome{
+        .reproductive_way_genome = selected->reproductive_way_genome,
+        .average_children_count = children,
+        .reproductive_way = selected->reproductive_way
+    };
 }
 
 Genomes::CreatureGenomes::Vital::VitalGenome 
