@@ -9,6 +9,10 @@ enum class PathogenTypes : uint8_t {
 struct PathogenId {
     uint64_t value;
     PathogenTypes type;
+
+    bool operator==(PathogenId other) const noexcept {
+        return other.value == value && other.type == type;
+    }
 };
 
 template <>
