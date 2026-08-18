@@ -1,3 +1,4 @@
+#include "karkinolution/organism/registry.hpp"
 #include <karkinolution/organism/entities/entities.hpp>
 #include <karkinolution/organism/stats.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
@@ -12,12 +13,16 @@ using Genomes::Resource;
 using MetabolismTrait = Genomes::CreatureGenomes::Metabolism::Trait;
 using VitalTrait = Genomes::CreatureGenomes::Vital::Trait;
 using MuscleTrait = Genomes::CreatureGenomes::MuscleStructure::Trait;
+using SkeletonTrait = Genomes::CreatureGenomes::SkeletonStructure::Trait;
 
 // ============================================================================
 // CreatureGrowingPhysiology
 // ============================================================================
 
-float CreatureGrowingPhysiology::get_new_max_energy_increment(const Creature& creature, const EntitiesRegistry&entities) {
+PhysiologyGrowTrade CreatureGrowingPhysiology::get_new_max_energy_increment(
+    const Creature& creature,
+    const OrganismRegistry&organism
+) {
     const auto& metabolism_genome = creature.genome.creature_genome.metabolism;
     const auto& metabolism = creature.body.metabolism;
 
@@ -34,13 +39,26 @@ float CreatureGrowingPhysiology::get_new_max_energy_increment(const Creature& cr
     const GrowthRate growth =
         metabolism_genome.growth_rates.max_energy;
 
-    return remaining.value()
+    const float gain =
+        remaining.value()
         * max_energy
-        * growth.value
-        * conversion.value();
+        * growth.value;
+
+    const float reserved_energy_cost =
+        gain / conversion.value();
+
+    return PhysiologyGrowTrade{
+        .gain = gain,
+        .cost = GrowCost{
+            .reserved_energy = reserved_energy_cost
+        }
+    };
 }
 
-float CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(const Creature& creature, const EntitiesRegistry&entities) {
+PhysiologyGrowTrade CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(
+    const Creature& creature,
+    const OrganismRegistry&organisms
+) {
     const auto& metabolism_genome = creature.genome.creature_genome.metabolism;
     const auto& metabolism = creature.body.metabolism;
 
@@ -58,13 +76,26 @@ float CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(const Cre
     const GrowthRate growth =
         metabolism_genome.growth_rates.max_reserved_energy;
 
-    return remaining.value()
+    const float gain =
+        remaining.value()
         * max_reserved_energy
-        * growth.value
-        * conversion.value();
+        * growth.value;
+
+    const float reserved_energy_cost =
+        gain / conversion.value();
+
+    return PhysiologyGrowTrade{
+        .gain = gain,
+        .cost = GrowCost{
+            .reserved_energy = reserved_energy_cost
+        }
+    };
 }
 
-float CreatureGrowingPhysiology::get_new_max_life_increment(const Creature& creature, const EntitiesRegistry&entities) {
+PhysiologyGrowTrade CreatureGrowingPhysiology::get_new_max_life_increment(
+    const Creature& creature,
+    const OrganismRegistry&organisms
+) {
     const auto& vital_genome = creature.genome.creature_genome.vital;
     const auto& body = creature.body;
 
@@ -84,33 +115,27 @@ float CreatureGrowingPhysiology::get_new_max_life_increment(const Creature& crea
     const NormalizedValue<float> nutrition =
         0.2f + body.metabolism.reserved.ratio();
 
-    return remaining.value()
+    const float gain =
+        remaining.value()
         * max_life
         * growth.value
-        * conversion.value()
         * nutrition.value();
-}
 
-float CreatureGrowingPhysiology::get_new_health_increment(const Creature& creature, const EntitiesRegistry&entities) {
-    const auto& vital_genome = creature.genome.creature_genome.vital;
-    const auto& body = creature.body;
-    const auto& muscle_structure_genome = creature.genome.creature_genome.muscle;
+    const float reserved_energy_cost =
+        gain / conversion.value();
 
-    const NormalizedValue<float> remaining =
-        vital_genome.average_health - body.vital.health;
-
-    const Factor<float, 2.0f, 0.0f> muscle_factor{
-        creature.specie_relative_muscle()
+    return PhysiologyGrowTrade{
+        .gain = gain,
+        .cost = GrowCost{
+            .reserved_energy = reserved_energy_cost
+        }
     };
-
-    return remaining.value()
-        * muscle_factor.value();
 }
 
 // TODO
 // Integrate MorbusExiguus infection
 
-float CreatureGrowingPhysiology::get_new_lateral_increment(const Creature &creature, const EntitiesRegistry&entities) {
+float CreatureGrowingPhysiology::get_new_lateral_increment(const Creature &creature, const OrganismRegistry&organisms) {
     const auto& vital_genome = creature.genome.creature_genome.vital;
     const auto& morphology_genome = creature.genome.creature_genome.morphology;
     const auto& body = creature.body;
@@ -123,7 +148,7 @@ float CreatureGrowingPhysiology::get_new_lateral_increment(const Creature &creat
     return remaining.value() * muscle_factor.value();
 }
 
-float CreatureGrowingPhysiology::get_new_back_increment(const Creature &creature, const EntitiesRegistry&entities) {
+float CreatureGrowingPhysiology::get_new_depth_increment(const Creature &creature, const OrganismRegistry&organisms) {
     const auto& vital_genome = creature.genome.creature_genome.vital;
     const auto& morphology_genome = creature.genome.creature_genome.morphology;
     const auto& body = creature.body;
@@ -136,7 +161,7 @@ float CreatureGrowingPhysiology::get_new_back_increment(const Creature &creature
     return remaining.value() * muscle_factor.value();
 }
 
-float CreatureGrowingPhysiology::get_new_height_increment(const Creature &creature, const EntitiesRegistry&entities) {
+float CreatureGrowingPhysiology::get_new_height_increment(const Creature &creature, const OrganismRegistry&organisms) {
     const auto& vital_genome = creature.genome.creature_genome.vital;
     const auto& morphology_genome = creature.genome.creature_genome.morphology;
     const auto& body = creature.body;
@@ -149,27 +174,77 @@ float CreatureGrowingPhysiology::get_new_height_increment(const Creature &creatu
     return remaining.value() * muscle_factor.value();
 }
 
-float CreatureGrowingPhysiology::get_new_muscle_increment(const Creature& creature, const EntitiesRegistry&entitites) {
-    const auto& vital_genome = creature.genome.creature_genome.vital;
-    const auto& metabolism_genome = creature.genome.creature_genome.metabolism;
-    const auto& muscle_genome = creature.genome.creature_genome.muscle;
+PhysiologyGrowTrade CreatureGrowingPhysiology::get_new_muscle_increment(
+    const Creature& creature,
+    const OrganismRegistry&organism
+) {
+    const auto& muscle_genome =
+        creature.genome.creature_genome.muscle;
+
     const auto& body = creature.body;
 
-    const NormalizedValue<float> muscle_factor = creature.specie_relative_muscle();
-    const NormalizedValue<float>& energy_factor = body.metabolism.reserved.ratio() * muscle_genome.transformations.at(Resource::RESERVED_ENERGY, MuscleTrait::MUSCLE).efficiency.value();
+    const NormalizedValue<float> muscle_factor =
+        creature.specie_relative_muscle();
 
-    
-    return muscle_factor.value() * energy_factor.value();
+    const float efficiency =
+        muscle_genome.transformations
+            .at(Resource::RESERVED_ENERGY, MuscleTrait::MUSCLE)
+            .efficiency
+            .value();
+
+    const float gain =
+        muscle_factor.value()
+        * body.metabolism.reserved.ratio();
+
+    const float reserved_energy_cost =
+        gain / efficiency;
+
+    return PhysiologyGrowTrade{
+        .gain = gain,
+        .cost = GrowCost{
+            .reserved_energy = reserved_energy_cost
+        }
+    };
 }
 
+PhysiologyGrowTrade CreatureGrowingPhysiology::get_new_skeleton_increment(
+    const Creature& creature,
+    const OrganismRegistry&organisms
+) {
+    const auto& skeleton_genome =
+        creature.genome.creature_genome.skeleton;
 
+    const auto& body = creature.body;
+
+    const NormalizedValue<float> skeleton_factor =
+        creature.specie_relative_bone();
+
+    const float efficiency =
+        skeleton_genome.transformations
+            .at(Resource::RESERVED_ENERGY, SkeletonTrait::BONES)
+            .efficiency
+            .value();
+
+    const float gain =
+        skeleton_factor.value()
+        * body.metabolism.reserved.ratio();
+
+    const float reserved_energy_cost =
+        gain / efficiency;
+
+    return PhysiologyGrowTrade{
+        .gain = gain,
+        .cost = GrowCost{
+            .reserved_energy = reserved_energy_cost
+        }
+    };
+}
 
 // ============================================================================
 // CreatureMetabolismPhysiology
 // ============================================================================
 
 Trade CreatureMetabolismPhysiology::metabolize(const Creature& creature, const RawMeat& raw_meat, const EntitiesRegistry& entities) {
-    // TODO: Implementar lógica
     return {};
 }
 
