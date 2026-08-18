@@ -23,14 +23,6 @@ void UterusMotor::transfer_energy_to_uterus(Creature &creature) {
     uterus.energy += reserved_trade;
 }
 
-void UterusMotor::run(Creature&creature) {
-    ReproductionValidator::has_uterus(creature.reproduction);
 
 
-    auto uterus = std::get<Uterus>(creature.reproduction.state);
 
-    if (uterus.is_pregnant()) {
-        transfer_energy_to_uterus(creature);
-        uterus.get_pregnant_uterus().gestation.pass();
-    }
-}
