@@ -1,8 +1,18 @@
 #pragma once
+#include "karkinolution/organism/registry.hpp"
 #include <karkinolution/organism/entities/entities.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/foods/nutrient.hpp>
+
+struct GrowCost {
+    float reserved_energy;
+};
+
+struct PhysiologyGrowTrade {
+    float gain;
+    GrowCost cost;
+};
 
 struct Trade {
     CreatureFunction gain;
@@ -10,16 +20,45 @@ struct Trade {
 };
 
 namespace CreatureGrowingPhysiology {
-    float get_new_max_energy_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_max_energy_reserved_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_max_life_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_health_increment(const Creature&creature, const EntitiesRegistry&entities);
+PhysiologyGrowTrade get_new_max_energy_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
 
-    float get_new_lateral_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_back_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_height_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_muscle_increment(const Creature&creature, const EntitiesRegistry&entities);
-    float get_new_skeleton_increment(const Creature&creature, const EntitiesRegistry&entities);
+PhysiologyGrowTrade get_new_max_energy_reserved_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
+
+PhysiologyGrowTrade get_new_max_life_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
+
+float get_new_lateral_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
+
+float get_new_depth_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
+
+float get_new_height_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
+
+PhysiologyGrowTrade get_new_muscle_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
+
+PhysiologyGrowTrade get_new_skeleton_increment(
+    const Creature& creature,
+    const OrganismRegistry& organisms
+);
 }
 
 namespace CreatureMetabolismPhysiology {
