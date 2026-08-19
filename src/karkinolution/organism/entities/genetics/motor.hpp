@@ -58,6 +58,16 @@ namespace GenomeMotor {
         const ReproductionViviparous& g2
     );
 
+
+    /*
+    scramble(ReproductiveGenome)
+
+    If the reproductive ways are different, one must be chosen,
+    and the reproductive_way_genome must not be scrambled.
+
+    If the reproductive ways are equal, the reproductive_way_genome
+    must be preserved and scrambled.
+    */
     ReproductiveGenome scramble(
         const ReproductiveGenome&g1,
         const ReproductiveGenome&g2

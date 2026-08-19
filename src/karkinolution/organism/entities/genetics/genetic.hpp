@@ -259,20 +259,34 @@ namespace Genomes {
         namespace Reproduction {
 
             struct ViviparousOrganismGenome {
-                NormalizedValue<float> reproduction_cost;
-                int fertility_limit;
-                int gestation_limit;
-                int average_children_count;
             };
 
             struct OviparousOrganismGenome {
             };
+
+            inline ReproductiveWays get_reproductive_way(const
+                                 std::variant<ViviparousOrganismGenome, OviparousOrganismGenome>&genome) {
+                                    if (std::holds_alternative<ViviparousOrganismGenome>(genome)) {
+                                        return ReproductiveWays::VIVIPAROUS;
+                                    } else if (std::holds_alternative<OviparousOrganismGenome>(genome)) {
+                                        return ReproductiveWays::OVIPAROUS;
+                                    }
+                                    std::unreachable();
+                                 }
             
             struct ReproductiveGenome {
                 std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> reproductive_way_genome;
                 int average_children_count;
-                ReproductiveWays reproductive_way;
+                int average_gestation_limit;
+                int fertility_limit;
+                NormalizedValue<float> reproduction_cost;
+                
+                ReproductiveWays reproductive_way() const noexcept {
+                    return get_reproductive_way(reproductive_way_genome);
+                }
             };
+
+
         }
 
     } 
