@@ -1,13 +1,13 @@
 #pragma once
 #include <karkinolution/organism/stats.hpp>
-
+#include <karkinolution/organism/foods/foods.hpp>
 
 using OrganismStats::Energy;
 
 
 struct Corpse {
     uint64_t id;
-    Energy energy;
+    RawMeat raw_meat;
 
 
 
