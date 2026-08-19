@@ -17,6 +17,8 @@ struct Corpse {
     Corpse(Corpse&&) = default;
     Corpse& operator=(Corpse&&) = default;
 
+    Corpse(uint64_t id, RawMeat raw_meat): id(id), raw_meat(raw_meat) {}
+
     bool ready_to_disapear() const;
 };
 
