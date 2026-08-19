@@ -14,5 +14,5 @@ enum class ConceiveOutput : uint8_t {
 namespace ReproductionOrganMotor {
     void run(Creature&creature);
     void prepair_to_conceive(Creature&creature); 
-    ConceiveOutput conceive(Creature&, Creature&);
+    std::variant<Embryo, ConceiveOutput> conceive(Creature&, Creature&);
 }
