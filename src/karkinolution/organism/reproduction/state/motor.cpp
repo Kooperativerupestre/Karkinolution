@@ -1,4 +1,5 @@
 #include "karkinolution/math/stats/compile_values.hpp"
+#include "karkinolution/organism/entities/embryo/embryo.hpp"
 #include "karkinolution/organism/reproduction/gestation.hpp"
 #include "karkinolution/organism/reproduction/state/physiology.hpp"
 #include "karkinolution/organism/reproduction/state/state.hpp"
@@ -34,16 +35,26 @@ void ReproductionOrganMotor::prepair_to_conceive(Creature &creature) {
     };
 }
 
-ConceiveOutput ReproductionOrganMotor::conceive(Creature &female, Creature &male) {
+std::variant<Embryo, ConceiveOutput> ReproductionOrganMotor::conceive(Creature &female, Creature &male) {
     ReproductionValidator::has_uterus(female.reproduction);
-    auto uterus = std::get<Uterus>(female.reproduction.state);
-
+    auto& uterus = std::get<Uterus>(female.reproduction.state);
+    
 
     if (uterus.is_pregnant()) {
         return ConceiveOutput::ALREADY_PREGNANT;
     }
 
+    ReproductionOrganMotor::prepair_to_conceive(female);
+
+    auto& pregnant_uterus = uterus.get_pregnant_uterus();
+    
+
     int children_count = ReproductionOrganPhysiology::get_children_count(female);
-    return ConceiveOutput::OK;
+
+    for (int i = 0; i < children_count; i++) {
+        Embryo embryo = ReproductionOrganPhysiology::generate_embryo(female, male);
+        pregnant_uterus.embryos.push_back(embryo.id);
+        return embryo;
+    } 
     // add: genome -> embryo
 }
