@@ -1,4 +1,5 @@
 #pragma once
+#include "karkinolution/math/geometry/models.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
@@ -8,8 +9,10 @@
 #include <functional>
 #include <karkinolution/organism/stats.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
-
+#include <karkinolution/math/physic/vec/model.hpp>
 using OrganismStats::Energy;
+
+using GeometryForms::Radius;
 
 struct Component {
     virtual ~Component() = default;
@@ -165,9 +168,8 @@ struct SoilPiece {
     std::vector<GenericProperty> required_capabilities;
     Components components;
 
-    SoilPiece(SoilTypes type, std::vector<SoilProperties> properties,
-    std::vector<GenericProperty> required_capabilities, Components components):
-    type(type), properties(properties), required_capabilities(required_capabilities), components(std::move(components)) {}
+    Radius radius;
+    Vec3 position;
 };
 
 namespace SoilF{
