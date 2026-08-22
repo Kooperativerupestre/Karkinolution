@@ -29,6 +29,6 @@ Use the following types to categorize your commits:
 
 ## Commit Guidelines
 
-1. **Use the Imperative Mood**: Always write the commit description as a command or instruction. (e.g., use `implement`, `fix`, `add`, or `remove`; never use `implemented`, `fixed`, `adds`, or `removed`).
+1. **Use the Imperative Mood**: Always write the commit description as a command or instruction. (e.g., use `implement`, `fix`, `add`, or `delete`; never use `implemented`, `fixed`, `adds`, or `removed`).
 2. **Do Not Commit Broken Code**: Ensure your migration scripts and database runners execute successfully before staging and committing your changes.
 3. **Keep Descriptions Concise**: Keep the commit line under 72 characters. If you need to provide more context, add a blank line below it followed by a detailed body.
