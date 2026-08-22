@@ -6,6 +6,7 @@
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/organism/stats.hpp>
+#include <karkinolution/terrain/rtree/box.hpp>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
@@ -149,6 +150,11 @@ struct SoilPiece {
     Radius radius;
     Vec3 position;
     SoilPieceId id;
+
+    [[nodiscard]] Box3D bounding_box() const {
+        Vec3 offset{radius.value, radius.value, 0.0};
+        return Box3D{position + offset, position - offset};
+    }
 };
 
 namespace SoilF {
