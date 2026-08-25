@@ -66,7 +66,7 @@ public:
   size_t choose_by_enlargement(Node &node, const Box3D &box);
   size_t choose_by_overlap(Node &node, const Box3D &box);
 
-  void choose_leaf(std::vector<Node *> &nodes, const Box3D &box, size_t depth);
+  void choose_leaf(std::vector<Node *> &nodes, const Box3D &box);
 
   std::vector<SoilPieceId> find(const Box3D &box) const;
 

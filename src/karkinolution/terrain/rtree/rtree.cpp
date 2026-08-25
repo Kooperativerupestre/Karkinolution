@@ -259,11 +259,10 @@ size_t RStarTree::choose_by_overlap(Node &node, const Box3D &box) {
   return best_index;
 }
 
-void RStarTree::choose_leaf(std::vector<Node *> &nodes, const Box3D &box,
-                            size_t depth) {
+void RStarTree::choose_leaf(std::vector<Node *> &nodes, const Box3D &box) {
   auto &last_node = nodes.back();
 
-  if (nodes.size() == depth) {
+  if (last_node->type == NodeType::LEAF) {
     return;
   }
 
@@ -282,7 +281,7 @@ void RStarTree::choose_leaf(std::vector<Node *> &nodes, const Box3D &box,
   Node &child =
       *std::get<std::unique_ptr<Node>>(last_node->entries[best_index].content);
   nodes.push_back(&child);
-  choose_leaf(nodes, box, depth);
+  choose_leaf(nodes, box);
 }
 
 SplitOutput RStarTreeMotor::split(std::vector<Entry> &entries,
@@ -448,7 +447,7 @@ void RStarTree::insert_entry(Entry entry, std::vector<Node *> path,
 void RStarTree::insert(SoilPieceId id, const Box3D &box,
                        bool already_reinserted) {
   std::vector<Node *> path{root_.get()};
-  choose_leaf(path, box, 0);
+  choose_leaf(path, box);
   insert_entry(Entry{.box = box, .content = id}, std::move(path),
                already_reinserted);
 }
@@ -456,7 +455,7 @@ void RStarTree::insert(SoilPieceId id, const Box3D &box,
 void RStarTree::reinsert_orphan(Entry entry, size_t depth) {
   std::vector<Node *> path{root_.get()};
   Box3D box = entry.box;
-  choose_leaf(path, box, depth);
+  choose_leaf(path, box);
   insert_entry(std::move(entry), std::move(path), true);
 }
 std::vector<SoilPieceId> RStarTree::find(const Box3D &box) const {
