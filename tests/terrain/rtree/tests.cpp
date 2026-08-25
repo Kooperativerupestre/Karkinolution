@@ -1,7 +1,6 @@
 #include "karkinolution/terrain/rtree/box.hpp"
 #include <cassert>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/utils/k_random.hpp>
@@ -11,37 +10,6 @@ namespace {
 
 Box3D make_box(double x, double y, double z, double size = 1.0) {
   return Box3D{.max = Vec3{x + size, y + size, z + size}, .min = Vec3{x, y, z}};
-}
-
-void print_node(const Node &node, std::size_t depth = 0) {
-  const std::string indent(depth * 2, ' ');
-
-  std::cerr << indent << "Node type="
-            << (node.type == NodeType::LEAF ? "LEAF" : "INTERNAL")
-            << " entries=" << node.entries.size()
-            << " box=" << (node.box.has_value() ? "yes" : "no") << '\n';
-
-  for (const Entry &entry : node.entries) {
-    if (std::holds_alternative<SoilPieceId>(entry.content)) {
-      std::cerr << indent
-                << "  SoilPieceId=" << std::get<SoilPieceId>(entry.content)
-                << '\n';
-    } else {
-      std::cerr << indent << "  Child:\n";
-
-      const auto &child = std::get<std::unique_ptr<Node>>(entry.content);
-
-      if (child != nullptr) {
-        print_node(*child, depth + 2);
-      }
-    }
-  }
-}
-
-void print_tree(const RStarTree &tree) {
-  std::cerr << "\n========== R* TREE ==========\n";
-  print_node(tree.root());
-  std::cerr << "==============================\n";
 }
 
 void assert_node_invariants(const Node &node, bool is_root = true) {
@@ -111,11 +79,6 @@ void assert_all_ids_exist(const RStarTree &tree, SoilPieceId count,
     }
 
     ASSERT_TRUE(tree.exists(id)) << "Lost SoilPieceId: " << id;
-
-    if (!tree.exists(id)) {
-      print_tree(tree);
-      return;
-    }
   }
 }
 
@@ -131,9 +94,6 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertions) {
                          static_cast<double>(static_cast<double>(id) / 1000)));
 
     if (!tree.exists(id)) {
-      std::cerr << "\nINSERT LOST ID: " << id << "\n";
-
-      print_tree(tree);
       FAIL();
     }
 
@@ -146,34 +106,23 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertionsAndDeletions) {
 
   constexpr SoilPieceId count = 1000;
 
-  std::cerr << "\nStarting insertion phase\n";
-
   for (SoilPieceId id = 0; id < count; ++id) {
-    std::cerr << "INSERT " << id << '\n';
     tree.insert(id,
                 make_box(static_cast<double>(id % 100),
                          static_cast<double>((id / 100) % 10),
                          static_cast<double>(static_cast<double>(id) / 1000)));
 
     if (!tree.exists(id)) {
-      std::cerr << "\nINSERT LOST ID: " << id << "\n";
-
-      print_tree(tree);
       FAIL();
     }
   }
 
-  std::cerr << "Insertion phase complete\n";
-
   assert_all_ids_exist(tree, count);
   assert_tree_invariants(tree);
 
-  std::cerr << "Starting deletion phase\n";
   std::vector<bool> deleted(count, false);
 
   for (SoilPieceId id = 0; id < count; id += 2) {
-    std::cerr << "Deleting ID " << id << '\n';
-
     ASSERT_TRUE(tree.exists(id))
         << "ID " << id << " does not exist BEFORE deletion";
 
@@ -187,8 +136,6 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertionsAndDeletions) {
     assert_all_ids_exist(tree, count, deleted);
     assert_tree_invariants(tree);
   }
-
-  std::cerr << "Deletion phase complete\n";
 
   for (SoilPieceId id = 1; id < count; id += 2) {
     EXPECT_TRUE(tree.exists(id)) << "Odd ID disappeared: " << id;
@@ -244,7 +191,6 @@ TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
   constexpr SoilPieceId count = 100;
 
   for (SoilPieceId id = 0; id < count; ++id) {
-    std::cerr << "INSERT " << id << '\n';
     tree.insert(id, make_box(static_cast<double>(id * 2), 0.0, 0.0));
   }
 
@@ -252,8 +198,6 @@ TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
   assert_tree_invariants(tree);
 
   constexpr SoilPieceId deleted_id = 50;
-
-  std::cerr << "\nDeleting ID " << deleted_id << '\n';
 
   ASSERT_TRUE(tree.exists(deleted_id));
 
@@ -269,11 +213,6 @@ TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
 
     EXPECT_TRUE(tree.exists(id))
         << "Lost soil piece after deleting " << deleted_id << ": " << id;
-
-    if (!tree.exists(id)) {
-      print_tree(tree);
-      break;
-    }
   }
 
   assert_tree_invariants(tree);
