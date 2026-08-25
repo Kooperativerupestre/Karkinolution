@@ -57,29 +57,40 @@ public:
 
   RStarTree();
 
-  void insert_entry(Entry entry, std::vector<Node *> path,
-                    bool already_reinserted);
-  void insert(SoilPieceId id, const Box3D &box, bool already_reinserted);
-  void reinsert_orphan(Entry entry, size_t depth);
-  void split(Node &leaf, Node *parent);
-  void split_root(Node &old_root);
-  size_t choose_by_enlargement(Node &node, const Box3D &box);
-  size_t choose_by_overlap(Node &node, const Box3D &box);
-
-  void choose_leaf(std::vector<Node *> &nodes, const Box3D &box);
+  void insert(SoilPieceId id, const Box3D &box,
+              bool already_reinserted = false);
 
   std::vector<SoilPieceId> find(const Box3D &box) const;
 
-  FindSoilPieceOutput find_soil_piece(SoilPieceId id);
-
   bool delete_soil_piece(SoilPieceId id);
+  bool exists(SoilPieceId id) const;
+
+  const Node &root() const { return *root_.get(); }
 
 private:
   std::unique_ptr<Node> root_;
+
+  void split(Node &leaf, Node *parent);
+  void split_root(Node &old_root);
+
   std::vector<SoilPieceId> find(const Box3D &box,
                                 const std::vector<Entry> &entries,
                                 std::vector<SoilPieceId> &ids) const;
 
   _Internal_FindSoilPieceOutput find_soil_piece(SoilPieceId id,
                                                 std::vector<Node *> &path);
+
+  void insert_entry(Entry entry, std::vector<Node *> path,
+                    bool already_reinserted);
+
+  size_t choose_by_enlargement(Node &node, const Box3D &box);
+  size_t choose_by_overlap(Node &node, const Box3D &box);
+
+  void choose_leaf(std::vector<Node *> &nodes, const Box3D &box);
+  void reinsert_orphan(Entry entry, size_t depth);
+  void choose_node_at_depth(std::vector<Node *> &nodes, const Box3D &box,
+                            size_t depth);
+  void refresh_mbrs(Node &node);
+  FindSoilPieceOutput find_soil_piece(SoilPieceId id);
+  bool exists_impl(const Node &node, SoilPieceId id) const;
 };

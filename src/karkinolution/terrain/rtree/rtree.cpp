@@ -13,6 +13,7 @@
 #include <optional>
 #include <pthread.h>
 #include <sys/types.h>
+#include <utility>
 #include <variant>
 
 RStarTree::RStarTree()
@@ -55,32 +56,38 @@ RStarTreeMotor::get_best_ordenation(std::vector<Entry> &entries,
 
   std::ranges::sort(ordenations[index(Axis::X)][index(Bound::MAX)],
                     [](const Entry *A, const Entry *B) {
-                      return A->box.max.x < B->box.max.x;
+                      return std::pair{A->box.max.x, A->box.min.x} <
+                             std::pair{B->box.max.x, B->box.min.x};
                     });
 
   std::ranges::sort(ordenations[index(Axis::X)][index(Bound::MIN)],
                     [](const Entry *A, const Entry *B) {
-                      return A->box.min.x < B->box.min.x;
+                      return std::pair{A->box.min.x, A->box.max.x} <
+                             std::pair{B->box.min.x, B->box.max.x};
                     });
 
   std::ranges::sort(ordenations[index(Axis::Y)][index(Bound::MAX)],
                     [](const Entry *A, const Entry *B) {
-                      return A->box.max.y < B->box.max.y;
+                      return std::pair{A->box.max.y, A->box.min.y} <
+                             std::pair{B->box.max.y, B->box.min.y};
                     });
 
   std::ranges::sort(ordenations[index(Axis::Y)][index(Bound::MIN)],
                     [](const Entry *A, const Entry *B) {
-                      return A->box.min.y < B->box.min.y;
+                      return std::pair{A->box.min.y, A->box.max.y} <
+                             std::pair{B->box.min.y, B->box.max.y};
                     });
 
   std::ranges::sort(ordenations[index(Axis::Z)][index(Bound::MAX)],
                     [](const Entry *A, const Entry *B) {
-                      return A->box.max.z < B->box.max.z;
+                      return std::pair{A->box.max.z, A->box.min.z} <
+                             std::pair{B->box.max.z, B->box.min.z};
                     });
 
   std::ranges::sort(ordenations[index(Axis::Z)][index(Bound::MIN)],
                     [](const Entry *A, const Entry *B) {
-                      return A->box.min.z < B->box.min.z;
+                      return std::pair{A->box.min.z, A->box.max.z} <
+                             std::pair{B->box.min.z, B->box.max.z};
                     });
 
   double best_score = std::numeric_limits<double>::infinity();
@@ -109,16 +116,17 @@ RStarTreeMotor::find_best_split_margin(std::vector<Entry *> &entries,
   prefix.reserve(size);
   suffix.reserve(size);
 
+  prefix.resize(size);
+  suffix.resize(size);
+
   prefix[0] = entries[0]->box;
 
-  for (size_t i = 1; i < size; i++) {
-    prefix[i] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
-  }
-
   suffix[size - 1] = entries[size - 1]->box;
-
   for (size_t i = size - 1; i > 0; i--) {
     suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
+  }
+  for (size_t i = 1; i < size; i++) {
+    prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
   }
 
   size_t best_index = min_entries;
@@ -151,17 +159,16 @@ RStarTreeMotor::find_best_split_intersection(std::vector<Entry *> &entries,
   std::vector<Box3D> suffix;
   prefix.reserve(size);
   suffix.reserve(size);
+  prefix.resize(size);
+  suffix.resize(size);
 
   prefix[0] = entries[0]->box;
-
-  for (size_t i = 1; i < size; i++) {
-    prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
-  }
-
   suffix[size - 1] = entries[size - 1]->box;
-
   for (size_t i = size - 1; i > 0; i--) {
     suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
+  }
+  for (size_t i = 1; i < size; i++) {
+    prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
   }
 
   size_t best_index = min_entries;
@@ -294,7 +301,7 @@ SplitOutput RStarTreeMotor::split(std::vector<Entry> &entries,
   std::vector<Entry *> left;
 
   for (size_t i = 0; i < best_ordenation.size(); i++) {
-    if (i <= split_index) {
+    if (i < split_index) {
       left.push_back(&*best_ordenation[i]);
     } else {
       right.push_back(&*best_ordenation[i]);
@@ -304,6 +311,7 @@ SplitOutput RStarTreeMotor::split(std::vector<Entry> &entries,
 }
 
 void RStarTree::split(Node &leaf, Node *parent) {
+  const NodeType node_type = leaf.type;
   auto split_output = RStarTreeMotor::split(leaf.entries, MIN_ENTRIES);
 
   std::vector<Entry> left_entries;
@@ -320,10 +328,12 @@ void RStarTree::split(Node &leaf, Node *parent) {
     right_entries.push_back(std::move(*entry));
   }
 
-  Node left_node{.box = RStarTreeMotor::calculate_mbr(left_entries, 0,
+  Node left_node{.type = node_type,
+                 .box = RStarTreeMotor::calculate_mbr(left_entries, 0,
                                                       left_entries.size()),
                  .entries = std::move(left_entries)};
-  Node right_node{.box = RStarTreeMotor::calculate_mbr(right_entries, 0,
+  Node right_node{.type = node_type,
+                  .box = RStarTreeMotor::calculate_mbr(right_entries, 0,
                                                        right_entries.size()),
                   .entries = std::move(right_entries)};
 
@@ -343,6 +353,7 @@ void RStarTree::split(Node &leaf, Node *parent) {
 }
 
 void RStarTree::split_root(Node &old_root) {
+  const NodeType node_type = old_root.type;
   auto split_output = RStarTreeMotor::split(old_root.entries, MIN_ENTRIES);
 
   std::vector<Entry> left_entries;
@@ -357,10 +368,12 @@ void RStarTree::split_root(Node &old_root) {
     right_entries.push_back(std::move(*const_cast<Entry *>(entry)));
   }
 
-  Node left_node{.box = RStarTreeMotor::calculate_mbr(left_entries, 0,
+  Node left_node{.type = node_type,
+                 .box = RStarTreeMotor::calculate_mbr(left_entries, 0,
                                                       left_entries.size()),
                  .entries = std::move(left_entries)};
-  Node right_node{.box = RStarTreeMotor::calculate_mbr(right_entries, 0,
+  Node right_node{.type = node_type,
+                  .box = RStarTreeMotor::calculate_mbr(right_entries, 0,
                                                        right_entries.size()),
                   .entries = std::move(right_entries)};
 
@@ -414,7 +427,6 @@ void RStarTree::insert_entry(Entry entry, std::vector<Node *> path,
           ordened_indices.begin(), ordened_indices.begin() + count_to_remove);
       std::ranges::sort(indices_to_remove, std::greater<>());
 
-      std::vector<Entry> removed_entries;
       for (size_t idx : indices_to_remove) {
         removed_entries.push_back(std::move(leaf.entries[idx]));
         leaf.entries.erase(leaf.entries.begin() + idx);
@@ -441,8 +453,7 @@ void RStarTree::insert_entry(Entry entry, std::vector<Node *> path,
   if (root_->entries.size() > MAX_ENTRIES) {
     split_root(*root_);
   }
-  root_->box =
-      RStarTreeMotor::calculate_mbr(root_->entries, 0, root_->entries.size());
+  refresh_mbrs(*root_);
 }
 void RStarTree::insert(SoilPieceId id, const Box3D &box,
                        bool already_reinserted) {
@@ -454,9 +465,51 @@ void RStarTree::insert(SoilPieceId id, const Box3D &box,
 
 void RStarTree::reinsert_orphan(Entry entry, size_t depth) {
   std::vector<Node *> path{root_.get()};
-  Box3D box = entry.box;
-  choose_leaf(path, box);
+  choose_node_at_depth(path, entry.box, depth);
   insert_entry(std::move(entry), std::move(path), true);
+}
+
+void RStarTree::choose_node_at_depth(std::vector<Node *> &nodes,
+                                     const Box3D &box, size_t depth) {
+  while (nodes.size() < depth) {
+    Node &node = *nodes.back();
+
+    bool children_are_leaves = false;
+    if (!node.entries.empty() &&
+        std::holds_alternative<std::unique_ptr<Node>>(
+            node.entries[0].content)) {
+      const auto &first_child =
+          *std::get<std::unique_ptr<Node>>(node.entries[0].content);
+      children_are_leaves = (first_child.type == NodeType::LEAF);
+    }
+
+    size_t best_index = children_are_leaves
+                            ? choose_by_overlap(node, box)
+                            : choose_by_enlargement(node, box);
+    nodes.push_back(
+        std::get<std::unique_ptr<Node>>(node.entries[best_index].content)
+            .get());
+  }
+}
+
+void RStarTree::refresh_mbrs(Node &node) {
+  if (node.entries.empty()) {
+    node.box = std::nullopt;
+    return;
+  }
+
+  for (auto &entry : node.entries) {
+    if (std::holds_alternative<std::unique_ptr<Node>>(entry.content)) {
+      auto &child = *std::get<std::unique_ptr<Node>>(entry.content);
+      refresh_mbrs(child);
+      if (child.box.has_value()) {
+        entry.box = child.box.value();
+      }
+    }
+  }
+
+  node.box =
+      RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
 }
 std::vector<SoilPieceId> RStarTree::find(const Box3D &box) const {
   std::vector<SoilPieceId> ids;
@@ -507,10 +560,10 @@ RStarTree::find_soil_piece(SoilPieceId id, std::vector<Node *> &path) {
       path.push_back(&node);
       auto output = find_soil_piece(id, path);
 
-      if (!output.found) {
-        path.erase(path.end() - 1);
-      } else {
+      if (output.found) {
         return {.found = true, .index = output.index};
+      } else {
+        path.erase(path.end() - 1);
       }
     }
   }
@@ -539,7 +592,7 @@ bool RStarTree::delete_soil_piece(SoilPieceId id) {
     if (node_size < MIN_ENTRIES) {
       for (size_t n_i = node_size; n_i-- > 0;) {
         orphaned_entries.push_back(
-            OrphanEntry{.entry = std::move(node.entries[n_i]), .depth = i + 1});
+            OrphanEntry{.entry = std::move(node.entries[n_i]), .depth = i});
 
         node.entries.erase(node.entries.begin() + n_i);
       }
@@ -575,5 +628,24 @@ bool RStarTree::delete_soil_piece(SoilPieceId id) {
     root_ = std::move(
         std::get<std::unique_ptr<Node>>(root_->entries.back().content));
   }
+  refresh_mbrs(*root_);
   return true;
+}
+
+bool RStarTree::exists(SoilPieceId id) const { return exists_impl(*root_, id); }
+
+bool RStarTree::exists_impl(const Node &node, SoilPieceId id) const {
+  for (const auto &entry : node.entries) {
+    if (std::holds_alternative<SoilPieceId>(entry.content)) {
+      if (std::get<SoilPieceId>(entry.content) == id) {
+        return true;
+      }
+    } else {
+      const auto &child = *std::get<std::unique_ptr<Node>>(entry.content);
+      if (exists_impl(child, id)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
