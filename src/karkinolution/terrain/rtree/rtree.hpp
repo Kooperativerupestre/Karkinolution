@@ -76,8 +76,6 @@ public:
 
 private:
   std::unique_ptr<Node> root_;
-
-  static void expand(Node &node, const Box3D &box);
   std::vector<SoilPieceId> find(const Box3D &box,
                                 const std::vector<Entry> &entries,
                                 std::vector<SoilPieceId> &ids) const;
