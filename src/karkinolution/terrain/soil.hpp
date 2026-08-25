@@ -150,11 +150,6 @@ struct SoilPiece {
     Radius radius;
     Vec3 position;
     SoilPieceId id;
-
-    [[nodiscard]] Box3D bounding_box() const {
-        Vec3 offset{radius.value, radius.value, 0.0};
-        return Box3D{position + offset, position - offset};
-    }
 };
 
 namespace SoilF {
