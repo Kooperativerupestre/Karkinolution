@@ -7,7 +7,7 @@ To maintain a clean, semantic, and readable Git history, this project enforces s
 All commit messages must follow this structure:
 `type: brief description in lowercase using imperative mood`
 
-*Example:* `add: implement person table and capabilities constraints`
+*Example:* `add(creature): implement creature brain`
 
 ---
 
@@ -25,10 +25,10 @@ Use the following types to categorize your commits:
   
 - **delete**: Use for any removal of functionality, code, or database schemas.
 
+- **docs**: Use for any change of docs.
 ---
 
 ## Commit Guidelines
 
-1. **Use the Imperative Mood**: Always write the commit description as a command or instruction. (e.g., use `implement`, `fix`, `add`, or `delete`; never use `implemented`, `fixed`, `adds`, or `removed`).
-2. **Do Not Commit Broken Code**: Ensure your migration scripts and database runners execute successfully before staging and committing your changes.
-3. **Keep Descriptions Concise**: Keep the commit line under 72 characters. If you need to provide more context, add a blank line below it followed by a detailed body.
+1. **Use the Imperative Mood**: Always write the commit description as a command or instruction. (e.g., use `implement(theme)`, `fix(theme)`, `add(theme)`, or `delete(theme)`; never use `implemented`, `fixed`, `adds`, or `removed`).
+2. **Keep Descriptions Concise**: Keep the commit line under 72 characters. If you need to provide more context, add a blank line below it followed by a detailed body.
