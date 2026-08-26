@@ -35,7 +35,7 @@ struct Entry {
 
 class Node {
   private:
-    AABB bounds;
+    AABB bounds_;
     std::vector<Entry> entries{};
     std::array<std::unique_ptr<Node>, MAX_OCTREE_CHILDREN> children{};
 
@@ -43,7 +43,7 @@ class Node {
     void find(const AABB& aabb, std::vector<const Entry*>& output_entries) const;
 
   public:
-    Node(const AABB& aabb) : bounds(aabb) {}
+    Node(const AABB& aabb) : bounds_(aabb) {}
 
     size_t children_size() const {
         size_t count = 0;
@@ -54,6 +54,8 @@ class Node {
         }
         return count;
     }
+
+    const AABB& bounds() const { return bounds_; }
 
     bool is_leaf() const { return children[0] == nullptr; }
     bool is_full() const { return entries.size() == MAX_ENTRIES; }
