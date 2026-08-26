@@ -3,20 +3,20 @@
 #include <optional>
 
 void Node::subdivide() {
-    const auto center = bounds.center();
+    const auto center = bounds_.center();
 
     for (int i = 0; i < 8; ++i) {
         Vec3 child_min;
         Vec3 child_max;
 
-        child_min.x = (i & 1) ? center.x : bounds.min.x;
-        child_max.x = (i & 1) ? bounds.max.x : center.x;
+        child_min.x = (i & 1) ? center.x : bounds_.min.x;
+        child_max.x = (i & 1) ? bounds_.max.x : center.x;
 
-        child_min.y = (i & 2) ? center.y : bounds.min.y;
-        child_max.y = (i & 2) ? bounds.max.y : center.y;
+        child_min.y = (i & 2) ? center.y : bounds_.min.y;
+        child_max.y = (i & 2) ? bounds_.max.y : center.y;
 
-        child_min.z = (i & 4) ? center.z : bounds.min.z;
-        child_max.z = (i & 4) ? bounds.max.z : center.z;
+        child_min.z = (i & 4) ? center.z : bounds_.min.z;
+        child_max.z = (i & 4) ? bounds_.max.z : center.z;
 
         children[i] = std::make_unique<Node>(AABB{child_min, child_max});
     }
@@ -28,7 +28,7 @@ std::optional<int> Node::child_containing(const AABB& other_bounds) const {
     }
 
     for (size_t i = 0; i < MAX_OCTREE_CHILDREN; i++) {
-        if (children[i].get()->bounds.contains(other_bounds)) {
+        if (children[i].get()->bounds_.contains(other_bounds)) {
             return static_cast<int>(i);
         }
     }
@@ -194,7 +194,7 @@ bool Node::exists(Id id, const AABB& aabb) const {
 }
 
 void Node::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
-    if (!bounds.intersects(aabb)) {
+    if (!bounds_.intersects(aabb)) {
         return;
     }
 
@@ -218,7 +218,7 @@ void Node::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
 }
 
 void Node::find(const AABB& aabb, std::vector<const Entry*>& output_entries) const {
-    if (!bounds.intersects(aabb)) {
+    if (!bounds_.intersects(aabb)) {
         return;
     }
 
