@@ -4,6 +4,12 @@
 
 enum class Axis : uint8_t { X, Y, Z };
 
+template <typename T>
+concept Vec3Like = requires(T value) {
+    requires std::same_as<std::remove_cvref_t<decltype(value.x)>, double>;
+    requires std::same_as<std::remove_cvref_t<decltype(value.y)>, double>;
+    requires std::same_as<std::remove_cvref_t<decltype(value.z)>, double>;
+};
 class Vec3 {
   public:
     double x, y, z;
