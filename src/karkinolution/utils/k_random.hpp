@@ -3,6 +3,7 @@
 #include <cmath>
 #include <concepts>
 #include <iterator>
+#include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <limits>
 #include <random>
@@ -132,7 +133,9 @@ template <std::floating_point T> T generate(T min, T max) {
 template <std::integral T> T generate(T min, T max) {
     return std::uniform_int_distribution<T>{min, max}(gen);
 }
-
+inline Vec3 generate(const Vec3& min, const Vec3& max) {
+    return Vec3{generate(min.x, max.x), generate(min.y, max.y), generate(min.z, max.z)};
+}
 template <std::floating_point T> T generate() {
     const auto limit = std::numeric_limits<T>();
     return std::uniform_real_distribution<T>{limit.lowest(), limit.max()};
@@ -141,7 +144,9 @@ template <std::integral T> T generate() {
     const auto limit = std::numeric_limits<T>();
     return std::uniform_int_distribution<T>(limit.lowest(), limit.max());
 }
-
+template <Vec3Like T> Vec3 generate() {
+    return Vec3{generate<double>(), generate<double>(), generate<double>()};
+}
 template <typename T, typename U> float inheritance(T v1, U v2) {
     float bias = generate(0.0f, 1.0f);
     return v1 + (v2 - v1) * bias;
