@@ -56,6 +56,7 @@ class Node {
     }
 
     const AABB& bounds() const { return bounds_; }
+    const std::vector<Entry>& entries_view() const { return entries; };
 
     bool is_leaf() const { return children[0] == nullptr; }
     bool is_full() const { return entries.size() == MAX_ENTRIES; }
