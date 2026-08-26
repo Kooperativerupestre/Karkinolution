@@ -22,6 +22,10 @@ struct AABB {
         return min.x <= other.max.x && max.x >= other.min.x && min.y <= other.max.y &&
                max.y >= other.min.y && min.z <= other.max.z && max.z >= other.min.z;
     }
+    [[nodiscard]] double volume() const noexcept {
+        const auto size = max - min;
+        return size.x * size.y * size.z;
+    }
 };
 
 struct Entry {
