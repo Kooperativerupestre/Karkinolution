@@ -1,13 +1,13 @@
 #pragma once
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
-#include <karkinolution/organism/foods/nutrient.hpp>
 #include <karkinolution/math/units.hpp>
-#include <limits>
+#include <karkinolution/organism/foods/nutrient.hpp>
+#include <karkinolution/organism/stats.hpp>
 #include <vector>
 
-using PhysicsStats::Volume;
 using OrganismStats::Health::Health;
+using PhysicsStats::Volume;
 
 class ShellValue : RuntimeLimitedValue<ShellValue, float> {
     using RuntimeLimitedValue<ShellValue, float>::RuntimeLimitedValue;
@@ -24,10 +24,9 @@ struct EggNutrients {
     Health health;
 };
 
-
 struct Egg {
     Shell shell;
     EggNutrients nutrients;
     std::vector<Id> embryos;
+    Vec3 position;
 };
-

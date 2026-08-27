@@ -1,32 +1,32 @@
 #pragma once
 
+#include "karkinolution/math/physic/vec/model.hpp"
 #include <cstdint>
 
 #include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
-#include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/reproduction/state/state.hpp>
+#include <karkinolution/organism/stats.hpp>
 
-
-using OrganismStats::Health::Health;
 using OrganismStats::Energy;
-using OrganismStats::Health::Immunity;
 using OrganismStats::Life;
+using OrganismStats::Body::Strength;
+using OrganismStats::Health::Health;
+using OrganismStats::Health::Immunity;
 using OrganismStats::Muscle::Muscle;
 using OrganismStats::Muscle::MuscleEfficiency;
 using OrganismStats::Muscle::MuscleQuality;
-using OrganismStats::Skeleton::SkeletonQuality;
 using OrganismStats::Skeleton::Bone;
+using OrganismStats::Skeleton::SkeletonQuality;
 using OrganismStats::Time::Age;
 using OrganismStats::Time::FertilityCooldown;
-using PhysicsStats::Volume;
-using PhysicsStats::SharedVolume;
-using PhysicsStats::Mass;
 using PhysicsStats::Density;
-using OrganismStats::Body::Strength;
+using PhysicsStats::Mass;
+using PhysicsStats::SharedVolume;
+using PhysicsStats::Volume;
 
 struct Metabolism {
     Energy energy;
@@ -36,24 +36,15 @@ struct Metabolism {
     [[nodiscard]]
     NormalizedValue<float> hungry() const;
 
-    Metabolism(
-        Energy energy,
-        Energy reserved,
-        Diet&& diet
-    )
-        : energy(energy),
-          reserved(reserved),
-          diet(diet)
-    {}
+    Metabolism(Energy energy, Energy reserved, Diet&& diet)
+        : energy(energy), reserved(reserved), diet(diet) {}
 };
-
 
 struct Vital {
     Life life;
     Immunity immunity;
     Health health;
 };
-
 
 struct MuscleStructure {
     Muscle muscle;
@@ -62,11 +53,9 @@ struct MuscleStructure {
     SharedVolume shared_volume;
 };
 
-
 struct BodyReproductive {
     FertilityCooldown fertility;
 };
-
 
 struct Morphology {
     Size size;
@@ -79,13 +68,11 @@ struct Morphology {
     Volume volume() const noexcept;
 };
 
-
 struct SkeletonStructure {
     SharedVolume shared_volume;
     Bone bone;
     SkeletonQuality quality;
 };
-
 
 struct Body {
     Metabolism metabolism;
@@ -99,7 +86,7 @@ struct Body {
 
     [[nodiscard]]
     Strength strength() const noexcept;
-    
+
     [[nodiscard]]
     NormalizedValue<float> hungry() const noexcept;
 
@@ -107,19 +94,16 @@ struct Body {
     float needed_energy() const noexcept;
 };
 
-
 struct Ontology {
     Gender gender;
     std::string name;
     uint64_t id;
 };
 
-
 struct Brain {
     std::optional<AttackedEvent> last_attack = std::nullopt;
     NormalizedValue<float> sociability;
 };
-
 
 struct Creature {
     Genome genome;
@@ -129,6 +113,7 @@ struct Creature {
     Body body;
     ReproductionOrgan reproduction;
 
+    Vec3 position;
     Creature(const Creature&) = delete;
     Creature& operator=(const Creature&) = delete;
 
@@ -156,6 +141,5 @@ struct Creature {
     [[nodiscard]]
     float specie_relative_age() const noexcept;
 };
-
 
 using CreatureFunction = void (*)(Creature&);
