@@ -22,6 +22,5 @@ Corpse CorpsePhysiology::generate_corpse(const Embryo& embryo) {
 
     raw_meat.energy += embryo.energy.value() * 0.4f;
     raw_meat.energy += embryo.volume.value * 0.15f * embryo.energy.value();
-    return Corpse{Size(0.5, 0.5, 0.5), embryo.position, raw_meat, gen_id()};
-    // Until embryo doesn't have Size, this is the value here
+    return Corpse{embryo.size(), embryo.position, raw_meat, gen_id()};
 }

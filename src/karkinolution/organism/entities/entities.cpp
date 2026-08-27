@@ -47,26 +47,13 @@ const Vec3& EntityGetters::get_position(const Entity& entity) {
     return std::visit([](const auto& entity) -> const Vec3& { return entity.position; }, entity);
 }
 
-Size& EntityGetters::get_size(Entity& entity) {
+Size EntityGetters::get_size(Entity& entity) {
     if (std::holds_alternative<Creature>(entity)) {
         return std::get<Creature>(entity).body.morphology.size;
     } else if (std::holds_alternative<Corpse>(entity)) {
         return std::get<Corpse>(entity).size;
     } else if (std::holds_alternative<Embryo>(entity)) {
-        throw SimulationError("Embryo doesn't have size");
-    } else if (std::holds_alternative<Egg>(entity)) {
-        return std::get<Egg>(entity).size;
-    }
-    std::unreachable();
-}
-
-const Size& EntityGetters::get_size(const Entity& entity) {
-    if (std::holds_alternative<Creature>(entity)) {
-        return std::get<Creature>(entity).body.morphology.size;
-    } else if (std::holds_alternative<Corpse>(entity)) {
-        return std::get<Corpse>(entity).size;
-    } else if (std::holds_alternative<Embryo>(entity)) {
-        throw SimulationError("Embryo doesn't have size");
+        return std::get<Embryo>(entity).size();
     } else if (std::holds_alternative<Egg>(entity)) {
         return std::get<Egg>(entity).size;
     }
