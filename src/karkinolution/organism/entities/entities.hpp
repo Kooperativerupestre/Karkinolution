@@ -39,4 +39,7 @@ Id get_id(const Egg& egg);
 
 Vec3& get_position(Entity& entity);
 const Vec3& get_position(const Entity& entity);
+
+Size& get_size(Entity& entity);
+const Size& get_size(const Entity& entity);
 } // namespace EntityGetters
