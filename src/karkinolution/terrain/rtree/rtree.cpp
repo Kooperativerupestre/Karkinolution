@@ -17,6 +17,14 @@
 #include <utility>
 #include <variant>
 
+/*
+    When I wrote this, only God and I knew how it worked.
+
+    Today, only God knows.
+
+    Good luck.
+*/
+
 RStarTree::RStarTree()
     : root_(std::make_unique<RtreeNode>(
           RtreeNode{.type = NodeType::LEAF, .box = std::nullopt, .entries = {}})) {}
