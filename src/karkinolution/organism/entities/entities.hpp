@@ -1,4 +1,5 @@
 #pragma once
+#include "karkinolution/math/physic/vec/model.hpp"
 #include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -35,4 +36,7 @@ Id get_id(const Corpse& corpse);
 Id get_id(const Creature& creature);
 Id get_id(const Embryo& embryo);
 Id get_id(const Egg& egg);
+
+Vec3& get_position(Entity& entity);
+const Vec3& get_position(const Entity& entity);
 } // namespace EntityGetters
