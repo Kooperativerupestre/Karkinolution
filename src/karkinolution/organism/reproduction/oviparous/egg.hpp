@@ -31,6 +31,7 @@ struct Egg {
     EggNutrients nutrients;
     std::vector<Id> embryos;
     Vec3 position;
+    Size size;
 
     [[nodiscard]] Id build_id() const noexcept { return IDF::create_egg_id(id); }
 };
