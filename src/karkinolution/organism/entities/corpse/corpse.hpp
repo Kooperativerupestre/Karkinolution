@@ -1,6 +1,7 @@
 #pragma once
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
+#include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/stats.hpp>
 
@@ -11,6 +12,7 @@ struct Corpse {
     RawMeat raw_meat;
 
     Vec3 position;
+    Size size;
 
     [[nodiscard]] Id build_id() const noexcept { return IDF::create_corpse_id(id); }
 
@@ -19,8 +21,6 @@ struct Corpse {
 
     Corpse(Corpse&&) = default;
     Corpse& operator=(Corpse&&) = default;
-
-    Corpse(uint64_t id, RawMeat raw_meat) : id(id), raw_meat(raw_meat) {}
 
     bool ready_to_disapear() const;
 };
