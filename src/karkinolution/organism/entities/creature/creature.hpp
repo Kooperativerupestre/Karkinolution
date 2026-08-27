@@ -120,6 +120,8 @@ struct Creature {
     Creature(Creature&&) = default;
     Creature& operator=(Creature&&) = default;
 
+    [[nodiscard]] Id build_id() const noexcept { return IDF::create_creature_id(ontology.id); }
+
     [[nodiscard]]
     float specie_relative_muscle() const noexcept;
 
