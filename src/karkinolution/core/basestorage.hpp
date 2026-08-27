@@ -79,11 +79,17 @@ template <typename K, typename V> class BaseStorage {
         size_t removed = data.erase(k);
 
         if (removed == 0) {
-            throw std::out_of_range("tentativa de deletar chave inexistente");
+            throw std::out_of_range("inexistent key");
         }
     }
 
-    void try_del(const K& k) { data.erase(k); }
+    bool try_del(const K& k) {
+        size_t removed = data.erase(k);
+        if (removed == 0) {
+            return false;
+        }
+        return true;
+    }
 
     V& at(const K& k) { return data.at(k); }
 
