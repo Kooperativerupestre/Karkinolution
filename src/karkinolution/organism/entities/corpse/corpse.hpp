@@ -15,7 +15,8 @@ struct Corpse {
     Size size;
 
     [[nodiscard]] Id build_id() const noexcept { return IDF::create_corpse_id(id); }
-
+    Corpse(const Size& size, const Vec3& position, const RawMeat& raw_meat, uint64_t id)
+        : size(size), position(position), raw_meat(raw_meat), id(id) {}
     Corpse(const Corpse&) = delete;
     Corpse& operator=(const Corpse&) = delete;
 
