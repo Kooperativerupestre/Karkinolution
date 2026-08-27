@@ -1,5 +1,6 @@
 #pragma once
 #include "karkinolution/organism/entities/identity.hpp"
+#include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
@@ -30,6 +31,7 @@ struct Embryo {
     Volume volume;
     Genome genome;
     int age;
+    Vec3 position;
 
     [[nodiscard]] Id build_id() const noexcept { return IDF::create_embryo_id(id); }
     [[nodiscard]] EmbryoHungry hungry() const;
