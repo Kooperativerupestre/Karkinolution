@@ -26,8 +26,11 @@ struct EggNutrients {
 };
 
 struct Egg {
+    uint64_t id;
     Shell shell;
     EggNutrients nutrients;
     std::vector<Id> embryos;
     Vec3 position;
+
+    [[nodiscard]] Id build_id() const noexcept { return IDF::create_egg_id(id); }
 };
