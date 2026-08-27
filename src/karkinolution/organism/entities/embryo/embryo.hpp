@@ -32,11 +32,15 @@ struct Embryo {
     Genome genome;
     int age;
     Vec3 position;
-    // TODO: implement size
+
+    [[nodiscard]] Size size() const noexcept {
+        return Size{
+            .lateral = volume.value * 0.8, .height = volume.value * 0.5, .back = volume.value};
+    }
     [[nodiscard]] Id build_id() const noexcept { return IDF::create_embryo_id(id); }
     [[nodiscard]] EmbryoHungry hungry() const;
 
-    [[nodiscard]] float specie_relative_volume() const;
+    [[nodiscard]] double specie_relative_volume() const;
     [[nodiscard]] float specie_relative_energy_max() const;
     [[nodiscard]] float specie_relative_life() const;
 };
