@@ -138,11 +138,11 @@ inline Vec3 generate(const Vec3& min, const Vec3& max) {
 }
 template <std::floating_point T> T generate() {
     const auto limit = std::numeric_limits<T>();
-    return std::uniform_real_distribution<T>{limit.lowest(), limit.max()};
+    return std::uniform_real_distribution<T>(limit.lowest(), limit.max())(gen);
 }
 template <std::integral T> T generate() {
     const auto limit = std::numeric_limits<T>();
-    return std::uniform_int_distribution<T>(limit.lowest(), limit.max());
+    return std::uniform_int_distribution<T>(limit.lowest(), limit.max())(gen);
 }
 template <Vec3Like T> Vec3 generate() {
     return Vec3{generate<double>(), generate<double>(), generate<double>()};
