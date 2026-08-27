@@ -6,28 +6,31 @@
 #include <karkinolution/utils/k_random.hpp>
 #include <variant>
 
+using TRStarTree = RStarTree<SoilPieceId>;
+using TRTreeNode = RtreeNode<SoilPieceId>;
+using TRTreeEntry = RtreeEntry<SoilPieceId>;
 namespace {
 
 Box3D make_box(double x, double y, double z, double size = 1.0) {
     return Box3D{.max = Vec3{x + size, y + size, z + size}, .min = Vec3{x, y, z}};
 }
 
-void assert_node_invariants(const RtreeNode& node, bool is_root = true) {
-    ASSERT_LE(node.entries.size(), RStarTree::MAX_ENTRIES);
+void assert_node_invariants(const TRTreeNode& node, bool is_root = true) {
+    ASSERT_LE(node.entries.size(), TRStarTree::MAX_ENTRIES);
 
     if (!is_root) {
-        ASSERT_GE(node.entries.size(), RStarTree::MIN_ENTRIES);
+        ASSERT_GE(node.entries.size(), TRStarTree::MIN_ENTRIES);
     }
 
     if (node.type == NodeType::LEAF) {
-        for (const RtreeEntry& entry : node.entries) {
+        for (const TRTreeEntry& entry : node.entries) {
             ASSERT_TRUE(std::holds_alternative<SoilPieceId>(entry.content));
         }
     } else {
-        for (const RtreeEntry& entry : node.entries) {
-            ASSERT_TRUE(std::holds_alternative<std::unique_ptr<RtreeNode>>(entry.content));
+        for (const TRTreeEntry& entry : node.entries) {
+            ASSERT_TRUE(std::holds_alternative<std::unique_ptr<TRTreeNode>>(entry.content));
 
-            const auto& child = std::get<std::unique_ptr<RtreeNode>>(entry.content);
+            const auto& child = std::get<std::unique_ptr<TRTreeNode>>(entry.content);
 
             ASSERT_NE(child, nullptr);
 
@@ -46,7 +49,7 @@ void assert_box_equal(const Box3D& lhs, const Box3D& rhs) {
     EXPECT_DOUBLE_EQ(lhs.max.z, rhs.max.z);
 }
 
-void assert_mbr_invariant(const RtreeNode& node) {
+void assert_mbr_invariant(const TRTreeNode& node) {
     if (!node.entries.empty()) {
         Box3D expected = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
 
@@ -56,20 +59,20 @@ void assert_mbr_invariant(const RtreeNode& node) {
     }
 
     if (node.type == NodeType::INTERNAL) {
-        for (const RtreeEntry& entry : node.entries) {
-            const auto& child = std::get<std::unique_ptr<RtreeNode>>(entry.content);
+        for (const TRTreeEntry& entry : node.entries) {
+            const auto& child = std::get<std::unique_ptr<TRTreeNode>>(entry.content);
 
             assert_mbr_invariant(*child);
         }
     }
 }
 
-void assert_tree_invariants(const RStarTree& tree) {
+void assert_tree_invariants(const TRStarTree& tree) {
     assert_node_invariants(tree.root());
     assert_mbr_invariant(tree.root());
 }
 
-void assert_all_ids_exist(const RStarTree& tree, SoilPieceId count,
+void assert_all_ids_exist(const TRStarTree& tree, SoilPieceId count,
                           const std::vector<bool>& deleted = {}) {
 
     for (SoilPieceId id = 0; id < count; ++id) {
@@ -84,7 +87,7 @@ void assert_all_ids_exist(const RStarTree& tree, SoilPieceId count,
 } // namespace
 
 TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertions) {
-    RStarTree tree;
+    TRStarTree tree;
 
     for (SoilPieceId id = 0; id < 1000; ++id) {
         tree.insert(id,
@@ -100,7 +103,7 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertions) {
 }
 
 TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertionsAndDeletions) {
-    RStarTree tree;
+    TRStarTree tree;
 
     constexpr SoilPieceId count = 1000;
 
@@ -137,7 +140,7 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertionsAndDeletions) {
 }
 
 TEST(RStarTreeTest, DeleteNonexistentSoilPieceReturnsFalse) {
-    RStarTree tree;
+    TRStarTree tree;
 
     constexpr SoilPieceId id = 42;
 
@@ -149,7 +152,7 @@ TEST(RStarTreeTest, DeleteNonexistentSoilPieceReturnsFalse) {
 }
 
 TEST(RStarTreeTest, DeleteExistingSoilPieceReturnsTrueAndRemovesIt) {
-    RStarTree tree;
+    TRStarTree tree;
 
     constexpr SoilPieceId id = 42;
 
@@ -164,7 +167,7 @@ TEST(RStarTreeTest, DeleteExistingSoilPieceReturnsTrueAndRemovesIt) {
 }
 
 TEST(RStarTreeTest, DeletingSameSoilPieceTwiceReturnsFalse) {
-    RStarTree tree;
+    TRStarTree tree;
 
     constexpr SoilPieceId id = 42;
 
@@ -180,7 +183,7 @@ TEST(RStarTreeTest, DeletingSameSoilPieceTwiceReturnsFalse) {
 }
 
 TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
-    RStarTree tree;
+    TRStarTree tree;
 
     constexpr SoilPieceId count = 100;
 
