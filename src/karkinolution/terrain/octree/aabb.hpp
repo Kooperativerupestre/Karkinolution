@@ -33,17 +33,17 @@ struct Entry {
     AABB bound;
 };
 
-class Node {
+class OctreeNode {
   private:
     AABB bounds_;
     std::vector<Entry> entries{};
-    std::array<std::unique_ptr<Node>, MAX_OCTREE_CHILDREN> children{};
+    std::array<std::unique_ptr<OctreeNode>, MAX_OCTREE_CHILDREN> children{};
 
     void find(const AABB& aabb, std::vector<Entry*>& output_entries);
     void find(const AABB& aabb, std::vector<const Entry*>& output_entries) const;
 
   public:
-    Node(const AABB& aabb) : bounds_(aabb) {}
+    OctreeNode(const AABB& aabb) : bounds_(aabb) {}
 
     size_t children_size() const {
         size_t count = 0;
@@ -57,7 +57,7 @@ class Node {
 
     const AABB& bounds() const { return bounds_; }
     const std::vector<Entry>& entries_view() const { return entries; };
-    const std::array<std::unique_ptr<Node>, MAX_OCTREE_CHILDREN>& children_view() const {
+    const std::array<std::unique_ptr<OctreeNode>, MAX_OCTREE_CHILDREN>& children_view() const {
         return children;
     };
 
@@ -65,7 +65,7 @@ class Node {
     bool is_full() const { return entries.size() == MAX_ENTRIES; }
     void subdivide();
     std::optional<int> child_containing(const AABB& bounds) const;
-    Node& insert(const Entry& entry);
+    OctreeNode& insert(const Entry& entry);
     bool remove(Id id);
 
     bool remove(Id id, const AABB& old_box);

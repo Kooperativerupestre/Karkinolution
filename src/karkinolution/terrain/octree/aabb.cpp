@@ -2,7 +2,7 @@
 #include <karkinolution/terrain/octree/aabb.hpp>
 #include <optional>
 
-void Node::subdivide() {
+void OctreeNode::subdivide() {
     const auto center = bounds_.center();
 
     for (int i = 0; i < 8; ++i) {
@@ -18,11 +18,11 @@ void Node::subdivide() {
         child_min.z = (i & 4) ? center.z : bounds_.min.z;
         child_max.z = (i & 4) ? bounds_.max.z : center.z;
 
-        children[i] = std::make_unique<Node>(AABB{child_min, child_max});
+        children[i] = std::make_unique<OctreeNode>(AABB{child_min, child_max});
     }
 }
 
-std::optional<int> Node::child_containing(const AABB& other_bounds) const {
+std::optional<int> OctreeNode::child_containing(const AABB& other_bounds) const {
     if (is_leaf()) {
         return std::nullopt;
     }
@@ -36,7 +36,7 @@ std::optional<int> Node::child_containing(const AABB& other_bounds) const {
     return std::nullopt;
 }
 
-Node& Node::insert(const Entry& entry) {
+OctreeNode& OctreeNode::insert(const Entry& entry) {
     if (is_leaf()) {
         if (is_full()) {
             subdivide();
@@ -77,7 +77,7 @@ Node& Node::insert(const Entry& entry) {
     }
 }
 
-bool Node::remove(Id id) {
+bool OctreeNode::remove(Id id) {
     for (size_t i = entries.size(); i-- > 0;) {
         if (entries[i].entity_id == id) {
             entries.erase(entries.begin() + i);
@@ -104,7 +104,7 @@ bool Node::remove(Id id) {
     return false;
 }
 
-bool Node::remove(Id id, const AABB& old_box) {
+bool OctreeNode::remove(Id id, const AABB& old_box) {
     for (size_t i = entries.size(); i-- > 0;) {
         if (entries[i].entity_id == id) {
             entries.erase(entries.begin() + i);
@@ -125,7 +125,7 @@ bool Node::remove(Id id, const AABB& old_box) {
     return children[index.value()]->remove(id, old_box);
 }
 
-bool Node::update(Id id, const AABB& new_box) {
+bool OctreeNode::update(Id id, const AABB& new_box) {
     const auto had_remove = remove(id);
 
     if (!had_remove) {
@@ -136,7 +136,7 @@ bool Node::update(Id id, const AABB& new_box) {
     return true;
 }
 
-bool Node::update(Id id, const AABB& old_box, const AABB& new_box) {
+bool OctreeNode::update(Id id, const AABB& old_box, const AABB& new_box) {
     const auto had_remove = remove(id, old_box);
 
     if (!had_remove) {
@@ -147,7 +147,7 @@ bool Node::update(Id id, const AABB& old_box, const AABB& new_box) {
     return true;
 }
 
-bool Node::exists(Id id) const {
+bool OctreeNode::exists(Id id) const {
     for (size_t i = entries.size(); i-- > 0;) {
         if (entries[i].entity_id == id) {
             return true;
@@ -173,7 +173,7 @@ bool Node::exists(Id id) const {
     return false;
 }
 
-bool Node::exists(Id id, const AABB& aabb) const {
+bool OctreeNode::exists(Id id, const AABB& aabb) const {
     for (size_t i = entries.size(); i-- > 0;) {
         if (entries[i].entity_id == id) {
             return true;
@@ -193,7 +193,7 @@ bool Node::exists(Id id, const AABB& aabb) const {
     return children[index.value()]->exists(id, aabb);
 }
 
-void Node::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
+void OctreeNode::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
     if (!bounds_.intersects(aabb)) {
         return;
     }
@@ -217,7 +217,7 @@ void Node::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
     }
 }
 
-void Node::find(const AABB& aabb, std::vector<const Entry*>& output_entries) const {
+void OctreeNode::find(const AABB& aabb, std::vector<const Entry*>& output_entries) const {
     if (!bounds_.intersects(aabb)) {
         return;
     }
@@ -241,13 +241,13 @@ void Node::find(const AABB& aabb, std::vector<const Entry*>& output_entries) con
     }
 }
 
-std::vector<Entry*> Node::find(const AABB& aabb) {
+std::vector<Entry*> OctreeNode::find(const AABB& aabb) {
     std::vector<Entry*> output{};
     find(aabb, output);
     return output;
 }
 
-std::vector<const Entry*> Node::find(const AABB& aabb) const {
+std::vector<const Entry*> OctreeNode::find(const AABB& aabb) const {
     std::vector<const Entry*> output{};
     find(aabb, output);
     return output;

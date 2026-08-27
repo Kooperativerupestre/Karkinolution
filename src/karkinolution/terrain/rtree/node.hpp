@@ -4,17 +4,17 @@
 
 enum class NodeType : uint8_t { LEAF, INTERNAL };
 
-struct Node;
+struct RtreeNode;
 
-using EntryContentType = std::variant<SoilPieceId, std::unique_ptr<Node>>;
+using EntryContentType = std::variant<SoilPieceId, std::unique_ptr<RtreeNode>>;
 
 struct Entry {
-  Box3D box;
-  EntryContentType content;
+    Box3D box;
+    EntryContentType content;
 };
 
-struct Node {
-  NodeType type;
-  std::optional<Box3D> box;
-  std::vector<Entry> entries;
+struct RtreeNode {
+    NodeType type;
+    std::optional<Box3D> box;
+    std::vector<Entry> entries;
 };
