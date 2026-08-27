@@ -32,7 +32,7 @@ struct Embryo {
     Genome genome;
     int age;
     Vec3 position;
-
+    // TODO: implement size
     [[nodiscard]] Id build_id() const noexcept { return IDF::create_embryo_id(id); }
     [[nodiscard]] EmbryoHungry hungry() const;
 
