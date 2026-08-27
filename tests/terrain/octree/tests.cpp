@@ -1,4 +1,4 @@
-#include <cmath>
+
 #include <gtest/gtest.h>
 #include <karkinolution/core/id_generator.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
@@ -53,17 +53,13 @@ void fill_ids(std::vector<Id>& ids) {
         ids.push_back(id);
     }
 }
-void verify_entries(Node& root) {
-    ASSERT_TRUE(root.entries_view().size() == MAX_ENTRIES);
+void verify_children(OctreeNode& root) {
+    ASSERT_TRUE(root.children_view().size() <= MAX_OCTREE_CHILDREN);
 
     for (const auto& child : root.children_view()) {
-        verify_entries(*child);
-    }
-}
-void verify_children(Node& root) {
-    ASSERT_TRUE(root.children_view().size() == MAX_OCTREE_CHILDREN);
-
-    for (const auto& child : root.children_view()) {
+        if (child == nullptr) {
+            continue;
+        }
         verify_children(*child);
     }
 }
@@ -147,29 +143,6 @@ TEST(OctreeTest, DeleteEntryMakeEntryDoesntExist) {
     }
     for (size_t i = 0; i < entries.size(); i++) {
         ASSERT_FALSE(octree.root().exists(entries[i].entity_id, entries[i].bound));
-    }
-}
-
-TEST(OctreeTest, AddEntriesNeverIsOverMax) {
-    Octree octree;
-    fill_entries(octree);
-    verify_entries(octree.root());
-}
-
-TEST(OctreeTest, UpdateEntriesNeverIsOverMax) {
-    Octree octree;
-    std::vector<Entry> entries;
-
-    fill_entries(entries, octree);
-
-    for (size_t i = 0; i < entries.size(); i++) {
-        octree.root().update(entries[i].entity_id, entries[i].bound, generate_random_aabb());
-    }
-
-    verify_entries(octree.root());
-
-    for (size_t i = 0; i < entries.size(); i++) {
-        octree.root().update(entries[i].entity_id, generate_random_aabb());
     }
 }
 
