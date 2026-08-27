@@ -370,7 +370,7 @@ void RStarTree::insert_entry(RtreeEntry entry, std::vector<RtreeNode*> path,
     auto& leaf = *path.back();
     size_t path_size = path.size();
 
-    std::vector<RtreeEntry> removed_entries;
+    std::vector<OrphanEntry> removed_entries;
 
     leaf.entries.push_back(std::move(entry));
     size_t size = leaf.entries.size();
@@ -401,7 +401,8 @@ void RStarTree::insert_entry(RtreeEntry entry, std::vector<RtreeNode*> path,
             std::ranges::sort(indices_to_remove, std::greater<>());
 
             for (size_t idx : indices_to_remove) {
-                removed_entries.push_back(std::move(leaf.entries[idx]));
+                removed_entries.push_back(
+                    OrphanEntry{std::move(leaf.entries[idx]), path.size() - 1});
                 leaf.entries.erase(leaf.entries.begin() + idx);
             }
 
@@ -419,7 +420,7 @@ void RStarTree::insert_entry(RtreeEntry entry, std::vector<RtreeNode*> path,
     }
 
     for (auto& e : removed_entries) {
-        insert(std::get<SoilPieceId>(e.content), e.box, true);
+        reinsert_orphan(std::move(e.entry), e.depth);
     }
 
     if (root_->entries.size() > MAX_ENTRIES) {
@@ -441,7 +442,7 @@ void RStarTree::reinsert_orphan(RtreeEntry entry, size_t depth) {
 
 void RStarTree::choose_node_at_depth(std::vector<RtreeNode*>& nodes, const Box3D& box,
                                      size_t depth) {
-    while (nodes.size() < depth) {
+    while (nodes.size() - 1 < depth) {
         RtreeNode& node = *nodes.back();
 
         bool children_are_leaves = false;
