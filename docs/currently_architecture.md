@@ -69,3 +69,7 @@ Motors execute actions, coordinate operations, invoke other components, use algo
 ## Package by Domain
 
 The project should be organized primarily by domain rather than by technical responsibility.
+
+# Atomicity
+
+The EntityMapMotor & TerritoryMotor must have atomic operations. if the R*-tree or Octree fails, or if the OrganismRegistry or SoilPieceRegistry fails, the entire operation must be reverted.
