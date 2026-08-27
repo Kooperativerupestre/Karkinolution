@@ -5,8 +5,7 @@
 #include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <karkinolution/terrain/soil.hpp>
-
-using Territory = RStarTree;
+using Territory = RStarTree<SoilPieceId>;
 class SoilPieceRegistry : public BaseStorage<SoilPieceId, SoilPiece> {
   public:
     using BaseStorage<SoilPieceId, SoilPiece>::BaseStorage;
