@@ -36,7 +36,7 @@ std::optional<int> OctreeNode::child_containing(const AABB& other_bounds) const 
     return std::nullopt;
 }
 
-OctreeNode& OctreeNode::insert(const Entry& entry) {
+OctreeNode& OctreeNode::insert(const OctreeEntry& entry) {
     if (is_leaf()) {
         if (is_full()) {
             subdivide();
@@ -132,7 +132,7 @@ bool OctreeNode::update(Id id, const AABB& new_box) {
         return false; // if removal fails, insertion does not execute
     }
 
-    insert(Entry{.entity_id = id, .bound = new_box});
+    insert(OctreeEntry{.entity_id = id, .bound = new_box});
     return true;
 }
 
@@ -143,7 +143,7 @@ bool OctreeNode::update(Id id, const AABB& old_box, const AABB& new_box) {
         return false; // if removal fails, insertion does not execute
     }
 
-    insert(Entry{.entity_id = id, .bound = new_box});
+    insert(OctreeEntry{.entity_id = id, .bound = new_box});
     return true;
 }
 
@@ -193,7 +193,7 @@ bool OctreeNode::exists(Id id, const AABB& aabb) const {
     return children[index.value()]->exists(id, aabb);
 }
 
-void OctreeNode::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
+void OctreeNode::find(const AABB& aabb, std::vector<OctreeEntry*>& output_entries) {
     if (!bounds_.intersects(aabb)) {
         return;
     }
@@ -217,7 +217,7 @@ void OctreeNode::find(const AABB& aabb, std::vector<Entry*>& output_entries) {
     }
 }
 
-void OctreeNode::find(const AABB& aabb, std::vector<const Entry*>& output_entries) const {
+void OctreeNode::find(const AABB& aabb, std::vector<const OctreeEntry*>& output_entries) const {
     if (!bounds_.intersects(aabb)) {
         return;
     }
@@ -241,14 +241,14 @@ void OctreeNode::find(const AABB& aabb, std::vector<const Entry*>& output_entrie
     }
 }
 
-std::vector<Entry*> OctreeNode::find(const AABB& aabb) {
-    std::vector<Entry*> output{};
+std::vector<OctreeEntry*> OctreeNode::find(const AABB& aabb) {
+    std::vector<OctreeEntry*> output{};
     find(aabb, output);
     return output;
 }
 
-std::vector<const Entry*> OctreeNode::find(const AABB& aabb) const {
-    std::vector<const Entry*> output{};
+std::vector<const OctreeEntry*> OctreeNode::find(const AABB& aabb) const {
+    std::vector<const OctreeEntry*> output{};
     find(aabb, output);
     return output;
 }

@@ -12,10 +12,10 @@ struct FindSplitOutput {
 
 struct GetBestOrdenationOutput {
     size_t best_index;
-    std::vector<Entry*> entries;
+    std::vector<RtreeEntry*> entries;
 };
 struct SplitOutput {
-    std::vector<Entry*> left, right;
+    std::vector<RtreeEntry*> left, right;
 };
 
 struct FindSoilPieceOutput {
@@ -30,18 +30,18 @@ struct _Internal_FindSoilPieceOutput {
 };
 
 struct OrphanEntry {
-    Entry entry;
+    RtreeEntry entry;
     size_t depth;
 };
 
 namespace RStarTreeMotor {
-Box3D calculate_mbr(const std::vector<Entry>&, size_t begin, size_t end);
-Box3D calculate_mbr(const std::vector<Entry*>&, size_t begin, size_t end);
-GetBestOrdenationOutput get_best_ordenation(std::vector<Entry>&, size_t min_entries);
-FindSplitOutput find_best_split_intersection(std::vector<Entry*>&, size_t min_entries);
-FindSplitOutput find_best_split_intersection(std::vector<Entry>&, size_t min_entries);
-FindSplitOutput find_best_split_margin(std::vector<Entry*>&, size_t min_entries);
-SplitOutput split(std::vector<Entry>& entries, size_t min_entries);
+Box3D calculate_mbr(const std::vector<RtreeEntry>&, size_t begin, size_t end);
+Box3D calculate_mbr(const std::vector<RtreeEntry*>&, size_t begin, size_t end);
+GetBestOrdenationOutput get_best_ordenation(std::vector<RtreeEntry>&, size_t min_entries);
+FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry*>&, size_t min_entries);
+FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry>&, size_t min_entries);
+FindSplitOutput find_best_split_margin(std::vector<RtreeEntry*>&, size_t min_entries);
+SplitOutput split(std::vector<RtreeEntry>& entries, size_t min_entries);
 } // namespace RStarTreeMotor
 
 class RStarTree {
@@ -67,18 +67,18 @@ class RStarTree {
     void split(RtreeNode& leaf, RtreeNode* parent);
     void split_root(RtreeNode& old_root);
 
-    std::vector<SoilPieceId> find(const Box3D& box, const std::vector<Entry>& entries,
+    std::vector<SoilPieceId> find(const Box3D& box, const std::vector<RtreeEntry>& entries,
                                   std::vector<SoilPieceId>& ids) const;
 
     _Internal_FindSoilPieceOutput find_soil_piece(SoilPieceId id, std::vector<RtreeNode*>& path);
 
-    void insert_entry(Entry entry, std::vector<RtreeNode*> path, bool already_reinserted);
+    void insert_entry(RtreeEntry entry, std::vector<RtreeNode*> path, bool already_reinserted);
 
     size_t choose_by_enlargement(RtreeNode& node, const Box3D& box);
     size_t choose_by_overlap(RtreeNode& node, const Box3D& box);
 
     void choose_leaf(std::vector<RtreeNode*>& nodes, const Box3D& box);
-    void reinsert_orphan(Entry entry, size_t depth);
+    void reinsert_orphan(RtreeEntry entry, size_t depth);
     void choose_node_at_depth(std::vector<RtreeNode*>& nodes, const Box3D& box, size_t depth);
     void refresh_mbrs(RtreeNode& node);
     FindSoilPieceOutput find_soil_piece(SoilPieceId id);

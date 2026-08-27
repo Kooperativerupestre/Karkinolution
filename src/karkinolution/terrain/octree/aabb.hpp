@@ -28,7 +28,7 @@ struct AABB {
     }
 };
 
-struct Entry {
+struct OctreeEntry {
     Id entity_id;
     AABB bound;
 };
@@ -36,11 +36,11 @@ struct Entry {
 class OctreeNode {
   private:
     AABB bounds_;
-    std::vector<Entry> entries{};
+    std::vector<OctreeEntry> entries{};
     std::array<std::unique_ptr<OctreeNode>, MAX_OCTREE_CHILDREN> children{};
 
-    void find(const AABB& aabb, std::vector<Entry*>& output_entries);
-    void find(const AABB& aabb, std::vector<const Entry*>& output_entries) const;
+    void find(const AABB& aabb, std::vector<OctreeEntry*>& output_entries);
+    void find(const AABB& aabb, std::vector<const OctreeEntry*>& output_entries) const;
 
   public:
     OctreeNode(const AABB& aabb) : bounds_(aabb) {}
@@ -56,7 +56,7 @@ class OctreeNode {
     }
 
     const AABB& bounds() const { return bounds_; }
-    const std::vector<Entry>& entries_view() const { return entries; };
+    const std::vector<OctreeEntry>& entries_view() const { return entries; };
     const std::array<std::unique_ptr<OctreeNode>, MAX_OCTREE_CHILDREN>& children_view() const {
         return children;
     };
@@ -65,7 +65,7 @@ class OctreeNode {
     bool is_full() const { return entries.size() == MAX_ENTRIES; }
     void subdivide();
     std::optional<int> child_containing(const AABB& bounds) const;
-    OctreeNode& insert(const Entry& entry);
+    OctreeNode& insert(const OctreeEntry& entry);
     bool remove(Id id);
 
     bool remove(Id id, const AABB& old_box);
@@ -78,8 +78,8 @@ class OctreeNode {
     bool exists(Id id) const;
     bool exists(Id id, const AABB& old_box) const;
 
-    std::vector<Entry*> find(const AABB& aabb);
-    std::vector<const Entry*> find(const AABB& aabb) const;
+    std::vector<OctreeEntry*> find(const AABB& aabb);
+    std::vector<const OctreeEntry*> find(const AABB& aabb) const;
 
     /*
 func(...) -> Do if it exists
