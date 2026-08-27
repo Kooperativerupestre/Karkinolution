@@ -70,6 +70,8 @@ enum class SoilTypes : uint8_t { SAND, ROCK, DIRT, WATER };
 
 enum class SoilProperties : uint8_t { EDIBLE, DANGEROUS };
 
+namespace SoilPieceComponents {
+
 struct FoodState : Component {
   public:
     Energy food;
@@ -91,6 +93,11 @@ struct MovementCost : Component {
 
     MovementCost(float cost) : cost(cost) {}
 };
+} // namespace SoilPieceComponents
+
+using SoilPieceComponents::Damage;
+using SoilPieceComponents::FoodState;
+using SoilPieceComponents::MovementCost;
 
 struct Blueprint {
     std::vector<std::function<std::unique_ptr<Component>()>> default_components;
