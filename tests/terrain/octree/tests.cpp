@@ -26,13 +26,13 @@ AABB generate_random_aabb() {
     return AABB{.max = RandomGenerators::generate<Vec3>(),
                 .min = RandomGenerators::generate<Vec3>()};
 }
-void fill_entries(std::vector<Entry>& entries, Octree& octree) {
+void fill_entries(std::vector<OctreeEntry>& entries, Octree& octree) {
     for (size_t i = 0; i < 100; i++) {
         const AABB aabb{.max = RandomGenerators::generate<Vec3>(),
                         .min = RandomGenerators::generate<Vec3>()};
         const auto id_value = gen_id();
         const Id id = IDF::create_creature_id(id_value);
-        entries.push_back(Entry{.entity_id = id, .bound = aabb});
+        entries.push_back(OctreeEntry{.entity_id = id, .bound = aabb});
 
         octree.root().insert(entries.back());
     }
@@ -43,7 +43,7 @@ void fill_entries(Octree& octree) {
         const auto id_value = gen_id();
         const Id id = IDF::create_creature_id(id_value);
 
-        octree.root().insert(Entry{.entity_id = id, .bound = aabb});
+        octree.root().insert(OctreeEntry{.entity_id = id, .bound = aabb});
     }
 }
 void fill_ids(std::vector<Id>& ids) {
@@ -69,7 +69,7 @@ void verify_children(OctreeNode& root) {
 TEST(OctreeTest, RemoveIsEqualTrueIfItExists) {
     Octree octree;
 
-    std::vector<Entry> entries;
+    std::vector<OctreeEntry> entries;
     fill_entries(entries, octree);
 
     for (size_t i = entries.size(); i-- > 0;) {
@@ -110,7 +110,7 @@ TEST(OctreeTest, RemoveIsEqualFalseItDoesntExist) {
 TEST(OctreeTest, AddEntryMakeEntryExists) {
     Octree octree;
 
-    std::vector<Entry> entries;
+    std::vector<OctreeEntry> entries;
 
     fill_entries(entries, octree);
     for (size_t i = 0; i < entries.size(); i++) {
@@ -123,7 +123,7 @@ TEST(OctreeTest, AddEntryMakeEntryExists) {
 
 TEST(OctreeTest, DeleteEntryMakeEntryDoesntExist) {
     Octree octree;
-    std::vector<Entry> entries;
+    std::vector<OctreeEntry> entries;
 
     fill_entries(entries, octree);
     for (size_t i = 0; i < entries.size(); i++) {
@@ -149,7 +149,7 @@ TEST(OctreeTest, DeleteEntryMakeEntryDoesntExist) {
 TEST(OctreeTest, AddChildrenNeverIsOverMax) {
     Octree octree;
 
-    std::vector<Entry> entries;
+    std::vector<OctreeEntry> entries;
     fill_entries(entries, octree);
 
     for (size_t i = 0; i < entries.size(); i++) {
@@ -160,7 +160,7 @@ TEST(OctreeTest, AddChildrenNeverIsOverMax) {
 TEST(OctreeTest, UpdateChildrenNeverIsOverMax) {
     Octree octree;
 
-    std::vector<Entry> entries;
+    std::vector<OctreeEntry> entries;
 
     fill_entries(entries, octree);
 

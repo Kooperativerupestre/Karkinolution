@@ -8,7 +8,7 @@ struct RtreeNode;
 
 using EntryContentType = std::variant<SoilPieceId, std::unique_ptr<RtreeNode>>;
 
-struct Entry {
+struct RtreeEntry {
     Box3D box;
     EntryContentType content;
 };
@@ -16,5 +16,5 @@ struct Entry {
 struct RtreeNode {
     NodeType type;
     std::optional<Box3D> box;
-    std::vector<Entry> entries;
+    std::vector<RtreeEntry> entries;
 };

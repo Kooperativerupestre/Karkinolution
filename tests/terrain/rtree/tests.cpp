@@ -20,11 +20,11 @@ void assert_node_invariants(const RtreeNode& node, bool is_root = true) {
     }
 
     if (node.type == NodeType::LEAF) {
-        for (const Entry& entry : node.entries) {
+        for (const RtreeEntry& entry : node.entries) {
             ASSERT_TRUE(std::holds_alternative<SoilPieceId>(entry.content));
         }
     } else {
-        for (const Entry& entry : node.entries) {
+        for (const RtreeEntry& entry : node.entries) {
             ASSERT_TRUE(std::holds_alternative<std::unique_ptr<RtreeNode>>(entry.content));
 
             const auto& child = std::get<std::unique_ptr<RtreeNode>>(entry.content);
@@ -56,7 +56,7 @@ void assert_mbr_invariant(const RtreeNode& node) {
     }
 
     if (node.type == NodeType::INTERNAL) {
-        for (const Entry& entry : node.entries) {
+        for (const RtreeEntry& entry : node.entries) {
             const auto& child = std::get<std::unique_ptr<RtreeNode>>(entry.content);
 
             assert_mbr_invariant(*child);
