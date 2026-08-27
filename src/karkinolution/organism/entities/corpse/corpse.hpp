@@ -1,5 +1,6 @@
 #pragma once
 #include "karkinolution/math/physic/vec/model.hpp"
+#include "karkinolution/organism/entities/identity.hpp"
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/stats.hpp>
 
@@ -10,6 +11,8 @@ struct Corpse {
     RawMeat raw_meat;
 
     Vec3 position;
+
+    [[nodiscard]] Id build_id() const noexcept { return IDF::create_corpse_id(id); }
 
     Corpse(const Corpse&) = delete;
     Corpse& operator=(const Corpse&) = delete;
