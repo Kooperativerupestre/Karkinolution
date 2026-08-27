@@ -1,3 +1,4 @@
+#include "karkinolution/core/error.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
 #include "karkinolution/terrain/rtree/node.hpp"
 #include "karkinolution/terrain/soil.hpp"
@@ -313,13 +314,20 @@ void RStarTree::split(RtreeNode& node, RtreeNode* parent) {
                              RStarTreeMotor::calculate_mbr(right_entries, 0, right_entries.size()),
                          .entries = std::move(right_entries)};
 
-    for (auto it = parent->entries.begin(); it != parent->entries.end(); it++) {
+    bool found = false;
+
+    for (auto it = parent->entries.begin(); it != parent->entries.end(); ++it) {
         if (std::holds_alternative<std::unique_ptr<RtreeNode>>(it->content) &&
             std::get<std::unique_ptr<RtreeNode>>(it->content).get() == &node) {
             parent->entries.erase(it);
+            found = true;
             break;
         }
-    };
+    }
+
+    if (!found) {
+        throw SimulationError("Node must be in parent");
+    }
     parent->entries.push_back(
         RtreeEntry{.box = left_node.box.value(),
                    .content = std::make_unique<RtreeNode>(std::move(left_node))});
