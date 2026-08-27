@@ -3,6 +3,7 @@ build/
 cmake-build-*/
 out/
 build-valgrind
+build-asan
 
 # --- CMake generated files ---
 CMakeFiles/
