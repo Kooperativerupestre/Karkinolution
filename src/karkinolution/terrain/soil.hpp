@@ -95,10 +95,6 @@ struct MovementCost : Component {
 };
 } // namespace SoilPieceComponents
 
-using SoilPieceComponents::Damage;
-using SoilPieceComponents::FoodState;
-using SoilPieceComponents::MovementCost;
-
 struct Blueprint {
     std::vector<std::function<std::unique_ptr<Component>()>> default_components;
     std::vector<SoilProperties> properties;
@@ -108,43 +104,48 @@ struct Blueprint {
 };
 
 inline const std::unordered_map<SoilTypes, Blueprint> blueprints = {
-    {SoilTypes::DIRT, Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-                                                           return std::make_unique<FoodState>(
-                                                               Energy(10.0f, 10.0f), 1);
-                                                       },
-                                                       []() -> std::unique_ptr<Component> {
-                                                           return std::make_unique<MovementCost>(1);
-                                                       }},
-                                .properties = {SoilProperties::EDIBLE},
-                                .required_properties = {Properties::Capabilities::Move::WALK}
+    {SoilTypes::DIRT,
+     Blueprint{
+         .default_components = {[]() -> std::unique_ptr<Component> {
+                                    return std::make_unique<SoilPieceComponents::FoodState>(
+                                        Energy(10.0f, 10.0f), 1);
+                                },
+                                []() -> std::unique_ptr<Component> {
+                                    return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                                }},
+         .properties = {SoilProperties::EDIBLE},
+         .required_properties = {Properties::Capabilities::Move::WALK}
 
-                      }},
+     }},
 
-    {SoilTypes::SAND, Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-                                                           return std::make_unique<FoodState>(
-                                                               Energy(10.0f, 10.0f), 1);
-                                                       },
-                                                       []() -> std::unique_ptr<Component> {
-                                                           return std::make_unique<MovementCost>(2);
-                                                       }},
-                                .properties = {SoilProperties::EDIBLE}}},
+    {SoilTypes::SAND,
+     Blueprint{
+         .default_components = {[]() -> std::unique_ptr<Component> {
+                                    return std::make_unique<SoilPieceComponents::FoodState>(
+                                        Energy(10.0f, 10.0f), 1);
+                                },
+                                []() -> std::unique_ptr<Component> {
+                                    return std::make_unique<SoilPieceComponents::MovementCost>(2);
+                                }},
+         .properties = {SoilProperties::EDIBLE}}},
 
     {SoilTypes::ROCK, Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-                                    return std::make_unique<MovementCost>(1);
+                                    return std::make_unique<SoilPieceComponents::MovementCost>(1);
                                 }},
                                 .properties = {SoilProperties::DANGEROUS},
                                 .required_properties = {Properties::Capabilities::Move::WALK}}},
 
     {SoilTypes::WATER,
-     Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-                                          return std::make_unique<FoodState>(Energy(10.0f, 10.0f),
-                                                                             1);
-                                      },
-                                      []() -> std::unique_ptr<Component> {
-                                          return std::make_unique<MovementCost>(1);
-                                      }},
-               .properties = {SoilProperties::EDIBLE},
-               .required_properties = {Properties::Capabilities::Move::SWIMM}}}};
+     Blueprint{
+         .default_components = {[]() -> std::unique_ptr<Component> {
+                                    return std::make_unique<SoilPieceComponents::FoodState>(
+                                        Energy(10.0f, 10.0f), 1);
+                                },
+                                []() -> std::unique_ptr<Component> {
+                                    return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                                }},
+         .properties = {SoilProperties::EDIBLE},
+         .required_properties = {Properties::Capabilities::Move::SWIMM}}}};
 
 using SoilPieceId = uint64_t;
 

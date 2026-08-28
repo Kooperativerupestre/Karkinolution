@@ -15,8 +15,8 @@ struct PerceivedSoil {
     Vec3 position;
 
     std::optional<Energy> food;
-    std::optional<Damage> damage;
-    std::optional<MovementCost> movement_cost;
+    std::optional<SoilPieceComponents::Damage> damage;
+    std::optional<SoilPieceComponents::MovementCost> movement_cost;
 
     bool has_food() const { return food.has_value(); }
     bool has_damage() const { return damage.has_value(); }
