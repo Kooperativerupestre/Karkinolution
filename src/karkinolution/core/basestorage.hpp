@@ -15,7 +15,7 @@ template <typename K, typename V> class BaseStorage {
     std::unordered_map<K, V> data{};
 
   public:
-    const std::unordered_map<K, V> internal_data() const { return data; }
+    const std::unordered_map<K, V>& internal_data() const { return data; }
     auto keys() { return data | std::views::keys; }
 
     auto keys() const { return data | std::views::keys; }
