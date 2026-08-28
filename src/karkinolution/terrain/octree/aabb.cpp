@@ -252,3 +252,14 @@ std::vector<const OctreeEntry*> OctreeNode::find(const AABB& aabb) const {
     find(aabb, output);
     return output;
 }
+
+std::vector<Id> OctreeNode::find_ids(const AABB& aabb) const {
+    auto found = find(aabb);
+
+    std::vector<Id> output;
+
+    for (const auto& entry : found) {
+        output.push_back(entry->entity_id);
+    }
+    return output;
+}

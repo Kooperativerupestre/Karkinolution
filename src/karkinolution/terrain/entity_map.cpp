@@ -1,4 +1,5 @@
 #include "karkinolution/terrain/entity_map.hpp"
+#include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 #include <cassert>
@@ -16,6 +17,12 @@ AABB AABBConversion::to_aabb(const Size& size, const Vec3& position) {
     const Vec3 half_size{size.lateral.value / 2.0, size.height.value / 2.0, size.back.value / 2.0};
 
     return AABB{.max = position + half_size, .min = position - half_size};
+}
+
+AABB to_abb(const GeometryForms::Radius& radius, const Vec3& position) {
+    Vec3 extent{radius.value, radius.value, radius.value};
+
+    return AABB{position - extent, position + extent};
 }
 
 bool EntityMapMotor::add(Creature&& creature, OrganismRegistry& registry, EntityMap& map) {
@@ -83,6 +90,12 @@ bool EntityMapMotor::remove(Id id, OrganismRegistry& registry, EntityMap& map) {
     auto was_removed = map.root().remove(id);
     assert(was_removed);
     return true;
+}
+
+std::vector<Id> EntityMapMotor::find(const GeometryForms::Radius& radius, const Vec3& position,
+                                     const EntityMap& map) {
+    auto aabb = AABBConversion::to_abb(radius, position);
+    return map.root().find_ids(aabb);
 }
 
 bool EntityMapMotor::update_coord(Id id, OrganismRegistry& registry, EntityMap& map,
