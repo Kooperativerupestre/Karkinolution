@@ -38,7 +38,7 @@ struct PerceivedCorpse {
 };
 
 using PerceptionData = RStarTree<std::variant<SoilPieceId, Id>>;
-using PerceivedEntity = std::variant<PerceivedCreature>;
+using PerceivedEntity = std::variant<PerceivedCreature, PerceivedCorpse>;
 
 class PerceptionEntityRegistry : public BaseStorage<Id, PerceivedEntity> {
   public:

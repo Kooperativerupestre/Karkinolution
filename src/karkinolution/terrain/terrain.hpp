@@ -14,6 +14,7 @@ class SoilPieceRegistry : public BaseStorage<SoilPieceId, SoilPiece> {
 namespace BoxConversion {
 Box3D to_box(const SoilPiece& piece);
 Box3D to_box(const Size& size, const Vec3& position);
+Box3D to_box(const Radius& radius, const Vec3& position);
 } // namespace BoxConversion
 
 namespace TerritoryMotor {
@@ -21,4 +22,6 @@ bool add(SoilPiece&& piece, Territory& territory, SoilPieceRegistry& registry);
 bool remove(SoilPieceId id, Territory& territory, SoilPieceRegistry& registry);
 std::vector<SoilPieceId> find(const SoilPiece& piece, const Territory& territory);
 std::vector<SoilPieceId> find(const Size& size, const Vec3& position, const Territory& territory);
+std::vector<SoilPieceId> find(const Radius& radius, const Vec3& position,
+                              const Territory& territory);
 } // namespace TerritoryMotor

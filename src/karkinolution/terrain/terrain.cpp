@@ -17,6 +17,12 @@ Box3D BoxConversion::to_box(const Size& size, const Vec3& position) {
     };
 }
 
+Box3D BoxConversion::to_box(const Radius& radius, const Vec3& center) {
+    Vec3 extent{radius.value, radius.value, radius.value};
+
+    return Box3D{center - extent, center + extent};
+}
+
 bool TerritoryMotor::add(SoilPiece&& piece, Territory& territory, SoilPieceRegistry& registry) {
     SoilPieceId id = piece.id;
     Box3D box = BoxConversion::to_box(piece);
@@ -41,6 +47,11 @@ std::vector<SoilPieceId> TerritoryMotor::find(const Size& size, const Vec3& posi
     return territory.find(box);
 }
 
+std::vector<SoilPieceId> TerritoryMotor::find(const Radius& radius, const Vec3& position,
+                                              const Territory& territory) {
+    auto box = BoxConversion::to_box(radius, position);
+    return territory.find(box);
+}
 bool TerritoryMotor::remove(SoilPieceId id, Territory& territory, SoilPieceRegistry& registry) {
     auto was_be_removed = territory.delete_soil_piece(id);
     if (!was_be_removed) {

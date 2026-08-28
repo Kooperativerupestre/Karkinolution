@@ -81,6 +81,8 @@ class OctreeNode {
     std::vector<OctreeEntry*> find(const AABB& aabb);
     std::vector<const OctreeEntry*> find(const AABB& aabb) const;
 
+    std::vector<Id> find_ids(const AABB& aabb) const;
+
     /*
 func(...) -> Do if it exists
 func(..., old_box) -> Do if it exists and the correct old_box is provided
