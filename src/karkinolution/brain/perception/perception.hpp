@@ -50,16 +50,6 @@ class PerceptionSoilRegistry : public BaseStorage<SoilPieceId, PerceivedSoil> {
     using BaseStorage<SoilPieceId, PerceivedSoil>::BaseStorage;
 };
 
-template <typename F>
-concept PerceptionEntityFilter = requires(F filter, const PerceivedEntity& entity) {
-    { filter(entity) } -> std::same_as<bool>;
-};
-
-template <typename F>
-concept PerceptionSoilFilter = requires(F filter, const PerceivedSoil& entity) {
-    { filter(entity) } -> std::same_as<bool>;
-};
-
 using EntityFilter = bool (*)(const PerceivedEntity&);
 using SoilFilter = bool (*)(const PerceivedSoil&);
 
