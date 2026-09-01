@@ -54,14 +54,14 @@ Perception Perceiver::perceive(const Creature& perceiver, const World& world) {
 
     const Radius& radius = perceiver.genome.core_genome.vision_radius;
 
-    const auto soils_id = TerritoryMotor::find(radius, perceiver.position, world.territory);
+    const auto soils_id = world.territory.find(radius, perceiver.position);
     const auto entities_id = EntityMapMotor::find(radius, perceiver.position, world.entity_map);
 
     p_entities.reserve(entities_id.size());
     p_soils.reserve(soils_id.size());
 
     for (auto id : soils_id) {
-        const auto& soil = world.soil_registry.at(id);
+        const auto& soil = world.territory.soils().at(id);
         p_soils.add(id, perceive(soil, perceiver));
         data.insert(id, BoxConversion::to_box(soil));
     }

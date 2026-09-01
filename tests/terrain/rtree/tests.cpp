@@ -125,7 +125,7 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertionsAndDeletions) {
     for (SoilPieceId id = 0; id < count; id += 2) {
         ASSERT_TRUE(tree.exists(id)) << "ID " << id << " does not exist BEFORE deletion";
 
-        ASSERT_TRUE(tree.delete_soil_piece(id)) << "delete_soil_piece(" << id << ") returned false";
+        ASSERT_TRUE(tree.remove(id)) << "delete_soil_piece(" << id << ") returned false";
 
         ASSERT_FALSE(tree.exists(id)) << "ID " << id << " still exists AFTER deletion";
 
@@ -145,7 +145,7 @@ TEST(RStarTreeTest, DeleteNonexistentSoilPieceReturnsFalse) {
     constexpr SoilPieceId id = 42;
 
     EXPECT_FALSE(tree.exists(id));
-    EXPECT_FALSE(tree.delete_soil_piece(id));
+    EXPECT_FALSE(tree.remove(id));
     EXPECT_FALSE(tree.exists(id));
 
     assert_tree_invariants(tree);
@@ -160,7 +160,7 @@ TEST(RStarTreeTest, DeleteExistingSoilPieceReturnsTrueAndRemovesIt) {
 
     ASSERT_TRUE(tree.exists(id));
 
-    EXPECT_TRUE(tree.delete_soil_piece(id));
+    EXPECT_TRUE(tree.remove(id));
     EXPECT_FALSE(tree.exists(id));
 
     assert_tree_invariants(tree);
@@ -173,10 +173,10 @@ TEST(RStarTreeTest, DeletingSameSoilPieceTwiceReturnsFalse) {
 
     tree.insert(id, make_box(0.0, 0.0, 0.0));
 
-    ASSERT_TRUE(tree.delete_soil_piece(id));
+    ASSERT_TRUE(tree.remove(id));
     ASSERT_FALSE(tree.exists(id));
 
-    EXPECT_FALSE(tree.delete_soil_piece(id));
+    EXPECT_FALSE(tree.remove(id));
     EXPECT_FALSE(tree.exists(id));
 
     assert_tree_invariants(tree);
@@ -198,7 +198,7 @@ TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
 
     ASSERT_TRUE(tree.exists(deleted_id));
 
-    ASSERT_TRUE(tree.delete_soil_piece(deleted_id))
+    ASSERT_TRUE(tree.remove(deleted_id))
         << "delete_soil_piece(" << deleted_id << ") returned false";
 
     EXPECT_FALSE(tree.exists(deleted_id));

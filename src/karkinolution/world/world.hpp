@@ -9,5 +9,4 @@ struct World {
     OrganismRegistry organism_registry;
 
     Territory territory;
-    SoilPieceRegistry soil_registry;
 };
