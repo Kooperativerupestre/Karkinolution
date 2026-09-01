@@ -111,7 +111,7 @@ struct Creature {
     Brain brain;
     Ontology ontology;
     Body body;
-    ReproductionOrgan reproduction;
+    ReproductiveState reproduction;
 
     Vec3 position;
     Creature(const Creature&) = delete;

@@ -5,19 +5,21 @@
 #include "karkinolution/organism/reproduction/state/state.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
 #include "karkinolution/organism/stats.hpp"
+#include <karkinolution/organism/entities/creature/validator.hpp>
 #include <karkinolution/organism/reproduction/state/physiology.hpp>
 #include <karkinolution/utils/k_random.hpp>
 #include <random>
-#include <karkinolution/organism/entities/creature/validator.hpp>
 
-int ReproductionOrganPhysiology::get_children_count(Creature &creature) {
-    std::poisson_distribution<int> distribution(creature.genome.creature_genome.reproductive.average_children_count);
+int ReproductionOrganPhysiology::get_children_count(Creature& creature) {
+    std::poisson_distribution<int> distribution(
+        creature.genome.creature_genome.reproductive.average_children_count);
 
     return distribution(gen);
     // Poisson distribution is used here because repeated samples converge to the specified mean.
 }
 
-float ReproductionOrganPhysiology::needed_energy_of_all_embryos(const ReproductionOrgan &organ, const OrganismRegistry &organisms) {
+float ReproductionOrganPhysiology::needed_energy_of_all_embryos(const ReproductiveState& organ,
+                                                                const OrganismRegistry& organisms) {
     ReproductionValidator::is_pregnant(organ);
 
     float total_energy = 0.0f;
@@ -30,7 +32,7 @@ float ReproductionOrganPhysiology::needed_energy_of_all_embryos(const Reproducti
     return total_energy;
 }
 
-Embryo ReproductionOrganPhysiology::generate_embryo(const Creature &female, const Creature &male) {
+Embryo ReproductionOrganPhysiology::generate_embryo(const Creature& female, const Creature& male) {
     CreatureValidator::is_same_specie(female, male);
 
     Genome new_genome = GenomeMotor::crossover(female.genome, male.genome);
@@ -39,12 +41,12 @@ Embryo ReproductionOrganPhysiology::generate_embryo(const Creature &female, cons
     auto average_volume = new_genome.calculate_embryo_average_volume();
     auto average_max_life = new_genome.calculate_embryo_average_life();
 
-    auto init_average_max_energy = average_max_energy/7.0f;
-    Volume init_average_volume = average_volume.value/5.0f;
-    auto init_average_max_life = average_max_life/5.0f;
+    auto init_average_max_energy = average_max_energy / 7.0f;
+    Volume init_average_volume = average_volume.value / 5.0f;
+    auto init_average_max_life = average_max_life / 5.0f;
 
-    Energy energy(init_average_max_energy/2.0f, init_average_max_energy);
-    Life life(init_average_max_life/2.0f, init_average_max_life);
+    Energy energy(init_average_max_energy / 2.0f, init_average_max_energy);
+    Life life(init_average_max_life / 2.0f, init_average_max_life);
 
     return Embryo{
         .id = gen_id(),

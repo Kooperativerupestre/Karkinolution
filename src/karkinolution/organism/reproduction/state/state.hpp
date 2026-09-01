@@ -7,20 +7,20 @@
 #include <utility>
 #include <variant>
 
-using ReproductiveState = std::variant<std::monostate, Uterus>;
-using OrganismStats::Health::Health;
+using ReproductiveOrgan = std::variant<std::monostate, Uterus>;
 using OrganismStats::Energy;
+using OrganismStats::Health::Health;
 
-class ReproductionOrgan {
-    public:
-
-    ReproductiveState state;
+class ReproductiveState {
+  public:
+    ReproductiveOrgan state;
     ReproductiveWays reproductive_way;
 
-    ReproductionOrgan(ReproductiveState&&state, ReproductiveWays way) : state(state), reproductive_way(way) {}
+    ReproductiveState(ReproductiveOrgan&& state, ReproductiveWays way)
+        : state(state), reproductive_way(way) {}
 
-
-    ReproductionOrgan(Gender gender, ReproductiveWays reproductive_way, Energy initial_energy, Health initial_health) {
+    ReproductiveState(Gender gender, ReproductiveWays reproductive_way, Energy initial_energy,
+                      Health initial_health) {
         if (gender == Gender::MALE) {
             state = std::monostate();
         } else if (gender == Gender::FEMALE) {
