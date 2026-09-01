@@ -23,40 +23,34 @@ Box3D BoxConversion::to_box(const Radius& radius, const Vec3& center) {
     return Box3D{center - extent, center + extent};
 }
 
-bool TerritoryMotor::add(SoilPiece&& piece, Territory& territory, SoilPieceRegistry& registry) {
+bool Territory::add(SoilPiece&& piece) {
     SoilPieceId id = piece.id;
     Box3D box = BoxConversion::to_box(piece);
 
-    bool added = registry.try_add(id, std::move(piece));
+    bool added = soils_.try_add(id, std::move(piece));
     if (!added) {
         return false;
     }
 
-    territory.insert(id, box);
+    data_.insert(id, box);
     return true;
 }
 
-std::vector<SoilPieceId> TerritoryMotor::find(const SoilPiece& piece, const Territory& territory) {
+std::vector<SoilPieceId> Territory::find(const SoilPiece& piece) const {
     auto box = BoxConversion::to_box(piece);
-    return territory.find(box);
+    return data_.find(box);
 }
 
-std::vector<SoilPieceId> TerritoryMotor::find(const Size& size, const Vec3& position,
-                                              const Territory& territory) {
-    auto box = BoxConversion::to_box(size, position);
-    return territory.find(box);
-}
-
-std::vector<SoilPieceId> TerritoryMotor::find(const Radius& radius, const Vec3& position,
-                                              const Territory& territory) {
+std::vector<SoilPieceId> Territory::find(const Radius& radius, const Vec3& position) const {
     auto box = BoxConversion::to_box(radius, position);
-    return territory.find(box);
+    return data_.find(box);
 }
-bool TerritoryMotor::remove(SoilPieceId id, Territory& territory, SoilPieceRegistry& registry) {
-    auto was_be_removed = territory.delete_soil_piece(id);
+
+bool Territory::remove(SoilPieceId id) {
+    auto was_be_removed = data_.remove(id);
     if (!was_be_removed) {
         return false;
     }
-    registry.del(id);
+    soils_.del(id);
     return true;
 }
