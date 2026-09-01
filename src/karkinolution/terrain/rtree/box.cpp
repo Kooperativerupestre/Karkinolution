@@ -78,3 +78,9 @@ Vec3& Box3D::operator[](Bound bound) noexcept {
 [[nodiscard]] double Box3DMotor::enlargement(const Box3D& current, const Box3D& canditate) {
     return combine(current, canditate).volume() - current.volume();
 }
+
+[[nodiscard]] bool Box3DMotor::contains(const Box3D& container, const Box3D& contained) {
+    return container.min.x <= contained.min.x && container.min.y <= contained.min.y &&
+           container.min.z <= contained.min.z && container.max.x >= contained.max.x &&
+           container.max.y >= contained.max.y && container.max.z >= contained.max.z;
+}

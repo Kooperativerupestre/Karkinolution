@@ -24,6 +24,12 @@ Box3D BoxConversion::to_box(const Radius& radius, const Vec3& center) {
 }
 
 bool Territory::add(SoilPiece&& piece) {
+    const auto piece_box = BoxConversion::to_box(piece);
+
+    if (!Box3DMotor::contains(piece_box, box())) {
+        return false;
+    }
+
     SoilPieceId id = piece.id;
     Box3D box = BoxConversion::to_box(piece);
 
