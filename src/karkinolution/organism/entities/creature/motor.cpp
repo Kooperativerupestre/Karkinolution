@@ -1,3 +1,4 @@
+#include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/motor.hpp>
 #include <karkinolution/organism/entities/creature/physiology.hpp>
@@ -34,9 +35,16 @@ void CreatureMotor::grow(Creature& creature, const OrganismRegistry& organisms) 
     body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 }
 
-void CreatureMotor::run(Creature& creature, const OrganismRegistry& organisms) {
+void CreatureMotor::run(Creature& creature, World& world) {
+    // aliases
+
+    auto& organisms = world.organism_reistr;
+
+    // code
     const auto age_effects = CreaturePhysiology::get_to_age_effects(creature);
     auto& body = creature.body;
     age_effects(creature);
     grow(creature, organisms);
+
+    const Perception perception = Perceiver::perceive(creature, world);
 }
