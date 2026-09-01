@@ -14,7 +14,7 @@ using EntityMap = Octree;
 
 namespace AABBConversion {
 AABB to_aabb(const Size& size, const Vec3& position);
-AABB to_abb(const GeometryForms::Radius& radius, const Vec3& position);
+AABB to_aabb(const GeometryForms::Radius& radius, const Vec3& position);
 } // namespace AABBConversion
 
 namespace EntityMapMotor {

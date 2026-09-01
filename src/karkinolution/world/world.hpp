@@ -6,7 +6,7 @@
 #include <karkinolution/terrain/terrain.hpp>
 struct World {
     EntityMap entity_map;
-    OrganismRegistry organism_reistr;
+    OrganismRegistry organism_registry;
 
     Territory territory;
     SoilPieceRegistry soil_registry;

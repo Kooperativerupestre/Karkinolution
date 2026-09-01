@@ -72,7 +72,7 @@ Perception Perceiver::perceive(const Creature& perceiver, const World& world) {
         } else if (id.type == EntityTypes::EMBRYO) {
             throw SimulationError("It was not implemented the perceive of embryo");
         }
-        const auto& entity = world.organism_reistr.entities.at(id);
+        const auto& entity = world.organism_registry.entities.at(id);
         if (id.type == EntityTypes::CREATURE) {
 
             p_entities.add(id, perceive(std::get<Creature>(entity), perceiver));
