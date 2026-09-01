@@ -1,9 +1,9 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/motor.hpp>
-#include <karkinolution/organism/registry.hpp>
 #include <karkinolution/organism/entities/creature/physiology.hpp>
+#include <karkinolution/organism/registry.hpp>
 
-void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) {
+void CreatureMotor::grow(Creature& creature, const OrganismRegistry& organisms) {
     auto& body = creature.body;
     auto muscle_grow = CreatureGrowingPhysiology::get_new_muscle_increment(creature, organisms);
 
@@ -23,19 +23,20 @@ void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) 
     body.morphology.size.back.value += depth_grow;
     body.morphology.size.lateral.value += lateral_grow;
 
-    auto max_energy_grow = CreatureGrowingPhysiology::get_new_max_energy_increment(creature, organisms);
+    auto max_energy_grow =
+        CreatureGrowingPhysiology::get_new_max_energy_increment(creature, organisms);
     body.metabolism.energy.max_ref() += max_energy_grow.gain;
     body.metabolism.reserved -= max_energy_grow.cost.reserved_energy;
 
-    auto max_reserved_grow = CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, organisms);
+    auto max_reserved_grow =
+        CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, organisms);
     body.metabolism.reserved.max_ref() += max_reserved_grow.gain;
     body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 }
 
-void CreatureMotor::run(Creature &creature, const OrganismRegistry &organisms) {
+void CreatureMotor::run(Creature& creature, const OrganismRegistry& organisms) {
     const auto age_effects = CreaturePhysiology::get_to_age_effects(creature);
     auto& body = creature.body;
     age_effects(creature);
     grow(creature, organisms);
-
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <karkinolution/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
+#include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/terrain/world.hpp>

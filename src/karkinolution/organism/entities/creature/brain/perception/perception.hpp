@@ -174,10 +174,6 @@ class Perception {
 
 namespace PerceptionAnalyzer {
 
-// Base
-
-// Perception
-
 PerceptionView filter(const Perception& perception,
                       std::optional<EntityFilter> entity_filter = std::nullopt,
                       std::optional<SoilFilter> soil_filter = std::nullopt);
