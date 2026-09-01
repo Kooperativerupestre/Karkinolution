@@ -2,9 +2,9 @@
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/terrain/terrain.hpp"
-#include <karkinolution/brain/perception/perceiver.hpp>
-#include <karkinolution/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
+#include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
+#include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/terrain/world.hpp>
