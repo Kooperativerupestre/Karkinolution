@@ -94,7 +94,7 @@ bool EntityMapMotor::remove(Id id, OrganismRegistry& registry, EntityMap& map) {
 
 std::vector<Id> EntityMapMotor::find(const GeometryForms::Radius& radius, const Vec3& position,
                                      const EntityMap& map) {
-    auto aabb = AABBConversion::to_abb(radius, position);
+    auto aabb = AABBConversion::to_aabb(radius, position);
     return map.root().find_ids(aabb);
 }
 

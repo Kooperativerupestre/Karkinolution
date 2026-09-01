@@ -41,7 +41,7 @@ void CreatureMotor::grow(Creature& creature, const OrganismRegistry& organisms) 
 void CreatureMotor::run(Creature& creature, World& world) {
     // aliases
 
-    auto& organisms = world.organism_reistr;
+    auto& organisms = world.organism_registry;
 
     // code
     if (CreaturePhysiology::is_dead(creature)) {
