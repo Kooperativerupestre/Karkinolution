@@ -16,6 +16,14 @@ class ReproductiveState {
     ReproductiveOrgan state;
     ReproductiveWays reproductive_way;
 
+    bool is_pregnant() const {
+        if (std::holds_alternative<std::monostate>(state)) {
+            return false;
+        } else {
+            return (std::get<Uterus>(state).is_pregnant());
+        }
+    }
+
     ReproductiveState(ReproductiveOrgan&& state, ReproductiveWays way)
         : state(state), reproductive_way(way) {}
 
