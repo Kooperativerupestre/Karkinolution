@@ -336,7 +336,7 @@ template <typename IdType> class RStarTree {
 
     std::vector<IdType> find(const Box3D& box) const;
 
-    bool delete_soil_piece(IdType id);
+    bool remove(IdType id);
     bool exists(IdType id) const;
 
     const RtreeNode<IdType>& root() const { return *root_.get(); }
@@ -370,7 +370,7 @@ template <typename IdType> class RStarTree {
 
     void refresh_mbrs(RtreeNode<IdType>& node);
 
-    RStarTreeMotor::FindSoilPieceOutput<IdType> find_soil_piece(IdType id);
+    RStarTreeMotor::FindSoilPieceOutput<IdType> find(IdType id);
 
     bool exists_impl(const RtreeNode<IdType>& node, IdType id) const;
 };
@@ -795,11 +795,11 @@ std::vector<IdType> RStarTree<IdType>::find(const Box3D& box,
 }
 
 template <typename IdType>
-RStarTreeMotor::FindSoilPieceOutput<IdType> RStarTree<IdType>::find_soil_piece(IdType id) {
+RStarTreeMotor::FindSoilPieceOutput<IdType> RStarTree<IdType>::find(IdType id) {
 
     std::vector<RtreeNode<IdType>*> path{root_.get()};
 
-    auto output = find_soil_piece(id, path);
+    auto output = find(id, path);
 
     return {.path = path, .index = output.index, .found = output.found};
 }
@@ -824,7 +824,7 @@ RStarTree<IdType>::find_soil_piece(IdType id, std::vector<RtreeNode<IdType>*>& p
 
             path.push_back(&node);
 
-            auto output = find_soil_piece(id, path);
+            auto output = find(id, path);
 
             if (output.found) {
                 return {.found = true, .index = output.index};
@@ -837,9 +837,9 @@ RStarTree<IdType>::find_soil_piece(IdType id, std::vector<RtreeNode<IdType>*>& p
     return {.found = false};
 }
 
-template <typename IdType> bool RStarTree<IdType>::delete_soil_piece(IdType id) {
+template <typename IdType> bool RStarTree<IdType>::remove(IdType id) {
 
-    auto find_output = find_soil_piece(id);
+    auto find_output = find(id);
 
     if (!find_output.found) {
         return false;
