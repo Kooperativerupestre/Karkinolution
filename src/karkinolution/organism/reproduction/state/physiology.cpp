@@ -10,7 +10,7 @@
 #include <karkinolution/utils/k_random.hpp>
 #include <random>
 
-int ReproductionOrganPhysiology::get_children_count(Creature& creature) {
+int ReproductionStatePhysiology::get_children_count(Creature& creature) {
     std::poisson_distribution<int> distribution(
         creature.genome.creature_genome.reproductive.average_children_count);
 
@@ -18,7 +18,7 @@ int ReproductionOrganPhysiology::get_children_count(Creature& creature) {
     // Poisson distribution is used here because repeated samples converge to the specified mean.
 }
 
-float ReproductionOrganPhysiology::needed_energy_of_all_embryos(const ReproductiveState& organ,
+float ReproductionStatePhysiology::needed_energy_of_all_embryos(const ReproductiveState& organ,
                                                                 const OrganismRegistry& organisms) {
     ReproductionValidator::is_pregnant(organ);
 
@@ -32,7 +32,7 @@ float ReproductionOrganPhysiology::needed_energy_of_all_embryos(const Reproducti
     return total_energy;
 }
 
-Embryo ReproductionOrganPhysiology::generate_embryo(const Creature& female, const Creature& male) {
+Embryo ReproductionStatePhysiology::generate_embryo(const Creature& female, const Creature& male) {
     CreatureValidator::is_same_specie(female, male);
 
     Genome new_genome = GenomeMotor::crossover(female.genome, male.genome);

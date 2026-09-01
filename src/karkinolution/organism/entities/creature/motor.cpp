@@ -1,3 +1,4 @@
+#include "karkinolution/organism/reproduction/state/motor.hpp"
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/motor.hpp>
@@ -51,6 +52,10 @@ void CreatureMotor::run(Creature& creature, World& world) {
     auto& body = creature.body;
     age_effects(creature);
     grow(creature, organisms);
+
+    if (creature.reproduction.is_pregnant()) {
+        ReproductionStateMotor::run(creature);
+    }
 
     const Perception perception = Perceiver::perceive(creature, world);
 }
