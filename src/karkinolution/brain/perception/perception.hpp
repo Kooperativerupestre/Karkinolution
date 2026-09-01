@@ -2,6 +2,7 @@
 
 #include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/organism/foods/foods.hpp"
+#include "karkinolution/terrain/rtree/box.hpp"
 #include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -9,10 +10,15 @@
 #include <karkinolution/organism/stats.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/terrain.hpp>
 #include <optional>
+
+using GeometryForms::Radius;
+
 struct PerceivedSoil {
     SoilPieceId id;
     Vec3 position;
+    Radius radius;
 
     std::optional<Energy> food;
     std::optional<SoilPieceComponents::Damage> damage;
@@ -29,12 +35,14 @@ struct PerceivedCreature {
     Life life;
     Gender gender;
     Vec3 position;
+    Size size;
 };
 
 struct PerceivedCorpse {
     Id id;
     RawMeat meat;
     Vec3 position;
+    Size size;
 };
 
 using PerceptionData = RStarTree<std::variant<SoilPieceId, Id>>;
@@ -50,10 +58,24 @@ class PerceptionSoilRegistry : public BaseStorage<SoilPieceId, PerceivedSoil> {
     using BaseStorage<SoilPieceId, PerceivedSoil>::BaseStorage;
 };
 
-using EntityFilter = bool (*)(const PerceivedEntity&);
-using SoilFilter = bool (*)(const PerceivedSoil&);
+using EntityFilter = std::move_only_function<bool(const PerceivedEntity&)>;
+using SoilFilter = std::move_only_function<bool(const PerceivedSoil&)>;
 
 class Perception;
+
+namespace PerceivedEntityGetters {
+inline constexpr const Vec3& get_position(const PerceivedEntity& entity) {
+    return std::visit([](const auto& ent) -> const Vec3& { return ent.position; }, entity);
+}
+
+inline constexpr const Id get_id(const PerceivedEntity& entity) {
+    return std::visit([](const auto& ent) -> Id { return ent.id; }, entity);
+}
+
+inline constexpr const Size& get_size(const PerceivedEntity& entity) {
+    return std::visit([](const auto& ent) -> const Size& { return ent.size; }, entity);
+}
+} // namespace PerceivedEntityGetters
 
 class PerceptionView {
   private:
@@ -78,8 +100,8 @@ class PerceptionView {
         soils_ = soils;
         entities_ = entities;
 
-        entity_filter_ = entity_filter;
-        soil_filter_ = soil_filter;
+        entity_filter_ = std::move(entity_filter);
+        soil_filter_ = std::move(soil_filter);
 
         perception_ = &perception;
     }
@@ -146,6 +168,8 @@ class Perception {
     [[nodiscard]] bool exists(Id id) const { return entities_.exists(id); }
 
     [[nodiscard]] bool exists(SoilPieceId id) const { return soils_.exists(id); }
+
+    [[nodiscard]] Box3D radius_box() const { return BoxConversion::to_box(radius_, position_); }
 };
 
 namespace PerceptionAnalyzer {
@@ -196,12 +220,4 @@ PerceptionView reduce(const Perception& perception, const Radius& radius,
 PerceptionView reduce(const PerceptionView& view, const Radius& radius,
                       std::optional<EntityFilter> entity_filter = std::nullopt,
                       std::optional<SoilFilter> soil_filter = std::nullopt);
-
-PerceptionView reperceive(const Perception& perception, const Radius& radius, const Vec3& position,
-                          std::optional<EntityFilter> entity_filter = std::nullopt,
-                          std::optional<SoilFilter> soil_filter = std::nullopt);
-
-PerceptionView reperceive(const PerceptionView& view, const Radius& radius, const Vec3& position,
-                          std::optional<EntityFilter> entity_filter = std::nullopt,
-                          std::optional<SoilFilter> soil_filter = std::nullopt);
 } // namespace PerceptionAnalyzer

@@ -14,18 +14,21 @@ PerceivedCreature Perceiver::perceive(const Creature& target, const Creature& pe
                                    .energy = target.body.metabolism.energy,
                                    .life = target.body.vital.life,
                                    .gender = target.ontology.gender,
-                                   .position = target.position};
+                                   .position = target.position,
+                                   .size = target.body.morphology.size};
     return perceived;
 }
 
 PerceivedCorpse Perceiver::perceive(const Corpse& target, const Creature& perceiver) {
-    PerceivedCorpse perceived = {
-        .id = target.build_id(), .meat = target.raw_meat, .position = target.position};
+    PerceivedCorpse perceived = {.id = target.build_id(),
+                                 .meat = target.raw_meat,
+                                 .position = target.position,
+                                 .size = target.size};
     return perceived;
 }
 
 PerceivedSoil Perceiver::perceive(const SoilPiece& target, const Creature& perceiver) {
-    PerceivedSoil perceived = {};
+    PerceivedSoil perceived = {.radius = target.radius};
 
     if (target.components.exists<SoilPieceComponents::FoodState>()) {
         perceived.food = target.components.try_get<SoilPieceComponents::FoodState>()->food;
