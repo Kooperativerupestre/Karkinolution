@@ -7,7 +7,7 @@
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/terrain/soil.hpp>
-#include <karkinolution/terrain/world.hpp>
+#include <karkinolution/world/world.hpp>
 
 PerceivedCreature Perceiver::perceive(const Creature& target, const Creature& perceiver) {
     PerceivedCreature perceived = {.id = target.build_id(),

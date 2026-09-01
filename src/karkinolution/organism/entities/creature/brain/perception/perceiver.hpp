@@ -4,7 +4,7 @@
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/terrain/soil.hpp>
-#include <karkinolution/terrain/world.hpp>
+#include <karkinolution/world/world.hpp>
 
 namespace Perceiver {
 PerceivedCreature perceive(const Creature& target, const Creature& perceiver);
