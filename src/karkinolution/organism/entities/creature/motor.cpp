@@ -56,6 +56,9 @@ void CreatureMotor::run(Creature& creature, World& world) {
     if (creature.reproduction.is_pregnant()) {
         ReproductionStateMotor::run(creature);
     }
+    world.entity_map.root().update(
+        creature.build_id(),
+        AABBConversion::to_aabb(creature.body.morphology.size, creature.position));
 
     const Perception perception = Perceiver::perceive(creature, world);
 }
