@@ -34,15 +34,15 @@ class EntitiesRegistry : public BaseStorage<Id, Entity> {
 };
 
 namespace EntityGetters {
-Id get_id(const Entity &entity);
-Id get_id(const Corpse &corpse);
-Id get_id(const Creature &creature);
-Id get_id(const Embryo &embryo);
-Id get_id(const Egg &egg);
+	Id get_id(const Entity &entity);
+	Id get_id(const Corpse &corpse);
+	Id get_id(const Creature &creature);
+	Id get_id(const Embryo &embryo);
+	Id get_id(const Egg &egg);
 
-Vec3       &get_position(Entity &entity);
-const Vec3 &get_position(const Entity &entity);
+	Vec3       &get_position(Entity &entity);
+	const Vec3 &get_position(const Entity &entity);
 
-Size get_size(const Entity &entity);
+	Size get_size(const Entity &entity);
 
 } // namespace EntityGetters

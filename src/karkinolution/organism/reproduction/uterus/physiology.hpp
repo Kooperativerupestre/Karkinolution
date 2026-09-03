@@ -9,8 +9,8 @@
 
 namespace UterusPhysiology {
 
-NormalizedValue<float> embryotrophy_energy(const Uterus &uterus, const Embryo &embryo);
-EmbryonicEnergy
-embryotrophy(const Uterus &uterus, const Embryo &embryo, const NormalizedValue<float> &ratio);
+	NormalizedValue<float> embryotrophy_energy(const Uterus &uterus, const Embryo &embryo);
+	EmbryonicEnergy
+	embryotrophy(const Uterus &uterus, const Embryo &embryo, const NormalizedValue<float> &ratio);
 
 } // namespace UterusPhysiology

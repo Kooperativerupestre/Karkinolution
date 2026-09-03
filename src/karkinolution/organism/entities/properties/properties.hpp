@@ -6,12 +6,12 @@
 #include <variant>
 
 namespace Properties {
-namespace Capabilities {
-enum class Move : uint8_t {
-	WALK,
-	SWIMM
-};
-} // namespace Capabilities
+	namespace Capabilities {
+		enum class Move : uint8_t {
+			WALK,
+			SWIMM
+		};
+	} // namespace Capabilities
 } // namespace Properties
 
 using GenericProperty = std::variant<Properties::Capabilities::Move>;

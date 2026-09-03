@@ -26,19 +26,19 @@ template <> struct std::hash<Id> {
 };
 
 namespace IDF {
-inline constexpr Id create_creature_id(uint64_t id) {
-	return Id{id, EntityTypes::CREATURE};
-}
+	inline constexpr Id create_creature_id(uint64_t id) {
+		return Id{id, EntityTypes::CREATURE};
+	}
 
-inline constexpr Id create_corpse_id(uint64_t id) {
-	return Id{id, EntityTypes::CORPSE};
-}
+	inline constexpr Id create_corpse_id(uint64_t id) {
+		return Id{id, EntityTypes::CORPSE};
+	}
 
-inline constexpr Id create_embryo_id(uint64_t id) {
-	return Id{id, EntityTypes::EMBRYO};
-}
+	inline constexpr Id create_embryo_id(uint64_t id) {
+		return Id{id, EntityTypes::EMBRYO};
+	}
 
-inline constexpr Id create_egg_id(uint64_t id) {
-	return Id{id, EntityTypes::EGG};
-}
+	inline constexpr Id create_egg_id(uint64_t id) {
+		return Id{id, EntityTypes::EGG};
+	}
 } // namespace IDF

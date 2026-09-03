@@ -12,7 +12,7 @@ enum class ConceiveOutput : uint8_t {
 };
 
 namespace ReproductionStateMotor {
-void                                 run(Creature &creature);
-void                                 prepair_to_conceive(Creature &creature);
-std::variant<Embryo, ConceiveOutput> conceive(Creature &, Creature &);
+	void                                 run(Creature &creature);
+	void                                 prepair_to_conceive(Creature &creature);
+	std::variant<Embryo, ConceiveOutput> conceive(Creature &, Creature &);
 } // namespace ReproductionStateMotor

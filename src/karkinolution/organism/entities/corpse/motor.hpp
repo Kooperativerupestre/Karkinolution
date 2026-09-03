@@ -4,5 +4,5 @@
 #include <karkinolution/organism/registry.hpp>
 
 namespace CorpseMotor {
-void run(Corpse &corpse);
+	void run(Corpse &corpse);
 } // namespace CorpseMotor

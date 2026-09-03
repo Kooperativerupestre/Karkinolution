@@ -23,51 +23,51 @@ find() == vector of entries that intersect
 */
 
 namespace {
-AABB generate_random_aabb() {
-	return AABB{.max = RandomGenerators::generate<Vec3>(),
-				.min = RandomGenerators::generate<Vec3>()};
-}
-
-void fill_entries(std::vector<OctreeEntry> &entries, Octree &octree) {
-	for (size_t i = 0; i < 100; i++) {
-		const AABB aabb{.max = RandomGenerators::generate<Vec3>(),
-						.min = RandomGenerators::generate<Vec3>()};
-		const auto id_value = gen_id();
-		const Id   id       = IDF::create_creature_id(id_value);
-		entries.push_back(OctreeEntry{.entity_id = id, .bound = aabb});
-
-		octree.root().insert(entries.back());
+	AABB generate_random_aabb() {
+		return AABB{.max = RandomGenerators::generate<Vec3>(),
+					.min = RandomGenerators::generate<Vec3>()};
 	}
-}
 
-void fill_entries(Octree &octree) {
-	for (size_t i = 0; i < 100; i++) {
-		const auto aabb     = generate_random_aabb();
-		const auto id_value = gen_id();
-		const Id   id       = IDF::create_creature_id(id_value);
+	void fill_entries(std::vector<OctreeEntry> &entries, Octree &octree) {
+		for (size_t i = 0; i < 100; i++) {
+			const AABB aabb{.max = RandomGenerators::generate<Vec3>(),
+							.min = RandomGenerators::generate<Vec3>()};
+			const auto id_value = gen_id();
+			const Id   id       = IDF::create_creature_id(id_value);
+			entries.push_back(OctreeEntry{.entity_id = id, .bound = aabb});
 
-		octree.root().insert(OctreeEntry{.entity_id = id, .bound = aabb});
-	}
-}
-
-void fill_ids(std::vector<Id> &ids) {
-	for (size_t i = 0; i < 100; i++) {
-		const auto id_value = gen_id();
-		const Id   id       = IDF::create_creature_id(id_value);
-		ids.push_back(id);
-	}
-}
-
-void verify_children(OctreeNode &root) {
-	ASSERT_TRUE(root.children_view().size() <= MAX_OCTREE_CHILDREN);
-
-	for (const auto &child : root.children_view()) {
-		if (child == nullptr) {
-			continue;
+			octree.root().insert(entries.back());
 		}
-		verify_children(*child);
 	}
-}
+
+	void fill_entries(Octree &octree) {
+		for (size_t i = 0; i < 100; i++) {
+			const auto aabb     = generate_random_aabb();
+			const auto id_value = gen_id();
+			const Id   id       = IDF::create_creature_id(id_value);
+
+			octree.root().insert(OctreeEntry{.entity_id = id, .bound = aabb});
+		}
+	}
+
+	void fill_ids(std::vector<Id> &ids) {
+		for (size_t i = 0; i < 100; i++) {
+			const auto id_value = gen_id();
+			const Id   id       = IDF::create_creature_id(id_value);
+			ids.push_back(id);
+		}
+	}
+
+	void verify_children(OctreeNode &root) {
+		ASSERT_TRUE(root.children_view().size() <= MAX_OCTREE_CHILDREN);
+
+		for (const auto &child : root.children_view()) {
+			if (child == nullptr) {
+				continue;
+			}
+			verify_children(*child);
+		}
+	}
 
 } // namespace
 

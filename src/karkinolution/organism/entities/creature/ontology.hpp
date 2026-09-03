@@ -19,8 +19,8 @@ enum class Gender : uint8_t {
 };
 
 namespace GenderF {
-Gender choice();
-Gender other_sex(Gender g);
+	Gender choice();
+	Gender other_sex(Gender g);
 } // namespace GenderF
 
 class Diet {

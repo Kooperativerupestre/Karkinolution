@@ -6,95 +6,95 @@
 #include <cstdint>
 
 namespace {
-std::string utf32_to_utf8(const std::u32string &u32) {
-	std::string utf8;
-	utf8.reserve(u32.size() * 4);
+	std::string utf32_to_utf8(const std::u32string &u32) {
+		std::string utf8;
+		utf8.reserve(u32.size() * 4);
 
-	for (char32_t cp : u32) {
-		if (cp <= 0x7F) {
-			utf8.push_back(static_cast<char>(cp));
-		} else if (cp <= 0x7FF) {
-			utf8.push_back(static_cast<char>(0xC0 | ((cp >> 6) & 0x1F)));
-			utf8.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-		} else if (cp <= 0xFFFF) {
-			utf8.push_back(static_cast<char>(0xE0 | ((cp >> 12) & 0x0F)));
-			utf8.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
-			utf8.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
-		} else if (cp <= 0x10FFFF) {
-			utf8.push_back(static_cast<char>(0xF0 | ((cp >> 18) & 0x07)));
-			utf8.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
-			utf8.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
-			utf8.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+		for (char32_t cp : u32) {
+			if (cp <= 0x7F) {
+				utf8.push_back(static_cast<char>(cp));
+			} else if (cp <= 0x7FF) {
+				utf8.push_back(static_cast<char>(0xC0 | ((cp >> 6) & 0x1F)));
+				utf8.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+			} else if (cp <= 0xFFFF) {
+				utf8.push_back(static_cast<char>(0xE0 | ((cp >> 12) & 0x0F)));
+				utf8.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+				utf8.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+			} else if (cp <= 0x10FFFF) {
+				utf8.push_back(static_cast<char>(0xF0 | ((cp >> 18) & 0x07)));
+				utf8.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
+				utf8.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+				utf8.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+			}
 		}
+		return utf8;
 	}
-	return utf8;
-}
 
-std::u32string utf8_to_utf32(std::string_view utf8) {
-	std::u32string u32;
-	u32.reserve(utf8.size());
+	std::u32string utf8_to_utf32(std::string_view utf8) {
+		std::u32string u32;
+		u32.reserve(utf8.size());
 
-	size_t i = 0;
-	while (i < utf8.size()) {
-		uint8_t  byte          = static_cast<uint8_t>(utf8[i]);
-		char32_t cp            = 0;
-		size_t   bytes_to_read = 0;
+		size_t i = 0;
+		while (i < utf8.size()) {
+			uint8_t  byte          = static_cast<uint8_t>(utf8[i]);
+			char32_t cp            = 0;
+			size_t   bytes_to_read = 0;
 
-		if (byte <= 0x7F) {
-			cp            = byte;
-			bytes_to_read = 0;
-		} else if ((byte & 0xE0) == 0xC0) {
-			cp            = byte & 0x1F;
-			bytes_to_read = 1;
-		} else if ((byte & 0xF0) == 0xE0) {
-			cp            = byte & 0x0F;
-			bytes_to_read = 2;
-		} else if ((byte & 0xF8) == 0xF0) {
-			cp            = byte & 0x07;
-			bytes_to_read = 3;
-		} else {
+			if (byte <= 0x7F) {
+				cp            = byte;
+				bytes_to_read = 0;
+			} else if ((byte & 0xE0) == 0xC0) {
+				cp            = byte & 0x1F;
+				bytes_to_read = 1;
+			} else if ((byte & 0xF0) == 0xE0) {
+				cp            = byte & 0x0F;
+				bytes_to_read = 2;
+			} else if ((byte & 0xF8) == 0xF0) {
+				cp            = byte & 0x07;
+				bytes_to_read = 3;
+			} else {
+				i++;
+				continue;
+			}
+
+			if (i + bytes_to_read >= utf8.size()) {
+				break;
+			}
+
+			for (size_t j = 0; j < bytes_to_read; ++j) {
+				i++;
+				uint8_t next_byte = static_cast<uint8_t>(utf8[i]);
+				cp                = (cp << 6) | (next_byte & 0x3F);
+			}
+			u32.push_back(cp);
 			i++;
-			continue;
 		}
-
-		if (i + bytes_to_read >= utf8.size()) {
-			break;
-		}
-
-		for (size_t j = 0; j < bytes_to_read; ++j) {
-			i++;
-			uint8_t next_byte = static_cast<uint8_t>(utf8[i]);
-			cp                = (cp << 6) | (next_byte & 0x3F);
-		}
-		u32.push_back(cp);
-		i++;
-	}
-	return u32;
-}
-
-char32_t custom_towupper(char32_t cp) {
-	if (cp >= U'a' && cp <= U'z') {
-		return cp - (U'a' - U'A');
+		return u32;
 	}
 
-	static const std::unordered_map<char32_t, char32_t> lowercase_to_uppercase = {{U'á', U'Á'},
-																				  {U'é', U'É'},
-																				  {U'í', U'Í'},
-																				  {U'ó', U'Ó'},
-																				  {U'ú', U'Ú'},
-																				  {U'ý', U'Ý'},
-																				  {U'ā', U'Ā'},
-																				  {U'ē', U'Ē'},
-																				  {U'ī', U'Ī'},
-																				  {U'ō', U'Ō'},
-																				  {U'ū', U'Ū'},
-																				  {U'ȳ', U'Ȳ'}};
+	char32_t custom_towupper(char32_t cp) {
+		if (cp >= U'a' && cp <= U'z') {
+			return cp - (U'a' - U'A');
+		}
 
-	if (auto it = lowercase_to_uppercase.find(cp); it != lowercase_to_uppercase.end()) {
-		return it->second;
+		static const std::unordered_map<char32_t, char32_t> lowercase_to_uppercase = {{U'á', U'Á'},
+																					  {U'é', U'É'},
+																					  {U'í', U'Í'},
+																					  {U'ó', U'Ó'},
+																					  {U'ú', U'Ú'},
+																					  {U'ý', U'Ý'},
+																					  {U'ā', U'Ā'},
+																					  {U'ē', U'Ē'},
+																					  {U'ī', U'Ī'},
+																					  {U'ō', U'Ō'},
+																					  {U'ū', U'Ū'},
+																					  {U'ȳ', U'Ȳ'}};
+
+		if (auto it = lowercase_to_uppercase.find(cp); it != lowercase_to_uppercase.end()) {
+			return it->second;
+		}
+		return cp;
 	}
-	return cp;
-}
 } // namespace
 
 LetterPool::LetterPool(std::string_view letters)
@@ -119,18 +119,18 @@ std::string LetterPool::pick() const {
 }
 
 namespace Pools {
-inline const LetterPool vowels{"aeiouy"};
-inline const LetterPool long_vowels{"āēīōūȳ"};
-inline const LetterPool high_vowels{"áéíóúý"};
-inline const LetterPool general_vowels{"aeiouyāēīōūȳáéíóúý"};
+	inline const LetterPool vowels{"aeiouy"};
+	inline const LetterPool long_vowels{"āēīōūȳ"};
+	inline const LetterPool high_vowels{"áéíóúý"};
+	inline const LetterPool general_vowels{"aeiouyāēīōūȳáéíóúý"};
 
-inline const LetterPool plosives{"pbtdkg"};
-inline const LetterPool fricatives{"fvszh"};
-inline const LetterPool liquids{"rl"};
-inline const LetterPool nasals{"mn"};
-inline const LetterPool approximants{"jw"};
+	inline const LetterPool plosives{"pbtdkg"};
+	inline const LetterPool fricatives{"fvszh"};
+	inline const LetterPool liquids{"rl"};
+	inline const LetterPool nasals{"mn"};
+	inline const LetterPool approximants{"jw"};
 
-inline const LetterPool consonants{"pbtdkgfvszhrlmnjw"};
+	inline const LetterPool consonants{"pbtdkgfvszhrlmnjw"};
 } // namespace Pools
 
 const std::unordered_map<std::string_view, Pool::CommandFunc> Pool::commands = {

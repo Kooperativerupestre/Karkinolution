@@ -32,47 +32,47 @@ template <typename T> class IntegerValue {
 };
 
 namespace PhysicsStats {
-class Volume : public DoubleValue {
-	public:
+	class Volume : public DoubleValue {
+		public:
 
-		using DoubleValue::DoubleValue;
-};
+			using DoubleValue::DoubleValue;
+	};
 
-class SharedVolume : public NormalizedValue<double> {
-	public:
+	class SharedVolume : public NormalizedValue<double> {
+		public:
 
-		using NormalizedValue::NormalizedValue;
-};
+			using NormalizedValue::NormalizedValue;
+	};
 
-class Efficiency : public NormalizedValue<float> {
-	public:
+	class Efficiency : public NormalizedValue<float> {
+		public:
 
-		using NormalizedValue::NormalizedValue;
-};
+			using NormalizedValue::NormalizedValue;
+	};
 
-class Quality : public NormalizedValue<float> {
-	public:
+	class Quality : public NormalizedValue<float> {
+		public:
 
-		using NormalizedValue::NormalizedValue;
-};
+			using NormalizedValue::NormalizedValue;
+	};
 
-class Mass : public DoubleValue {
-	public:
+	class Mass : public DoubleValue {
+		public:
 
-		using DoubleValue::DoubleValue;
-};
+			using DoubleValue::DoubleValue;
+	};
 
-class Density : public DoubleValue {
-	public:
+	class Density : public DoubleValue {
+		public:
 
-		using DoubleValue::DoubleValue;
-};
+			using DoubleValue::DoubleValue;
+	};
 
-class Meter : public DoubleValue {
-	public:
+	class Meter : public DoubleValue {
+		public:
 
-		using DoubleValue::DoubleValue;
-};
+			using DoubleValue::DoubleValue;
+	};
 } // namespace PhysicsStats
 
 using PhysicsStats::Efficiency;

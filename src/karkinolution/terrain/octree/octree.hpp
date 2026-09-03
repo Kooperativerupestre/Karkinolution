@@ -4,7 +4,7 @@
 #include <karkinolution/terrain/octree/aabb.hpp>
 
 namespace {
-AABB world = {.max = {-1000, -1000, -1000}, .min = {1000, 1000, 1000}};
+	AABB world = {.max = {-1000, -1000, -1000}, .min = {1000, 1000, 1000}};
 } // namespace
 
 class Octree {

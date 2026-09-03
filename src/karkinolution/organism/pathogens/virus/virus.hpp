@@ -77,15 +77,15 @@ static_assert(VirusType<Vorax>);
 static_assert(VirusType<MorbusExiguus>);
 
 namespace VirusUtils {
-VirusId get_id(const AllVirusType &virus);
+	VirusId get_id(const AllVirusType &virus);
 
-template <typename T> decltype(auto) get_viral_load(T &&virus) {
-	return std::visit(
-		[](auto &&v) -> decltype(auto) {
-			return std::forward<decltype(v)>(v).viral_load;
-		},
-		std::forward<T>(virus));
-}
+	template <typename T> decltype(auto) get_viral_load(T &&virus) {
+		return std::visit(
+			[](auto &&v) -> decltype(auto) {
+				return std::forward<decltype(v)>(v).viral_load;
+			},
+			std::forward<T>(virus));
+	}
 } // namespace VirusUtils
 
 class GenericVirus {
@@ -106,11 +106,11 @@ struct MetamorphosisEnvironment {
 };
 
 namespace VirusIDF {
-inline VirusId create_virus_id(uint64_t id, VirusSpecies specie) {
-	return VirusId{.specie = specie, .type = PathogenTypes::VIRUS, .id = id};
-}
+	inline VirusId create_virus_id(uint64_t id, VirusSpecies specie) {
+		return VirusId{.specie = specie, .type = PathogenTypes::VIRUS, .id = id};
+	}
 
-inline VirusId create_virus_id(VirusSpecies specie) {
-	return VirusId{.specie = specie, .type = PathogenTypes::VIRUS, .id = gen_id()};
-}
+	inline VirusId create_virus_id(VirusSpecies specie) {
+		return VirusId{.specie = specie, .type = PathogenTypes::VIRUS, .id = gen_id()};
+	}
 } // namespace VirusIDF

@@ -4,6 +4,6 @@
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 
 namespace CorpsePhysiology {
-Corpse generate_corpse(const Creature &creature);
-Corpse generate_corpse(const Embryo &embryo);
+	Corpse generate_corpse(const Creature &creature);
+	Corpse generate_corpse(const Embryo &embryo);
 } // namespace CorpsePhysiology
