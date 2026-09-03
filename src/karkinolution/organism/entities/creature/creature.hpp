@@ -1,8 +1,8 @@
 #pragma once
 
 #include "karkinolution/math/physic/vec/model.hpp"
-#include <cstdint>
 
+#include <cstdint>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -29,119 +29,123 @@ using PhysicsStats::SharedVolume;
 using PhysicsStats::Volume;
 
 struct Metabolism {
-    Energy energy;
-    Energy reserved;
-    Diet diet;
+		Energy energy;
+		Energy reserved;
+		Diet   diet;
 
-    [[nodiscard]]
-    NormalizedValue<float> hungry() const;
+		[[nodiscard]]
+		NormalizedValue<float> hungry() const;
 
-    Metabolism(Energy energy, Energy reserved, Diet&& diet)
-        : energy(energy), reserved(reserved), diet(diet) {}
+		Metabolism(Energy energy, Energy reserved, Diet &&diet)
+			: energy(energy)
+			, reserved(reserved)
+			, diet(diet) {}
 };
 
 struct Vital {
-    Life life;
-    Immunity immunity;
-    Health health;
+		Life     life;
+		Immunity immunity;
+		Health   health;
 };
 
 struct MuscleStructure {
-    Muscle muscle;
-    MuscleEfficiency efficiency;
-    MuscleQuality quality;
-    SharedVolume shared_volume;
+		Muscle           muscle;
+		MuscleEfficiency efficiency;
+		MuscleQuality    quality;
+		SharedVolume     shared_volume;
 };
 
 struct BodyReproductive {
-    FertilityCooldown fertility;
+		FertilityCooldown fertility;
 };
 
 struct Morphology {
-    Size size;
-    Mass mass;
+		Size size;
+		Mass mass;
 
-    [[nodiscard]]
-    Mass density() const noexcept;
+		[[nodiscard]]
+		Mass density() const noexcept;
 
-    [[nodiscard]]
-    Volume volume() const noexcept;
+		[[nodiscard]]
+		Volume volume() const noexcept;
 };
 
 struct SkeletonStructure {
-    SharedVolume shared_volume;
-    Bone bone;
-    SkeletonQuality quality;
+		SharedVolume    shared_volume;
+		Bone            bone;
+		SkeletonQuality quality;
 };
 
 struct Body {
-    Metabolism metabolism;
-    Vital vital;
-    BodyReproductive reproductive;
-    Morphology morphology;
-    SkeletonStructure skeleton;
-    MuscleStructure muscle;
+		Metabolism        metabolism;
+		Vital             vital;
+		BodyReproductive  reproductive;
+		Morphology        morphology;
+		SkeletonStructure skeleton;
+		MuscleStructure   muscle;
 
-    Age age;
+		Age age;
 
-    [[nodiscard]]
-    Strength strength() const noexcept;
+		[[nodiscard]]
+		Strength strength() const noexcept;
 
-    [[nodiscard]]
-    NormalizedValue<float> hungry() const noexcept;
+		[[nodiscard]]
+		NormalizedValue<float> hungry() const noexcept;
 
-    [[nodiscard]]
-    float needed_energy() const noexcept;
+		[[nodiscard]]
+		float needed_energy() const noexcept;
 };
 
 struct Ontology {
-    Gender gender;
-    std::string name;
-    uint64_t id;
+		Gender      gender;
+		std::string name;
+		uint64_t    id;
 };
 
 struct Brain {
-    std::optional<AttackedEvent> last_attack = std::nullopt;
-    NormalizedValue<float> sociability;
+		std::optional<AttackedEvent> last_attack = std::nullopt;
+		NormalizedValue<float>       sociability;
 };
 
 struct Creature {
-    Genome genome;
+		Genome genome;
 
-    Brain brain;
-    Ontology ontology;
-    Body body;
-    ReproductiveState reproduction;
+		Brain             brain;
+		Ontology          ontology;
+		Body              body;
+		ReproductiveState reproduction;
 
-    Vec3 position;
-    Creature(const Creature&) = delete;
-    Creature& operator=(const Creature&) = delete;
+		Vec3 position;
+		Creature(const Creature &)            = delete;
+		Creature &operator=(const Creature &) = delete;
 
-    Creature(Creature&&) = default;
-    Creature& operator=(Creature&&) = default;
+		Creature(Creature &&)            = default;
+		Creature &operator=(Creature &&) = default;
 
-    [[nodiscard]] Id build_id() const noexcept { return IDF::create_creature_id(ontology.id); }
+		[[nodiscard]] Id build_id() const noexcept {
+			return IDF::create_creature_id(ontology.id);
+		}
 
-    [[nodiscard]]
-    float specie_relative_muscle() const noexcept;
+		[[nodiscard]]
+		float specie_relative_muscle() const noexcept;
 
-    [[nodiscard]]
-    float specie_relative_bone() const noexcept;
+		[[nodiscard]]
+		float specie_relative_bone() const noexcept;
 
-    [[nodiscard]]
-    float specie_relative_max_energy() const noexcept;
+		[[nodiscard]]
+		float specie_relative_max_energy() const noexcept;
 
-    [[nodiscard]]
-    float specie_relative_max_reserved_energy() const noexcept;
+		[[nodiscard]]
+		float specie_relative_max_reserved_energy() const noexcept;
 
-    [[nodiscard]]
-    float specie_relative_mass() const noexcept;
+		[[nodiscard]]
+		float specie_relative_mass() const noexcept;
 
-    [[nodiscard]]
-    float specie_relative_volume() const noexcept;
+		[[nodiscard]]
+		float specie_relative_volume() const noexcept;
 
-    [[nodiscard]]
-    float specie_relative_age() const noexcept;
+		[[nodiscard]]
+		float specie_relative_age() const noexcept;
 };
 
-using CreatureFunction = void (*)(Creature&);
+using CreatureFunction = void (*)(Creature &);

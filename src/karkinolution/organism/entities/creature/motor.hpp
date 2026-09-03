@@ -5,6 +5,6 @@
 #include <karkinolution/world/world.hpp>
 
 namespace CreatureMotor {
-void run(Creature& creature, World&);
-void grow(Creature& creature, const OrganismRegistry&);
+void run(Creature &creature, World &);
+void grow(Creature &creature, const OrganismRegistry &);
 } // namespace CreatureMotor
