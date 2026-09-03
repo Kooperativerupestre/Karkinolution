@@ -4,6 +4,6 @@
 
 using OrganismStats::Body::Damage;
 
-Damage AttackPhysiology::calculate_damage(const Creature& creature) {
-    return creature.body.strength().value;
+Damage AttackPhysiology::calculate_damage(const Creature &creature) {
+	return creature.body.strength().value;
 }

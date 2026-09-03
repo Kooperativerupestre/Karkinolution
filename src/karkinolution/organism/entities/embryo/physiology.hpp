@@ -1,8 +1,8 @@
 #pragma once
 
 #include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/organism/stats.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
+#include <karkinolution/organism/stats.hpp>
 
 // Energy 100% (embryotrophic)
 
@@ -27,27 +27,27 @@ inline constexpr float EMBRYO_BASAL_METABOLISM = 10.0f;
 
 using OrganismStats::Energy;
 
-
 struct ResourceTrade {
-    const NormalizedValue<float> cost;
-    const float gain;
+		const NormalizedValue<float> cost;
+		const float                  gain;
 };
 
 namespace EmbryoGrowingPhysiology {
-    constexpr NormalizedValue<float> get_increment(const NormalizedValue<float>& ratio, const NormalizedValue<float>& factor);
-    
-    ResourceTrade get_new_max_energy_increment(const Embryo&embryo, const Energy&energy);
-    ResourceTrade get_new_max_life_increment(const Embryo&embryo, const Energy&energy);
+constexpr NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio,
+											   const NormalizedValue<float> &factor);
 
-    ResourceTrade get_new_life_increment(const Embryo&embryo, const Energy&energy);
-    ResourceTrade get_new_energy_increment(const Embryo&embryo, const Energy&energy);
-    ResourceTrade get_new_health_increment(const Embryo&embryo, const Energy&energy);
-    ResourceTrade get_new_volume_increment(const Embryo&embryo, const Energy&energy);
-}
+ResourceTrade get_new_max_energy_increment(const Embryo &embryo, const Energy &energy);
+ResourceTrade get_new_max_life_increment(const Embryo &embryo, const Energy &energy);
+
+ResourceTrade get_new_life_increment(const Embryo &embryo, const Energy &energy);
+ResourceTrade get_new_energy_increment(const Embryo &embryo, const Energy &energy);
+ResourceTrade get_new_health_increment(const Embryo &embryo, const Energy &energy);
+ResourceTrade get_new_volume_increment(const Embryo &embryo, const Energy &energy);
+} // namespace EmbryoGrowingPhysiology
 
 namespace EmbryoPhysiology {
-    bool is_dead(const Embryo&embryo);
-    float basal_metabolism(const Embryo&embryo);
+bool  is_dead(const Embryo &embryo);
+float basal_metabolism(const Embryo &embryo);
 
-    float transfor_into_nutrients(const Embryo&embryo);
-}
+float transfor_into_nutrients(const Embryo &embryo);
+} // namespace EmbryoPhysiology

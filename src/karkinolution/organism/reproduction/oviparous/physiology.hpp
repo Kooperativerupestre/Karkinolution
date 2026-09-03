@@ -1,9 +1,9 @@
 #pragma once
 #include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/organism/reproduction/oviparous/egg.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
-
+#include <karkinolution/organism/reproduction/oviparous/egg.hpp>
 
 namespace EggPhysiology {
-    EmbryonicEnergy embryotrophy(const Egg&egg, const Embryo&embryo, const NormalizedValue<float>&ratio);
-}
+EmbryonicEnergy
+embryotrophy(const Egg &egg, const Embryo &embryo, const NormalizedValue<float> &ratio);
+} // namespace EggPhysiology

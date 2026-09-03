@@ -11,112 +11,139 @@
  */
 
 template <typename K, typename V> class BaseStorage {
-  private:
-    std::unordered_map<K, V> data{};
+	private:
 
-  public:
-    const std::unordered_map<K, V>& internal_data() const { return data; }
-    auto keys() { return data | std::views::keys; }
+		std::unordered_map<K, V> data{};
 
-    auto keys() const { return data | std::views::keys; }
+	public:
 
-    auto values() { return data | std::views::values; }
+		const std::unordered_map<K, V> &internal_data() const {
+			return data;
+		}
 
-    auto values() const { return data | std::views::values; }
+		auto keys() {
+			return data | std::views::keys;
+		}
 
-    const std::unordered_map<K, V>& iter() const { return data; }
+		auto keys() const {
+			return data | std::views::keys;
+		}
 
-    size_t size() const { return data.size(); }
+		auto values() {
+			return data | std::views::values;
+		}
 
-    bool exists(const K& k) const { return data.contains(k); }
+		auto values() const {
+			return data | std::views::values;
+		}
 
-    bool exists_value(const V& v) const {
-        for (const auto& [key, value] : data) {
-            if (value == v) {
-                return true;
-            }
-        }
+		const std::unordered_map<K, V> &iter() const {
+			return data;
+		}
 
-        return false;
-    }
+		size_t size() const {
+			return data.size();
+		}
 
-    void reserve(size_t i) { data.reserve(i); }
+		bool exists(const K &k) const {
+			return data.contains(k);
+		}
 
-    template <typename Predicate> bool exists_value(Predicate predicate) const {
-        for (const auto& [key, value] : data) {
-            if (predicate(key, value)) {
-                return true;
-            }
-        }
+		bool exists_value(const V &v) const {
+			for (const auto &[key, value] : data) {
+				if (value == v) {
+					return true;
+				}
+			}
 
-        return false;
-    }
+			return false;
+		}
 
-    template <typename Predicate> V* at_by_value(Predicate predicate) {
-        for (auto& [key, value] : data) {
-            if (predicate(key, value)) {
-                return &value;
-            }
-        }
+		void reserve(size_t i) {
+			data.reserve(i);
+		}
 
-        return nullptr;
-    }
+		template <typename Predicate> bool exists_value(Predicate predicate) const {
+			for (const auto &[key, value] : data) {
+				if (predicate(key, value)) {
+					return true;
+				}
+			}
 
-    template <typename Predicate> const V* at_by_value(Predicate predicate) const {
-        for (const auto& [key, value] : data) {
-            if (predicate(key, value)) {
-                return &value;
-            }
-        }
+			return false;
+		}
 
-        return nullptr;
-    }
+		template <typename Predicate> V* at_by_value(Predicate predicate) {
+			for (auto &[key, value] : data) {
+				if (predicate(key, value)) {
+					return &value;
+				}
+			}
 
-    void add(const K& k, const V& v) { data.emplace(k, v); }
+			return nullptr;
+		}
 
-    template <typename V2> bool try_add(const K& k, V2&& v) {
-        auto [it, inserted] = data.emplace(k, std::forward<V2>(v));
+		template <typename Predicate> const V* at_by_value(Predicate predicate) const {
+			for (const auto &[key, value] : data) {
+				if (predicate(key, value)) {
+					return &value;
+				}
+			}
 
-        return inserted;
-    }
+			return nullptr;
+		}
 
-    void del(const K& k) {
-        size_t removed = data.erase(k);
+		void add(const K &k, const V &v) {
+			data.emplace(k, v);
+		}
 
-        if (removed == 0) {
-            throw std::out_of_range("inexistent key");
-        }
-    }
+		template <typename V2> bool try_add(const K &k, V2 &&v) {
+			auto [it, inserted] = data.emplace(k, std::forward<V2>(v));
 
-    bool try_del(const K& k) {
-        size_t removed = data.erase(k);
-        if (removed == 0) {
-            return false;
-        }
-        return true;
-    }
+			return inserted;
+		}
 
-    V& at(const K& k) { return data.at(k); }
+		void del(const K &k) {
+			size_t removed = data.erase(k);
 
-    const V& at(const K& k) const { return data.at(k); }
+			if (removed == 0) {
+				throw std::out_of_range("inexistent key");
+			}
+		}
 
-    V* try_at(const K& k) {
-        auto it = data.find(k);
+		bool try_del(const K &k) {
+			size_t removed = data.erase(k);
+			if (removed == 0) {
+				return false;
+			}
+			return true;
+		}
 
-        if (it != data.end()) {
-            return &it->second;
-        }
+		V &at(const K &k) {
+			return data.at(k);
+		}
 
-        return nullptr;
-    }
+		const V &at(const K &k) const {
+			return data.at(k);
+		}
 
-    const V* try_at(const K& k) const {
-        auto it = data.find(k);
+		V* try_at(const K &k) {
+			auto it = data.find(k);
 
-        if (it != data.end()) {
-            return &it->second;
-        }
+			if (it != data.end()) {
+				return &it->second;
+			}
 
-        return nullptr;
-    }
+			return nullptr;
+		}
+
+		const V* try_at(const K &k) const {
+			auto it = data.find(k);
+
+			if (it != data.end()) {
+				return &it->second;
+			}
+
+			return nullptr;
+		}
 };
