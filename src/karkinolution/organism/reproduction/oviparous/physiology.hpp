@@ -4,6 +4,6 @@
 #include <karkinolution/organism/reproduction/oviparous/egg.hpp>
 
 namespace EggPhysiology {
-EmbryonicEnergy
-embryotrophy(const Egg &egg, const Embryo &embryo, const NormalizedValue<float> &ratio);
+	EmbryonicEnergy
+	embryotrophy(const Egg &egg, const Embryo &embryo, const NormalizedValue<float> &ratio);
 } // namespace EggPhysiology

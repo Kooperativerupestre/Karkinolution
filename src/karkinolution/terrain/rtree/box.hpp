@@ -31,10 +31,10 @@ constexpr size_t index(Bound bound) {
 }
 
 namespace Box3DMotor {
-[[nodiscard]] bool   intersect(const Box3D &A, const Box3D &B);
-[[nodiscard]] double overlap_volume(const Box3D &A, const Box3D &B);
-[[nodiscard]] Box3D  intersection(const Box3D &A, const Box3D &B);
-[[nodiscard]] Box3D  combine(const Box3D &A, const Box3D &B);
-[[nodiscard]] double enlargement(const Box3D &current, const Box3D &canditate);
-[[nodiscard]] bool   contains(const Box3D &container, const Box3D &contained);
+	[[nodiscard]] bool   intersect(const Box3D &A, const Box3D &B);
+	[[nodiscard]] double overlap_volume(const Box3D &A, const Box3D &B);
+	[[nodiscard]] Box3D  intersection(const Box3D &A, const Box3D &B);
+	[[nodiscard]] Box3D  combine(const Box3D &A, const Box3D &B);
+	[[nodiscard]] double enlargement(const Box3D &current, const Box3D &canditate);
+	[[nodiscard]] bool   contains(const Box3D &container, const Box3D &contained);
 } // namespace Box3DMotor

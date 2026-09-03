@@ -8,9 +8,9 @@
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 
 namespace UterusMotor {
-void transfer_energy_to_uterus(Creature &creature);
-void transfer_energy_to_uterus(Creature &creature, float energy, float reserved);
-void transfer_energy_to_uterus(Creature              &creature,
-							   NormalizedValue<float> energy_ratio,
-							   NormalizedValue<float> reserved_ratio);
+	void transfer_energy_to_uterus(Creature &creature);
+	void transfer_energy_to_uterus(Creature &creature, float energy, float reserved);
+	void transfer_energy_to_uterus(Creature              &creature,
+								   NormalizedValue<float> energy_ratio,
+								   NormalizedValue<float> reserved_ratio);
 } // namespace UterusMotor

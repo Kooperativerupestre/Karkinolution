@@ -7,5 +7,5 @@
 using OrganismStats::Body::Damage;
 
 namespace AttackPhysiology {
-Damage calculate_damage(const Creature &creature);
+	Damage calculate_damage(const Creature &creature);
 } // namespace AttackPhysiology

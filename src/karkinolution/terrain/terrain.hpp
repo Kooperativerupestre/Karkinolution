@@ -9,9 +9,9 @@
 #include <karkinolution/terrain/soil.hpp>
 
 namespace BoxConversion {
-Box3D to_box(const SoilPiece &piece);
-Box3D to_box(const Size &size, const Vec3 &position);
-Box3D to_box(const Radius &radius, const Vec3 &position);
+	Box3D to_box(const SoilPiece &piece);
+	Box3D to_box(const Size &size, const Vec3 &position);
+	Box3D to_box(const Radius &radius, const Vec3 &position);
 } // namespace BoxConversion
 
 class SoilPieceRegistry : public BaseStorage<SoilPieceId, SoilPiece> {

@@ -13,5 +13,5 @@ enum class MoveOutput : uint8_t {
 };
 
 namespace MovementMotor {
-MoveOutput move(Creature &creature, World &world, const Vec3 &new_position); // atomic operation
+	MoveOutput move(Creature &creature, World &world, const Vec3 &new_position); // atomic operation
 } // namespace MovementMotor

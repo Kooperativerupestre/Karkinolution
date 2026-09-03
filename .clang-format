@@ -76,7 +76,7 @@ SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 
 # Namespaces
-NamespaceIndentation: None
+NamespaceIndentation: All
 FixNamespaceComments: true
 ShortNamespaceLines: 0
 

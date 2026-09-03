@@ -15,22 +15,23 @@
 using EntityMap = Octree;
 
 namespace AABBConversion {
-AABB to_aabb(const Size &size, const Vec3 &position);
-AABB to_aabb(const GeometryForms::Radius &radius, const Vec3 &position);
+	AABB to_aabb(const Size &size, const Vec3 &position);
+	AABB to_aabb(const GeometryForms::Radius &radius, const Vec3 &position);
 } // namespace AABBConversion
 
 namespace EntityMapMotor {
-bool add(Entity &&entity, OrganismRegistry &registry, EntityMap &map, const Territory &territory);
+	bool
+	add(Entity &&entity, OrganismRegistry &registry, EntityMap &map, const Territory &territory);
 
-bool remove(Id id, OrganismRegistry &registry, EntityMap &map, const AABB &old_aabb);
-bool remove(Id id, OrganismRegistry &registry, EntityMap &map);
+	bool remove(Id id, OrganismRegistry &registry, EntityMap &map, const AABB &old_aabb);
+	bool remove(Id id, OrganismRegistry &registry, EntityMap &map);
 
-std::vector<Id>
-find(const GeometryForms::Radius &radius, const Vec3 &position, const EntityMap &map);
+	std::vector<Id>
+	find(const GeometryForms::Radius &radius, const Vec3 &position, const EntityMap &map);
 
-bool update_coord(Id                id,
-				  OrganismRegistry &registry,
-				  EntityMap        &map,
-				  const Vec3       &new_coord,
-				  const Territory  &territory);
+	bool update_coord(Id                id,
+					  OrganismRegistry &registry,
+					  EntityMap        &map,
+					  const Vec3       &new_coord,
+					  const Territory  &territory);
 } // namespace EntityMapMotor

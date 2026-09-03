@@ -8,72 +8,74 @@
 
 namespace {
 
-using MetabolismTrait           = Genomes::CreatureGenomes::Metabolism::Trait;
-using MetabolismRelation        = Genomes::CreatureGenomes::Metabolism::Relation;
-using MetabolismTransformations = Genomes::CreatureGenomes::Metabolism::Transformations;
+	using MetabolismTrait           = Genomes::CreatureGenomes::Metabolism::Trait;
+	using MetabolismRelation        = Genomes::CreatureGenomes::Metabolism::Relation;
+	using MetabolismTransformations = Genomes::CreatureGenomes::Metabolism::Transformations;
 
-using VitalTrait           = Genomes::CreatureGenomes::Vital::Trait;
-using VitalTransformations = Genomes::CreatureGenomes::Vital::Transformations;
+	using VitalTrait           = Genomes::CreatureGenomes::Vital::Trait;
+	using VitalTransformations = Genomes::CreatureGenomes::Vital::Transformations;
 
-using MuscleTrait           = Genomes::CreatureGenomes::MuscleStructure::Trait;
-using MuscleTransformations = Genomes::CreatureGenomes::MuscleStructure::Transformations;
+	using MuscleTrait           = Genomes::CreatureGenomes::MuscleStructure::Trait;
+	using MuscleTransformations = Genomes::CreatureGenomes::MuscleStructure::Transformations;
 
-MetabolismTransformations
-metabolism_transformations(float max_reserved_energy, float max_energy, float energy) {
-	return MetabolismTransformations{std::flat_map<Genomes::Resource,
-												   std::vector<MetabolismRelation>>{
-		{Genomes::Resource::RESERVED_ENERGY,
-		 {{Genomes::Resource::RESERVED_ENERGY,
-		   MetabolismTrait::MAX_RESERVED_ENERGY,
-		   Efficiency{max_reserved_energy}},
-		  {Genomes::Resource::RESERVED_ENERGY, MetabolismTrait::MAX_ENERGY, Efficiency{max_energy}},
-		  {Genomes::Resource::RESERVED_ENERGY, MetabolismTrait::ENERGY, Efficiency{energy}}}}}};
-}
-
-VitalTransformations vital_transformations(float max_life) {
-	VitalTransformations transformations;
-
-	transformations.add(
-		Genomes::Resource::RESERVED_ENERGY,
-		{Genomes::Resource::RESERVED_ENERGY, VitalTrait::MAX_LIFE, Efficiency{max_life}});
-
-	return transformations;
-}
-
-MuscleTransformations muscle_transformations(float muscle) {
-	MuscleTransformations transformations;
-
-	transformations.add(
-		Genomes::Resource::RESERVED_ENERGY,
-		{Genomes::Resource::RESERVED_ENERGY, MuscleTrait::MUSCLE, Efficiency{muscle}});
-
-	return transformations;
-}
-
-using SkeletonTransformations = Genomes::CreatureGenomes::SkeletonStructure::Transformations;
-
-SkeletonTransformations skeleton_transformations(float bone) {
-	SkeletonTransformations transformations;
-
-	transformations.add(Genomes::Resource::RESERVED_ENERGY,
-						{Genomes::Resource::RESERVED_ENERGY,
-						 Genomes::CreatureGenomes::SkeletonStructure::Trait::BONES,
-						 Efficiency{bone}});
-
-	return transformations;
-}
-
-PropertiesContainer movement_properties(bool can_walk, bool can_swim) {
-	PropertiesContainer properties;
-
-
-	if (can_swim) {
-		properties.add(Properties::Capabilities::Move::SWIMM);
-	} else if (can_walk) {
-		properties.add(Properties::Capabilities::Move::WALK);
+	MetabolismTransformations
+	metabolism_transformations(float max_reserved_energy, float max_energy, float energy) {
+		return MetabolismTransformations{std::flat_map<Genomes::Resource,
+													   std::vector<MetabolismRelation>>{
+			{Genomes::Resource::RESERVED_ENERGY,
+			 {{Genomes::Resource::RESERVED_ENERGY,
+			   MetabolismTrait::MAX_RESERVED_ENERGY,
+			   Efficiency{max_reserved_energy}},
+			  {Genomes::Resource::RESERVED_ENERGY,
+			   MetabolismTrait::MAX_ENERGY,
+			   Efficiency{max_energy}},
+			  {Genomes::Resource::RESERVED_ENERGY, MetabolismTrait::ENERGY, Efficiency{energy}}}}}};
 	}
-	return properties;
-}
+
+	VitalTransformations vital_transformations(float max_life) {
+		VitalTransformations transformations;
+
+		transformations.add(
+			Genomes::Resource::RESERVED_ENERGY,
+			{Genomes::Resource::RESERVED_ENERGY, VitalTrait::MAX_LIFE, Efficiency{max_life}});
+
+		return transformations;
+	}
+
+	MuscleTransformations muscle_transformations(float muscle) {
+		MuscleTransformations transformations;
+
+		transformations.add(
+			Genomes::Resource::RESERVED_ENERGY,
+			{Genomes::Resource::RESERVED_ENERGY, MuscleTrait::MUSCLE, Efficiency{muscle}});
+
+		return transformations;
+	}
+
+	using SkeletonTransformations = Genomes::CreatureGenomes::SkeletonStructure::Transformations;
+
+	SkeletonTransformations skeleton_transformations(float bone) {
+		SkeletonTransformations transformations;
+
+		transformations.add(Genomes::Resource::RESERVED_ENERGY,
+							{Genomes::Resource::RESERVED_ENERGY,
+							 Genomes::CreatureGenomes::SkeletonStructure::Trait::BONES,
+							 Efficiency{bone}});
+
+		return transformations;
+	}
+
+	PropertiesContainer movement_properties(bool can_walk, bool can_swim) {
+		PropertiesContainer properties;
+
+
+		if (can_swim) {
+			properties.add(Properties::Capabilities::Move::SWIMM);
+		} else if (can_walk) {
+			properties.add(Properties::Capabilities::Move::WALK);
+		}
+		return properties;
+	}
 
 } // namespace
 

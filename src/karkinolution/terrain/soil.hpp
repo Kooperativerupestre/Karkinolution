@@ -85,34 +85,34 @@ enum class SoilProperties : uint8_t {
 
 namespace SoilPieceComponents {
 
-struct FoodState : Component {
-	public:
+	struct FoodState : Component {
+		public:
 
-		Energy food;
-		float  regen_tax;
+			Energy food;
+			float  regen_tax;
 
-		FoodState(Energy food, float regen_tax)
-			: food(food)
-			, regen_tax(regen_tax) {}
-};
+			FoodState(Energy food, float regen_tax)
+				: food(food)
+				, regen_tax(regen_tax) {}
+	};
 
-struct Damage : Component {
-	public:
+	struct Damage : Component {
+		public:
 
-		float damage;
+			float damage;
 
-		Damage(float damage)
-			: damage(damage) {}
-};
+			Damage(float damage)
+				: damage(damage) {}
+	};
 
-struct MovementCost : Component {
-	public:
+	struct MovementCost : Component {
+		public:
 
-		float cost;
+			float cost;
 
-		MovementCost(float cost)
-			: cost(cost) {}
-};
+			MovementCost(float cost)
+				: cost(cost) {}
+	};
 } // namespace SoilPieceComponents
 
 struct Blueprint {
@@ -182,5 +182,5 @@ struct SoilPiece {
 };
 
 namespace SoilF {
-SoilPiece gen_soil_piece(SoilTypes s_t);
+	SoilPiece gen_soil_piece(SoilTypes s_t);
 } // namespace SoilF
