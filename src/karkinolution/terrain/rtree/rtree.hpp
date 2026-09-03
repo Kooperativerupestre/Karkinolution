@@ -29,299 +29,300 @@
 // ============================================================
 
 namespace RStarTreeMotor {
-struct FindSplitOutput {
-		size_t best_index;
-		double total_score;
-};
+	struct FindSplitOutput {
+			size_t best_index;
+			double total_score;
+	};
 
-template <typename IdType> struct GetBestOrdenationOutput {
-		size_t                           best_index;
-		std::vector<RtreeEntry<IdType>*> entries;
-};
+	template <typename IdType> struct GetBestOrdenationOutput {
+			size_t                           best_index;
+			std::vector<RtreeEntry<IdType>*> entries;
+	};
 
-template <typename IdType> struct SplitOutput {
-		std::vector<RtreeEntry<IdType>*> left;
-		std::vector<RtreeEntry<IdType>*> right;
-};
+	template <typename IdType> struct SplitOutput {
+			std::vector<RtreeEntry<IdType>*> left;
+			std::vector<RtreeEntry<IdType>*> right;
+	};
 
-template <typename IdType> struct FindSoilPieceOutput {
-		std::vector<RtreeNode<IdType>*> path;
-		std::optional<size_t>           index = std::nullopt;
-		bool                            found;
-};
+	template <typename IdType> struct FindSoilPieceOutput {
+			std::vector<RtreeNode<IdType>*> path;
+			std::optional<size_t>           index = std::nullopt;
+			bool                            found;
+	};
 
-struct _Internal_FindSoilPieceOutput {
-		bool                  found;
-		std::optional<size_t> index = std::nullopt;
-};
+	struct _Internal_FindSoilPieceOutput {
+			bool                  found;
+			std::optional<size_t> index = std::nullopt;
+	};
 
-template <typename IdType> struct OrphanEntry {
-		RtreeEntry<IdType> entry;
-		size_t             depth;
-};
+	template <typename IdType> struct OrphanEntry {
+			RtreeEntry<IdType> entry;
+			size_t             depth;
+	};
 
-template <typename IdType>
-Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>> &, size_t begin, size_t end);
+	template <typename IdType>
+	Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>> &, size_t begin, size_t end);
 
-template <typename IdType>
-Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>*> &, size_t begin, size_t end);
+	template <typename IdType>
+	Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>*> &, size_t begin, size_t end);
 
-template <typename IdType>
-GetBestOrdenationOutput<IdType> get_best_ordenation(std::vector<RtreeEntry<IdType>> &,
-													size_t min_entries);
+	template <typename IdType>
+	GetBestOrdenationOutput<IdType> get_best_ordenation(std::vector<RtreeEntry<IdType>> &,
+														size_t min_entries);
 
-template <typename IdType>
-FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>*> &,
-											 size_t min_entries);
+	template <typename IdType>
+	FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>*> &,
+												 size_t min_entries);
 
-template <typename IdType>
-FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>> &, size_t min_entries);
+	template <typename IdType>
+	FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>> &,
+												 size_t min_entries);
 
-template <typename IdType>
-FindSplitOutput find_best_split_margin(std::vector<RtreeEntry<IdType>*> &, size_t min_entries);
+	template <typename IdType>
+	FindSplitOutput find_best_split_margin(std::vector<RtreeEntry<IdType>*> &, size_t min_entries);
 
-template <typename IdType>
-SplitOutput<IdType> split(std::vector<RtreeEntry<IdType>> &entries, size_t min_entries);
+	template <typename IdType>
+	SplitOutput<IdType> split(std::vector<RtreeEntry<IdType>> &entries, size_t min_entries);
 
-// namespace RStarTreeMotor
+	// namespace RStarTreeMotor
 
-template <typename IdType>
-Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>> &entries, size_t begin, size_t end) {
-	Box3D mbr = entries[begin].box;
+	template <typename IdType>
+	Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>> &entries, size_t begin, size_t end) {
+		Box3D mbr = entries[begin].box;
 
-	for (size_t i = begin + 1; i < end; i++) {
-		mbr = Box3DMotor::combine(mbr, entries[i].box);
+		for (size_t i = begin + 1; i < end; i++) {
+			mbr = Box3DMotor::combine(mbr, entries[i].box);
+		}
+
+		return mbr;
 	}
 
-	return mbr;
-}
+	template <typename IdType>
+	Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>*> &entries, size_t begin, size_t end) {
+		Box3D mbr = entries[begin]->box;
 
-template <typename IdType>
-Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>*> &entries, size_t begin, size_t end) {
-	Box3D mbr = entries[begin]->box;
+		for (size_t i = begin + 1; i < end; i++) {
+			mbr = Box3DMotor::combine(mbr, entries[i]->box);
+		}
 
-	for (size_t i = begin + 1; i < end; i++) {
-		mbr = Box3DMotor::combine(mbr, entries[i]->box);
+		return mbr;
 	}
 
-	return mbr;
-}
+	template <typename IdType>
+	GetBestOrdenationOutput<IdType> get_best_ordenation(std::vector<RtreeEntry<IdType>> &entries,
+														size_t min_entries) {
+		std::array<std::array<std::vector<RtreeEntry<IdType>*>, 2>, 3> ordenations;
 
-template <typename IdType>
-GetBestOrdenationOutput<IdType> get_best_ordenation(std::vector<RtreeEntry<IdType>> &entries,
-													size_t                           min_entries) {
-	std::array<std::array<std::vector<RtreeEntry<IdType>*>, 2>, 3> ordenations;
+		for (auto &entry : entries) {
+			ordenations[index(Axis::X)][index(Bound::MAX)].push_back(&entry);
+			ordenations[index(Axis::X)][index(Bound::MIN)].push_back(&entry);
 
-	for (auto &entry : entries) {
-		ordenations[index(Axis::X)][index(Bound::MAX)].push_back(&entry);
-		ordenations[index(Axis::X)][index(Bound::MIN)].push_back(&entry);
+			ordenations[index(Axis::Y)][index(Bound::MAX)].push_back(&entry);
+			ordenations[index(Axis::Y)][index(Bound::MIN)].push_back(&entry);
 
-		ordenations[index(Axis::Y)][index(Bound::MAX)].push_back(&entry);
-		ordenations[index(Axis::Y)][index(Bound::MIN)].push_back(&entry);
+			ordenations[index(Axis::Z)][index(Bound::MAX)].push_back(&entry);
+			ordenations[index(Axis::Z)][index(Bound::MIN)].push_back(&entry);
+		}
 
-		ordenations[index(Axis::Z)][index(Bound::MAX)].push_back(&entry);
-		ordenations[index(Axis::Z)][index(Bound::MIN)].push_back(&entry);
-	}
+		std::ranges::sort(ordenations[index(Axis::X)][index(Bound::MAX)],
+						  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
+							  return std::pair{A->box.max.x, A->box.min.x}
+							  < std::pair{B->box.max.x, B->box.min.x};
+						  });
 
-	std::ranges::sort(ordenations[index(Axis::X)][index(Bound::MAX)],
-					  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-						  return std::pair{A->box.max.x, A->box.min.x}
-						  < std::pair{B->box.max.x, B->box.min.x};
-					  });
+		std::ranges::sort(ordenations[index(Axis::X)][index(Bound::MIN)],
+						  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
+							  return std::pair{A->box.min.x, A->box.max.x}
+							  < std::pair{B->box.min.x, B->box.max.x};
+						  });
 
-	std::ranges::sort(ordenations[index(Axis::X)][index(Bound::MIN)],
-					  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-						  return std::pair{A->box.min.x, A->box.max.x}
-						  < std::pair{B->box.min.x, B->box.max.x};
-					  });
+		std::ranges::sort(ordenations[index(Axis::Y)][index(Bound::MAX)],
+						  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
+							  return std::pair{A->box.max.y, A->box.min.y}
+							  < std::pair{B->box.max.y, B->box.min.y};
+						  });
 
-	std::ranges::sort(ordenations[index(Axis::Y)][index(Bound::MAX)],
-					  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-						  return std::pair{A->box.max.y, A->box.min.y}
-						  < std::pair{B->box.max.y, B->box.min.y};
-					  });
+		std::ranges::sort(ordenations[index(Axis::Y)][index(Bound::MIN)],
+						  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
+							  return std::pair{A->box.min.y, A->box.max.y}
+							  < std::pair{B->box.min.y, B->box.max.y};
+						  });
 
-	std::ranges::sort(ordenations[index(Axis::Y)][index(Bound::MIN)],
-					  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-						  return std::pair{A->box.min.y, A->box.max.y}
-						  < std::pair{B->box.min.y, B->box.max.y};
-					  });
+		std::ranges::sort(ordenations[index(Axis::Z)][index(Bound::MAX)],
+						  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
+							  return std::pair{A->box.max.z, A->box.min.z}
+							  < std::pair{B->box.max.z, B->box.min.z};
+						  });
 
-	std::ranges::sort(ordenations[index(Axis::Z)][index(Bound::MAX)],
-					  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-						  return std::pair{A->box.max.z, A->box.min.z}
-						  < std::pair{B->box.max.z, B->box.min.z};
-					  });
+		std::ranges::sort(ordenations[index(Axis::Z)][index(Bound::MIN)],
+						  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
+							  return std::pair{A->box.min.z, A->box.max.z}
+							  < std::pair{B->box.min.z, B->box.max.z};
+						  });
 
-	std::ranges::sort(ordenations[index(Axis::Z)][index(Bound::MIN)],
-					  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-						  return std::pair{A->box.min.z, A->box.max.z}
-						  < std::pair{B->box.min.z, B->box.max.z};
-					  });
+		double                            best_score = std::numeric_limits<double>::infinity();
+		std::vector<RtreeEntry<IdType>*>* ptr        = nullptr;
 
-	double                            best_score = std::numeric_limits<double>::infinity();
-	std::vector<RtreeEntry<IdType>*>* ptr        = nullptr;
+		for (auto &axis : ordenations) {
+			for (auto &bound : axis) {
+				auto   output      = find_best_split_margin(bound, min_entries);
+				double total_score = output.total_score;
 
-	for (auto &axis : ordenations) {
-		for (auto &bound : axis) {
-			auto   output      = find_best_split_margin(bound, min_entries);
-			double total_score = output.total_score;
-
-			if (total_score < best_score) {
-				best_score = total_score;
-				ptr        = &bound;
+				if (total_score < best_score) {
+					best_score = total_score;
+					ptr        = &bound;
+				}
 			}
 		}
+
+		return {.best_index = find_best_split_intersection(*ptr, min_entries).best_index,
+				.entries    = *ptr};
 	}
 
-	return {.best_index = find_best_split_intersection(*ptr, min_entries).best_index,
-			.entries    = *ptr};
-}
+	template <typename IdType>
+	FindSplitOutput find_best_split_margin(std::vector<RtreeEntry<IdType>*> &entries,
+										   size_t                            min_entries) {
+		size_t size = entries.size();
 
-template <typename IdType>
-FindSplitOutput find_best_split_margin(std::vector<RtreeEntry<IdType>*> &entries,
-									   size_t                            min_entries) {
-	size_t size = entries.size();
+		std::vector<Box3D> prefix;
+		std::vector<Box3D> suffix;
 
-	std::vector<Box3D> prefix;
-	std::vector<Box3D> suffix;
+		prefix.reserve(size);
+		suffix.reserve(size);
 
-	prefix.reserve(size);
-	suffix.reserve(size);
+		prefix.resize(size);
+		suffix.resize(size);
 
-	prefix.resize(size);
-	suffix.resize(size);
+		prefix[0]        = entries[0]->box;
+		suffix[size - 1] = entries[size - 1]->box;
 
-	prefix[0]        = entries[0]->box;
-	suffix[size - 1] = entries[size - 1]->box;
-
-	for (size_t i = size - 1; i > 0; i--) {
-		suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
-	}
-
-	for (size_t i = 1; i < size; i++) {
-		prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
-	}
-
-	size_t best_index = min_entries;
-
-	double best_score = prefix[best_index - 1].margin() + suffix[best_index].margin();
-
-	double total_score = best_score;
-
-	double best_volume_sum = prefix[best_index - 1].volume() + suffix[best_index].volume();
-
-	for (size_t i = min_entries + 1; i <= size - min_entries; i++) {
-
-		const double current_score = prefix[i - 1].margin() + suffix[i].margin();
-
-		const double current_volume = prefix[i - 1].volume() + suffix[i].volume();
-
-		total_score += current_score;
-
-		if (current_score < best_score
-			|| (current_score == best_score && current_volume < best_volume_sum)) {
-
-			best_score      = current_score;
-			best_index      = i;
-			best_volume_sum = current_volume;
+		for (size_t i = size - 1; i > 0; i--) {
+			suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
 		}
-	}
 
-	return {.best_index = best_index, .total_score = total_score};
-}
-
-template <typename IdType>
-FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>*> &entries,
-											 size_t                            min_entries) {
-
-	size_t size = entries.size();
-
-	std::vector<Box3D> prefix;
-	std::vector<Box3D> suffix;
-
-	prefix.reserve(size);
-	suffix.reserve(size);
-
-	prefix.resize(size);
-	suffix.resize(size);
-
-	prefix[0]        = entries[0]->box;
-	suffix[size - 1] = entries[size - 1]->box;
-
-	for (size_t i = size - 1; i > 0; i--) {
-		suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
-	}
-
-	for (size_t i = 1; i < size; i++) {
-		prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
-	}
-
-	size_t best_index = min_entries;
-
-	double best_score = Box3DMotor::overlap_volume(prefix[best_index - 1], suffix[best_index]);
-
-	double total_score = best_score;
-
-	double best_volume_sum = prefix[best_index - 1].volume() + suffix[best_index].volume();
-
-	double current_score;
-	double current_volume;
-
-	for (size_t i = min_entries + 1; i <= size - min_entries; i++) {
-
-		current_score = Box3DMotor::overlap_volume(prefix[i - 1], suffix[i]);
-
-		current_volume = prefix[i - 1].volume() + suffix[i].volume();
-
-		total_score += current_score;
-
-		if (current_score < best_score
-			|| (current_score == best_score && current_volume < best_volume_sum)) {
-
-			best_score      = current_score;
-			best_index      = i;
-			best_volume_sum = current_volume;
+		for (size_t i = 1; i < size; i++) {
+			prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
 		}
-	}
 
-	return {.best_index = best_index, .total_score = total_score};
-}
+		size_t best_index = min_entries;
 
-template <typename IdType>
-FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>> &entries,
-											 size_t                           min_entries) {
+		double best_score = prefix[best_index - 1].margin() + suffix[best_index].margin();
 
-	std::vector<RtreeEntry<IdType>*> pointers;
-	pointers.reserve(entries.size());
+		double total_score = best_score;
 
-	for (auto &entry : entries) {
-		pointers.push_back(&entry);
-	}
+		double best_volume_sum = prefix[best_index - 1].volume() + suffix[best_index].volume();
 
-	return find_best_split_intersection(pointers, min_entries);
-}
+		for (size_t i = min_entries + 1; i <= size - min_entries; i++) {
 
-template <typename IdType>
-SplitOutput<IdType> split(std::vector<RtreeEntry<IdType>> &entries, size_t min_entries) {
+			const double current_score = prefix[i - 1].margin() + suffix[i].margin();
 
-	auto best_ordenation = get_best_ordenation(entries, min_entries).entries;
+			const double current_volume = prefix[i - 1].volume() + suffix[i].volume();
 
-	size_t split_index = find_best_split_intersection(best_ordenation, min_entries).best_index;
+			total_score += current_score;
 
-	std::vector<RtreeEntry<IdType>*> right;
-	std::vector<RtreeEntry<IdType>*> left;
+			if (current_score < best_score
+				|| (current_score == best_score && current_volume < best_volume_sum)) {
 
-	for (size_t i = 0; i < best_ordenation.size(); i++) {
-		if (i < split_index) {
-			left.push_back(best_ordenation[i]);
-		} else {
-			right.push_back(best_ordenation[i]);
+				best_score      = current_score;
+				best_index      = i;
+				best_volume_sum = current_volume;
+			}
 		}
+
+		return {.best_index = best_index, .total_score = total_score};
 	}
 
-	return {.left = left, .right = right};
-}
+	template <typename IdType>
+	FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>*> &entries,
+												 size_t                            min_entries) {
+
+		size_t size = entries.size();
+
+		std::vector<Box3D> prefix;
+		std::vector<Box3D> suffix;
+
+		prefix.reserve(size);
+		suffix.reserve(size);
+
+		prefix.resize(size);
+		suffix.resize(size);
+
+		prefix[0]        = entries[0]->box;
+		suffix[size - 1] = entries[size - 1]->box;
+
+		for (size_t i = size - 1; i > 0; i--) {
+			suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
+		}
+
+		for (size_t i = 1; i < size; i++) {
+			prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
+		}
+
+		size_t best_index = min_entries;
+
+		double best_score = Box3DMotor::overlap_volume(prefix[best_index - 1], suffix[best_index]);
+
+		double total_score = best_score;
+
+		double best_volume_sum = prefix[best_index - 1].volume() + suffix[best_index].volume();
+
+		double current_score;
+		double current_volume;
+
+		for (size_t i = min_entries + 1; i <= size - min_entries; i++) {
+
+			current_score = Box3DMotor::overlap_volume(prefix[i - 1], suffix[i]);
+
+			current_volume = prefix[i - 1].volume() + suffix[i].volume();
+
+			total_score += current_score;
+
+			if (current_score < best_score
+				|| (current_score == best_score && current_volume < best_volume_sum)) {
+
+				best_score      = current_score;
+				best_index      = i;
+				best_volume_sum = current_volume;
+			}
+		}
+
+		return {.best_index = best_index, .total_score = total_score};
+	}
+
+	template <typename IdType>
+	FindSplitOutput find_best_split_intersection(std::vector<RtreeEntry<IdType>> &entries,
+												 size_t                           min_entries) {
+
+		std::vector<RtreeEntry<IdType>*> pointers;
+		pointers.reserve(entries.size());
+
+		for (auto &entry : entries) {
+			pointers.push_back(&entry);
+		}
+
+		return find_best_split_intersection(pointers, min_entries);
+	}
+
+	template <typename IdType>
+	SplitOutput<IdType> split(std::vector<RtreeEntry<IdType>> &entries, size_t min_entries) {
+
+		auto best_ordenation = get_best_ordenation(entries, min_entries).entries;
+
+		size_t split_index = find_best_split_intersection(best_ordenation, min_entries).best_index;
+
+		std::vector<RtreeEntry<IdType>*> right;
+		std::vector<RtreeEntry<IdType>*> left;
+
+		for (size_t i = 0; i < best_ordenation.size(); i++) {
+			if (i < split_index) {
+				left.push_back(best_ordenation[i]);
+			} else {
+				right.push_back(best_ordenation[i]);
+			}
+		}
+
+		return {.left = left, .right = right};
+	}
 
 } // namespace RStarTreeMotor
 

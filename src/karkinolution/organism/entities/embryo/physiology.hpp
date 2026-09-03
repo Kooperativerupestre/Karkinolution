@@ -33,21 +33,21 @@ struct ResourceTrade {
 };
 
 namespace EmbryoGrowingPhysiology {
-constexpr NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio,
-											   const NormalizedValue<float> &factor);
+	constexpr NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio,
+												   const NormalizedValue<float> &factor);
 
-ResourceTrade get_new_max_energy_increment(const Embryo &embryo, const Energy &energy);
-ResourceTrade get_new_max_life_increment(const Embryo &embryo, const Energy &energy);
+	ResourceTrade get_new_max_energy_increment(const Embryo &embryo, const Energy &energy);
+	ResourceTrade get_new_max_life_increment(const Embryo &embryo, const Energy &energy);
 
-ResourceTrade get_new_life_increment(const Embryo &embryo, const Energy &energy);
-ResourceTrade get_new_energy_increment(const Embryo &embryo, const Energy &energy);
-ResourceTrade get_new_health_increment(const Embryo &embryo, const Energy &energy);
-ResourceTrade get_new_volume_increment(const Embryo &embryo, const Energy &energy);
+	ResourceTrade get_new_life_increment(const Embryo &embryo, const Energy &energy);
+	ResourceTrade get_new_energy_increment(const Embryo &embryo, const Energy &energy);
+	ResourceTrade get_new_health_increment(const Embryo &embryo, const Energy &energy);
+	ResourceTrade get_new_volume_increment(const Embryo &embryo, const Energy &energy);
 } // namespace EmbryoGrowingPhysiology
 
 namespace EmbryoPhysiology {
-bool  is_dead(const Embryo &embryo);
-float basal_metabolism(const Embryo &embryo);
+	bool  is_dead(const Embryo &embryo);
+	float basal_metabolism(const Embryo &embryo);
 
-float transfor_into_nutrients(const Embryo &embryo);
+	float transfor_into_nutrients(const Embryo &embryo);
 } // namespace EmbryoPhysiology

@@ -13,79 +13,79 @@ using TRTreeEntry = RtreeEntry<SoilPieceId>;
 
 namespace {
 
-Box3D make_box(double x, double y, double z, double size = 1.0) {
-	return Box3D{.max = Vec3{x + size, y + size, z + size}, .min = Vec3{x, y, z}};
-}
-
-void assert_node_invariants(const TRTreeNode &node, bool is_root = true) {
-	ASSERT_LE(node.entries.size(), TRStarTree::MAX_ENTRIES);
-
-	if (!is_root) {
-		ASSERT_GE(node.entries.size(), TRStarTree::MIN_ENTRIES);
+	Box3D make_box(double x, double y, double z, double size = 1.0) {
+		return Box3D{.max = Vec3{x + size, y + size, z + size}, .min = Vec3{x, y, z}};
 	}
 
-	if (node.type == NodeType::LEAF) {
-		for (const TRTreeEntry &entry : node.entries) {
-			ASSERT_TRUE(std::holds_alternative<SoilPieceId>(entry.content));
-		}
-	} else {
-		for (const TRTreeEntry &entry : node.entries) {
-			ASSERT_TRUE(std::holds_alternative<std::unique_ptr<TRTreeNode>>(entry.content));
+	void assert_node_invariants(const TRTreeNode &node, bool is_root = true) {
+		ASSERT_LE(node.entries.size(), TRStarTree::MAX_ENTRIES);
 
-			const auto &child = std::get<std::unique_ptr<TRTreeNode>>(entry.content);
-
-			ASSERT_NE(child, nullptr);
-
-			assert_node_invariants(*child, false);
-		}
-	}
-}
-
-void assert_box_equal(const Box3D &lhs, const Box3D &rhs) {
-	EXPECT_DOUBLE_EQ(lhs.min.x, rhs.min.x);
-	EXPECT_DOUBLE_EQ(lhs.min.y, rhs.min.y);
-	EXPECT_DOUBLE_EQ(lhs.min.z, rhs.min.z);
-
-	EXPECT_DOUBLE_EQ(lhs.max.x, rhs.max.x);
-	EXPECT_DOUBLE_EQ(lhs.max.y, rhs.max.y);
-	EXPECT_DOUBLE_EQ(lhs.max.z, rhs.max.z);
-}
-
-void assert_mbr_invariant(const TRTreeNode &node) {
-	if (!node.entries.empty()) {
-		Box3D expected = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
-
-		ASSERT_TRUE(node.box.has_value());
-
-		assert_box_equal(*node.box, expected);
-	}
-
-	if (node.type == NodeType::INTERNAL) {
-		for (const TRTreeEntry &entry : node.entries) {
-			const auto &child = std::get<std::unique_ptr<TRTreeNode>>(entry.content);
-
-			assert_mbr_invariant(*child);
-		}
-	}
-}
-
-void assert_tree_invariants(const TRStarTree &tree) {
-	assert_node_invariants(tree.root());
-	assert_mbr_invariant(tree.root());
-}
-
-void assert_all_ids_exist(const TRStarTree        &tree,
-						  SoilPieceId              count,
-						  const std::vector<bool> &deleted = {}) {
-
-	for (SoilPieceId id = 0; id < count; ++id) {
-		if (!deleted.empty() && deleted[id]) {
-			continue;
+		if (!is_root) {
+			ASSERT_GE(node.entries.size(), TRStarTree::MIN_ENTRIES);
 		}
 
-		ASSERT_TRUE(tree.exists(id)) << "Lost SoilPieceId: " << id;
+		if (node.type == NodeType::LEAF) {
+			for (const TRTreeEntry &entry : node.entries) {
+				ASSERT_TRUE(std::holds_alternative<SoilPieceId>(entry.content));
+			}
+		} else {
+			for (const TRTreeEntry &entry : node.entries) {
+				ASSERT_TRUE(std::holds_alternative<std::unique_ptr<TRTreeNode>>(entry.content));
+
+				const auto &child = std::get<std::unique_ptr<TRTreeNode>>(entry.content);
+
+				ASSERT_NE(child, nullptr);
+
+				assert_node_invariants(*child, false);
+			}
+		}
 	}
-}
+
+	void assert_box_equal(const Box3D &lhs, const Box3D &rhs) {
+		EXPECT_DOUBLE_EQ(lhs.min.x, rhs.min.x);
+		EXPECT_DOUBLE_EQ(lhs.min.y, rhs.min.y);
+		EXPECT_DOUBLE_EQ(lhs.min.z, rhs.min.z);
+
+		EXPECT_DOUBLE_EQ(lhs.max.x, rhs.max.x);
+		EXPECT_DOUBLE_EQ(lhs.max.y, rhs.max.y);
+		EXPECT_DOUBLE_EQ(lhs.max.z, rhs.max.z);
+	}
+
+	void assert_mbr_invariant(const TRTreeNode &node) {
+		if (!node.entries.empty()) {
+			Box3D expected = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
+
+			ASSERT_TRUE(node.box.has_value());
+
+			assert_box_equal(*node.box, expected);
+		}
+
+		if (node.type == NodeType::INTERNAL) {
+			for (const TRTreeEntry &entry : node.entries) {
+				const auto &child = std::get<std::unique_ptr<TRTreeNode>>(entry.content);
+
+				assert_mbr_invariant(*child);
+			}
+		}
+	}
+
+	void assert_tree_invariants(const TRStarTree &tree) {
+		assert_node_invariants(tree.root());
+		assert_mbr_invariant(tree.root());
+	}
+
+	void assert_all_ids_exist(const TRStarTree        &tree,
+							  SoilPieceId              count,
+							  const std::vector<bool> &deleted = {}) {
+
+		for (SoilPieceId id = 0; id < count; ++id) {
+			if (!deleted.empty() && deleted[id]) {
+				continue;
+			}
+
+			ASSERT_TRUE(tree.exists(id)) << "Lost SoilPieceId: " << id;
+		}
+	}
 
 } // namespace
 

@@ -53,234 +53,235 @@ enum class CreatureSpecies : uint8_t {
 
 namespace CreatureSpeciesF {
 
-CreatureSpecies choice();
+	CreatureSpecies choice();
 
 } // namespace CreatureSpeciesF
 
 namespace Genomes {
 
-enum class Resource : uint8_t {
-	RESERVED_ENERGY
-};
+	enum class Resource : uint8_t {
+		RESERVED_ENERGY
+	};
 
-template <typename Trait> struct Relation {
-		Resource   resource;
-		Trait      target;
-		Efficiency efficiency;
-};
+	template <typename Trait> struct Relation {
+			Resource   resource;
+			Trait      target;
+			Efficiency efficiency;
+	};
 
-template <typename Trait> class Transformations {
-	private:
+	template <typename Trait> class Transformations {
+		private:
 
-		std::flat_map<Resource, std::vector<Relation<Trait>>> data;
+			std::flat_map<Resource, std::vector<Relation<Trait>>> data;
 
-	public:
+		public:
 
-		explicit Transformations(
-			std::flat_map<Resource, std::vector<Relation<Trait>>> &&transformations)
-			: data(std::move(transformations)) {}
+			explicit Transformations(
+				std::flat_map<Resource, std::vector<Relation<Trait>>> &&transformations)
+				: data(std::move(transformations)) {}
 
-		Transformations()
-			: data() {}
+			Transformations()
+				: data() {}
 
-		void add(Resource resource, Relation<Trait> transformation) {
-			data[resource].push_back(std::move(transformation));
-		}
-
-		const std::vector<Relation<Trait>> &at(Resource resource) const {
-			return data.at(resource);
-		}
-
-		const Relation<Trait> &at(Resource resource, Trait trait) const {
-			const auto &transformations = data.at(resource);
-
-			auto it = std::find_if(transformations.begin(),
-								   transformations.end(),
-								   [&](const Relation<Trait> &transformation) {
-									   return transformation.target == trait;
-								   });
-
-			if (it == transformations.end()) {
-				throw std::out_of_range("Transformation not found");
+			void add(Resource resource, Relation<Trait> transformation) {
+				data[resource].push_back(std::move(transformation));
 			}
 
-			return *it;
-		}
+			const std::vector<Relation<Trait>> &at(Resource resource) const {
+				return data.at(resource);
+			}
 
-		const std::flat_map<Resource, std::vector<Relation<Trait>>> &view() const {
-			return data;
-		}
-};
+			const Relation<Trait> &at(Resource resource, Trait trait) const {
+				const auto &transformations = data.at(resource);
 
-namespace CreatureGenomes {
+				auto it = std::find_if(transformations.begin(),
+									   transformations.end(),
+									   [&](const Relation<Trait> &transformation) {
+										   return transformation.target == trait;
+									   });
 
-namespace Metabolism {
+				if (it == transformations.end()) {
+					throw std::out_of_range("Transformation not found");
+				}
 
-enum class Trait : uint8_t {
-	MAX_RESERVED_ENERGY,
-	MAX_ENERGY,
-	ENERGY
-};
+				return *it;
+			}
 
-using Relation        = Genomes::Relation<Trait>;
-using Transformations = Genomes::Transformations<Trait>;
+			const std::flat_map<Resource, std::vector<Relation<Trait>>> &view() const {
+				return data;
+			}
+	};
 
-struct GrowthRates {
-		GrowthRate max_energy;
-		GrowthRate energy;
-		GrowthRate max_reserved_energy;
-};
+	namespace CreatureGenomes {
 
-struct MetabolismGenome {
-		float           max_energy;
-		float           max_reserved_energy;
-		Diet            diet;
-		Transformations transformations;
-		GrowthRates     growth_rates;
-};
+		namespace Metabolism {
 
-} // namespace Metabolism
+			enum class Trait : uint8_t {
+				MAX_RESERVED_ENERGY,
+				MAX_ENERGY,
+				ENERGY
+			};
 
-// 3.2: Vital
-namespace Vital {
+			using Relation        = Genomes::Relation<Trait>;
+			using Transformations = Genomes::Transformations<Trait>;
 
-enum class Trait : uint8_t {
-	MAX_LIFE
-};
+			struct GrowthRates {
+					GrowthRate max_energy;
+					GrowthRate energy;
+					GrowthRate max_reserved_energy;
+			};
 
-using Relation        = Genomes::Relation<Trait>;
-using Transformations = Genomes::Transformations<Trait>;
+			struct MetabolismGenome {
+					float           max_energy;
+					float           max_reserved_energy;
+					Diet            diet;
+					Transformations transformations;
+					GrowthRates     growth_rates;
+			};
 
-struct GrowthRates {
-		GrowthRate life;
-};
+		} // namespace Metabolism
 
-struct VitalGenome {
-		float           max_life;
-		Immunity        average_immunity;
-		Health          average_health;
-		Age             average_age;
-		Transformations transformations;
-		GrowthRates     growth_rates;
-};
+		// 3.2: Vital
+		namespace Vital {
 
-} // namespace Vital
+			enum class Trait : uint8_t {
+				MAX_LIFE
+			};
 
-namespace MuscleStructure {
+			using Relation        = Genomes::Relation<Trait>;
+			using Transformations = Genomes::Transformations<Trait>;
 
-enum class Trait : uint8_t {
-	MUSCLE
-};
+			struct GrowthRates {
+					GrowthRate life;
+			};
 
-using Relation        = Genomes::Relation<Trait>;
-using Transformations = Genomes::Transformations<Trait>;
+			struct VitalGenome {
+					float           max_life;
+					Immunity        average_immunity;
+					Health          average_health;
+					Age             average_age;
+					Transformations transformations;
+					GrowthRates     growth_rates;
+			};
 
-struct GrowthRates {
-		GrowthRate muscle;
-};
+		} // namespace Vital
 
-struct MuscleGenome {
-		SharedVolume     shared_volume;
-		Muscle           average_muscles;
-		MuscleEfficiency average_muscle_efficiency;
-		MuscleQuality    average_muscle_quality;
-		GrowthRates      growth_rates;
-		Transformations  transformations;
-};
+		namespace MuscleStructure {
 
-} // namespace MuscleStructure
+			enum class Trait : uint8_t {
+				MUSCLE
+			};
 
-namespace SkeletonStructure {
+			using Relation        = Genomes::Relation<Trait>;
+			using Transformations = Genomes::Transformations<Trait>;
 
-enum class Trait : uint8_t {
-	BONES
-};
+			struct GrowthRates {
+					GrowthRate muscle;
+			};
 
-using Relation        = Genomes::Relation<Trait>;
-using Transformations = Genomes::Transformations<Trait>;
+			struct MuscleGenome {
+					SharedVolume     shared_volume;
+					Muscle           average_muscles;
+					MuscleEfficiency average_muscle_efficiency;
+					MuscleQuality    average_muscle_quality;
+					GrowthRates      growth_rates;
+					Transformations  transformations;
+			};
 
-struct GrowthRates {
-		GrowthRate bone;
-};
+		} // namespace MuscleStructure
 
-struct SkeletonGenome {
-		SharedVolume    shared_volume;
-		Bone            average_bones;
-		SkeletonQuality average_bone_quality;
-		GrowthRate      growth;
-		Transformations transformations;
-};
+		namespace SkeletonStructure {
 
-} // namespace SkeletonStructure
+			enum class Trait : uint8_t {
+				BONES
+			};
 
-namespace Morphology {
+			using Relation        = Genomes::Relation<Trait>;
+			using Transformations = Genomes::Transformations<Trait>;
 
-enum class Trait {
-	HEIGHT,
-	BACK,
-	LATERAl
-};
+			struct GrowthRates {
+					GrowthRate bone;
+			};
 
-using Relation        = Genomes::Relation<Trait>;
-using Transformations = Genomes::Transformations<Trait>;
+			struct SkeletonGenome {
+					SharedVolume    shared_volume;
+					Bone            average_bones;
+					SkeletonQuality average_bone_quality;
+					GrowthRate      growth;
+					Transformations transformations;
+			};
 
-struct MorphologyGenome {
-		Lateral         average_lateral;
-		Back            average_back;
-		Height          average_height;
-		Mass            average_mass;
-		Transformations transformations;
-};
+		} // namespace SkeletonStructure
 
-} // namespace Morphology
+		namespace Morphology {
 
-namespace Reproduction {
+			enum class Trait {
+				HEIGHT,
+				BACK,
+				LATERAl
+			};
 
-struct ViviparousOrganismGenome {};
+			using Relation        = Genomes::Relation<Trait>;
+			using Transformations = Genomes::Transformations<Trait>;
 
-struct OviparousOrganismGenome {};
+			struct MorphologyGenome {
+					Lateral         average_lateral;
+					Back            average_back;
+					Height          average_height;
+					Mass            average_mass;
+					Transformations transformations;
+			};
 
-inline ReproductiveWays get_reproductive_way(
-	const std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> &genome) {
-	if (std::holds_alternative<ViviparousOrganismGenome>(genome)) {
-		return ReproductiveWays::VIVIPAROUS;
-	} else if (std::holds_alternative<OviparousOrganismGenome>(genome)) {
-		return ReproductiveWays::OVIPAROUS;
-	}
-	std::unreachable();
-}
+		} // namespace Morphology
 
-struct ReproductiveGenome {
-		std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> reproductive_way_genome;
-		int                                                             average_children_count;
-		int                                                             average_gestation_limit;
-		int                                                             fertility_limit;
-		NormalizedValue<float>                                          reproduction_cost;
+		namespace Reproduction {
 
-		ReproductiveWays reproductive_way() const noexcept {
-			return get_reproductive_way(reproductive_way_genome);
-		}
-};
+			struct ViviparousOrganismGenome {};
+
+			struct OviparousOrganismGenome {};
+
+			inline ReproductiveWays get_reproductive_way(
+				const std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> &genome) {
+				if (std::holds_alternative<ViviparousOrganismGenome>(genome)) {
+					return ReproductiveWays::VIVIPAROUS;
+				} else if (std::holds_alternative<OviparousOrganismGenome>(genome)) {
+					return ReproductiveWays::OVIPAROUS;
+				}
+				std::unreachable();
+			}
+
+			struct ReproductiveGenome {
+					std::variant<ViviparousOrganismGenome, OviparousOrganismGenome>
+										   reproductive_way_genome;
+					int                    average_children_count;
+					int                    average_gestation_limit;
+					int                    fertility_limit;
+					NormalizedValue<float> reproduction_cost;
+
+					ReproductiveWays reproductive_way() const noexcept {
+						return get_reproductive_way(reproductive_way_genome);
+					}
+			};
 
 
-} // namespace Reproduction
+		} // namespace Reproduction
 
-} // namespace CreatureGenomes
+	} // namespace CreatureGenomes
 
-namespace EmbryoGenomes {
+	namespace EmbryoGenomes {
 
-struct BodyGenome {
-		NormalizedValue<float> average_max_energy;
-		NormalizedValue<float> average_max_life;
-		NormalizedValue<float> average_health;
-};
+		struct BodyGenome {
+				NormalizedValue<float> average_max_energy;
+				NormalizedValue<float> average_max_life;
+				NormalizedValue<float> average_health;
+		};
 
-struct Morphology {
-		float                  volume_growth;
-		NormalizedValue<float> average_volume;
-};
+		struct Morphology {
+				float                  volume_growth;
+				NormalizedValue<float> average_volume;
+		};
 
-} // namespace EmbryoGenomes
+	} // namespace EmbryoGenomes
 
 
 } // namespace Genomes
@@ -358,10 +359,10 @@ class CreatureGenomes {
 };
 
 namespace Populate {
-void populate_crocodile(CreatureGenomes &creature_genomes);
-void populate_fish(CreatureGenomes &creature_genomes);
-void populate_crab(CreatureGenomes &creature_genomes);
-void populate_hippopotamus(CreatureGenomes &creature_genomes);
+	void populate_crocodile(CreatureGenomes &creature_genomes);
+	void populate_fish(CreatureGenomes &creature_genomes);
+	void populate_crab(CreatureGenomes &creature_genomes);
+	void populate_hippopotamus(CreatureGenomes &creature_genomes);
 } // namespace Populate
 
 inline CreatureGenomes init() {

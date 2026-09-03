@@ -75,29 +75,29 @@ using SoilFilter   = std::move_only_function<bool(const PerceivedSoil &)>;
 class Perception;
 
 namespace PerceivedEntityGetters {
-inline constexpr const Vec3 &get_position(const PerceivedEntity &entity) {
-	return std::visit(
-		[](const auto &ent) -> const Vec3 & {
-			return ent.position;
-		},
-		entity);
-}
+	inline constexpr const Vec3 &get_position(const PerceivedEntity &entity) {
+		return std::visit(
+			[](const auto &ent) -> const Vec3 & {
+				return ent.position;
+			},
+			entity);
+	}
 
-inline constexpr const Id get_id(const PerceivedEntity &entity) {
-	return std::visit(
-		[](const auto &ent) -> Id {
-			return ent.id;
-		},
-		entity);
-}
+	inline constexpr const Id get_id(const PerceivedEntity &entity) {
+		return std::visit(
+			[](const auto &ent) -> Id {
+				return ent.id;
+			},
+			entity);
+	}
 
-inline constexpr const Size &get_size(const PerceivedEntity &entity) {
-	return std::visit(
-		[](const auto &ent) -> const Size & {
-			return ent.size;
-		},
-		entity);
-}
+	inline constexpr const Size &get_size(const PerceivedEntity &entity) {
+		return std::visit(
+			[](const auto &ent) -> const Size & {
+				return ent.size;
+			},
+			entity);
+	}
 } // namespace PerceivedEntityGetters
 
 class PerceptionView {
@@ -237,56 +237,56 @@ class Perception {
 
 namespace PerceptionAnalyzer {
 
-PerceptionView filter(const Perception           &perception,
-					  std::optional<EntityFilter> entity_filter = std::nullopt,
-					  std::optional<SoilFilter>   soil_filter   = std::nullopt);
+	PerceptionView filter(const Perception           &perception,
+						  std::optional<EntityFilter> entity_filter = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt);
 
-PerceptionView filter(const Perception               &perception,
-					  std::optional<EntityFilter>     entity_filter,
-					  std::optional<SoilFilter>       soil_filter,
-					  const std::vector<Id>          &entities,
-					  const std::vector<SoilPieceId> &soils);
+	PerceptionView filter(const Perception               &perception,
+						  std::optional<EntityFilter>     entity_filter,
+						  std::optional<SoilFilter>       soil_filter,
+						  const std::vector<Id>          &entities,
+						  const std::vector<SoilPieceId> &soils);
 
-PerceptionView filter(const PerceptionView       &view,
-					  std::optional<EntityFilter> entity_filter = std::nullopt,
-					  std::optional<SoilFilter>   soil_filter   = std::nullopt);
+	PerceptionView filter(const PerceptionView       &view,
+						  std::optional<EntityFilter> entity_filter = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt);
 
-PerceptionView filter(const PerceptionView           &view,
-					  std::optional<EntityFilter>     entity_filter,
-					  std::optional<SoilFilter>       soil_filter,
-					  const std::vector<Id>          &entities,
-					  const std::vector<SoilPieceId> &soils);
+	PerceptionView filter(const PerceptionView           &view,
+						  std::optional<EntityFilter>     entity_filter,
+						  std::optional<SoilFilter>       soil_filter,
+						  const std::vector<Id>          &entities,
+						  const std::vector<SoilPieceId> &soils);
 
-PerceptionView filter_only_entities(const Perception &perception, EntityFilter filter);
-PerceptionView filter_only_entities(const PerceptionView &view, EntityFilter filter);
+	PerceptionView filter_only_entities(const Perception &perception, EntityFilter filter);
+	PerceptionView filter_only_entities(const PerceptionView &view, EntityFilter filter);
 
-PerceptionView filter_only_entities(const Perception      &perception,
-									EntityFilter           filter,
-									const std::vector<Id> &entities);
+	PerceptionView filter_only_entities(const Perception      &perception,
+										EntityFilter           filter,
+										const std::vector<Id> &entities);
 
-PerceptionView filter_only_entities(const PerceptionView  &view,
-									EntityFilter           filter,
-									const std::vector<Id> &entities);
+	PerceptionView filter_only_entities(const PerceptionView  &view,
+										EntityFilter           filter,
+										const std::vector<Id> &entities);
 
-PerceptionView filter_only_soils(const Perception &perception, SoilFilter filter);
-PerceptionView filter_only_soils(const PerceptionView &view, SoilFilter filter);
+	PerceptionView filter_only_soils(const Perception &perception, SoilFilter filter);
+	PerceptionView filter_only_soils(const PerceptionView &view, SoilFilter filter);
 
-PerceptionView filter_only_soils(const Perception               &perception,
-								 SoilFilter                      filter,
-								 const std::vector<SoilPieceId> &soils);
+	PerceptionView filter_only_soils(const Perception               &perception,
+									 SoilFilter                      filter,
+									 const std::vector<SoilPieceId> &soils);
 
-PerceptionView filter_only_soils(const PerceptionView           &view,
-								 SoilFilter                      filter,
-								 const std::vector<SoilPieceId> &soils);
+	PerceptionView filter_only_soils(const PerceptionView           &view,
+									 SoilFilter                      filter,
+									 const std::vector<SoilPieceId> &soils);
 
-// Utils
-PerceptionView reduce(const Perception           &perception,
-					  const Radius               &radius,
-					  std::optional<EntityFilter> entity_filter,
-					  std::optional<SoilFilter>   soil_filter);
+	// Utils
+	PerceptionView reduce(const Perception           &perception,
+						  const Radius               &radius,
+						  std::optional<EntityFilter> entity_filter,
+						  std::optional<SoilFilter>   soil_filter);
 
-PerceptionView reduce(const PerceptionView       &view,
-					  const Radius               &radius,
-					  std::optional<EntityFilter> entity_filter = std::nullopt,
-					  std::optional<SoilFilter>   soil_filter   = std::nullopt);
+	PerceptionView reduce(const PerceptionView       &view,
+						  const Radius               &radius,
+						  std::optional<EntityFilter> entity_filter = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt);
 } // namespace PerceptionAnalyzer

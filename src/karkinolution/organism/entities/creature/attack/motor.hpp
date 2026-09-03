@@ -4,5 +4,5 @@
 #include <karkinolution/organism/stats.hpp>
 
 namespace AttackMotor {
-OrganismStats::Body::Damage attack(const Creature &attacker, Creature &target);
+	OrganismStats::Body::Damage attack(const Creature &attacker, Creature &target);
 } // namespace AttackMotor

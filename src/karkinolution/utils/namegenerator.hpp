@@ -22,18 +22,18 @@ class LetterPool {
 };
 
 namespace Pools {
-inline extern const LetterPool vowels;
-inline extern const LetterPool long_vowels;
-inline extern const LetterPool high_vowels;
-inline extern const LetterPool general_vowels;
+	inline extern const LetterPool vowels;
+	inline extern const LetterPool long_vowels;
+	inline extern const LetterPool high_vowels;
+	inline extern const LetterPool general_vowels;
 
-inline extern const LetterPool plosives;
-inline extern const LetterPool fricatives;
-inline extern const LetterPool liquids;
-inline extern const LetterPool nasals;
-inline extern const LetterPool approximants;
+	inline extern const LetterPool plosives;
+	inline extern const LetterPool fricatives;
+	inline extern const LetterPool liquids;
+	inline extern const LetterPool nasals;
+	inline extern const LetterPool approximants;
 
-inline extern const LetterPool consonants;
+	inline extern const LetterPool consonants;
 } // namespace Pools
 
 class Pool {
