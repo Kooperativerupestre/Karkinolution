@@ -1,5 +1,6 @@
 #pragma once
 #include "karkinolution/math/geometry/models.hpp"
+#include "karkinolution/terrain/terrain.hpp"
 #include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/math/geometry/models.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
@@ -18,9 +19,7 @@ AABB to_aabb(const GeometryForms::Radius& radius, const Vec3& position);
 } // namespace AABBConversion
 
 namespace EntityMapMotor {
-bool add(Creature&& creature, OrganismRegistry& registry, EntityMap& map);
-bool add(Corpse&& corpse, OrganismRegistry& registry, EntityMap& map);
-bool add(Egg&& egg, OrganismRegistry& registry, EntityMap& map);
+bool add(Entity&& entity, OrganismRegistry& registry, EntityMap& map, const Territory& territory);
 
 bool remove(Id id, OrganismRegistry& registry, EntityMap& map, const AABB& old_aabb);
 bool remove(Id id, OrganismRegistry& registry, EntityMap& map);
@@ -28,7 +27,6 @@ bool remove(Id id, OrganismRegistry& registry, EntityMap& map);
 std::vector<Id> find(const GeometryForms::Radius& radius, const Vec3& position,
                      const EntityMap& map);
 
-bool update_coord(Id id, OrganismRegistry& registry, EntityMap& map, const Vec3& new_coord);
-bool update_coord(Id id, OrganismRegistry& registry, EntityMap& map, const AABB& old_aabb,
-                  const Vec3& new_coord);
+bool update_coord(Id id, OrganismRegistry& registry, EntityMap& map, const Vec3& new_coord,
+                  const Territory& territory);
 } // namespace EntityMapMotor
