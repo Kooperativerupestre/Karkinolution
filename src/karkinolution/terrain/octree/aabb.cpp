@@ -3,263 +3,263 @@
 #include <optional>
 
 void OctreeNode::subdivide() {
-    const auto center = bounds_.center();
+	const auto center = bounds_.center();
 
-    for (int i = 0; i < 8; ++i) {
-        Vec3 child_min;
-        Vec3 child_max;
+	for (int i = 0; i < 8; ++i) {
+		Vec3 child_min;
+		Vec3 child_max;
 
-        child_min.x = (i & 1) ? center.x : bounds_.min.x;
-        child_max.x = (i & 1) ? bounds_.max.x : center.x;
+		child_min.x = (i & 1) ? center.x : bounds_.min.x;
+		child_max.x = (i & 1) ? bounds_.max.x : center.x;
 
-        child_min.y = (i & 2) ? center.y : bounds_.min.y;
-        child_max.y = (i & 2) ? bounds_.max.y : center.y;
+		child_min.y = (i & 2) ? center.y : bounds_.min.y;
+		child_max.y = (i & 2) ? bounds_.max.y : center.y;
 
-        child_min.z = (i & 4) ? center.z : bounds_.min.z;
-        child_max.z = (i & 4) ? bounds_.max.z : center.z;
+		child_min.z = (i & 4) ? center.z : bounds_.min.z;
+		child_max.z = (i & 4) ? bounds_.max.z : center.z;
 
-        children[i] = std::make_unique<OctreeNode>(AABB{child_min, child_max});
-    }
+		children[i] = std::make_unique<OctreeNode>(AABB{child_min, child_max});
+	}
 }
 
-std::optional<int> OctreeNode::child_containing(const AABB& other_bounds) const {
-    if (is_leaf()) {
-        return std::nullopt;
-    }
+std::optional<int> OctreeNode::child_containing(const AABB &other_bounds) const {
+	if (is_leaf()) {
+		return std::nullopt;
+	}
 
-    for (size_t i = 0; i < MAX_OCTREE_CHILDREN; i++) {
-        if (children[i].get()->bounds_.contains(other_bounds)) {
-            return static_cast<int>(i);
-        }
-    }
+	for (size_t i = 0; i < MAX_OCTREE_CHILDREN; i++) {
+		if (children[i].get()->bounds_.contains(other_bounds)) {
+			return static_cast<int>(i);
+		}
+	}
 
-    return std::nullopt;
+	return std::nullopt;
 }
 
-OctreeNode& OctreeNode::insert(const OctreeEntry& entry) {
-    if (is_leaf()) {
-        if (is_full()) {
-            subdivide();
+OctreeNode &OctreeNode::insert(const OctreeEntry &entry) {
+	if (is_leaf()) {
+		if (is_full()) {
+			subdivide();
 
-            for (size_t i = entries.size(); i-- > 0;) {
-                auto& self_entry = entries[i];
-                const auto index = child_containing(self_entry.bound);
+			for (size_t i = entries.size(); i-- > 0;) {
+				auto      &self_entry = entries[i];
+				const auto index      = child_containing(self_entry.bound);
 
-                if (index.has_value()) {
-                    children[index.value()]->insert(self_entry);
-                    entries.erase(entries.begin() + i);
-                }
-            }
+				if (index.has_value()) {
+					children[index.value()]->insert(self_entry);
+					entries.erase(entries.begin() + i);
+				}
+			}
 
-            const auto index = child_containing(entry.bound);
+			const auto index = child_containing(entry.bound);
 
-            if (index.has_value()) {
-                children[index.value()]->insert(entry);
-                return *children[index.value()];
-            }
+			if (index.has_value()) {
+				children[index.value()]->insert(entry);
+				return *children[index.value()];
+			}
 
-            entries.push_back(entry);
-            return *this;
-        } else {
-            entries.push_back(entry);
-            return *this;
-        }
-    } else {
-        const auto index = child_containing(entry.bound);
+			entries.push_back(entry);
+			return *this;
+		} else {
+			entries.push_back(entry);
+			return *this;
+		}
+	} else {
+		const auto index = child_containing(entry.bound);
 
-        if (index.has_value()) {
-            children[index.value()]->insert(entry);
-            return *children[index.value()];
-        }
+		if (index.has_value()) {
+			children[index.value()]->insert(entry);
+			return *children[index.value()];
+		}
 
-        entries.push_back(entry);
-        return *this;
-    }
+		entries.push_back(entry);
+		return *this;
+	}
 }
 
 bool OctreeNode::remove(Id id) {
-    for (size_t i = entries.size(); i-- > 0;) {
-        if (entries[i].entity_id == id) {
-            entries.erase(entries.begin() + i);
-            return true;
-        }
-    }
+	for (size_t i = entries.size(); i-- > 0;) {
+		if (entries[i].entity_id == id) {
+			entries.erase(entries.begin() + i);
+			return true;
+		}
+	}
 
-    if (is_leaf()) {
-        return false;
-    }
+	if (is_leaf()) {
+		return false;
+	}
 
-    for (auto& child : children) {
-        if (child == nullptr) {
-            continue;
-        }
+	for (auto &child : children) {
+		if (child == nullptr) {
+			continue;
+		}
 
-        const auto had_remove = child->remove(id);
+		const auto had_remove = child->remove(id);
 
-        if (had_remove) {
-            return true;
-        }
-    }
+		if (had_remove) {
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
 
-bool OctreeNode::remove(Id id, const AABB& old_box) {
-    for (size_t i = entries.size(); i-- > 0;) {
-        if (entries[i].entity_id == id) {
-            entries.erase(entries.begin() + i);
-            return true;
-        }
-    }
+bool OctreeNode::remove(Id id, const AABB &old_box) {
+	for (size_t i = entries.size(); i-- > 0;) {
+		if (entries[i].entity_id == id) {
+			entries.erase(entries.begin() + i);
+			return true;
+		}
+	}
 
-    if (is_leaf()) {
-        return false;
-    }
+	if (is_leaf()) {
+		return false;
+	}
 
-    const auto index = child_containing(old_box);
+	const auto index = child_containing(old_box);
 
-    if (!index.has_value()) {
-        return false;
-    }
+	if (!index.has_value()) {
+		return false;
+	}
 
-    return children[index.value()]->remove(id, old_box);
+	return children[index.value()]->remove(id, old_box);
 }
 
-bool OctreeNode::update(Id id, const AABB& new_box) {
-    const auto had_remove = remove(id);
+bool OctreeNode::update(Id id, const AABB &new_box) {
+	const auto had_remove = remove(id);
 
-    if (!had_remove) {
-        return false; // if removal fails, insertion does not execute
-    }
+	if (!had_remove) {
+		return false; // if removal fails, insertion does not execute
+	}
 
-    insert(OctreeEntry{.entity_id = id, .bound = new_box});
-    return true;
+	insert(OctreeEntry{.entity_id = id, .bound = new_box});
+	return true;
 }
 
-bool OctreeNode::update(Id id, const AABB& old_box, const AABB& new_box) {
-    const auto had_remove = remove(id, old_box);
+bool OctreeNode::update(Id id, const AABB &old_box, const AABB &new_box) {
+	const auto had_remove = remove(id, old_box);
 
-    if (!had_remove) {
-        return false; // if removal fails, insertion does not execute
-    }
+	if (!had_remove) {
+		return false; // if removal fails, insertion does not execute
+	}
 
-    insert(OctreeEntry{.entity_id = id, .bound = new_box});
-    return true;
+	insert(OctreeEntry{.entity_id = id, .bound = new_box});
+	return true;
 }
 
 bool OctreeNode::exists(Id id) const {
-    for (size_t i = entries.size(); i-- > 0;) {
-        if (entries[i].entity_id == id) {
-            return true;
-        }
-    }
+	for (size_t i = entries.size(); i-- > 0;) {
+		if (entries[i].entity_id == id) {
+			return true;
+		}
+	}
 
-    if (is_leaf()) {
-        return false;
-    }
+	if (is_leaf()) {
+		return false;
+	}
 
-    for (const auto& child : children) {
-        if (child == nullptr) {
-            continue;
-        }
+	for (const auto &child : children) {
+		if (child == nullptr) {
+			continue;
+		}
 
-        const auto found = child->exists(id);
+		const auto found = child->exists(id);
 
-        if (found) {
-            return true;
-        }
-    }
+		if (found) {
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
 
-bool OctreeNode::exists(Id id, const AABB& aabb) const {
-    for (size_t i = entries.size(); i-- > 0;) {
-        if (entries[i].entity_id == id) {
-            return true;
-        }
-    }
+bool OctreeNode::exists(Id id, const AABB &aabb) const {
+	for (size_t i = entries.size(); i-- > 0;) {
+		if (entries[i].entity_id == id) {
+			return true;
+		}
+	}
 
-    if (is_leaf()) {
-        return false;
-    }
+	if (is_leaf()) {
+		return false;
+	}
 
-    const auto index = child_containing(aabb);
+	const auto index = child_containing(aabb);
 
-    if (!index.has_value()) {
-        return false;
-    }
+	if (!index.has_value()) {
+		return false;
+	}
 
-    return children[index.value()]->exists(id, aabb);
+	return children[index.value()]->exists(id, aabb);
 }
 
-void OctreeNode::find(const AABB& aabb, std::vector<OctreeEntry*>& output_entries) {
-    if (!bounds_.intersects(aabb)) {
-        return;
-    }
+void OctreeNode::find(const AABB &aabb, std::vector<OctreeEntry*> &output_entries) {
+	if (!bounds_.intersects(aabb)) {
+		return;
+	}
 
-    for (auto& entry : entries) {
-        if (entry.bound.intersects(aabb)) {
-            output_entries.push_back(&entry);
-        }
-    }
+	for (auto &entry : entries) {
+		if (entry.bound.intersects(aabb)) {
+			output_entries.push_back(&entry);
+		}
+	}
 
-    if (is_leaf()) {
-        return;
-    }
+	if (is_leaf()) {
+		return;
+	}
 
-    for (auto& child : children) {
-        if (child == nullptr) {
-            continue;
-        }
+	for (auto &child : children) {
+		if (child == nullptr) {
+			continue;
+		}
 
-        child->find(aabb, output_entries);
-    }
+		child->find(aabb, output_entries);
+	}
 }
 
-void OctreeNode::find(const AABB& aabb, std::vector<const OctreeEntry*>& output_entries) const {
-    if (!bounds_.intersects(aabb)) {
-        return;
-    }
+void OctreeNode::find(const AABB &aabb, std::vector<const OctreeEntry*> &output_entries) const {
+	if (!bounds_.intersects(aabb)) {
+		return;
+	}
 
-    for (const auto& entry : entries) {
-        if (entry.bound.intersects(aabb)) {
-            output_entries.push_back(&entry);
-        }
-    }
+	for (const auto &entry : entries) {
+		if (entry.bound.intersects(aabb)) {
+			output_entries.push_back(&entry);
+		}
+	}
 
-    if (is_leaf()) {
-        return;
-    }
+	if (is_leaf()) {
+		return;
+	}
 
-    for (const auto& child : children) {
-        if (child == nullptr) {
-            continue;
-        }
+	for (const auto &child : children) {
+		if (child == nullptr) {
+			continue;
+		}
 
-        child->find(aabb, output_entries);
-    }
+		child->find(aabb, output_entries);
+	}
 }
 
-std::vector<OctreeEntry*> OctreeNode::find(const AABB& aabb) {
-    std::vector<OctreeEntry*> output{};
-    find(aabb, output);
-    return output;
+std::vector<OctreeEntry*> OctreeNode::find(const AABB &aabb) {
+	std::vector<OctreeEntry*> output{};
+	find(aabb, output);
+	return output;
 }
 
-std::vector<const OctreeEntry*> OctreeNode::find(const AABB& aabb) const {
-    std::vector<const OctreeEntry*> output{};
-    find(aabb, output);
-    return output;
+std::vector<const OctreeEntry*> OctreeNode::find(const AABB &aabb) const {
+	std::vector<const OctreeEntry*> output{};
+	find(aabb, output);
+	return output;
 }
 
-std::vector<Id> OctreeNode::find_ids(const AABB& aabb) const {
-    auto found = find(aabb);
+std::vector<Id> OctreeNode::find_ids(const AABB &aabb) const {
+	auto found = find(aabb);
 
-    std::vector<Id> output;
+	std::vector<Id> output;
 
-    for (const auto& entry : found) {
-        output.push_back(entry->entity_id);
-    }
-    return output;
+	for (const auto &entry : found) {
+		output.push_back(entry->entity_id);
+	}
+	return output;
 }

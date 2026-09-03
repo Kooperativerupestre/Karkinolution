@@ -1,5 +1,6 @@
 #pragma once
 #include "karkinolution/organism/entities/identity.hpp"
+
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/math/units.hpp>
@@ -12,37 +13,47 @@ using OrganismStats::Health::Health;
 using PhysicsStats::Volume;
 
 class EmbryonicEnergy : public FloatValue {
-  public:
-    using FloatValue::FloatValue;
+	public:
+
+		using FloatValue::FloatValue;
 };
 
 class EmbryoHungry : public LimitedValue<EmbryoHungry, float, 2.0f, 0.0f> {
-  public:
-    template <typename T> EmbryoHungry(T value) : LimitedValue(value) {}
+	public:
 
-    EmbryoHungry() : LimitedValue(0) {}
+		template <typename T>
+		EmbryoHungry(T value)
+			: LimitedValue(value) {}
+
+		EmbryoHungry()
+			: LimitedValue(0) {}
 };
 
 struct Embryo {
-    uint64_t id;
-    Energy energy;
-    Life life;
-    Health health;
-    Volume volume;
-    Genome genome;
-    int age;
-    Vec3 position;
+		uint64_t id;
+		Energy   energy;
+		Life     life;
+		Health   health;
+		Volume   volume;
+		Genome   genome;
+		int      age;
+		Vec3     position;
 
-    [[nodiscard]] Size size() const noexcept {
-        return Size{
-            .lateral = volume.value * 0.8, .height = volume.value * 0.5, .back = volume.value};
-    }
-    [[nodiscard]] Id build_id() const noexcept { return IDF::create_embryo_id(id); }
-    [[nodiscard]] EmbryoHungry hungry() const;
+		[[nodiscard]] Size size() const noexcept {
+			return Size{.lateral = volume.value * 0.8,
+						.height  = volume.value * 0.5,
+						.back    = volume.value};
+		}
 
-    [[nodiscard]] double specie_relative_volume() const;
-    [[nodiscard]] float specie_relative_energy_max() const;
-    [[nodiscard]] float specie_relative_life() const;
+		[[nodiscard]] Id build_id() const noexcept {
+			return IDF::create_embryo_id(id);
+		}
+
+		[[nodiscard]] EmbryoHungry hungry() const;
+
+		[[nodiscard]] double specie_relative_volume() const;
+		[[nodiscard]] float  specie_relative_energy_max() const;
+		[[nodiscard]] float  specie_relative_life() const;
 };
 
-using EmbryoFunction = void (*)(Embryo&);
+using EmbryoFunction = void (*)(Embryo &);
