@@ -351,8 +351,8 @@ template <typename IdType> class RStarTree {
     std::vector<IdType> find(const Box3D& box, const std::vector<RtreeEntry<IdType>>& entries,
                              std::vector<IdType>& ids) const;
 
-    RStarTreeMotor::_Internal_FindSoilPieceOutput
-    find_soil_piece(IdType id, std::vector<RtreeNode<IdType>*>& path);
+    RStarTreeMotor::_Internal_FindSoilPieceOutput find_node(IdType id,
+                                                            std::vector<RtreeNode<IdType>*>& path);
 
     void insert_entry(RtreeEntry<IdType> entry, std::vector<RtreeNode<IdType>*> path,
                       bool already_reinserted);
@@ -796,17 +796,16 @@ std::vector<IdType> RStarTree<IdType>::find(const Box3D& box,
 
 template <typename IdType>
 RStarTreeMotor::FindSoilPieceOutput<IdType> RStarTree<IdType>::find(IdType id) {
-
     std::vector<RtreeNode<IdType>*> path{root_.get()};
 
-    auto output = find(id, path);
+    auto output = find_node(id, path);
 
     return {.path = path, .index = output.index, .found = output.found};
 }
 
 template <typename IdType>
 RStarTreeMotor::_Internal_FindSoilPieceOutput
-RStarTree<IdType>::find_soil_piece(IdType id, std::vector<RtreeNode<IdType>*>& path) {
+RStarTree<IdType>::find_node(IdType id, std::vector<RtreeNode<IdType>*>& path) {
 
     for (size_t i = 0; i < path.back()->entries.size(); i++) {
 
@@ -824,7 +823,7 @@ RStarTree<IdType>::find_soil_piece(IdType id, std::vector<RtreeNode<IdType>*>& p
 
             path.push_back(&node);
 
-            auto output = find(id, path);
+            auto output = find_node(id, path);
 
             if (output.found) {
                 return {.found = true, .index = output.index};
