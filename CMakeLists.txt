@@ -12,6 +12,14 @@ option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
 
 enable_testing()
 
+# ---------------- Dependencies ----------------
+
+set(FASTNOISE2_TOOLS OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(
+    "${CMAKE_SOURCE_DIR}/dependencies/FastNoise2"
+)
+
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
@@ -38,6 +46,11 @@ target_sources(karkinolution
 
 target_include_directories(karkinolution PUBLIC
     "${CMAKE_SOURCE_DIR}/src"
+)
+
+target_link_libraries(karkinolution
+    PUBLIC
+        FastNoise
 )
 
 # ---------------- Main executable ----------------
