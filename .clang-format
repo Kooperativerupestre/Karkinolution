@@ -1,12 +1,102 @@
 BasedOnStyle: LLVM
 
+# Indentation
 IndentWidth: 4
 TabWidth: 4
-UseTab: Never
+UseTab: ForContinuationAndIndentation
+ContinuationIndentWidth: 4
 
+# Lines
 ColumnLimit: 100
 
+# Braces
 BreakBeforeBraces: Attach
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseExpressionOnASingleLine: false
+AllowShortLambdasOnASingleLine: Empty
+AllowShortNamespacesOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
 
+# Switches
+IndentCaseLabels: true
+
+# Pointers
 PointerAlignment: Left
-ReferenceAlignment: Left
+ReferenceAlignment: Right
+DerivePointerAlignment: false
+
+# Classes
+IndentAccessModifiers: true
+AccessModifierOffset: 0
+EmptyLineAfterAccessModifier: Always
+EmptyLineBeforeAccessModifier: Always
+
+# Constructors
+PackConstructorInitializers: Never
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 4
+
+# Arguments
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# Expressions
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+AlignOperands: DontAlign
+
+# Alignment
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  PadOperators: true
+
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignFunctionDeclarations: true
+  AlignFunctionPointers: true
+
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  PadOperators: true
+
+# Includes
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+
+# Namespaces
+NamespaceIndentation: None
+FixNamespaceComments: true
+ShortNamespaceLines: 0
+
+# Comments
+ReflowComments: true
+SpacesBeforeTrailingComments: 1
+
+# Initialization
+Cpp11BracedListStyle: true
+
+# Commas
+InsertTrailingCommas: None
+
+# Spaces
+SpaceBeforeParens: ControlStatements
+SpaceBeforeAssignmentOperators: true
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+SpacesInSquareBrackets: false
+
+# Empty lines
+MaxEmptyLinesToKeep: 2
+SeparateDefinitionBlocks: Always
