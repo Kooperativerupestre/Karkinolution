@@ -34,6 +34,14 @@ const Embryo &EntitiesRegistry::at_embryo(Id id) const {
 	return std::get<Embryo>(this->at(id));
 }
 
+Egg &EntitiesRegistry::at_egg(Id id) {
+	return std::get<Egg>(this->at(id));
+}
+
+const Egg &EntitiesRegistry::at_egg(Id id) const {
+	return std::get<Egg>(this->at(id));
+}
+
 // ============================================================================
 // EntityGetters
 // ============================================================================
@@ -56,6 +64,10 @@ Id EntityGetters::get_id(const Creature &creature) {
 
 Id EntityGetters::get_id(const Embryo &embryo) {
 	return IDF::create_embryo_id(embryo.id);
+}
+
+Id EntityGetters::get_id(const Egg &egg) {
+	return egg.build_id();
 }
 
 Vec3 &EntityGetters::get_position(Entity &entity) {

@@ -22,10 +22,10 @@ AABB AABBConversion::to_aabb(const Size &size, const Vec3 &position) {
 	return AABB{.max = position + half_size, .min = position - half_size};
 }
 
-AABB to_abb(const GeometryForms::Radius &radius, const Vec3 &position) {
+AABB AABBConversion::to_aabb(const GeometryForms::Radius &radius, const Vec3 &position) {
 	Vec3 extent{radius.value, radius.value, radius.value};
 
-	return AABB{position - extent, position + extent};
+	return AABB{.max = position + extent, .min = position - extent};
 }
 
 bool EntityMapMotor::add(Entity          &&entity,
@@ -100,15 +100,16 @@ bool EntityMapMotor::update_coord(Id                id,
 	auto       &position  = EntityGetters::get_position(entity);
 	const auto &size      = EntityGetters::get_size(entity);
 	const AABB  old_bound = AABBConversion::to_aabb(size, position);
-
-	position = new_coord;
-
-	const AABB new_bound = AABBConversion::to_aabb(size, position);
+	const AABB  new_bound = AABBConversion::to_aabb(size, new_coord);
 
 	if (!AABBConversion::to_aabb(territory.size(), Vec3{0.0, 0.0, 0.0}).contains(new_bound)) {
 		return false;
 	}
 	const auto was_updated = map.root().update(id, old_bound, new_bound);
+	if (!was_updated) {
+		return false;
+	}
+	position = new_coord;
 	assert(was_updated);
 	return true;
 }
