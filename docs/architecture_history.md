@@ -127,3 +127,8 @@ By making the constraint part of the type and therefore enforcing it at compile 
 These limited values may vary depending on the requirements of the object that inherits from the wrapper. For more dynamic values, such as health, energy, and others, it does not make sense to require templates, creating a chain of template instantiations without any clear benefit.
 
 These values can frequently change their bounds at runtime, unlike `NormalizedValue` or `LimitedValue`, whose bounds are much more stable and therefore make more sense as part of the type itself.
+
+# 1.2
+
+I chose R*-tree for the territory because I needed a spatial data structure that makes area-based searches, easy and efficient. Octree was chosen because I needed the same properties as R*-tree, plus one additional requirement: The creature's position is often updated, so I looked into the Octree and I realized that the insertion and updates are faster than an6 R*-tree. I'm open to changes if my reasoning is proven wrong.
+
