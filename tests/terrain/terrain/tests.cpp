@@ -7,7 +7,7 @@
 #include <karkinolution/test/terrain_test_generator.hpp>
 
 namespace {
-	Territory give_me_territory(const Size &size = {10.0, 10.0, 10.0}) {
+	Territory give_me_territory(const Size &size = {50.0, 50.0, 50.0}) {
 		return TerrainFactory::gen_terrain(size, 666, TerrainScale::NORMAL, 1.0, 10.0, 20.0);
 	}
 } // namespace
