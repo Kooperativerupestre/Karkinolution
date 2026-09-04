@@ -57,7 +57,7 @@ bool Territory::remove(SoilPieceId id) {
 		return false;
 	}
 
- 	auto was_be_removed = data_.remove(id);
+	auto was_be_removed = data_.remove(id);
 	if (!was_be_removed) {
 		return false;
 	}
