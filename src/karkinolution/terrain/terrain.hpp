@@ -31,6 +31,9 @@ class Territory {
 
 	public:
 
+		Territory(const Size &size)
+			: size_(size) {}
+
 		const Size &size() const {
 			return size_;
 		}
