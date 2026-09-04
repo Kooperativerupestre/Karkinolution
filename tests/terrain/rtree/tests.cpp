@@ -216,6 +216,17 @@ TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
 		EXPECT_TRUE(tree.exists(id))
 			<< "Lost soil piece after deleting " << deleted_id << ": " << id;
 	}
-
 	assert_tree_invariants(tree);
+}
+
+TEST(RStarTreeTest, ClearReallyWorks) {
+	TRStarTree tree;
+
+	constexpr SoilPieceId count = 100;
+
+	for (SoilPieceId id = 0; id < count; ++id) {
+		tree.insert(id, make_box(static_cast<double>(id * 2), 0.0, 0.0));
+	}
+	tree.clear();
+	ASSERT_TRUE(tree.size() == 0);
 }
