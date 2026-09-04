@@ -346,6 +346,10 @@ template <typename IdType> class RStarTree {
 		bool remove(IdType id);
 		bool exists(IdType id) const;
 
+		std::vector<IdType> get_all_ids() const;
+		int                 size() const;
+		void                clear();
+
 		const RtreeNode<IdType> &root() const {
 			return *root_.get();
 		}
@@ -353,6 +357,10 @@ template <typename IdType> class RStarTree {
 	private:
 
 		std::unique_ptr<RtreeNode<IdType>> root_;
+
+		void get_all_ids(std::vector<IdType> &ids, const RtreeNode<IdType> &node) const;
+
+		void size(int &count, const RtreeNode<IdType> &node) const;
 
 		void split(RtreeNode<IdType> &leaf, RtreeNode<IdType>* parent);
 
@@ -810,7 +818,6 @@ std::vector<IdType> RStarTree<IdType>::find(const Box3D                         
 			}
 		}
 	}
-
 	return ids;
 }
 
@@ -956,4 +963,50 @@ bool RStarTree<IdType>::exists_impl(const RtreeNode<IdType> &node, IdType id) co
 	}
 
 	return false;
+}
+
+template <typename IdType> void RStarTree<IdType>::clear() {
+	root_->box = Box3D{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 0.0}};
+	root_->entries.clear();
+	root_->type = NodeType::LEAF;
+}
+
+template <typename IdType> std::vector<IdType> RStarTree<IdType>::get_all_ids() const {
+	std::vector<IdType> ids;
+
+	get_all_ids(ids, root());
+	return ids;
+}
+
+template <typename IdType> int RStarTree<IdType>::size() const {
+	int count = 0;
+	size(count, root());
+	return count;
+}
+
+template <typename IdType>
+void RStarTree<IdType>::size(int &count, const RtreeNode<IdType> &node) const {
+	if (node.type == NodeType::LEAF) {
+		count += node.entries.size();
+	} else {
+		for (const RtreeEntry<IdType> &entry : node.entries) {
+			assert(std::holds_alternative<std::unique_ptr<RtreeNode<IdType>>>(entry.content));
+			size(count, *std::get<std::unique_ptr<RtreeNode<IdType>>>(entry.content));
+		}
+	}
+}
+
+template <typename IdType>
+void RStarTree<IdType>::get_all_ids(std::vector<IdType> &ids, const RtreeNode<IdType> &node) const {
+
+	if (node.type == NodeType::LEAF) {
+		for (const RtreeEntry<IdType> &entry : node.entries) {
+			ids.push_back(std::get<IdType>(entry.content));
+		}
+	} else {
+		for (const RtreeEntry<IdType> &entry : node.entries) {
+			assert(std::holds_alternative<std::unique_ptr<RtreeNode<IdType>>>(entry.content));
+			get_all_ids(ids, *std::get<std::unique_ptr<RtreeNode<IdType>>>(entry.content));
+		}
+	}
 }

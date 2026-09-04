@@ -69,3 +69,8 @@ bool Territory::remove(SoilPieceId id) {
 
 	return soils_.try_del(id);
 }
+
+void Territory::clear() {
+	data_.clear();
+	soils_.clear();
+}

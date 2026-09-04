@@ -20,7 +20,15 @@ class SoilPieceRegistry : public BaseStorage<SoilPieceId, SoilPiece> {
 		using BaseStorage<SoilPieceId, SoilPiece>::BaseStorage;
 };
 
+class TerritoryTest;
+
+// don't use if you aren't testing
+// this exists only for the creating of invalid states
+
+
 class Territory {
+		friend class TerritoryTest;
+
 	private:
 
 		Size size_;
@@ -42,6 +50,10 @@ class Territory {
 			return soils_;
 		}
 
+		const RStarTree<SoilPieceId> &internal_tree() const {
+			return data_; // don't use if the need isn't test
+		}
+
 		Box3D box() const {
 			return BoxConversion::to_box(size_, Vec3{0, 0, 0});
 		}
@@ -50,4 +62,5 @@ class Territory {
 		bool                     remove(SoilPieceId id);
 		std::vector<SoilPieceId> find(const SoilPiece &piece) const;
 		std::vector<SoilPieceId> find(const Radius &radius, const Vec3 &position) const;
+		void                     clear();
 };

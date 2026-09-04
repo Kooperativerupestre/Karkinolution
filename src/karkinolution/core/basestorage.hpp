@@ -63,6 +63,10 @@ template <typename K, typename V> class BaseStorage {
 			data.reserve(i);
 		}
 
+		void clear() {
+			data.clear();
+		}
+
 		template <typename Predicate> bool exists_value(Predicate predicate) const {
 			for (const auto &[key, value] : data) {
 				if (predicate(key, value)) {
@@ -95,6 +99,10 @@ template <typename K, typename V> class BaseStorage {
 
 		void add(const K &k, const V &v) {
 			data.emplace(k, v);
+		}
+
+		void add(const K &k, V &&v) {
+			data.emplace(k, std::forward<V>(v));
 		}
 
 		template <typename V2> bool try_add(const K &k, V2 &&v) {
