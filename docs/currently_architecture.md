@@ -72,4 +72,9 @@ The project should be organized primarily by domain rather than by technical res
 
 # Atomicity
 
-The EntityMapMotor & TerritoryMotor must have atomic operations. if the R*-tree or Octree fails, or if the OrganismRegistry or SoilPieceRegistry fails, the entire operation must be reverted.
+Every operation that depends on more than one system, must be atomic (if it's possible).
+Operation X:
+- Operation A
+- Operation B
+
+If operation A or B fails, the state must be rolled back.
