@@ -36,7 +36,7 @@ bool EntityMapMotor::add(Entity          &&entity,
 	const auto position    = EntityGetters::get_position(entity);
 	const auto entity_aabb = AABBConversion::to_aabb(size, position);
 
-	if (!AABBConversion::to_aabb(territory.radius(), Vec3{0.0, 0.0, 0.0}).contains(entity_aabb)) {
+	if (!AABBConversion::to_aabb(territory.size(), Vec3{0.0, 0.0, 0.0}).contains(entity_aabb)) {
 		return false;
 	}
 
@@ -105,7 +105,7 @@ bool EntityMapMotor::update_coord(Id                id,
 
 	const AABB new_bound = AABBConversion::to_aabb(size, position);
 
-	if (!AABBConversion::to_aabb(territory.radius(), Vec3{0.0, 0.0, 0.0}).contains(new_bound)) {
+	if (!AABBConversion::to_aabb(territory.size(), Vec3{0.0, 0.0, 0.0}).contains(new_bound)) {
 		return false;
 	}
 	const auto was_updated = map.root().update(id, old_bound, new_bound);
