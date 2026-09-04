@@ -21,7 +21,7 @@ Box3D BoxConversion::to_box(const Size &size, const Vec3 &position) {
 Box3D BoxConversion::to_box(const Radius &radius, const Vec3 &center) {
 	Vec3 extent{radius.value, radius.value, radius.value};
 
-	return Box3D{center - extent, center + extent};
+	return Box3D{.max = center + extent, .min = center - extent};
 }
 
 bool Territory::add(SoilPiece &&piece) {
