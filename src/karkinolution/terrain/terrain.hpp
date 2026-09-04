@@ -23,15 +23,16 @@ class SoilPieceRegistry : public BaseStorage<SoilPieceId, SoilPiece> {
 class Territory {
 	private:
 
-		Radius radius_;
+		Size size_;
+
 
 		RStarTree<SoilPieceId> data_;
 		SoilPieceRegistry      soils_;
 
 	public:
 
-		const Radius &radius() const {
-			return radius_;
+		const Size &size() const {
+			return size_;
 		}
 
 		const SoilPieceRegistry &soils() const {
@@ -39,7 +40,7 @@ class Territory {
 		}
 
 		Box3D box() const {
-			return BoxConversion::to_box(radius_, Vec3{0, 0, 0});
+			return BoxConversion::to_box(size_, Vec3{0, 0, 0});
 		}
 
 		bool                     add(SoilPiece &&piece);
