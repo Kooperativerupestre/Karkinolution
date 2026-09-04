@@ -47,7 +47,14 @@ struct Components {
 				return false;
 			}
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpotentially-evaluated-expression"
+#endif
 			const auto component_type = std::type_index(typeid(*component));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 			if (data.contains(component_type)) {
 				return false;
 			}
