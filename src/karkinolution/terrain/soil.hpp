@@ -123,7 +123,7 @@ struct Blueprint {
 		Components gen_components() const;
 };
 
-inline const std::unordered_map<SoilTypes, Blueprint> blueprints = {
+inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
 	{SoilTypes::DIRT,
 	 Blueprint{.default_components = {
 				   []() -> std::unique_ptr<Component> {
@@ -182,5 +182,6 @@ struct SoilPiece {
 };
 
 namespace SoilF {
-	SoilPiece gen_soil_piece(SoilTypes s_t);
+	SoilPiece
+	gen_soil_piece(SoilTypes s_t, const GeometryForms::Radius &radius, const Vec3 &position);
 } // namespace SoilF
