@@ -1,3 +1,4 @@
+#include "karkinolution/math/stats/compile_values.hpp"
 #include "karkinolution/math/units.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
@@ -189,4 +190,15 @@ PerceptionView PerceptionAnalyzer::reduce(const PerceptionView       &view,
 		},
 		view.entities(),
 		view.soils());
+}
+
+NormalizedValue<double> PerceptionAnalyzer::normalize_distance(const Perception &perception,
+															   const Vec3       &position) {
+	return position.distance_to(perception.farthest()) / perception.farthest_distance();
+}
+
+NormalizedValue<double> PerceptionAnalyzer::normalize_distance(const PerceptionView &view,
+															   const Vec3           &position) {
+	return position.distance_to(view.perception().farthest())
+		/ view.perception().farthest_distance();
 }
