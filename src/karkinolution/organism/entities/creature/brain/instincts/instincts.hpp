@@ -54,9 +54,9 @@ namespace PlannerNothing {
 } // namespace PlannerNothing
 
 using AllIntentPresets = std::variant<FindFoodPresets, NothingPresets>;
+using PlannerOutput    = std::variant<MovePreset, std::monostate>;
 
 namespace Planner {
 	AllIntentPresets resolve_intent(const Creature &creature, const Perception &perception);
-	std::variant<MovePreset, std::monostate> plan(const Creature   &creature,
-												  const Perception &perception);
+	PlannerOutput    plan(const Creature &creature, const Perception &perception);
 } // namespace Planner
