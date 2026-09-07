@@ -2,6 +2,7 @@
 #include "karkinolution/organism/registry.hpp"
 
 #include <karkinolution/organism/entities/creature/creature.hpp>
+#include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/entities.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/foods/nutrient.hpp>
@@ -55,6 +56,11 @@ namespace CreaturePhysiology {
 	CreatureFunction get_diseases_effect(const Creature         &creature,
 										 const EntitiesRegistry &entities);
 	bool             is_dead(const Creature &creature);
+
+	// Hatches a mature embryo into a fully-initialised Creature.
+	// Maps the embryo's current energy, life, health, volume, genome and
+	// position directly onto the newborn. Gender is randomly assigned here.
+	[[nodiscard]] Creature hatch_embryo(const Embryo &embryo);
 } // namespace CreaturePhysiology
 
 namespace BrainPhysiology {
