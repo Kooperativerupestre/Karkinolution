@@ -4,6 +4,8 @@ cmake-build-*/
 out/
 build-valgrind
 build-asan
+build-gcc
+build-release
 
 # --- CMake generated files ---
 CMakeFiles/
