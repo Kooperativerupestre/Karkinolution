@@ -14,6 +14,27 @@
 #include <optional>
 #include <vector>
 
+std::vector<std::reference_wrapper<const PerceivedSoil>> PerceptionView::resolved_soils() const {
+	std::vector<std::reference_wrapper<const PerceivedSoil>> r_soils;
+	r_soils.reserve(soils_.size());
+
+	for (auto soil_id : soils_) {
+		r_soils.push_back(std::ref(perception_->soils().at(soil_id)));
+	}
+	return r_soils;
+}
+
+std::vector<std::reference_wrapper<const PerceivedEntity>>
+PerceptionView::resolved_entities() const {
+	std::vector<std::reference_wrapper<const PerceivedEntity>> r_entities;
+	r_entities.reserve(entities_.size());
+
+	for (auto entity_id : entities_) {
+		r_entities.push_back(std::ref(perception_->entities().at(entity_id)));
+	}
+	return r_entities;
+}
+
 PerceptionView PerceptionAnalyzer::filter(const Perception           &perception,
 										  std::optional<EntityFilter> entity_filter,
 										  std::optional<SoilFilter>   soil_filter) {

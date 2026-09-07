@@ -11,9 +11,9 @@
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 
 void ReproductionStateMotor::run(Creature &creature) {
-	ReproductionValidator::has_uterus(creature.reproduction);
+	ReproductionValidator::has_uterus(creature.body.reproductive.state);
 
-	auto &uterus = std::get<Uterus>(creature.reproduction.state);
+	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
 
 	if (uterus.is_pregnant()) {
 		UterusMotor::transfer_energy_to_uterus(creature);
@@ -22,10 +22,10 @@ void ReproductionStateMotor::run(Creature &creature) {
 }
 
 void ReproductionStateMotor::prepair_to_conceive(Creature &creature) {
-	ReproductionValidator::has_uterus(creature.reproduction);
-	ReproductionValidator::is_not_pregnant(creature.reproduction);
+	ReproductionValidator::has_uterus(creature.body.reproductive.state);
+	ReproductionValidator::is_not_pregnant(creature.body.reproductive.state);
 
-	auto &uterus = std::get<Uterus>(creature.reproduction.state);
+	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
 
 	UterusMotor::transfer_energy_to_uterus(creature,
 										   NormalizedValue<float>(0.3f),
@@ -43,8 +43,8 @@ void ReproductionStateMotor::prepair_to_conceive(Creature &creature) {
 
 std::variant<Embryo, ConceiveOutput> ReproductionStateMotor::conceive(Creature &female,
 																	  Creature &male) {
-	ReproductionValidator::has_uterus(female.reproduction);
-	auto &uterus = std::get<Uterus>(female.reproduction.state);
+	ReproductionValidator::has_uterus(female.body.reproductive.state);
+	auto &uterus = std::get<Uterus>(female.body.reproductive.state.state);
 
 	if (uterus.is_pregnant()) {
 		return ConceiveOutput::ALREADY_PREGNANT;

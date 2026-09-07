@@ -4,6 +4,7 @@
 #include "karkinolution/organism/foods/foods.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
 
+#include <functional>
 #include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -117,7 +118,7 @@ class PerceptionView {
 					   const std::vector<Id>          entities,
 					   const Perception              &perception,
 					   std::optional<EntityFilter>    entity_filter = std::nullopt,
-					   std::optional<SoilFilter>      soil_filter   = std::nullopt) {
+					   std::optional<SoilFilter> soil_filter        = std::nullopt) {
 
 			if (!entity_filter.has_value() && !soil_filter.has_value()) {
 				throw SimulationError("At least one filter should have value");
@@ -147,6 +148,9 @@ class PerceptionView {
 		const std::vector<Id> &entities() const {
 			return entities_;
 		}
+
+		std::vector<std::reference_wrapper<const PerceivedSoil>>   resolved_soils() const;
+		std::vector<std::reference_wrapper<const PerceivedEntity>> resolved_entities() const;
 
 		bool exists(Id id) const {
 			for (const auto &o_id : entities_) {
@@ -239,7 +243,7 @@ namespace PerceptionAnalyzer {
 
 	PerceptionView filter(const Perception           &perception,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter>   soil_filter   = std::nullopt);
+						  std::optional<SoilFilter> soil_filter     = std::nullopt);
 
 	PerceptionView filter(const Perception               &perception,
 						  std::optional<EntityFilter>     entity_filter,
@@ -249,7 +253,7 @@ namespace PerceptionAnalyzer {
 
 	PerceptionView filter(const PerceptionView       &view,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter>   soil_filter   = std::nullopt);
+						  std::optional<SoilFilter> soil_filter     = std::nullopt);
 
 	PerceptionView filter(const PerceptionView           &view,
 						  std::optional<EntityFilter>     entity_filter,
@@ -282,11 +286,11 @@ namespace PerceptionAnalyzer {
 	// Utils
 	PerceptionView reduce(const Perception           &perception,
 						  const Radius               &radius,
-						  std::optional<EntityFilter> entity_filter,
-						  std::optional<SoilFilter>   soil_filter);
+						  std::optional<EntityFilter> entity_filter = std::nullopt,
+						  std::optional<SoilFilter> soil_filter     = std::nullopt);
 
 	PerceptionView reduce(const PerceptionView       &view,
 						  const Radius               &radius,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter>   soil_filter   = std::nullopt);
+						  std::optional<SoilFilter> soil_filter     = std::nullopt);
 } // namespace PerceptionAnalyzer

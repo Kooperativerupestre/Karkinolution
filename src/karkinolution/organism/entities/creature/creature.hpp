@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/math/units.hpp>
+#include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
@@ -57,6 +58,7 @@ struct MuscleStructure {
 
 struct BodyReproductive {
 		FertilityCooldown fertility;
+		ReproductiveState state;
 };
 
 struct Morphology {
@@ -102,18 +104,44 @@ struct Ontology {
 		uint64_t    id;
 };
 
-struct Brain {
+struct Creature;
+
+class Brain {
+		friend class Creature;
+
+	private:
+
+		Intent intent_;
+
+	public:
+
+		Brain() {
+			intent_.type = IntentTypes::NOTHING, intent_.time = 0;
+		}
+
 		std::optional<AttackedEvent> last_attack = std::nullopt;
 		NormalizedValue<float>       sociability;
+
+		const Intent &intent() const {
+			return intent_;
+		}
+
+		void pass_intent() {
+			intent_.time++;
+		}
+
+		void switch_intent(IntentTypes type) {
+			intent_.type = type;
+			intent_.time = 0;
+		}
 };
 
 struct Creature {
 		Genome genome;
 
-		Brain             brain;
-		Ontology          ontology;
-		Body              body;
-		ReproductiveState reproduction;
+		Brain    brain;
+		Ontology ontology;
+		Body     body;
 
 		Vec3 position;
 		Creature(const Creature &)            = delete;
