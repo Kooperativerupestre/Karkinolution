@@ -1,3 +1,4 @@
+#include "karkinolution/organism/entities/creature/brain/intents.hpp"
 #include "karkinolution/organism/registry.hpp"
 
 #include <karkinolution/math/stats/compile_values.hpp>
@@ -7,6 +8,7 @@
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/stats.hpp>
+#include <utility>
 
 
 using Genomes::Resource;
@@ -188,10 +190,6 @@ Trade CreatureMetabolismPhysiology::metabolize(const Creature         &creature,
 	return {};
 }
 
-// ============================================================================
-// CreaturePhysiology
-// ============================================================================
-
 CreatureFunction CreaturePhysiology::get_to_age_effects(Creature &creature, int age) {
 	return [](Creature &creature) {
 		creature.body.age.value++;
@@ -201,4 +199,21 @@ CreatureFunction CreaturePhysiology::get_to_age_effects(Creature &creature, int 
 CreatureFunction CreaturePhysiology::get_diseases_effect(const Creature         &creature,
 														 const EntitiesRegistry &entities) {
 	return {};
+}
+
+bool BrainPhysiology::should_stop_intent(const Brain &brain) {
+	const auto intent = brain.intent();
+
+	if (intent.type == IntentTypes::FIND_FOOD) {
+		if (intent.time > 7) {
+			return true;
+		}
+		return false;
+	} else if (intent.type == IntentTypes::NOTHING) {
+		if (intent.time > 1) {
+			return true;
+		}
+		return false;
+	}
+	std::unreachable();
 }

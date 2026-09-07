@@ -1,5 +1,6 @@
 #include "karkinolution/organism/reproduction/state/motor.hpp"
 
+#include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/motor.hpp>
@@ -7,6 +8,16 @@
 #include <karkinolution/organism/registry.hpp>
 #include <karkinolution/world/motor.hpp>
 #include <karkinolution/world/world.hpp>
+
+void BrainMotor::run(Brain &brain, const Creature &creature) {
+	const auto stop = BrainPhysiology::should_stop_intent(brain);
+
+	if (stop) {
+		brain.switch_intent(Instincts::take(creature));
+	}
+
+	brain.pass_intent();
+}
 
 void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) {
 	auto &body        = creature.body;
@@ -54,7 +65,7 @@ void CreatureMotor::run(Creature &creature, World &world) {
 	age_effects(creature);
 	grow(creature, organisms);
 
-	if (creature.reproduction.is_pregnant()) {
+	if (creature.body.reproductive.state.is_pregnant()) {
 		ReproductionStateMotor::run(creature);
 	}
 	world.entity_map.root().update(
@@ -62,4 +73,5 @@ void CreatureMotor::run(Creature &creature, World &world) {
 		AABBConversion::to_aabb(creature.body.morphology.size, creature.position));
 
 	const Perception perception = Perceiver::perceive(creature, world);
+	BrainMotor::run(creature.brain, creature);
 }

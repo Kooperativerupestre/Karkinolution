@@ -13,9 +13,9 @@ void UterusMotor::transfer_energy_to_uterus(Creature &creature) {
 }
 
 void UterusMotor::transfer_energy_to_uterus(Creature &creature, float energy, float reserved) {
-	ReproductionValidator::has_uterus(creature.reproduction);
+	ReproductionValidator::has_uterus(creature.body.reproductive.state);
 
-	auto &uterus = std::get<Uterus>(creature.reproduction.state);
+	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
 
 	const float uterus_remaining = uterus.energy.max() - uterus.energy.value();
 

@@ -56,3 +56,7 @@ namespace CreaturePhysiology {
 										 const EntitiesRegistry &entities);
 	bool             is_dead(const Creature &creature);
 } // namespace CreaturePhysiology
+
+namespace BrainPhysiology {
+	bool should_stop_intent(const Brain &brain);
+} // namespace BrainPhysiology

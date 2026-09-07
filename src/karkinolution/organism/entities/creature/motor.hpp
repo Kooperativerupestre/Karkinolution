@@ -4,6 +4,10 @@
 #include <karkinolution/organism/registry.hpp>
 #include <karkinolution/world/world.hpp>
 
+namespace BrainMotor {
+	void run(Brain &brain, const Creature &creature);
+} // namespace BrainMotor
+
 namespace CreatureMotor {
 	void run(Creature &creature, World &);
 	void grow(Creature &creature, const OrganismRegistry &);

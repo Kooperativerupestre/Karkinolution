@@ -4,7 +4,6 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/stats.hpp>
 
-using PhysicsStats::Density;
 using PhysicsStats::Mass;
 
 /*
