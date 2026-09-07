@@ -1,9 +1,11 @@
-
 name: CI
 
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '0 21 * * *'
+      timezone: 'America/Sao_Paulo'
 
 permissions:
   contents: read
@@ -119,6 +121,7 @@ jobs:
 
   valgrind:
     name: Valgrind
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
 
     steps:
@@ -159,6 +162,7 @@ jobs:
             -v "$PWD:/workspace" \
             karkinolution-ci:latest \
             cmake --build /workspace/build-valgrind
+
       - name: Run Valgrind
         run: |
           docker run --rm \
