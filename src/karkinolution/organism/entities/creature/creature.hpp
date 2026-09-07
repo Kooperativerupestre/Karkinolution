@@ -144,6 +144,21 @@ struct Creature {
 		Body     body;
 
 		Vec3 position;
+
+		Creature(Genome &&genome, Brain &&brain, Ontology &&ontology, Body &&body, Vec3 position)
+			: genome(std::move(genome))
+			, brain(std::move(brain))
+			, ontology(std::move(ontology))
+			, body(std::move(body))
+			, position(position) {}
+
+		Creature(const Genome &genome, Brain &&brain, Ontology &&ontology, Body &&body, Vec3 position)
+			: genome(genome)
+			, brain(std::move(brain))
+			, ontology(std::move(ontology))
+			, body(std::move(body))
+			, position(position) {}
+
 		Creature(const Creature &)            = delete;
 		Creature &operator=(const Creature &) = delete;
 

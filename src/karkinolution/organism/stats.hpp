@@ -31,10 +31,10 @@ namespace OrganismStats {
 	};
 
 	namespace Time {
-		class FertilityCooldown : public IntegerWithMax<uint8_t> {
+		class FertilityCooldown : public IntegerWithMax<int> {
 			public:
 
-				using IntegerWithMax<uint8_t>::IntegerWithMax;
+				using IntegerWithMax<int>::IntegerWithMax;
 
 				bool reproductive_capabable() const {
 					return value() > max();
