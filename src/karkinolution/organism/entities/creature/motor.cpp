@@ -1,5 +1,7 @@
 #include "karkinolution/organism/reproduction/state/motor.hpp"
 
+#include "karkinolution/organism/entities/creature/movement/motor.hpp"
+
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -8,6 +10,7 @@
 #include <karkinolution/organism/registry.hpp>
 #include <karkinolution/world/motor.hpp>
 #include <karkinolution/world/world.hpp>
+#include <variant>
 
 void BrainMotor::run(Brain &brain, const Creature &creature) {
 	const auto stop = BrainPhysiology::should_stop_intent(brain);
@@ -17,6 +20,12 @@ void BrainMotor::run(Brain &brain, const Creature &creature) {
 	}
 
 	brain.pass_intent();
+}
+
+void CreatureMotor::update_map(const Creature &creature, World &world) {
+	world.entity_map.root().update(
+		creature.build_id(),
+		AABBConversion::to_aabb(creature.body.morphology.size, creature.position));
 }
 
 void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) {
@@ -50,6 +59,16 @@ void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) 
 	body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 }
 
+PlannerOutput
+CreatureMotor::resolve_presets(Creature &creature, const Perception &perception, World &world) {
+	const auto preset = Planner::plan(creature, perception);
+
+	if (std::holds_alternative<MovePreset>(preset)) {
+		MovementMotor::move(creature, world, std::get<MovePreset>(preset).new_coord);
+	}
+	return std::monostate();
+}
+
 void CreatureMotor::run(Creature &creature, World &world) {
 	// aliases
 
@@ -68,10 +87,9 @@ void CreatureMotor::run(Creature &creature, World &world) {
 	if (creature.body.reproductive.state.is_pregnant()) {
 		ReproductionStateMotor::run(creature);
 	}
-	world.entity_map.root().update(
-		creature.build_id(),
-		AABBConversion::to_aabb(creature.body.morphology.size, creature.position));
 
 	const Perception perception = Perceiver::perceive(creature, world);
 	BrainMotor::run(creature.brain, creature);
+
+	const auto preset = resolve_presets(creature, perception, world);
 }
