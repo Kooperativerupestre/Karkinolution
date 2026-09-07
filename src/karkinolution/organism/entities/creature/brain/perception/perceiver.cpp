@@ -84,5 +84,12 @@ Perception Perceiver::perceive(const Creature &perceiver, const World &world) {
 					BoxConversion::to_box(EntityGetters::get_size(entity),
 										  EntityGetters::get_position(entity)));
 	}
-	return Perception{data, radius, p_entities, p_soils, perceiver.position};
+
+	Vec3 farthest;
+
+	farthest.z = world.territory.size().height.value;
+	farthest.x =
+		std::min(radius.value + perceiver.position.x, world.territory.size().lateral.value);
+	farthest.y = std::min(radius.value + perceiver.position.y, world.territory.size().back.value);
+	return Perception{data, radius, p_entities, p_soils, perceiver.position, farthest};
 }

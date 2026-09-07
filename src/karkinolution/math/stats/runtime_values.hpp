@@ -116,6 +116,10 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 
 			return NormalizedValue<T>((_value - _min) / (_max - _min));
 		}
+
+		T constexpr remaining() const {
+			return _max - _value;
+		}
 };
 
 template <typename T> class IntegerWithMax {

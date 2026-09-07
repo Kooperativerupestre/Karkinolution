@@ -184,16 +184,6 @@ CreatureGrowingPhysiology::get_new_skeleton_increment(const Creature         &cr
 							   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 }
 
-// ============================================================================
-// CreatureMetabolismPhysiology
-// ============================================================================
-
-Trade CreatureMetabolismPhysiology::metabolize(const Creature         &creature,
-											   const RawMeat          &raw_meat,
-											   const EntitiesRegistry &entities) {
-	return {};
-}
-
 CreatureFunction CreaturePhysiology::get_to_age_effects(Creature &creature, int age) {
 	return [](Creature &creature) {
 		creature.body.age.value++;

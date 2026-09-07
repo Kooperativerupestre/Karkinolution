@@ -1,6 +1,7 @@
 #pragma once
 
 #include "karkinolution/math/geometry/models.hpp"
+#include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/organism/foods/foods.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
 
@@ -182,6 +183,9 @@ class Perception {
 
 		size_t entities_size_, soils_size_;
 		Vec3   position_;
+		Vec3   farthest_;
+
+		double farthest_distance_;
 
 	public:
 
@@ -189,14 +193,17 @@ class Perception {
 				   const Radius                   &radius,
 				   const PerceptionEntityRegistry &entities,
 				   const PerceptionSoilRegistry   &soils,
-				   const Vec3                      position)
+				   const Vec3                      position,
+				   const Vec3                      farthest)
 			: data_(std::move(data))
 			, radius_(radius)
 			, entities_(entities)
 			, soils_(soils)
 			, entities_size_(entities.size())
 			, soils_size_(soils.size())
-			, position_(position) {}
+			, position_(position)
+			, farthest_(farthest)
+			, farthest_distance_(position.distance_to(farthest)) {}
 
 		[[nodiscard]] const PerceptionData &data() const {
 			return data_; // don't depend this if your goal isn't perception analyze.
@@ -220,6 +227,14 @@ class Perception {
 
 		[[nodiscard]] size_t soils_size() const {
 			return soils_size_;
+		}
+
+		[[nodiscard]] const Vec3 &farthest() const {
+			return farthest_;
+		}
+
+		[[nodiscard]] const double farthest_distance() const {
+			return farthest_distance_;
 		}
 
 		[[nodiscard]] const Vec3 &position() const {
@@ -293,4 +308,7 @@ namespace PerceptionAnalyzer {
 						  const Radius               &radius,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
 						  std::optional<SoilFilter> soil_filter     = std::nullopt);
+
+	NormalizedValue<double> normalize_distance(const Perception &perception, const Vec3 &position);
+	NormalizedValue<double> normalize_distance(const PerceptionView &view, const Vec3 &poition);
 } // namespace PerceptionAnalyzer
