@@ -2,7 +2,21 @@
 
 Run these commands from the repository root.
 
-## Local development
+`-j$(nproc)` is optional for build commands. When used, it enables parallel compilation using all available CPU threads.
+
+For example:
+
+```bash
+cmake --build build
+```
+
+or, for a faster parallel build:
+
+```bash
+cmake --build build -j$(nproc)
+```
+
+## Local Development
 
 ### Configure a Debug build
 
@@ -77,6 +91,64 @@ Only remove the build directory; it contains generated files and compiled artifa
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 ```
 
+## Optimized Builds
+
+Use a `Release` build when you want compiler optimizations enabled and a build suitable for performance testing.
+
+### Configure a Release build
+
+```bash
+cmake -S . -B build-release -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++
+```
+
+### Build the Release version
+
+```bash
+cmake --build build-release
+```
+
+### Build a specific Release target
+
+```bash
+cmake --build build-release --target karkinolution_app
+cmake --build build-release --target karkinolution_tests
+```
+
+### Run the Release application
+
+```bash
+./build-release/karkinolution_app
+```
+
+### Run Release tests
+
+```bash
+ctest --test-dir build-release --output-on-failure
+```
+
+### Configure a highly optimized build
+
+For performance benchmarking, configure a `Release` build with native CPU optimizations:
+
+```bash
+cmake -S . -B build-native -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_CXX_FLAGS="-march=native"
+```
+
+### Build the native-optimized version
+
+```bash
+cmake --build build-native
+```
+
+`-march=native` enables instructions specific to the CPU of the machine performing the build. Such binaries may not run on older or different CPUs, so this configuration should not be used for portable distribution builds.
+
 ## Docker Compose
 
 ### Start an interactive development container
@@ -128,15 +200,15 @@ To remove the named build and ccache volumes as well, use the following only whe
 docker compose down -v
 ```
 
-## CI checks in Docker
+## CI Checks in Docker
 
-Build the CI image:
+### Build the CI image
 
 ```bash
 docker build -f Dockerfile.ci -t karkinolution-ci .
 ```
 
-Configure and build a CI test tree:
+### Configure and build a CI test tree
 
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
@@ -152,7 +224,7 @@ docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   ctest --test-dir /workspace/build-ci --output-on-failure
 ```
 
-Run the sanitizer configuration and tests:
+### Run the sanitizer configuration and tests
 
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
@@ -173,7 +245,7 @@ docker run --rm -v "$PWD:/workspace" \
   ctest --test-dir /workspace/build-sanitizers --output-on-failure
 ```
 
-Run Valgrind against the test executable:
+### Run Valgrind against the test executable
 
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
