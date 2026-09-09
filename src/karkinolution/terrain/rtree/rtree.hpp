@@ -390,6 +390,7 @@ template <typename IdType> class RStarTree {
 								  size_t                           depth);
 
 		void refresh_mbrs(RtreeNode<IdType> &node);
+		void refresh_path_mbrs(std::vector<RtreeNode<IdType>*> &path);
 
 		RStarTreeMotor::FindSoilPieceOutput<IdType> find(IdType id);
 
@@ -701,7 +702,7 @@ void RStarTree<IdType>::insert_entry(RtreeEntry<IdType>              entry,
 		split_root(*root_);
 	}
 
-	refresh_mbrs(*root_);
+	refresh_path_mbrs(path);
 }
 
 template <typename IdType>
@@ -761,20 +762,18 @@ template <typename IdType> void RStarTree<IdType>::refresh_mbrs(RtreeNode<IdType
 		return;
 	}
 
-	for (auto &entry : node.entries) {
-		if (std::holds_alternative<std::unique_ptr<RtreeNode<IdType>>>(entry.content)) {
+	node.box = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
+}
 
-			auto &child = *std::get<std::unique_ptr<RtreeNode<IdType>>>(entry.content);
-
-			refresh_mbrs(child);
-
-			if (child.box.has_value()) {
-				entry.box = child.box.value();
-			}
-		}
+template <typename IdType>
+void RStarTree<IdType>::refresh_path_mbrs(std::vector<RtreeNode<IdType>*> &path) {
+	if (path.empty()) {
+		return;
 	}
 
-	node.box = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
+	for (auto it = path.rbegin(); it != path.rend(); ++it) {
+		refresh_mbrs(**it);
+	}
 }
 
 template <typename IdType> std::vector<IdType> RStarTree<IdType>::find(const Box3D &box) const {
@@ -933,7 +932,7 @@ template <typename IdType> bool RStarTree<IdType>::remove(IdType id) {
 			std::move(std::get<std::unique_ptr<RtreeNode<IdType>>>(root_->entries.back().content));
 	}
 
-	refresh_mbrs(*root_);
+	refresh_path_mbrs(path);
 
 	return true;
 }
