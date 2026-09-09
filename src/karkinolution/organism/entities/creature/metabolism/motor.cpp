@@ -3,7 +3,7 @@
 #include <karkinolution/organism/entities/creature/metabolism/physiology.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 
-void MetabolisMotor::eat(Creature &creature, RawMeat &raw_meat) {
+void MetabolismMotor::eat(Creature &creature, RawMeat &raw_meat) {
 	const auto food_division = MetabolismPhysiology::divide(raw_meat.energy);
 
 	const auto energy_to_reach_max   = creature.body.metabolism.energy.remaining();
@@ -19,7 +19,7 @@ void MetabolisMotor::eat(Creature &creature, RawMeat &raw_meat) {
 	raw_meat.energy -= effective_energy + effective_reserved_energy;
 }
 
-void MetabolisMotor::eat(Creature &creature, Grass &grass) {
+void MetabolismMotor::eat(Creature &creature, Grass &grass) {
 	const auto food_division = MetabolismPhysiology::divide(grass.energy);
 
 	const auto energy_to_reach_max   = creature.body.metabolism.energy.remaining();

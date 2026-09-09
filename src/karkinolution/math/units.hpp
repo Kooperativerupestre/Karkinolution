@@ -16,7 +16,7 @@ class DoubleValue {
 
 		double value;
 
-		DoubleValue(double value)
+		constexpr DoubleValue(double value)
 			: value(static_cast<double>(value)) {}
 };
 

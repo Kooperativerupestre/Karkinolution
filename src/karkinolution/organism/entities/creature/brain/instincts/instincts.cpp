@@ -1,7 +1,10 @@
+#include "karkinolution/core/error.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/actions/presets.hpp"
+#include "karkinolution/organism/entities/creature/brain/instincts/metabolism.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
+#include "karkinolution/terrain/soil.hpp"
 
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
@@ -96,10 +99,74 @@ IntentTypes Instincts::take(const Creature &creature) {
 	return best_s_i.type;
 }
 
-FindFoodPresets PlannerFindFood::plan(const Creature &creature, const Perception &perception) {
-	const auto view = PerceptionAnalyzer::reduce(perception, GeometryForms::Radius{1.5});
+std::optional<PlannerFindFood::Goal> PlannerFindFood::choose_goal(const Creature   &creature,
+																  const Perception &perception) {
+	const auto output = PerceptionAnalyzer::reduce(perception, FIND_FOOD_RADIUS);
 
-	return FindFoodPresets{MovePreset{.new_coord = view.resolved_soils().back().get().position}};
+	FoodCandidate*                               food_canditate = nullptr;
+	NormalizedValue<float>                       best_score{0.0};
+	std::optional<std::variant<Id, SoilPieceId>> id = std::nullopt;
+
+	for (const auto &_entity : output.resolved_entities()) {
+		const auto &entity = _entity.get();
+		if (std::holds_alternative<PerceivedCorpse>(entity)) {
+			const auto   &corpse      = std::get<PerceivedCorpse>(entity);
+			FoodCandidate current_f_c = MetabolismInstincts::make_corpse_canditate(corpse);
+
+			const auto current_score =
+				MetabolismInstincts::preference(current_f_c, creature, perception);
+
+
+			if (food_canditate == nullptr || best_score < current_score) {
+				food_canditate = &current_f_c;
+				best_score     = current_score;
+				id             = corpse.id;
+			}
+		}
+	}
+
+	for (const auto &_soil : output.resolved_soils()) {
+		const auto &soil = _soil.get();
+
+		std::optional<FoodCandidate> current_f_c = MetabolismInstincts::make_soil_candidate(soil);
+		if (current_f_c.has_value()) {
+			const auto current_score =
+				MetabolismInstincts::preference(current_f_c.value(), creature, perception);
+
+
+			if (food_canditate == nullptr || best_score < current_score) {
+				food_canditate = &current_f_c.value();
+				best_score     = current_score;
+				id             = soil.id;
+			}
+		}
+	}
+
+	if (food_canditate == nullptr) {
+		throw SimulationError("Food candidate cannot be null");
+	}
+
+	if (!id.has_value()) {
+		return std::nullopt;
+	}
+
+	return Goal{.position = food_canditate->position,
+				.hint     = food_canditate->hint,
+				.id       = id.value()};
+}
+
+FindFoodPresets PlannerFindFood::plan(const Creature &creature, const Perception &perception) {
+	const auto goal_ = choose_goal(creature, perception);
+
+	if (!goal_.has_value()) {
+		return FindFoodPresets{std::monostate()};
+	}
+	const auto &goal = goal_.value();
+
+	if (goal.position.distance_squared_to(creature.position) > MIN_SQUARED_DISTANCE_TO_EAT) {
+		return FindFoodPresets{MovePreset{.new_coord = goal.position}};
+	}
+	return FindFoodPresets{EatPreset{.hint = goal.hint, .id = goal.id}};
 }
 
 NothingPresets PlannerNothing::plan(const Creature &creature, const Perception &perception) {
@@ -123,14 +190,29 @@ Planner::resolve_intent(const Creature &creature, const Perception &perception) 
 	std::unreachable();
 }
 
-std::variant<MovePreset, std::monostate> Planner::plan(const Creature   &creature,
-													   const Perception &perception) {
+std::optional<AllPresets> Planner::plan(const Creature &creature, const Perception &perception) {
 	const auto output = resolve_intent(creature, perception);
 
 	if (std::holds_alternative<FindFoodPresets>(output)) {
-		return std::get<FindFoodPresets>(output).value;
+		const auto &preset = std::get<FindFoodPresets>(output);
+
+		if (std::holds_alternative<EatPreset>(preset.value)) {
+			return std::get<EatPreset>(preset.value);
+		} else if (std::holds_alternative<MovePreset>(preset.value)) {
+			return std::get<MovePreset>(preset.value);
+		} else if (std::holds_alternative<std::monostate>(preset.value)) {
+			return std::nullopt;
+		}
+		std::unreachable();
 	} else if (std::holds_alternative<NothingPresets>(output)) {
-		return std::get<NothingPresets>(output).value;
+		const auto &preset = std::get<NothingPresets>(output);
+
+		if (std::holds_alternative<MovePreset>(preset.value)) {
+			return std::get<MovePreset>(preset.value);
+		} else if (std::holds_alternative<std::monostate>(preset.value)) {
+			return std::nullopt;
+		}
+		std::unreachable();
 	}
 	std::unreachable();
 }

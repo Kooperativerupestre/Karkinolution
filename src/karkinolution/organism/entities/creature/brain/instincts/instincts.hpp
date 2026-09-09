@@ -2,6 +2,8 @@
 
 #include "karkinolution/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/actions/presets.hpp"
+#include "karkinolution/organism/foods/foods.hpp"
+#include "karkinolution/terrain/soil.hpp"
 
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
@@ -30,9 +32,9 @@ namespace Instincts {
 } // namespace Instincts
 
 struct FindFoodPresets {
-		std::variant<MovePreset, std::monostate> value;
+		std::variant<MovePreset, EatPreset, std::monostate> value;
 
-		FindFoodPresets(std::variant<MovePreset, std::monostate> value)
+		FindFoodPresets(std::variant<MovePreset, EatPreset, std::monostate> value)
 			: value(value) {}
 };
 
@@ -46,7 +48,21 @@ struct NothingPresets {
 using AllIntentPresets = std::variant<FindFoodPresets, NothingPresets>;
 
 namespace PlannerFindFood {
-	FindFoodPresets plan(const Creature &creature, const Perception &perception);
+	inline constexpr Radius FIND_FOOD_RADIUS{5};
+	inline constexpr double MIN_DISTANCE_TO_EAT         = 0.5;
+	inline constexpr double MIN_SQUARED_DISTANCE_TO_EAT = MIN_DISTANCE_TO_EAT * MIN_DISTANCE_TO_EAT;
+
+	struct Goal {
+			Vec3                          position;
+			FoodHint                      hint;
+			std::variant<Id, SoilPieceId> id;
+
+			// hint == GRASS -> id = SoilPiecId
+			// hint == RAW_MEAT -> id = Id
+	};
+
+	std::optional<Goal> choose_goal(const Creature &creature, const Perception &perception);
+	FindFoodPresets     plan(const Creature &creature, const Perception &perception);
 } // namespace PlannerFindFood
 
 namespace PlannerNothing {
@@ -54,9 +70,8 @@ namespace PlannerNothing {
 } // namespace PlannerNothing
 
 using AllIntentPresets = std::variant<FindFoodPresets, NothingPresets>;
-using PlannerOutput    = std::variant<MovePreset, std::monostate>;
 
 namespace Planner {
 	AllIntentPresets resolve_intent(const Creature &creature, const Perception &perception);
-	PlannerOutput    plan(const Creature &creature, const Perception &perception);
+	std::optional<AllPresets> plan(const Creature &creature, const Perception &perception);
 } // namespace Planner

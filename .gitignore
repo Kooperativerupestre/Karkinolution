@@ -6,6 +6,7 @@ build-valgrind
 build-asan
 build-gcc
 build-release
+build-native
 
 # --- CMake generated files ---
 CMakeFiles/

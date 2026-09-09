@@ -1,10 +1,13 @@
 #include "karkinolution/organism/reproduction/state/motor.hpp"
 
+#include "karkinolution/organism/entities/creature/actions/presets.hpp"
+#include "karkinolution/organism/entities/creature/metabolism/resolver.hpp"
 #include "karkinolution/organism/entities/creature/movement/motor.hpp"
 
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
+#include <karkinolution/organism/entities/creature/metabolism/motor.hpp>
 #include <karkinolution/organism/entities/creature/motor.hpp>
 #include <karkinolution/organism/entities/creature/physiology.hpp>
 #include <karkinolution/organism/registry.hpp>
@@ -59,14 +62,25 @@ void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) 
 	body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 }
 
-PlannerOutput
+std::optional<AllPresets>
 CreatureMotor::resolve_presets(Creature &creature, const Perception &perception, World &world) {
-	const auto preset = Planner::plan(creature, perception);
+	const auto preset_ = Planner::plan(creature, perception);
+
+	if (!preset_.has_value()) {
+		return std::nullopt;
+	}
+	const auto &preset = preset_.value();
 
 	if (std::holds_alternative<MovePreset>(preset)) {
 		MovementMotor::move(creature, world, std::get<MovePreset>(preset).new_coord);
+	} else if (std::holds_alternative<EatPreset>(preset)) {
+		MetabolismMotor::eat(
+			creature,
+			std::get<std::reference_wrapper<RawMeat>>(
+				MetabolismResolver::resolve_preset(std::get<EatPreset>(preset), world))
+				.get());
 	}
-	return std::monostate();
+	return preset_;
 }
 
 void CreatureMotor::run(Creature &creature, World &world) {
