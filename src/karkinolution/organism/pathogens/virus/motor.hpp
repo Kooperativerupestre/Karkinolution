@@ -15,7 +15,7 @@ namespace VirusMotor {
 	void apply(Embryo &embryo, const MorbusExiguus &virus);
 	void apply(Creature &creature, const MorbusExiguus &virus);
 
-	void transmit(Id entity_id, Id new_entity_id, VirusId virus_id);
+	void transmit(EntityId entity_id, EntityId new_entity_id, VirusId virus_id);
 
 
 	void fight(Immunity &immunity, Vorax &virus);

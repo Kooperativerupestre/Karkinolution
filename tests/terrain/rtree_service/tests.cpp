@@ -1,10 +1,12 @@
+#include "karkinolution/test/rtree_service_test_generator.hpp"
+
 #include <gtest/gtest.h>
-#include <karkinolution/core/id_generator.hpp>
+#include <karkinolution/core/id.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <karkinolution/terrain/terrain_gen.hpp>
-#include <karkinolution/test/terrain_test_generator.hpp>
+#include <karkinolution/test/rtree_service_test_generator.hpp>
 
 namespace {
 	Territory give_me_territory(const Size &size = {50.0, 50.0, 50.0}) {
@@ -12,11 +14,11 @@ namespace {
 	}
 } // namespace
 
-TEST(TerritoryTest, AddIsAtomic) {
+TEST(RSTServiceTest, AddIsAtomic) {
 	auto territory = give_me_territory();
 	territory.clear();
-	auto      &registry      = TerritoryTest::get_registry(territory);
-	auto      &internal_tree = TerritoryTest::get_tree(territory);
+	auto      &registry      = RSTServiceTest::get_registry(territory);
+	auto      &internal_tree = RSTServiceTest::get_tree(territory);
 	const auto common_id     = gen_id();
 	// common id -> violating the unique id constraint of BaseStorage
 	SoilPiece soil_A = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
@@ -26,16 +28,16 @@ TEST(TerritoryTest, AddIsAtomic) {
 	soil_B.id        = common_id;
 
 	// unique id constraint
-	const auto was_A_inserted = territory.add(std::move(soil_A));
+	const auto was_A_inserted = territory.add(soil_A.id, std::move(soil_A));
 
 	ASSERT_TRUE(was_A_inserted);
 
-	const auto was_B_inserted = territory.add(std::move(soil_B));
+	const auto was_B_inserted = territory.add(soil_B.id, std::move(soil_B));
 	ASSERT_FALSE(was_B_inserted);
 
 
-	ASSERT_TRUE(territory.internal_tree().exists(common_id));
-	ASSERT_TRUE(territory.internal_tree().size() == 1);
+	ASSERT_TRUE(territory.tree().exists(common_id));
+	ASSERT_TRUE(territory.tree().size() == 1);
 
 	territory.clear();
 
@@ -51,7 +53,7 @@ TEST(TerritoryTest, AddIsAtomic) {
 	bool was_C_inserted_on_registry = registry.try_add(common_id, std::move(soil_C));
 	ASSERT_TRUE(was_C_inserted_on_registry);
 
-	bool was_D_inserted_on_territory = territory.add(std::move(soil_D));
+	bool was_D_inserted_on_territory = territory.add(soil_D.id, std::move(soil_D));
 	ASSERT_FALSE(was_D_inserted_on_territory);
 
 	territory.clear();
@@ -65,14 +67,14 @@ TEST(TerritoryTest, AddIsAtomic) {
 
 
 	internal_tree.insert(common_id, BoxConversion::to_box(soil_E));
-	const bool was_F_inserted_on_territory = territory.add(std::move(soil_F));
+	const bool was_F_inserted_on_territory = territory.add(soil_F.id, std::move(soil_F));
 	ASSERT_FALSE(was_F_inserted_on_territory);
 }
 
-TEST(TerritoryTest, RemoveIsAtomic) {
+TEST(RSTServiceTest, RemoveIsAtomic) {
 	auto  territory     = give_me_territory();
-	auto &registry      = TerritoryTest::get_registry(territory);
-	auto &internal_tree = TerritoryTest::get_tree(territory);
+	auto &registry      = RSTServiceTest::get_registry(territory);
+	auto &internal_tree = RSTServiceTest::get_tree(territory);
 
 	territory.clear();
 
@@ -106,19 +108,19 @@ TEST(TerritoryTest, RemoveIsAtomic) {
 	ASSERT_FALSE(internal_tree.exists(common_id));
 }
 
-TEST(TerritoryTest, AddRejectsPieceOutsideBoundary) {
+TEST(RSTServiceTest, AddRejectsPieceOutsideBoundary) {
 	auto territory = give_me_territory();
 	territory.clear();
 
-	auto &registry      = TerritoryTest::get_registry(territory);
-	auto &internal_tree = TerritoryTest::get_tree(territory);
+	auto &registry      = RSTServiceTest::get_registry(territory);
+	auto &internal_tree = RSTServiceTest::get_tree(territory);
 
 	const auto id = gen_id();
 
 	SoilPiece soil = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{100.0, 100.0, 100.0});
 	soil.id        = id;
 
-	const bool was_inserted = territory.add(std::move(soil));
+	const bool was_inserted = territory.add(soil.id, std::move(soil));
 
 	ASSERT_FALSE(was_inserted);
 	ASSERT_FALSE(registry.exists(id));
@@ -127,11 +129,11 @@ TEST(TerritoryTest, AddRejectsPieceOutsideBoundary) {
 	ASSERT_TRUE(internal_tree.size() == 0);
 }
 
-TEST(TerritoryTest, ClearReallyWorks) {
+TEST(RSTServiceTest, ClearReallyWorks) {
 	auto territory = give_me_territory();
 
 	territory.clear();
 
-	ASSERT_TRUE(territory.internal_tree().get_all_ids().size() == 0);
-	ASSERT_TRUE(territory.soils().size() == 0);
+	ASSERT_TRUE(territory.tree().get_all_ids().size() == 0);
+	ASSERT_TRUE(territory.registry().size() == 0);
 }

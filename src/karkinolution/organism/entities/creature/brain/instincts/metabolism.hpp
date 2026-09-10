@@ -5,6 +5,7 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
+#include <karkinolution/organism/nature/grass/grass.hpp>
 
 struct FoodCandidate {
 		FoodHint hint;
@@ -15,8 +16,9 @@ struct FoodCandidate {
 namespace MetabolismInstincts {
 
 
-	FoodCandidate                make_corpse_canditate(const PerceivedCorpse &corpse);
-	std::optional<FoodCandidate> make_soil_candidate(const PerceivedSoil &soil);
+	FoodCandidate make_corpse_canditate(const PerceivedCorpse &corpse);
+	FoodCandidate make_grass_candidate(const PerceivedGrass &grass);
+
 
 	NormalizedValue<float> get_diet_preference(const Diet &diet, FoodHint hint);
 	NormalizedValue<float> get_diet_weight(const Creature &creature);

@@ -7,8 +7,8 @@
 #include <karkinolution/organism/foods/foods.hpp>
 
 NormalizedValue<float> MetabolismInstincts::get_diet_preference(const Diet &diet, FoodHint hint) {
-	if (hint == FoodHint::GRASS) {
-		return diet.grass_score();
+	if (hint == FoodHint::GRASS_MATTER) {
+		return diet.grass_matter_score();
 	} else if (hint == FoodHint::RAW_MEAT) {
 		return diet.raw_meat_score();
 	}
@@ -49,15 +49,11 @@ NormalizedValue<float> MetabolismInstincts::preference(const FoodCandidate &food
 FoodCandidate MetabolismInstincts::make_corpse_canditate(const PerceivedCorpse &corpse) {
 	return FoodCandidate{.hint     = FoodHint::RAW_MEAT,
 						 .position = corpse.position,
-						 .energy   = corpse.meat.energy};
+						 .energy   = corpse.meat.value};
 }
 
-std::optional<FoodCandidate> MetabolismInstincts::make_soil_candidate(const PerceivedSoil &soil) {
-	if (!soil.has_food()) {
-		return std::nullopt;
-	}
-
-	return FoodCandidate{.hint     = FoodHint::GRASS,
-						 .position = soil.position,
-						 .energy   = soil.food->value()};
+FoodCandidate MetabolismInstincts::make_grass_candidate(const PerceivedGrass &grass) {
+	return FoodCandidate{.hint     = FoodHint::GRASS_MATTER,
+						 .position = grass.position,
+						 .energy   = grass.matter.value()};
 }

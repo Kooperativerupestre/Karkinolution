@@ -4,7 +4,6 @@
 #include "karkinolution/organism/entities/creature/actions/presets.hpp"
 #include "karkinolution/organism/entities/creature/brain/instincts/metabolism.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
-#include "karkinolution/terrain/soil.hpp"
 
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
@@ -103,9 +102,9 @@ std::optional<PlannerFindFood::Goal> PlannerFindFood::choose_goal(const Creature
 																  const Perception &perception) {
 	const auto output = PerceptionAnalyzer::reduce(perception, FIND_FOOD_RADIUS);
 
-	FoodCandidate*                               food_canditate = nullptr;
-	NormalizedValue<float>                       best_score{0.0};
-	std::optional<std::variant<Id, SoilPieceId>> id = std::nullopt;
+	FoodCandidate*                                  food_canditate = nullptr;
+	NormalizedValue<float>                          best_score{0.0};
+	std::optional<std::variant<EntityId, NatureId>> id = std::nullopt;
 
 	for (const auto &_entity : output.resolved_entities()) {
 		const auto &entity = _entity.get();
@@ -125,19 +124,20 @@ std::optional<PlannerFindFood::Goal> PlannerFindFood::choose_goal(const Creature
 		}
 	}
 
-	for (const auto &_soil : output.resolved_soils()) {
-		const auto &soil = _soil.get();
+	for (const auto &_nature : output.resolve_natures()) {
+		const auto &nature = _nature.get();
+		if (std::holds_alternative<PerceivedGrass>(nature)) {
+			const auto   &grass       = std::get<PerceivedGrass>(nature);
+			FoodCandidate current_f_c = MetabolismInstincts::make_grass_candidate(grass);
 
-		std::optional<FoodCandidate> current_f_c = MetabolismInstincts::make_soil_candidate(soil);
-		if (current_f_c.has_value()) {
 			const auto current_score =
-				MetabolismInstincts::preference(current_f_c.value(), creature, perception);
+				MetabolismInstincts::preference(current_f_c, creature, perception);
 
 
 			if (food_canditate == nullptr || best_score < current_score) {
-				food_canditate = &current_f_c.value();
-				best_score     = current_score;
-				id             = soil.id;
+				food_canditate = &current_f_c;
+				best_score = current_score, id = grass.id;
+				id = grass.id;
 			}
 		}
 	}

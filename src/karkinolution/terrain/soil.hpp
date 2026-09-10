@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
@@ -86,23 +87,10 @@ enum class SoilTypes : uint8_t {
 };
 
 enum class SoilProperties : uint8_t {
-	EDIBLE,
 	DANGEROUS
 };
 
 namespace SoilPieceComponents {
-
-	struct FoodState : Component {
-		public:
-
-			Energy food;
-			float  regen_tax;
-
-			FoodState(Energy food, float regen_tax)
-				: food(food)
-				, regen_tax(regen_tax) {}
-	};
-
 	struct Damage : Component {
 		public:
 
@@ -132,29 +120,19 @@ struct Blueprint {
 
 inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
 	{SoilTypes::DIRT,
-	 Blueprint{.default_components = {
-				   []() -> std::unique_ptr<Component> {
-					   return std::make_unique<SoilPieceComponents::FoodState>(Energy(10.0f, 10.0f),
-																			   1);
-				   },
-				   []() -> std::unique_ptr<Component> {
-					   return std::make_unique<SoilPieceComponents::MovementCost>(1);
-				   }},
-			   .properties          = {SoilProperties::EDIBLE},
+	 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
+                   return std::make_unique<SoilPieceComponents::MovementCost>(1);
+               }},
+			   .properties          = {},
 			   .required_properties = {Properties::Capabilities::Move::WALK}
 
 	 }},
 
 	{SoilTypes::SAND,
-	 Blueprint{.default_components = {
-				   []() -> std::unique_ptr<Component> {
-					   return std::make_unique<SoilPieceComponents::FoodState>(Energy(10.0f, 10.0f),
-																			   1);
-				   },
-				   []() -> std::unique_ptr<Component> {
-					   return std::make_unique<SoilPieceComponents::MovementCost>(2);
-				   }},
-			   .properties = {SoilProperties::EDIBLE}}},
+	 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
+				   return std::make_unique<SoilPieceComponents::MovementCost>(2);
+			   }},
+			   .properties         = {}}},
 
 	{SoilTypes::ROCK,
 	 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
@@ -164,15 +142,10 @@ inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
 			   .required_properties = {Properties::Capabilities::Move::WALK}}},
 
 	{SoilTypes::WATER,
-	 Blueprint{.default_components = {
-				   []() -> std::unique_ptr<Component> {
-					   return std::make_unique<SoilPieceComponents::FoodState>(Energy(10.0f, 10.0f),
-																			   1);
-				   },
-				   []() -> std::unique_ptr<Component> {
-					   return std::make_unique<SoilPieceComponents::MovementCost>(1);
-				   }},
-			   .properties          = {SoilProperties::EDIBLE},
+	 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
+                   return std::make_unique<SoilPieceComponents::MovementCost>(1);
+               }},
+			   .properties          = {},
 			   .required_properties = {Properties::Capabilities::Move::SWIMM}}}};
 
 using SoilPieceId = uint64_t;
@@ -192,3 +165,9 @@ namespace SoilF {
 	SoilPiece
 	gen_soil_piece(SoilTypes s_t, const GeometryForms::Radius &radius, const Vec3 &position);
 } // namespace SoilF
+
+class SoilPieceRegistry : public BaseStorage<SoilPieceId, SoilPiece> {
+	public:
+
+		using BaseStorage<SoilPieceId, SoilPiece>::BaseStorage;
+};

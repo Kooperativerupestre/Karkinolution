@@ -2,9 +2,10 @@
 #include <karkinolution/organism/entities/creature/metabolism/motor.hpp>
 #include <karkinolution/organism/entities/creature/metabolism/physiology.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
+#include <karkinolution/organism/nature/grass/grass.hpp>
 
 void MetabolismMotor::eat(Creature &creature, RawMeat &raw_meat) {
-	const auto food_division = MetabolismPhysiology::divide(raw_meat.energy);
+	const auto food_division = MetabolismPhysiology::divide(raw_meat.value);
 
 	const auto energy_to_reach_max   = creature.body.metabolism.energy.remaining();
 	const auto r_energy_to_reach_max = creature.body.metabolism.reserved.remaining();
@@ -16,11 +17,11 @@ void MetabolismMotor::eat(Creature &creature, RawMeat &raw_meat) {
 	creature.body.metabolism.energy += effective_energy;
 	creature.body.metabolism.reserved += effective_reserved_energy;
 
-	raw_meat.energy -= effective_energy + effective_reserved_energy;
+	raw_meat.value -= effective_energy + effective_reserved_energy;
 }
 
-void MetabolismMotor::eat(Creature &creature, Grass &grass) {
-	const auto food_division = MetabolismPhysiology::divide(grass.energy);
+void MetabolismMotor::eat(Creature &creature, GrassMatter &grass) {
+	const auto food_division = MetabolismPhysiology::divide(grass.value());
 
 	const auto energy_to_reach_max   = creature.body.metabolism.energy.remaining();
 	const auto r_energy_to_reach_max = creature.body.metabolism.reserved.remaining();
@@ -32,5 +33,5 @@ void MetabolismMotor::eat(Creature &creature, Grass &grass) {
 	creature.body.metabolism.energy += effective_energy;
 	creature.body.metabolism.reserved += effective_reserved_energy;
 
-	grass.energy -= effective_energy + effective_reserved_energy;
+	grass -= effective_energy + effective_reserved_energy;
 }

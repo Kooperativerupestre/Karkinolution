@@ -53,9 +53,9 @@ namespace PlannerFindFood {
 	inline constexpr double MIN_SQUARED_DISTANCE_TO_EAT = MIN_DISTANCE_TO_EAT * MIN_DISTANCE_TO_EAT;
 
 	struct Goal {
-			Vec3                          position;
-			FoodHint                      hint;
-			std::variant<Id, SoilPieceId> id;
+			Vec3                             position;
+			FoodHint                         hint;
+			std::variant<EntityId, NatureId> id;
 
 			// hint == GRASS -> id = SoilPiecId
 			// hint == RAW_MEAT -> id = Id

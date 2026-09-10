@@ -53,7 +53,7 @@ bool EntityMapMotor::add(Entity          &&entity,
 	return true;
 }
 
-bool EntityMapMotor::remove(Id                id,
+bool EntityMapMotor::remove(EntityId          id,
 							OrganismRegistry &registry,
 							EntityMap        &map,
 							const AABB       &old_aabb) {
@@ -68,7 +68,7 @@ bool EntityMapMotor::remove(Id                id,
 	return true;
 }
 
-bool EntityMapMotor::remove(Id id, OrganismRegistry &registry, EntityMap &map) {
+bool EntityMapMotor::remove(EntityId id, OrganismRegistry &registry, EntityMap &map) {
 	bool exists = registry.entities.exists(id) && map.root().exists(id);
 
 	if (!exists) {
@@ -81,14 +81,14 @@ bool EntityMapMotor::remove(Id id, OrganismRegistry &registry, EntityMap &map) {
 	return true;
 }
 
-std::vector<Id> EntityMapMotor::find(const GeometryForms::Radius &radius,
-									 const Vec3                  &position,
-									 const EntityMap             &map) {
+std::vector<EntityId> EntityMapMotor::find(const GeometryForms::Radius &radius,
+										   const Vec3                  &position,
+										   const EntityMap             &map) {
 	auto aabb = AABBConversion::to_aabb(radius, position);
 	return map.root().find_ids(aabb);
 }
 
-bool EntityMapMotor::update_coord(Id                id,
+bool EntityMapMotor::update_coord(EntityId          id,
 								  OrganismRegistry &registry,
 								  EntityMap        &map,
 								  const Vec3       &new_coord,

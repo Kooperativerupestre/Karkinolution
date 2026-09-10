@@ -1,6 +1,9 @@
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
+#include "karkinolution/organism/nature/grass/grass.hpp"
+#include "karkinolution/organism/nature/identity.hpp"
+#include "karkinolution/organism/nature/natures.hpp"
 #include "karkinolution/terrain/terrain.hpp"
 
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
@@ -28,41 +31,32 @@ PerceivedCorpse Perceiver::perceive(const Corpse &target, const Creature &percei
 	return perceived;
 }
 
-PerceivedSoil Perceiver::perceive(const SoilPiece &target, const Creature &perceiver) {
-	PerceivedSoil perceived = {.radius = target.radius};
-
-	if (target.components.exists<SoilPieceComponents::FoodState>()) {
-		perceived.food = target.components.try_get<SoilPieceComponents::FoodState>()->food;
-	}
-
-	if (target.components.exists<SoilPieceComponents::Damage>()) {
-		perceived.damage = target.components.try_get<SoilPieceComponents::Damage>()->damage;
-	}
-
-	if (target.components.exists<SoilPieceComponents::MovementCost>()) {
-		perceived.movement_cost =
-			target.components.try_get<SoilPieceComponents::MovementCost>()->cost;
-	}
-	perceived.id       = target.id;
-	perceived.position = target.position;
+PerceivedGrass Perceiver::perceive(const Grass &grass, const Creature &creature) {
+	PerceivedGrass perceived = {.id       = grass.build_id(),
+								.matter   = grass.matter,
+								.position = grass.position,
+								.radius   = grass.radius};
 	return perceived;
 }
 
 Perception Perceiver::perceive(const Creature &perceiver, const World &world) {
 	PerceptionEntityRegistry p_entities;
 	PerceptionSoilRegistry   p_soils;
+	PerceptionNatureRegistry p_natures;
 	PerceptionData           data;
 
 	const Radius &radius = perceiver.genome.core_genome.vision_radius;
 
 	const auto soils_id    = world.territory.find(radius, perceiver.position);
 	const auto entities_id = EntityMapMotor::find(radius, perceiver.position, world.entity_map);
+	const auto natures_id  = world.natures.find(radius, perceiver.position);
 
 	p_entities.reserve(entities_id.size());
 	p_soils.reserve(soils_id.size());
+	p_natures.reserve(natures_id.size());
 
 	for (auto id : soils_id) {
-		const auto &soil = world.territory.soils().at(id);
+		const auto &soil = world.territory.registry().at(id);
 		p_soils.add(id, perceive(soil, perceiver));
 		data.insert(id, BoxConversion::to_box(soil));
 	}
@@ -85,11 +79,22 @@ Perception Perceiver::perceive(const Creature &perceiver, const World &world) {
 										  EntityGetters::get_position(entity)));
 	}
 
+	for (auto id : natures_id) {
+		const auto &nature = world.natures.registry().at(id);
+
+		if (id.type == NatureTypes::GRASS) {
+			p_natures.add(id, perceive(std::get<Grass>(nature), perceiver));
+		}
+		data.insert(id,
+					BoxConversion::to_box(NatureGetters::get_radius(nature),
+										  NatureGetters::get_position(nature)));
+	}
+
 	Vec3 farthest;
 
 	farthest.z = world.territory.size().height.value;
 	farthest.x =
 		std::min(radius.value + perceiver.position.x, world.territory.size().lateral.value);
 	farthest.y = std::min(radius.value + perceiver.position.y, world.territory.size().back.value);
-	return Perception{data, radius, p_entities, p_soils, perceiver.position, farthest};
+	return Perception{data, radius, p_entities, p_soils, p_natures, perceiver.position, farthest};
 }

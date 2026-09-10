@@ -78,8 +78,8 @@ Territory TerrainFactory::gen_terrain(const Size                  &size,
 		const auto soil_type = TerrainFactory::get_soil_type(noise_value);
 
 		const auto radius = RandomGenerators::generate(min_radius.value, max_radius.value);
-
-		territory.add(SoilF::gen_soil_piece(soil_type, radius, coord));
+		auto       soil   = SoilF::gen_soil_piece(soil_type, radius, coord);
+		territory.add(soil.id, std::move(soil));
 	}
 
 	return territory;

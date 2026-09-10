@@ -45,8 +45,8 @@ struct Embryo {
 						.back    = volume.value};
 		}
 
-		[[nodiscard]] Id build_id() const noexcept {
-			return IDF::create_embryo_id(id);
+		[[nodiscard]] EntityId build_id() const noexcept {
+			return EntityIDF::create_embryo_id(id);
 		}
 
 		[[nodiscard]] EmbryoHungry hungry() const;

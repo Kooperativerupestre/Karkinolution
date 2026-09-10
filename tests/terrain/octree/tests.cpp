@@ -1,6 +1,6 @@
 
 #include <gtest/gtest.h>
-#include <karkinolution/core/id_generator.hpp>
+#include <karkinolution/core/id.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/terrain/octree/aabb.hpp>
 #include <karkinolution/terrain/octree/octree.hpp>
@@ -30,10 +30,10 @@ namespace {
 
 	void fill_entries(std::vector<OctreeEntry> &entries, Octree &octree) {
 		for (size_t i = 0; i < 100; i++) {
-			const AABB aabb{.max = RandomGenerators::generate<Vec3>(),
-							.min = RandomGenerators::generate<Vec3>()};
-			const auto id_value = gen_id();
-			const Id   id       = IDF::create_creature_id(id_value);
+			const AABB     aabb{.max = RandomGenerators::generate<Vec3>(),
+								.min = RandomGenerators::generate<Vec3>()};
+			const auto     id_value = gen_id();
+			const EntityId id       = EntityIDF::create_creature_id(id_value);
 			entries.push_back(OctreeEntry{.entity_id = id, .bound = aabb});
 
 			octree.root().insert(entries.back());
@@ -42,18 +42,18 @@ namespace {
 
 	void fill_entries(Octree &octree) {
 		for (size_t i = 0; i < 100; i++) {
-			const auto aabb     = generate_random_aabb();
-			const auto id_value = gen_id();
-			const Id   id       = IDF::create_creature_id(id_value);
+			const auto     aabb     = generate_random_aabb();
+			const auto     id_value = gen_id();
+			const EntityId id       = EntityIDF::create_creature_id(id_value);
 
 			octree.root().insert(OctreeEntry{.entity_id = id, .bound = aabb});
 		}
 	}
 
-	void fill_ids(std::vector<Id> &ids) {
+	void fill_ids(std::vector<EntityId> &ids) {
 		for (size_t i = 0; i < 100; i++) {
-			const auto id_value = gen_id();
-			const Id   id       = IDF::create_creature_id(id_value);
+			const auto     id_value = gen_id();
+			const EntityId id       = EntityIDF::create_creature_id(id_value);
 			ids.push_back(id);
 		}
 	}
@@ -95,7 +95,7 @@ TEST(OctreeTest, RemoveIsEqualTrueIfItExists) {
 TEST(OctreeTest, RemoveIsEqualFalseItDoesntExist) {
 	Octree octree;
 
-	std::vector<Id> ids;
+	std::vector<EntityId> ids;
 	fill_ids(ids);
 
 	for (size_t i = ids.size(); i-- > 0;) {

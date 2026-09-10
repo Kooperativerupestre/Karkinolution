@@ -19,11 +19,11 @@ namespace {
 		return Corpse{entity_size(), position, RawMeat{100.0F}, id};
 	}
 
-	Id corpse_id(uint64_t id) {
-		return IDF::create_corpse_id(id);
+	EntityId corpse_id(uint64_t id) {
+		return EntityIDF::create_corpse_id(id);
 	}
 
-	bool contains_id(const std::vector<Id> &ids, Id id) {
+	bool contains_id(const std::vector<EntityId> &ids, EntityId id) {
 		return std::find(ids.begin(), ids.end(), id) != ids.end();
 	}
 
