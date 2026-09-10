@@ -26,3 +26,14 @@ dependencies/FastNoise2/LICENSE
 
 FastNoise2 repository:
 https://github.com/Auburn/FastNoise2
+
+
+Asio
+
+Asio is distributed under the Boost Software License 1.0.
+
+The full license text is available in the Asio distribution:
+dependencies/asio/LICENSE_1_0.txt
+
+Asio repository:
+https://github.com/chriskohlhoff/asio

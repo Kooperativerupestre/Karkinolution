@@ -20,6 +20,12 @@ add_subdirectory(
     "${CMAKE_SOURCE_DIR}/dependencies/FastNoise2"
 )
 
+add_library(asio INTERFACE)
+
+target_include_directories(asio INTERFACE
+    "${CMAKE_SOURCE_DIR}/dependencies/asio/asio/include"
+)
+
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
@@ -51,6 +57,7 @@ target_include_directories(karkinolution PUBLIC
 target_link_libraries(karkinolution
     PUBLIC
         FastNoise
+        asio
 )
 
 # ---------------- Main executable ----------------
