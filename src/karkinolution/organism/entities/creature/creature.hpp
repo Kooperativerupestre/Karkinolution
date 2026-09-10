@@ -152,7 +152,11 @@ struct Creature {
 			, body(std::move(body))
 			, position(position) {}
 
-		Creature(const Genome &genome, Brain &&brain, Ontology &&ontology, Body &&body, Vec3 position)
+		Creature(const Genome &genome,
+				 Brain       &&brain,
+				 Ontology    &&ontology,
+				 Body        &&body,
+				 Vec3          position)
 			: genome(genome)
 			, brain(std::move(brain))
 			, ontology(std::move(ontology))
@@ -165,8 +169,8 @@ struct Creature {
 		Creature(Creature &&)            = default;
 		Creature &operator=(Creature &&) = default;
 
-		[[nodiscard]] Id build_id() const noexcept {
-			return IDF::create_creature_id(ontology.id);
+		[[nodiscard]] EntityId build_id() const noexcept {
+			return EntityIDF::create_creature_id(ontology.id);
 		}
 
 		[[nodiscard]]

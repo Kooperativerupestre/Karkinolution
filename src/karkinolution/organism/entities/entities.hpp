@@ -14,31 +14,31 @@
 using Entity                   = std::variant<Creature, Corpse, Embryo, Egg>;
 using GenericPathogenContainer = std::variant<VirusContainer>;
 
-class EntitiesRegistry : public BaseStorage<Id, Entity> {
+class EntitiesRegistry : public BaseStorage<EntityId, Entity> {
 	public:
 
 		EntitiesRegistry()
-			: BaseStorage<Id, Entity>() {}
+			: BaseStorage<EntityId, Entity>() {}
 
-		Creature       &at_creature(Id id);
-		const Creature &at_creature(Id id) const;
+		Creature       &at_creature(EntityId id);
+		const Creature &at_creature(EntityId id) const;
 
-		Corpse       &at_corpse(Id id);
-		const Corpse &at_corpse(Id id) const;
+		Corpse       &at_corpse(EntityId id);
+		const Corpse &at_corpse(EntityId id) const;
 
-		Embryo       &at_embryo(Id id);
-		const Embryo &at_embryo(Id id) const;
+		Embryo       &at_embryo(EntityId id);
+		const Embryo &at_embryo(EntityId id) const;
 
-		Egg       &at_egg(Id id);
-		const Egg &at_egg(Id id) const;
+		Egg       &at_egg(EntityId id);
+		const Egg &at_egg(EntityId id) const;
 };
 
 namespace EntityGetters {
-	Id get_id(const Entity &entity);
-	Id get_id(const Corpse &corpse);
-	Id get_id(const Creature &creature);
-	Id get_id(const Embryo &embryo);
-	Id get_id(const Egg &egg);
+	EntityId get_id(const Entity &entity);
+	EntityId get_id(const Corpse &corpse);
+	EntityId get_id(const Creature &creature);
+	EntityId get_id(const Embryo &embryo);
+	EntityId get_id(const Egg &egg);
 
 	Vec3       &get_position(Entity &entity);
 	const Vec3 &get_position(const Entity &entity);

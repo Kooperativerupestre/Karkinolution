@@ -10,35 +10,35 @@
 // EntitiesRegistry
 // ============================================================================
 
-Creature &EntitiesRegistry::at_creature(Id id) {
+Creature &EntitiesRegistry::at_creature(EntityId id) {
 	return std::get<Creature>(this->at(id));
 }
 
-const Creature &EntitiesRegistry::at_creature(Id id) const {
+const Creature &EntitiesRegistry::at_creature(EntityId id) const {
 	return std::get<Creature>(this->at(id));
 }
 
-Corpse &EntitiesRegistry::at_corpse(Id id) {
+Corpse &EntitiesRegistry::at_corpse(EntityId id) {
 	return std::get<Corpse>(this->at(id));
 }
 
-const Corpse &EntitiesRegistry::at_corpse(Id id) const {
+const Corpse &EntitiesRegistry::at_corpse(EntityId id) const {
 	return std::get<Corpse>(this->at(id));
 }
 
-Embryo &EntitiesRegistry::at_embryo(Id id) {
+Embryo &EntitiesRegistry::at_embryo(EntityId id) {
 	return std::get<Embryo>(this->at(id));
 }
 
-const Embryo &EntitiesRegistry::at_embryo(Id id) const {
+const Embryo &EntitiesRegistry::at_embryo(EntityId id) const {
 	return std::get<Embryo>(this->at(id));
 }
 
-Egg &EntitiesRegistry::at_egg(Id id) {
+Egg &EntitiesRegistry::at_egg(EntityId id) {
 	return std::get<Egg>(this->at(id));
 }
 
-const Egg &EntitiesRegistry::at_egg(Id id) const {
+const Egg &EntitiesRegistry::at_egg(EntityId id) const {
 	return std::get<Egg>(this->at(id));
 }
 
@@ -46,7 +46,7 @@ const Egg &EntitiesRegistry::at_egg(Id id) const {
 // EntityGetters
 // ============================================================================
 
-Id EntityGetters::get_id(const Entity &entity) {
+EntityId EntityGetters::get_id(const Entity &entity) {
 	return std::visit(
 		[](const auto &value) {
 			return get_id(value);
@@ -54,19 +54,19 @@ Id EntityGetters::get_id(const Entity &entity) {
 		entity);
 }
 
-Id EntityGetters::get_id(const Corpse &corpse) {
-	return IDF::create_corpse_id(corpse.id);
+EntityId EntityGetters::get_id(const Corpse &corpse) {
+	return EntityIDF::create_corpse_id(corpse.id);
 }
 
-Id EntityGetters::get_id(const Creature &creature) {
-	return IDF::create_creature_id(creature.ontology.id);
+EntityId EntityGetters::get_id(const Creature &creature) {
+	return EntityIDF::create_creature_id(creature.ontology.id);
 }
 
-Id EntityGetters::get_id(const Embryo &embryo) {
-	return IDF::create_embryo_id(embryo.id);
+EntityId EntityGetters::get_id(const Embryo &embryo) {
+	return EntityIDF::create_embryo_id(embryo.id);
 }
 
-Id EntityGetters::get_id(const Egg &egg) {
+EntityId EntityGetters::get_id(const Egg &egg) {
 	return egg.build_id();
 }
 

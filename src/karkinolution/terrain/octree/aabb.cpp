@@ -77,7 +77,7 @@ OctreeNode &OctreeNode::insert(const OctreeEntry &entry) {
 	}
 }
 
-bool OctreeNode::remove(Id id) {
+bool OctreeNode::remove(EntityId id) {
 	for (size_t i = entries.size(); i-- > 0;) {
 		if (entries[i].entity_id == id) {
 			entries.erase(entries.begin() + i);
@@ -104,7 +104,7 @@ bool OctreeNode::remove(Id id) {
 	return false;
 }
 
-bool OctreeNode::remove(Id id, const AABB &old_box) {
+bool OctreeNode::remove(EntityId id, const AABB &old_box) {
 	for (size_t i = entries.size(); i-- > 0;) {
 		if (entries[i].entity_id == id) {
 			entries.erase(entries.begin() + i);
@@ -125,7 +125,7 @@ bool OctreeNode::remove(Id id, const AABB &old_box) {
 	return children[index.value()]->remove(id, old_box);
 }
 
-bool OctreeNode::update(Id id, const AABB &new_box) {
+bool OctreeNode::update(EntityId id, const AABB &new_box) {
 	const auto had_remove = remove(id);
 
 	if (!had_remove) {
@@ -136,7 +136,7 @@ bool OctreeNode::update(Id id, const AABB &new_box) {
 	return true;
 }
 
-bool OctreeNode::update(Id id, const AABB &old_box, const AABB &new_box) {
+bool OctreeNode::update(EntityId id, const AABB &old_box, const AABB &new_box) {
 	const auto had_remove = remove(id, old_box);
 
 	if (!had_remove) {
@@ -147,7 +147,7 @@ bool OctreeNode::update(Id id, const AABB &old_box, const AABB &new_box) {
 	return true;
 }
 
-bool OctreeNode::exists(Id id) const {
+bool OctreeNode::exists(EntityId id) const {
 	for (size_t i = entries.size(); i-- > 0;) {
 		if (entries[i].entity_id == id) {
 			return true;
@@ -173,7 +173,7 @@ bool OctreeNode::exists(Id id) const {
 	return false;
 }
 
-bool OctreeNode::exists(Id id, const AABB &aabb) const {
+bool OctreeNode::exists(EntityId id, const AABB &aabb) const {
 	for (size_t i = entries.size(); i-- > 0;) {
 		if (entries[i].entity_id == id) {
 			return true;
@@ -253,10 +253,10 @@ std::vector<const OctreeEntry*> OctreeNode::find(const AABB &aabb) const {
 	return output;
 }
 
-std::vector<Id> OctreeNode::find_ids(const AABB &aabb) const {
+std::vector<EntityId> OctreeNode::find_ids(const AABB &aabb) const {
 	auto found = find(aabb);
 
-	std::vector<Id> output;
+	std::vector<EntityId> output;
 
 	for (const auto &entry : found) {
 		output.push_back(entry->entity_id);

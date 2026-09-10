@@ -9,8 +9,8 @@
 #include <stdexcept>
 
 struct AttackedEvent {
-		Id    attacker_id;
-		float damage;
+		EntityId attacker_id;
+		float    damage;
 };
 
 enum class Gender : uint8_t {
@@ -26,12 +26,12 @@ namespace GenderF {
 class Diet {
 	private:
 
-		NormalizedValue<float> _grass_score;
+		NormalizedValue<float> _grass_matter_score;
 		NormalizedValue<float> _raw_meat_score;
 
 	public:
 
-		const NormalizedValue<float> &grass_score() const;
+		const NormalizedValue<float> &grass_matter_score() const;
 		const NormalizedValue<float> &raw_meat_score() const;
 
 		const NormalizedValue<float> &operator[](FoodHint food_hint) const;
@@ -41,8 +41,8 @@ class Diet {
 				throw std::invalid_argument("Sum of scores > 1.0");
 			}
 
-			_grass_score    = grass_score;
-			_raw_meat_score = raw_meat_score;
+			_grass_matter_score = grass_score;
+			_raw_meat_score     = raw_meat_score;
 		}
 };
 

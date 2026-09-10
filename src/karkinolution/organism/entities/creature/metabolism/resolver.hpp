@@ -5,6 +5,6 @@
 #include <karkinolution/world/world.hpp>
 
 namespace MetabolismResolver {
-	std::variant<std::reference_wrapper<RawMeat>, std::reference_wrapper<Grass>>
+	std::variant<std::reference_wrapper<RawMeat>, std::reference_wrapper<GrassMatter>>
 	resolve_preset(const EatPreset &preset, World &world);
 } // namespace MetabolismResolver

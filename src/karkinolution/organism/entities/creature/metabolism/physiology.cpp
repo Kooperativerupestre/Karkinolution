@@ -12,3 +12,7 @@ FoodDivision MetabolismPhysiology::divide(float energy) {
 FoodDivision MetabolismPhysiology::divide(const Energy &energy) {
 	return divide(energy.value());
 }
+
+FoodDivision MetabolismPhysiology::divide(const GrassMatter &grass) {
+	return divide(grass.value());
+}

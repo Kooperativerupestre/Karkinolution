@@ -27,14 +27,14 @@ struct EggNutrients {
 };
 
 struct Egg {
-		uint64_t        id;
-		Shell           shell;
-		EggNutrients    nutrients;
-		std::vector<Id> embryos;
-		Vec3            position;
-		Size            size;
+		uint64_t              id;
+		Shell                 shell;
+		EggNutrients          nutrients;
+		std::vector<EntityId> embryos;
+		Vec3                  position;
+		Size                  size;
 
-		[[nodiscard]] Id build_id() const noexcept {
-			return IDF::create_egg_id(id);
+		[[nodiscard]] EntityId build_id() const noexcept {
+			return EntityIDF::create_egg_id(id);
 		}
 };

@@ -3,10 +3,11 @@
 #include "karkinolution/organism/entities/identity.hpp"
 
 #include <karkinolution/math/units.hpp>
-#include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/stats.hpp>
 
+
 using OrganismStats::Energy;
+using OrganismStats::Body::RawMeat;
 
 struct Corpse {
 		uint64_t id;
@@ -15,8 +16,8 @@ struct Corpse {
 		Vec3 position;
 		Size size;
 
-		[[nodiscard]] Id build_id() const noexcept {
-			return IDF::create_corpse_id(id);
+		[[nodiscard]] EntityId build_id() const noexcept {
+			return EntityIDF::create_corpse_id(id);
 		}
 
 		Corpse(const Size &size, const Vec3 &position, const RawMeat &raw_meat, uint64_t id)

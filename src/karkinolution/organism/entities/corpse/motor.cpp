@@ -3,5 +3,5 @@
 #include <karkinolution/organism/registry.hpp>
 
 void CorpseMotor::run(Corpse &corpse) {
-	corpse.raw_meat.energy *= 0.1;
+	corpse.raw_meat.value *= 0.1;
 }

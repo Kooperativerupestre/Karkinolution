@@ -17,5 +17,6 @@ struct FoodDivision {
 namespace MetabolismPhysiology {
 	FoodDivision divide(float energy);
 	FoodDivision divide(const Energy &energy);
+	FoodDivision divide(const GrassMatter &grass);
 
 } // namespace MetabolismPhysiology
