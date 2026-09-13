@@ -134,8 +134,8 @@ class PerceptionView {
 					   const std::vector<NatureId>    natures,
 					   const Perception              &perception,
 					   std::optional<EntityFilter>    entity_filter = std::nullopt,
-					   std::optional<SoilFilter> soil_filter        = std::nullopt,
-					   std::optional<NatureFilter> nature_filter    = std::nullopt) {
+					   std::optional<SoilFilter>      soil_filter   = std::nullopt,
+					   std::optional<NatureFilter>    nature_filter = std::nullopt) {
 
 			if (!entity_filter.has_value() && !soil_filter.has_value()
 				&& !nature_filter.has_value()) {
@@ -298,27 +298,27 @@ namespace PerceptionAnalyzer {
 
 	PerceptionView filter(const Perception           &perception,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter> soil_filter     = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt,
 						  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 	PerceptionView filter(const Perception               &perception,
 						  const std::vector<EntityId>    &entities,
 						  const std::vector<SoilPieceId> &soils,
 						  std::optional<EntityFilter>     entity_filter = std::nullopt,
-						  std::optional<SoilFilter> soil_filter         = std::nullopt,
-						  std::optional<NatureFilter> nature_filter     = std::nullopt);
+						  std::optional<SoilFilter>       soil_filter   = std::nullopt,
+						  std::optional<NatureFilter>     nature_filter = std::nullopt);
 
 	PerceptionView filter(const PerceptionView       &view,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter> soil_filter     = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt,
 						  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 	PerceptionView filter(const PerceptionView           &view,
 						  const std::vector<EntityId>    &entities,
 						  const std::vector<SoilPieceId> &soils,
 						  std::optional<EntityFilter>     entity_filter = std::nullopt,
-						  std::optional<SoilFilter> soil_filter         = std::nullopt,
-						  std::optional<NatureFilter> nature_filter     = std::nullopt);
+						  std::optional<SoilFilter>       soil_filter   = std::nullopt,
+						  std::optional<NatureFilter>     nature_filter = std::nullopt);
 
 	PerceptionView filter_only_entities(const Perception &perception, EntityFilter filter);
 	PerceptionView filter_only_entities(const PerceptionView &view, EntityFilter filter);
@@ -356,13 +356,13 @@ namespace PerceptionAnalyzer {
 	PerceptionView reduce(const Perception           &perception,
 						  const Radius               &radius,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter> soil_filter     = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt,
 						  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 	PerceptionView reduce(const PerceptionView       &view,
 						  const Radius               &radius,
 						  std::optional<EntityFilter> entity_filter = std::nullopt,
-						  std::optional<SoilFilter> soil_filter     = std::nullopt,
+						  std::optional<SoilFilter>   soil_filter   = std::nullopt,
 						  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 	NormalizedValue<double> normalize_distance(const Perception &perception, const Vec3 &position);
