@@ -2,11 +2,11 @@
 build/
 cmake-build-*/
 out/
-build-valgrind
-build-asan
-build-gcc
-build-release
-build-native
+build-valgrind/
+build-asan/
+build-gcc/
+build-release/
+build-native/
 
 # --- CMake generated files ---
 CMakeFiles/
@@ -56,5 +56,32 @@ Thumbs.db
 # --- Logs ---
 *.log
 
-# --- ccache (caso ative depois, pro GitHub Actions) ---
+# --- ccache ---
 .ccache/
+
+# --- Python virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Python caches / generated files ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyright/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Python packaging / build artifacts ---
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- uv ---
+.python-version

@@ -1,0 +1,41 @@
+Checks:
+  - -*
+  - bugprone-use-after-move
+  - modernize-deprecated-headers
+  - modernize-redundant-void-arg
+  - modernize-use-bool-literals
+  - modernize-use-default-member-init
+  - modernize-use-nullptr
+  - performance-move-const-arg
+  - readability-braces-around-statements
+  - readability-operators-representation
+  - readability-redundant-member-init
+
+HeaderFileExtensions:
+  - ""
+  - h
+  - hh
+  - hpp
+  - hxx
+  - inc
+  - cppm
+
+ImplementationFileExtensions:
+  - c
+  - cc
+  - cpp
+  - cxx
+  - m
+  - mm
+
+HeaderFilterRegex: (src|tests)/
+
+FormatStyle: file
+
+CheckOptions:
+  modernize-deprecated-headers.CheckHeaderFile: true
+  modernize-use-bool-literals.IgnoreMacros: false
+  modernize-use-default-member-init.IgnoreMacros: false
+  modernize-use-default-member-init.UseAssignment: true
+  readability-operators-representation.BinaryOperators: "&&;&=;&;|;~;!;!=;||;|=;^;^="
+  readability-operators-representation.OverloadedOperators: "&&;&=;&;|;~;!;!=;||;|=;^;^="
