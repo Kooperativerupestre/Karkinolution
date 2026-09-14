@@ -775,8 +775,26 @@ void RStarTree<IdType>::refresh_path_mbrs(std::vector<RtreeNode<IdType>*> &path)
 		return;
 	}
 
-	for (auto it = path.rbegin(); it != path.rend(); ++it) {
-		refresh_mbrs(**it);
+	for (size_t i = path.size(); i-- > 0;) {
+		RtreeNode<IdType> &node = *path[i];
+
+		refresh_mbrs(node);
+		if (i == 0) {
+			continue;
+		}
+
+		RtreeNode<IdType> &parent = *path[i - 1];
+
+		for (auto &entry : parent.entries) {
+			if (std::holds_alternative<std::unique_ptr<RtreeNode<IdType>>>(entry.content)
+				&& std::get<std::unique_ptr<RtreeNode<IdType>>>(entry.content).get() == &node) {
+
+				if (node.box.has_value()) {
+					entry.box = node.box.value();
+				}
+				break;
+			}
+		}
 	}
 }
 
