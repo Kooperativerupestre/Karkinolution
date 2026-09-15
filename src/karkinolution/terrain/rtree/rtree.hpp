@@ -60,6 +60,11 @@ namespace RStarTreeMotor {
 			size_t             depth;
 	};
 
+	enum class SplitRootOutput : uint8_t {
+		RIGHT,
+		LEFT
+	};
+
 	template <typename IdType>
 	Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>> &, size_t begin, size_t end);
 
@@ -364,7 +369,9 @@ template <typename IdType> class RStarTree {
 
 		void split(RtreeNode<IdType> &leaf, RtreeNode<IdType>* parent);
 
-		void split_root(RtreeNode<IdType> &old_root);
+		std::optional<std::reference_wrapper<RtreeEntry<IdType>>>
+		split_root(RtreeNode<IdType>                &old_root,
+				   std::optional<RtreeNode<IdType>*> target = std::nullopt);
 
 		std::vector<IdType> find(const Box3D                           &box,
 								 const std::vector<RtreeEntry<IdType>> &entries,
@@ -586,11 +593,30 @@ void RStarTree<IdType>::split(RtreeNode<IdType> &node, RtreeNode<IdType>* parent
 		RtreeEntry<IdType>{.box = right_node->box.value(), .content = std::move(right_node)});
 }
 
-template <typename IdType> void RStarTree<IdType>::split_root(RtreeNode<IdType> &old_root) {
+template <typename IdType>
+std::optional<std::reference_wrapper<RtreeEntry<IdType>>>
+RStarTree<IdType>::split_root(RtreeNode<IdType>                &old_root,
+							  std::optional<RtreeNode<IdType>*> target) {
 
 	const NodeType node_type = old_root.type;
 
 	auto split_output = RStarTreeMotor::split(old_root.entries, MIN_ENTRIES);
+
+	std::optional<RStarTreeMotor::SplitRootOutput> output = std::nullopt;
+
+	if (target.has_value()) {
+		for (const auto &entry : split_output.left) {
+			if (std::holds_alternative<std::unique_ptr<RtreeNode<IdType>>>(entry->content)) {
+				output = RStarTreeMotor::SplitRootOutput::LEFT;
+			}
+		}
+
+		for (const auto &entry : split_output.right) {
+			if (std::holds_alternative<std::unique_ptr<RtreeNode<IdType>>>(entry->content)) {
+				output = RStarTreeMotor::SplitRootOutput::RIGHT;
+			}
+		}
+	}
 
 	std::vector<RtreeEntry<IdType>> left_entries;
 	std::vector<RtreeEntry<IdType>> right_entries;
@@ -631,6 +657,16 @@ template <typename IdType> void RStarTree<IdType>::split_root(RtreeNode<IdType> 
 		RtreeEntry<IdType>{.box = right_node->box.value(), .content = std::move(right_node)});
 
 	old_root.box = RStarTreeMotor::calculate_mbr(old_root.entries, 0, old_root.entries.size());
+
+	if (!target.has_value()) {
+		return std::nullopt;
+	}
+
+	if (output == RStarTreeMotor::SplitRootOutput::LEFT) {
+		return std::ref(old_root.entries[0]);
+	} else {
+		return std::ref(old_root.entries[1]);
+	}
 }
 
 template <typename IdType>
@@ -654,7 +690,7 @@ void RStarTree<IdType>::insert_entry(RtreeEntry<IdType>              entry,
 				auto &parent = path[path_size - 2];
 				split(leaf, parent);
 			} else {
-				split_root(leaf);
+				split_root(leaf, std::nullopt);
 			}
 		} else {
 			auto node_center = RStarTreeMotor::calculate_mbr(leaf.entries, 0, size).center();
@@ -703,8 +739,15 @@ void RStarTree<IdType>::insert_entry(RtreeEntry<IdType>              entry,
 	}
 
 	if (root_->entries.size() > MAX_ENTRIES) {
-		split_root(*root_);
+		auto entry = split_root(*root_, path[1]);
+
+		auto &split_entry = entry->get();
+
+		auto* split_node = std::get<std::unique_ptr<RtreeNode<IdType>>>(split_entry.content).get();
+
+		path.insert(path.begin() + 1, split_node);
 	}
+
 
 	refresh_path_mbrs(path);
 }
