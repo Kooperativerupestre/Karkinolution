@@ -230,3 +230,87 @@ TEST(RStarTreeTest, ClearReallyWorks) {
 	tree.clear();
 	ASSERT_TRUE(tree.size() == 0);
 }
+
+TEST(RStarTreeTest, FindReallyWorks) {
+	TRStarTree tree;
+
+	constexpr SoilPieceId count = 500;
+
+	// Insert 500 boxes in a 10 x 10 x 5 grid.
+	for (SoilPieceId id = 0; id < count; ++id) {
+		const double x = static_cast<double>(id % 10) * 10.0;
+		const double y = static_cast<double>((id / 10) % 10) * 10.0;
+		const double z = static_cast<double>(id / 100) * 10.0;
+
+		tree.insert(id, make_box(x, y, z));
+	}
+
+	assert_tree_invariants(tree);
+
+	// Find a region containing exactly one box.
+	{
+		const Box3D query = make_box(20.0, 30.0, 10.0, 1.0);
+
+		const auto result = tree.find(query);
+
+		ASSERT_EQ(result.size(), 1);
+		EXPECT_EQ(result[0], 132);
+	}
+
+	// Find a larger region.
+	//
+	// Box boundaries are inclusive, so boxes starting exactly at
+	// x = 30, y = 30, or z = 20 also intersect the query.
+	//
+	// x: 0, 10, 20, 30 -> 4
+	// y: 0, 10, 20, 30 -> 4
+	// z: 0, 10, 20      -> 3
+	//
+	// Total: 4 * 4 * 3 = 48.
+	{
+		const Box3D query = Box3D{
+			.max = Vec3{30.0, 30.0, 20.0},
+			.min = Vec3{0.0, 0.0, 0.0},
+		};
+
+		const auto result = tree.find(query);
+
+		ASSERT_EQ(result.size(), 48);
+
+		std::unordered_set<SoilPieceId> expected;
+
+		for (SoilPieceId z = 0; z <= 2; ++z) {
+			for (SoilPieceId y = 0; y <= 3; ++y) {
+				for (SoilPieceId x = 0; x <= 3; ++x) {
+					expected.insert(z * 100 + y * 10 + x);
+				}
+			}
+		}
+
+		EXPECT_EQ(std::unordered_set<SoilPieceId>(result.begin(), result.end()), expected);
+	}
+
+	// Search a completely empty region.
+	{
+		const Box3D query = Box3D{
+			.max = Vec3{1010.0, 1010.0, 1010.0},
+			.min = Vec3{1000.0, 1000.0, 1000.0},
+		};
+
+		const auto result = tree.find(query);
+
+		EXPECT_TRUE(result.empty());
+	}
+
+	// Search a region between the inserted boxes.
+	{
+		const Box3D query = Box3D{
+			.max = Vec3{9.0, 9.0, 9.0},
+			.min = Vec3{5.0, 5.0, 5.0},
+		};
+
+		const auto result = tree.find(query);
+
+		EXPECT_TRUE(result.empty());
+	}
+}
