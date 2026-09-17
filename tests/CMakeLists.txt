@@ -1,3 +1,6 @@
+enable_testing()
+
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -24,3 +27,10 @@ target_link_libraries(karkinolution_tests PRIVATE
 include(GoogleTest)
 
 gtest_discover_tests(karkinolution_tests)
+
+add_test(
+    NAME server_connection
+    COMMAND python3
+        ${CMAKE_CURRENT_SOURCE_DIR}/networking/integration/test_client.py
+        $<TARGET_FILE:karkinolution_app>
+)
