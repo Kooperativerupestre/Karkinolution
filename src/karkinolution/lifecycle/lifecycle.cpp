@@ -1,11 +1,11 @@
 #include <karkinolution/lifecycle/lifecycle.hpp>
 
+#include "karkinolution/organism/entities/embryo/motor.hpp"
 #include "karkinolution/terrain/motor.hpp"
 
 void LifeCycle::run(Entity& entity, World& world) {
 	if (std::holds_alternative<Embryo>(entity)) {
-		return;
-		// TODO
+		EmbryoMotor::run(std::get<Embryo>(entity), world);
 	} else if (std::holds_alternative<Creature>(entity)) {
 		CreatureMotor::run(std::get<Creature>(entity), world);
 	} else if (std::holds_alternative<Corpse>(entity)) {

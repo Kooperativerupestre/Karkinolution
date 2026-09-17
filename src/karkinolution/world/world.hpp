@@ -15,14 +15,13 @@ struct World {
 		OrganismRegistry organism_registry;
 		NaturesMap natures;
 		Territory territory;
+		int time = 0;
 
 		void pass_time() {
 			++time;
 		}
 
-	private:
 
-		int time = 0;
 };
 
 struct WorldPreset {
