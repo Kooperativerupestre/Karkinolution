@@ -1,8 +1,9 @@
 #pragma once
 
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
-#include <karkinolution/organism/registry.hpp>
+
+#include "karkinolution/world/world.hpp"
 
 namespace CorpseMotor {
-	void run(Corpse &corpse);
+	void run(Corpse &corpse, World&world);
 } // namespace CorpseMotor
