@@ -14,3 +14,13 @@ struct World {
 		NaturesMap       natures;
 		Territory        territory;
 };
+
+struct WorldPreset {
+		int   seed;
+		Size  size;
+		float epsilon;
+};
+
+namespace WorldFactory {
+	World create_world(const WorldPreset &preset);
+} // namespace WorldFactory

@@ -10,6 +10,22 @@ class SimulationError : public std::runtime_error {
 			: std::runtime_error(message) {}
 };
 
+// NETWORKING
+
+class NetworkingError : public SimulationError {
+	public:
+
+		explicit NetworkingError(const std::string &message)
+			: SimulationError(message) {}
+};
+
+class BufferError : public NetworkingError {
+	public:
+
+		explicit BufferError(const std::string &message)
+			: NetworkingError(message) {}
+};
+
 // MAIN SUBDOMAINS
 class IdError : public SimulationError {
 	public:

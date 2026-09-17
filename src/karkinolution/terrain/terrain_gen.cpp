@@ -8,7 +8,6 @@
 #include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <utility>
-#include <vector>
 
 SoilTypes TerrainFactory::get_soil_type(const SignedNormalizedValue<float> &factor) {
 
@@ -35,51 +34,37 @@ Territory TerrainFactory::gen_terrain(const Size                  &size,
 									  float                        epsilon,
 									  const GeometryForms::Radius &min_radius,
 									  const GeometryForms::Radius &max_radius) {
-
-	/*
-	 * The noise graph belongs to this terrain generation operation.
-	 *
-	 * In particular, the FractalFBm generator must have its source
-	 * configured before GenSingle3D() is called.
-	 */
 	auto simplex = FastNoise::New<FastNoise::Simplex>();
-
-	simplex->SetScale(10.0f);
+	simplex->SetScale(scale);
 
 	auto terrain_noise = FastNoise::New<FastNoise::FractalFBm>();
-
 	terrain_noise->SetSource(simplex);
 	terrain_noise->SetOctaveCount(5);
 	terrain_noise->SetGain(0.5f);
 	terrain_noise->SetLacunarity(2.0f);
 
-	std::vector<Vec3> coords;
-
-	for (double lateral = 0.0; lateral <= size.lateral.value; lateral += epsilon) {
-
-		for (double depth = 0.0; depth <= size.back.value; depth += epsilon) {
-
-			for (double height = 0.0; height <= size.height.value; height += epsilon) {
-
-				coords.push_back(Vec3{lateral, depth, height});
-			}
-		}
-	}
-
 	Territory territory{size};
 
-	for (const auto &coord : coords) {
+	for (double lateral = 0.0; lateral <= size.lateral.value; lateral += epsilon) {
+		for (double depth = 0.0; depth <= size.back.value; depth += epsilon) {
+			for (double height = 0.0; height <= size.height.value; height += epsilon) {
 
-		const auto noise_value = terrain_noise->GenSingle3D(static_cast<float>(coord.x),
-															static_cast<float>(coord.y),
-															static_cast<float>(coord.z),
-															seed);
+				const Vec3 coord{lateral, depth, height};
 
-		const auto soil_type = TerrainFactory::get_soil_type(noise_value);
+				const auto noise_value = terrain_noise->GenSingle3D(static_cast<float>(coord.x),
+																	static_cast<float>(coord.y),
+																	static_cast<float>(coord.z),
+																	seed);
 
-		const auto radius = RandomGenerators::generate(min_radius.value, max_radius.value);
-		auto       soil   = SoilF::gen_soil_piece(soil_type, radius, coord);
-		territory.add(soil.id, std::move(soil));
+				const auto soil_type = TerrainFactory::get_soil_type(noise_value);
+
+				const auto radius = RandomGenerators::generate(min_radius.value, max_radius.value);
+
+				auto soil = SoilF::gen_soil_piece(soil_type, radius, coord);
+
+				territory.add(soil.id, std::move(soil));
+			}
+		}
 	}
 
 	return territory;
