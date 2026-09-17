@@ -14,28 +14,36 @@ class RSTServiceTest;
 template <typename ID, BoxConvertible V, typename Registry>
 	requires BaseStorageChild<Registry, ID, V>
 class RSTService {
-		friend class RSTServiceTest;
+	friend class RSTServiceTest;
 
 	private:
 
 		RStarTree<ID> tree_;
-		Registry      registry_;
-		Size          size_;
+		Registry registry_;
+		Size size_;
 
 	public:
 
-		RSTService(const Size &size)
+		RSTService(const Size& size)
 			: size_(size) {}
 
-		const Registry &registry() const {
+		const Registry& registry() const {
 			return registry_;
 		}
 
-		const RStarTree<ID> &tree() const {
+		auto soils() {
+			return registry_.values();
+		}
+
+		auto soils() const {
+			return registry_.values();
+		}
+
+		const RStarTree<ID>& tree() const {
 			return tree_;
 		}
 
-		const Size &size() const {
+		const Size& size() const {
 			return size_;
 		}
 
@@ -43,7 +51,7 @@ class RSTService {
 			return BoxConversion::to_box(size_, Vec3Utils::zero());
 		}
 
-		bool add(ID id, V &&value) {
+		bool add(ID id, V&& value) {
 			const auto value_box = BoxConversion::to_box(value);
 
 			if (!Box3DMotor::contains(box(), value_box)) {
@@ -76,12 +84,12 @@ class RSTService {
 			return registry_.try_del(id);
 		}
 
-		std::vector<ID> find(const Radius &radius, const Vec3 &position) const {
+		std::vector<ID> find(const Radius& radius, const Vec3& position) const {
 			auto box = BoxConversion::to_box(radius, position);
 			return tree_.find(box);
 		}
 
-		std::vector<ID> find(const Size &size, const Vec3 &position) const {
+		std::vector<ID> find(const Size& size, const Vec3& position) const {
 			auto box = BoxConversion::to_box(size, position);
 			return tree_.find(box);
 		}

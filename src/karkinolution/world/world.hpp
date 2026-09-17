@@ -9,18 +9,28 @@
 #include <karkinolution/terrain/terrain.hpp>
 
 struct World {
-		EntityMap        entity_map;
+	public:
+
+		EntityMap entity_map;
 		OrganismRegistry organism_registry;
-		NaturesMap       natures;
-		Territory        territory;
+		NaturesMap natures;
+		Territory territory;
+
+		void pass_time() {
+			++time;
+		}
+
+	private:
+
+		int time = 0;
 };
 
 struct WorldPreset {
-		int   seed;
-		Size  size;
-		float epsilon;
+	int seed;
+	Size size;
+	float epsilon;
 };
 
 namespace WorldFactory {
-	World create_world(const WorldPreset &preset);
+	World create_world(const WorldPreset& preset);
 } // namespace WorldFactory
