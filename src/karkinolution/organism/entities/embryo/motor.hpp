@@ -3,7 +3,7 @@
 #include <karkinolution/world/world.hpp>
 
 namespace EmbryoMotor {
-	void grow(Embryo& embryo);
+	void grow(Embryo &embryo);
 
-	void run(Embryo& embryo, World& world);
-}
+	void run(Embryo &embryo, World &world);
+} // namespace EmbryoMotor

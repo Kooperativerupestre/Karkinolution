@@ -9,23 +9,23 @@
 #include <karkinolution/test/rtree_service_test_generator.hpp>
 
 namespace {
-	Territory give_me_territory(const Size &size = {50.0, 50.0, 50.0}) {
-		return TerrainFactory::gen_terrain(size, 666, TerrainScale::NORMAL, 1.0, 10.0, 20.0);
+	Territory give_me_territory(const Size& size = {50.0, 50.0, 50.0}) {
+		return TerrainFactory::gen_terrain(size, 666, TerrainScale::NORMAL, 5.0, 10.0, 20.0);
 	}
 } // namespace
 
 TEST(RSTServiceTest, AddIsAtomic) {
 	auto territory = give_me_territory();
 	territory.clear();
-	auto      &registry      = RSTServiceTest::get_registry(territory);
-	auto      &internal_tree = RSTServiceTest::get_tree(territory);
-	const auto common_id     = gen_id();
+	auto& registry = RSTServiceTest::get_registry(territory);
+	auto& internal_tree = RSTServiceTest::get_tree(territory);
+	const auto common_id = gen_id();
 	// common id -> violating the unique id constraint of BaseStorage
 	SoilPiece soil_A = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_A.id        = common_id;
+	soil_A.id = common_id;
 
 	SoilPiece soil_B = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_B.id        = common_id;
+	soil_B.id = common_id;
 
 	// unique id constraint
 	const auto was_A_inserted = territory.add(soil_A.id, std::move(soil_A));
@@ -45,10 +45,10 @@ TEST(RSTServiceTest, AddIsAtomic) {
 
 
 	SoilPiece soil_C = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_C.id        = common_id;
+	soil_C.id = common_id;
 
 	SoilPiece soil_D = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_D.id        = common_id;
+	soil_D.id = common_id;
 
 	bool was_C_inserted_on_registry = registry.try_add(common_id, std::move(soil_C));
 	ASSERT_TRUE(was_C_inserted_on_registry);
@@ -60,10 +60,10 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	// if internal tree fails
 
 	SoilPiece soil_E = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_E.id        = common_id;
+	soil_E.id = common_id;
 
 	SoilPiece soil_F = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_F.id        = common_id;
+	soil_F.id = common_id;
 
 
 	internal_tree.insert(common_id, BoxConversion::to_box(soil_E));
@@ -72,9 +72,9 @@ TEST(RSTServiceTest, AddIsAtomic) {
 }
 
 TEST(RSTServiceTest, RemoveIsAtomic) {
-	auto  territory     = give_me_territory();
-	auto &registry      = RSTServiceTest::get_registry(territory);
-	auto &internal_tree = RSTServiceTest::get_tree(territory);
+	auto territory = give_me_territory();
+	auto& registry = RSTServiceTest::get_registry(territory);
+	auto& internal_tree = RSTServiceTest::get_tree(territory);
 
 	territory.clear();
 
@@ -83,7 +83,7 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 	const auto common_id = gen_id();
 
 	SoilPiece soil_A = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_A.id        = common_id;
+	soil_A.id = common_id;
 	internal_tree.insert(soil_A.id, BoxConversion::to_box(soil_A));
 
 	const bool was_A_removed = territory.remove(common_id);
@@ -97,7 +97,7 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 
 
 	SoilPiece soil_B = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
-	soil_B.id        = common_id;
+	soil_B.id = common_id;
 
 	registry.add(common_id, std::move(soil_B));
 
@@ -112,13 +112,13 @@ TEST(RSTServiceTest, AddRejectsPieceOutsideBoundary) {
 	auto territory = give_me_territory();
 	territory.clear();
 
-	auto &registry      = RSTServiceTest::get_registry(territory);
-	auto &internal_tree = RSTServiceTest::get_tree(territory);
+	auto& registry = RSTServiceTest::get_registry(territory);
+	auto& internal_tree = RSTServiceTest::get_tree(territory);
 
 	const auto id = gen_id();
 
 	SoilPiece soil = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{100.0, 100.0, 100.0});
-	soil.id        = id;
+	soil.id = id;
 
 	const bool was_inserted = territory.add(soil.id, std::move(soil));
 

@@ -14,7 +14,7 @@ float EmbryoPhysiology::basal_metabolism(const Embryo& embryo) {
 	return EMBRYO_BASAL_METABOLISM;
 }
 
-constexpr NormalizedValue<float>
+NormalizedValue<float>
 EmbryoGrowingPhysiology::get_increment(const NormalizedValue<float>& ratio,
                                        const NormalizedValue<float>& factor) {
 	if (ratio < Approx<float>(0.5)) {

@@ -1,11 +1,12 @@
 #include "karkinolution/world/motor.hpp"
-#include <karkinolution/organism/entities/embryo/motor.hpp>
 
 #include "embryo.hpp"
-#include "physiology.hpp"
 #include "karkinolution/world/world.hpp"
+#include "physiology.hpp"
 
-void EmbryoMotor::grow(Embryo& embryo) {
+#include <karkinolution/organism/entities/embryo/motor.hpp>
+
+void EmbryoMotor::grow(Embryo &embryo) {
 	const auto volume_trade = EmbryoGrowingPhysiology::get_new_volume_increment(embryo);
 
 	embryo.energy -= volume_trade.cost;
@@ -32,7 +33,7 @@ void EmbryoMotor::grow(Embryo& embryo) {
 	embryo.health += health_trade.gain;
 }
 
-void EmbryoMotor::run(Embryo& embryo, World& world) {
+void EmbryoMotor::run(Embryo &embryo, World &world) {
 	if (EmbryoPhysiology::is_dead(embryo)) {
 		WorldMotor::remove(embryo.build_id(), world);
 	}

@@ -1,9 +1,9 @@
-#include <karkinolution/lifecycle/lifecycle.hpp>
-
 #include "karkinolution/organism/entities/embryo/motor.hpp"
 #include "karkinolution/terrain/motor.hpp"
 
-void LifeCycle::run(Entity& entity, World& world) {
+#include <karkinolution/lifecycle/lifecycle.hpp>
+
+void LifeCycle::run(Entity &entity, World &world) {
 	if (std::holds_alternative<Embryo>(entity)) {
 		EmbryoMotor::run(std::get<Embryo>(entity), world);
 	} else if (std::holds_alternative<Creature>(entity)) {
@@ -16,14 +16,13 @@ void LifeCycle::run(Entity& entity, World& world) {
 	}
 }
 
-void LifeCycle::run(World& world) {
+void LifeCycle::run(World &world) {
 	world.pass_time();
-	for (auto& piece :
-	     world.territory.soils()) {
+	for (auto &piece : world.territory.soils()) {
 		SoilPieceMotor::run(piece);
 	}
 
-	for (auto& entity : world.organism_registry.entities.values()) {
+	for (auto &entity : world.organism_registry.entities.values()) {
 		run(entity, world);
 	}
 }

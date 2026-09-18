@@ -11,25 +11,23 @@
 struct World {
 	public:
 
-		EntityMap entity_map;
+		EntityMap        entity_map;
 		OrganismRegistry organism_registry;
-		NaturesMap natures;
-		Territory territory;
-		int time = 0;
+		NaturesMap       natures;
+		Territory        territory;
+		int              time = 0;
 
 		void pass_time() {
 			++time;
 		}
-
-
 };
 
 struct WorldPreset {
-	int seed;
-	Size size;
-	float epsilon;
+		int   seed;
+		Size  size;
+		float epsilon;
 };
 
 namespace WorldFactory {
-	World create_world(const WorldPreset& preset);
+	World create_world(const WorldPreset &preset);
 } // namespace WorldFactory

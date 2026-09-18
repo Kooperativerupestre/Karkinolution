@@ -2,7 +2,7 @@
 #include <karkinolution/terrain/soil.hpp>
 
 namespace SoilPieceMotor {
-	void run(SoilPiece& piece);
+	void run(SoilPiece &piece);
 
 	// TODO
-}
+} // namespace SoilPieceMotor
