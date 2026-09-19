@@ -28,19 +28,113 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
         with:
-          version: "latest"
-
-      - name: Set up Python
-        run: uv python install 3.13
-
-      - name: Install dependencies
-        run: uv sync
+          context: .
+          file: Dockerfile.ci
+          tags: ${{ env.DOCKER_IMAGE }}
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
 
       - name: Run CLI unit tests
-        run: uv run python -m unittest discover -s cli/tests
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e HOME=/tmp \
+            ${{ env.DOCKER_IMAGE }} \
+            uv run python -m unittest discover -s cli/tests
+
+  style-check:
+    name: Style Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: ${{ env.DOCKER_IMAGE }}
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Run style check
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e HOME=/tmp \
+            ${{ env.DOCKER_IMAGE }} \
+            uv run karkinolution style check src/karkinolution main.cpp
+
+  tidy-check:
+    name: Tidy Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: clang20-tidy
+          max-size: 1G
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: ${{ env.DOCKER_IMAGE }}
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Configure
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake \
+              -S /workspace \
+              -B /workspace/build-tidy \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF
+
+      - name: Run tidy check
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e HOME=/tmp \
+            ${{ env.DOCKER_IMAGE }} \
+            uv run karkinolution tidy check src/karkinolution main.cpp --build-dir /workspace/build-tidy
 
   unit-tests:
     name: Unit Tests
@@ -111,24 +205,6 @@ jobs:
             ctest \
               --test-dir /workspace/build-ci \
               --output-on-failure
-
-      - name: Check simulator style
-        run: |
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/workspace" \
-            -e HOME=/tmp \
-            ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution style check src/karkinolution main.cpp
-
-      - name: Check simulator tidy
-        run: |
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/workspace" \
-            -e HOME=/tmp \
-            ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution tidy check src/karkinolution main.cpp --build-dir /workspace/build-ci
 
   sanitizers:
     name: Sanitizers
