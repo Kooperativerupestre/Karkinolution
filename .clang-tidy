@@ -6,7 +6,6 @@ Checks:
   - modernize-use-bool-literals
   - modernize-use-default-member-init
   - modernize-use-nullptr
-  - performance-move-const-arg
   - readability-braces-around-statements
   - readability-operators-representation
   - readability-redundant-member-init
