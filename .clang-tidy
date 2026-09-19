@@ -12,7 +12,6 @@ Checks:
   - readability-redundant-member-init
 
 HeaderFileExtensions:
-  - ""
   - h
   - hh
   - hpp
