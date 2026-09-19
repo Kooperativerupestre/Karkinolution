@@ -10,6 +10,7 @@ Checks:
   - readability-braces-around-statements
   - readability-operators-representation
   - readability-redundant-member-init
+WarningsAsErrors: '*'
 
 HeaderFileExtensions:
   - h

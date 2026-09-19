@@ -4,8 +4,9 @@ import unittest
 from pathlib import Path
 
 import typer
+from unittest import mock
 
-from karkinolution.tidy.commands import filter_compile_tokens, sanitize_compile_commands
+from karkinolution.tidy.commands import filter_compile_tokens, run_tidy, sanitize_compile_commands
 
 
 class TestTidy(unittest.TestCase):
@@ -110,6 +111,36 @@ class TestTidy(unittest.TestCase):
 
             with self.assertRaises(typer.Exit):
                 sanitize_compile_commands(missing_source, target_dir)
+
+    @mock.patch("subprocess.run")
+    def test_run_tidy_passes_warnings_as_errors(self, mock_run: mock.MagicMock) -> None:
+        mock_run.return_value.returncode = 0
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            source_file = tmp_path / "compile_commands.json"
+            source_file.write_text("[]")
+            source_code = tmp_path / "main.cpp"
+            source_code.write_text("int main() {}")
+
+            run_tidy([source_code], build_dir=tmp_path, warnings_as_errors=True)
+            mock_run.assert_called_once()
+            called_cmd = mock_run.call_args[0][0]
+            self.assertIn("--warnings-as-errors=*", called_cmd)
+
+    @mock.patch("subprocess.run")
+    def test_run_tidy_omits_warnings_as_errors_when_disabled(self, mock_run: mock.MagicMock) -> None:
+        mock_run.return_value.returncode = 0
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            source_file = tmp_path / "compile_commands.json"
+            source_file.write_text("[]")
+            source_code = tmp_path / "main.cpp"
+            source_code.write_text("int main() {}")
+
+            run_tidy([source_code], build_dir=tmp_path, warnings_as_errors=False)
+            mock_run.assert_called_once()
+            called_cmd = mock_run.call_args[0][0]
+            self.assertNotIn("--warnings-as-errors=*", called_cmd)
 
 
 if __name__ == "__main__":
