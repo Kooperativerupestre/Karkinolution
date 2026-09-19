@@ -18,16 +18,32 @@ app.add_typer(tidy_app, name="tidy")
     "check",
     help="Check whether source files are correctly formatted.",
 )
-def style_check(paths: list[Path]) -> None:
-    style.check(tuple(paths))
+def style_check(
+    paths: list[Path],
+    style_file: Path | None = typer.Option(
+        None,
+        "--style-file",
+        "-s",
+        help="Path to .clang-format file.",
+    ),
+) -> None:
+    style.check(tuple(paths), style_file=style_file)
 
 
 @style_app.command(
     "format",
     help="Format source files in-place.",
 )
-def style_format(paths: list[Path]) -> None:
-    style.format(tuple(paths))
+def style_format(
+    paths: list[Path],
+    style_file: Path | None = typer.Option(
+        None,
+        "--style-file",
+        "-s",
+        help="Path to .clang-format file.",
+    ),
+) -> None:
+    style.format(tuple(paths), style_file=style_file)
 
 
 @tidy_app.command(
@@ -47,11 +63,18 @@ def tidy_check(
         "--warnings-as-errors/--no-warnings-as-errors",
         help="Treat warnings as errors.",
     ),
+    config_file: Path | None = typer.Option(
+        None,
+        "--config-file",
+        "-c",
+        help="Path to .clang-tidy file.",
+    ),
 ) -> None:
     tidy.check(
         tuple(paths),
         build_dir=build_dir,
         warnings_as_errors=warnings_as_errors,
+        config_file=config_file,
     )
 
 
@@ -67,8 +90,14 @@ def tidy_fix(
         "-b",
         help="Path to the build directory containing compile_commands.json.",
     ),
+    config_file: Path | None = typer.Option(
+        None,
+        "--config-file",
+        "-c",
+        help="Path to .clang-tidy file.",
+    ),
 ) -> None:
-    tidy.fix(tuple(paths), build_dir=build_dir)
+    tidy.fix(tuple(paths), build_dir=build_dir, config_file=config_file)
 
 
 if __name__ == "__main__":

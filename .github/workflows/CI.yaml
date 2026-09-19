@@ -78,7 +78,7 @@ jobs:
             -v "$PWD:/workspace" \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution style check src/karkinolution main.cpp
+            uv run karkinolution style check src/karkinolution main.cpp --style-file /workspace/.clang-format
 
   tidy-check:
     name: Tidy Check
@@ -134,7 +134,7 @@ jobs:
             -v "$PWD:/workspace" \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution tidy check src/karkinolution main.cpp --build-dir /workspace/build-tidy
+            uv run karkinolution tidy check src/karkinolution main.cpp --build-dir /workspace/build-tidy --config-file /workspace/.clang-tidy
 
   unit-tests:
     name: Unit Tests

@@ -55,5 +55,14 @@ def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
     return files
 
 
+def find_config_file(filename: str, start: Path | None = None) -> Path | None:
+    current = (start or Path.cwd()).resolve()
+    for parent in [current, *current.parents]:
+        candidate = parent / filename
+        if candidate.is_file():
+            return candidate.resolve()
+    return None
+
+
 def complete() -> None:
     typer.echo("🦀")

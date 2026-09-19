@@ -142,6 +142,23 @@ class TestTidy(unittest.TestCase):
             called_cmd = mock_run.call_args[0][0]
             self.assertNotIn("--warnings-as-errors=*", called_cmd)
 
+    @mock.patch("subprocess.run")
+    def test_run_tidy_passes_config_file(self, mock_run: mock.MagicMock) -> None:
+        mock_run.return_value.returncode = 0
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            source_file = tmp_path / "compile_commands.json"
+            source_file.write_text("[]")
+            source_code = tmp_path / "main.cpp"
+            source_code.write_text("int main() {}")
+            config_file = tmp_path / ".clang-tidy"
+            config_file.write_text("Checks: '-*'")
+
+            run_tidy([source_code], build_dir=tmp_path, config_file=config_file)
+            mock_run.assert_called_once()
+            called_cmd = mock_run.call_args[0][0]
+            self.assertIn(f"--config-file={config_file.resolve()}", called_cmd)
+
 
 if __name__ == "__main__":
     unittest.main()
