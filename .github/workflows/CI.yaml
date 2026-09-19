@@ -288,6 +288,8 @@ jobs:
             -v "$PWD:/workspace" \
             -w /workspace/src/godot/godot-cpp \
             -e CCACHE_DIR=/workspace/.ccache \
+            -e CC="ccache clang-20" \
+            -e CXX="ccache clang++-20" \
             ${{ env.DOCKER_IMAGE }} \
             scons \
               -j"$(nproc)" \
