@@ -5,7 +5,7 @@ on:
   pull_request:
   schedule:
     - cron: '0 21 * * *'
-  timezone: 'America/Sao_Paulo'
+      timezone: 'America/Sao_Paulo'
 
 permissions:
   contents: read
