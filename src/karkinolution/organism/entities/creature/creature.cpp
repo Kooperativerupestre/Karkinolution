@@ -61,9 +61,9 @@ NormalizedValue<float> Body::reproductive_maturity() const {
 [[nodiscard]] float Creature::specie_relative_volume() const noexcept {
 	return body.morphology.volume().value
 		/ Size::volume(genome.creature_genome.morphology.average_lateral,
-		               genome.creature_genome.morphology.average_height,
-		               genome.creature_genome.morphology.average_back)
-		.value;
+					   genome.creature_genome.morphology.average_height,
+					   genome.creature_genome.morphology.average_back)
+			  .value;
 }
 
 [[nodiscard]] float Creature::specie_relative_age() const noexcept {

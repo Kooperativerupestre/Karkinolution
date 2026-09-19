@@ -22,7 +22,7 @@ godot::Ref<GodotParsedFrame> Karkinolution::parse_frame(const godot::PackedByteA
 }
 
 godot::Ref<GodotCreature> Karkinolution::parse_creature(const godot::PackedByteArray &payload,
-													   std::uint64_t                id) {
+														std::uint64_t                 id) {
 	return GodotBinaryParser::parse_creature(payload, id);
 }
 

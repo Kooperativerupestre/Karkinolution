@@ -11,25 +11,25 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 
 	protected:
 
-		Derived& derived() {
-			return static_cast<Derived&>(*this);
+		Derived &derived() {
+			return static_cast<Derived &>(*this);
 		}
 
-		const Derived& derived() const {
-			return static_cast<const Derived&>(*this);
+		const Derived &derived() const {
+			return static_cast<const Derived &>(*this);
 		}
 
 	public:
 
 		RuntimeLimitedValue(T value, T max, T min = T(0))
 			: _value(value)
-			  , _min(min)
-			  , _max(max) {
+			, _min(min)
+			, _max(max) {
 			if (_min > _max) {
 				throw std::invalid_argument(
 					std::format("Invalid RuntimeLimitedValue range. Min() > Max(): {} > {}",
-					            _min,
-					            _max));
+								_min,
+								_max));
 			}
 
 			clamp();
@@ -47,11 +47,11 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 			return _max;
 		}
 
-		T& max_ref() noexcept {
+		T &max_ref() noexcept {
 			return _max;
 		}
 
-		T& min_ref() noexcept {
+		T &min_ref() noexcept {
 			return _min;
 		}
 
@@ -63,42 +63,42 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 			}
 		}
 
-		template <typename U> Derived& set(U new_value) {
+		template <typename U> Derived &set(U new_value) {
 			_value = static_cast<T>(new_value);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived& operator+=(U other) {
+		template <typename U> Derived &operator+=(U other) {
 			_value += static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived& operator-=(U other) {
+		template <typename U> Derived &operator-=(U other) {
 			_value -= static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived& operator*=(U other) {
+		template <typename U> Derived &operator*=(U other) {
 			_value *= static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived& operator/=(U other) {
+		template <typename U> Derived &operator/=(U other) {
 			_value /= static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		Derived& zero() {
+		Derived &zero() {
 			_value = _min;
 			return derived();
 		}
 
-		Derived& full() {
+		Derived &full() {
 			_value = _max;
 			return derived();
 		}
@@ -135,7 +135,7 @@ template <typename T> class IntegerWithMax {
 
 		IntegerWithMax(T value, T max)
 			: _value(value)
-			  , _max(max) {
+			, _max(max) {
 			if (_max < T(0)) {
 				throw std::invalid_argument("Invalid IntegerWithMax");
 			}
@@ -145,13 +145,13 @@ template <typename T> class IntegerWithMax {
 
 		IntegerWithMax(T max)
 			: _value(T(0))
-			  , _max(max) {
+			, _max(max) {
 			if (_max < T(0)) {
 				throw std::invalid_argument("Invalid IntegerWithMax");
 			}
 		}
 
-		auto operator<=>(const IntegerWithMax&) const = default;
+		auto operator<=>(const IntegerWithMax &) const = default;
 
 		void pass() {
 			if (_value < _max) {
@@ -229,7 +229,7 @@ template <typename T> class IntegerLimited {
 
 		IntegerLimited(T value, T max)
 			: _value(value)
-			  , _max(max) {
+			, _max(max) {
 			if (_max < T(0)) {
 				throw std::invalid_argument("Invalid IntegerLimited");
 			}
@@ -239,13 +239,13 @@ template <typename T> class IntegerLimited {
 
 		IntegerLimited(T max)
 			: _value(0)
-			  , _max(max) {
+			, _max(max) {
 			if (_max < T(0)) {
 				throw std::invalid_argument("Invalid IntegerLimited");
 			}
 		}
 
-		auto operator<=>(const IntegerLimited&) const = default;
+		auto operator<=>(const IntegerLimited &) const = default;
 
 		void pass() {
 			if (_value < _max) {
@@ -306,5 +306,5 @@ template <typename T> class IntegerLimited {
 
 // Generic runtime value
 template <typename T> class RuntimeFactor : public RuntimeLimitedValue<RuntimeFactor<T>, T> {
-	using RuntimeLimitedValue<RuntimeFactor, T>::RuntimeLimitedValue;
+		using RuntimeLimitedValue<RuntimeFactor, T>::RuntimeLimitedValue;
 };

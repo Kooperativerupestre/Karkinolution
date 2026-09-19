@@ -30,16 +30,16 @@ class GodotCreature : public godot::RefCounted {
 		[[nodiscard]] std::uint64_t get_id() const;
 		void                        set_id(std::uint64_t id);
 
-		[[nodiscard]] std::uint8_t  get_gender() const;
-		void                        set_gender(std::uint8_t gender);
+		[[nodiscard]] std::uint8_t get_gender() const;
+		void                       set_gender(std::uint8_t gender);
 
-		[[nodiscard]] std::uint8_t  get_specie() const;
-		void                        set_specie(std::uint8_t specie);
+		[[nodiscard]] std::uint8_t get_specie() const;
+		void                       set_specie(std::uint8_t specie);
 
 		[[nodiscard]] godot::String get_gender_name() const;
 		[[nodiscard]] godot::String get_specie_name() const;
 
-		static godot::Ref<GodotCreature> from_deserialized(const DesserializedCreature &deserialized,
-													       std::uint64_t                id = 0);
+		static godot::Ref<GodotCreature>
+		from_deserialized(const DesserializedCreature &deserialized, std::uint64_t id = 0);
 		static godot::Ref<GodotCreature> from_core(const ::Creature &creature);
 };
