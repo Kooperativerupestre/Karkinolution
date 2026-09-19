@@ -32,22 +32,14 @@ file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
 )
 
-file(GLOB_RECURSE KARKINOLUTION_MODULES CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cppm"
-    "${CMAKE_SOURCE_DIR}/src/karkinolution/*.ixx"
-)
-
 add_library(karkinolution)
+set_target_properties(karkinolution PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+)
 
 target_sources(karkinolution
     PRIVATE
         ${KARKINOLUTION_SOURCES}
-
-    PUBLIC
-        FILE_SET CXX_MODULES
-        TYPE CXX_MODULES
-        FILES
-            ${KARKINOLUTION_MODULES}
 )
 
 target_include_directories(karkinolution PUBLIC
@@ -58,6 +50,30 @@ target_link_libraries(karkinolution
     PUBLIC
         FastNoise
         asio
+)
+
+# ---------------- Godot Extension ----------------
+
+add_library(karkinolution_godot SHARED
+    src/godot/extension/register_types.cpp
+    src/godot/extension/karkinolution.cpp
+    src/godot/extension/binary/frame.cpp
+    src/godot/extension/model/creature/creature.cpp
+)
+target_include_directories(karkinolution_godot PRIVATE
+    "${CMAKE_SOURCE_DIR}/src"
+    "${CMAKE_SOURCE_DIR}/src/godot/extension"
+    "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/include"
+    "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/gen/include"
+)
+
+set_target_properties(karkinolution_godot PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/src/godot/karkinolution/bin"
+)
+
+target_link_libraries(karkinolution_godot PRIVATE
+    karkinolution
+    "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a"
 )
 
 # ---------------- Main executable ----------------

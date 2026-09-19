@@ -12,7 +12,7 @@ CreatureBytes CreatureSRI::serialize_creature(const Creature &creature) {
 	if (creature.ontology.gender == Gender::FEMALE) {
 		bytes[0] = std::byte(0x01);
 	} else { // gender == male
-		bytes[0] = std::byte(0x2);
+		bytes[0] = std::byte(0x02);
 	}
 
 	if (creature.genome.core_genome.specie == CreatureSpecies::CRAB) {

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bq5sqy6odt1tw"]
+
+[ext_resource type="Script" uid="uid://delhh08ytpfih" path="res://scripts/main.gd" id="1_delhh"]
+[ext_resource type="Script" uid="uid://dwbw7mdntlupw" path="res://scripts/network_client.gd" id="2_sugp2"]
+
+[node name="Main" type="Node2D" unique_id=410552027]
+script = ExtResource("1_delhh")
+
+[node name="NetworkClient" type="Node" parent="." unique_id=1711344010]
+script = ExtResource("2_sugp2")
+
+[connection signal="connected_to_server" from="NetworkClient" to="." method="_on_network_client_connected_to_server"]
+[connection signal="connection_failed" from="NetworkClient" to="." method="_on_network_client_connection_failed"]
+[connection signal="disconnected_from_server" from="NetworkClient" to="." method="_on_network_client_disconnected_from_server"]
+[connection signal="creature_received" from="NetworkClient" to="." method="_on_network_client_creature_received"]
+[connection signal="error_received" from="NetworkClient" to="." method="_on_network_client_error_received"]

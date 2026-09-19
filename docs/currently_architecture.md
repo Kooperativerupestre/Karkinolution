@@ -34,11 +34,13 @@ Contains:
 * Custom types
 * Concepts
 
-Note: Specific properties should be implemented as part of the struct in Model only when the property meets all of the following requirements:
+Note: Specific properties should be implemented as part of the struct in Model only when the property meets all of the
+following requirements:
 
 * It does not depend on another object to exist.
 * It meets the requirements of the **Property** naming convention.
-* Its calculation/get operation does not involve anything beyond the object itself, such as global values or other objects.
+* Its calculation/get operation does not involve anything beyond the object itself, such as global values or other
+  objects.
 
 ### Physiology
 
@@ -48,8 +50,11 @@ Contains:
 * Growth values
 * Effect getters
 * Relationship Properties
+* Idempotent
+* Deterministic
 
-Note: **Properties** in this context refers only to properties that meet the requirements of the **Property** naming convention but do not meet the requirements for being a Model property.
+Note: **Properties** in this context refers only to properties that meet the requirements of the **Property** naming
+convention but do not meet the requirements for being a Model property.
 
 ### Motor
 
@@ -58,7 +63,8 @@ Contains:
 * Executions
 * Pipelines
 
-Motors execute actions, coordinate operations, invoke other components, use algorithms, and perform other forms of domain execution.
+Motors execute actions, coordinate operations, invoke other components, use algorithms, and perform other forms of
+domain execution.
 
 ### Mutation
 
@@ -72,8 +78,8 @@ The project should be organized primarily by domain rather than by technical res
 
 # Atomicity
 
-Every operation that depends on more than one system, must be atomic (if it's possible).
-Operation X:
+Every operation that depends on more than one system, must be atomic (if it's possible). Operation X:
+
 - Operation A
 - Operation B
 
