@@ -20,6 +20,28 @@ env:
   DOCKER_IMAGE: karkinolution-ci:latest
 
 jobs:
+  cli-tests:
+    name: CLI Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run CLI unit tests
+        run: uv run python -m unittest discover -s cli/tests
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -89,6 +111,24 @@ jobs:
             ctest \
               --test-dir /workspace/build-ci \
               --output-on-failure
+
+      - name: Check simulator style
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e HOME=/tmp \
+            ${{ env.DOCKER_IMAGE }} \
+            uv run karkinolution style check src/karkinolution main.cpp
+
+      - name: Check simulator tidy
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e HOME=/tmp \
+            ${{ env.DOCKER_IMAGE }} \
+            uv run karkinolution tidy check src/karkinolution main.cpp --build-dir /workspace/build-ci
 
   sanitizers:
     name: Sanitizers
