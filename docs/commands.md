@@ -213,8 +213,8 @@ docker build -f Dockerfile.ci -t karkinolution-ci .
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   cmake -S /workspace -B /workspace/build-ci -G Ninja \
-  -DCMAKE_C_COMPILER=clang-20 \
-  -DCMAKE_CXX_COMPILER=clang++-20 \
+  -DCMAKE_C_COMPILER=clang-21 \
+  -DCMAKE_CXX_COMPILER=clang++-21 \
   -DCMAKE_BUILD_TYPE=Debug
 
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
@@ -229,8 +229,8 @@ docker run --rm -v "$PWD:/workspace" karkinolution-ci \
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   cmake -S /workspace -B /workspace/build-sanitizers -G Ninja \
-  -DCMAKE_C_COMPILER=clang-20 \
-  -DCMAKE_CXX_COMPILER=clang++-20 \
+  -DCMAKE_C_COMPILER=clang-21 \
+  -DCMAKE_CXX_COMPILER=clang++-21 \
   -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
   -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
