@@ -183,6 +183,18 @@ jobs:
               -DCMAKE_BUILD_TYPE=Debug \
               -DBUILD_GODOT_EXTENSION=OFF
 
+      - name: Build
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake \
+              --build /workspace/build-tidy \
+              --target karkinolution_app \
+              --parallel "$(nproc)"
+
       - name: Build tests
         run: |
           docker run --rm \
