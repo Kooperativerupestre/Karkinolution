@@ -10,12 +10,12 @@
 
 TEST(CreaturePhysiology, GetToAgeEffectsIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
 	OrganismRegistry registry;
 	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
@@ -32,12 +32,12 @@ TEST(CreaturePhysiology, GetToAgeEffectsIdempotency) {
 
 TEST(CreaturePhysiology, GetDiseasesEffectIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
 	OrganismRegistry registry;
 	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
@@ -51,12 +51,12 @@ TEST(CreaturePhysiology, GetDiseasesEffectIdempotency) {
 
 TEST(CreaturePhysiology, IsDeadIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
 	OrganismRegistry registry;
 	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
@@ -83,25 +83,24 @@ TEST(CreaturePhysiology, IsDeadIdempotency) {
 
 TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
-	const Embryo embryo{
-		.id = 42,
-		.energy = Energy{50.0f, 100.0f},
-		.life = Life{80.0f, 100.0f},
-		.health = Health{0.9f},
-		.volume = Volume{0.5f},
-		.genome = creat.genome,
-		.age = 5,
-		.position = Vec3{1.0f, 2.0f, 3.0f}};
+	const Embryo embryo{.id       = 42,
+						.energy   = Energy{50.0f, 100.0f},
+						.life     = Life{80.0f, 100.0f},
+						.health   = Health{0.9f},
+						.volume   = Volume{0.5f},
+						.genome   = creat.genome,
+						.age      = 5,
+						.position = Vec3{1.0f, 2.0f, 3.0f}};
 
 	const float initial_energy = embryo.energy.value();
-	const float initial_life = embryo.life.value();
+	const float initial_life   = embryo.life.value();
 	const float initial_health = embryo.health.value();
 	const float initial_volume = embryo.volume.value;
 
@@ -113,7 +112,8 @@ TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 	ASSERT_FLOAT_EQ(embryo.health.value(), initial_health);
 	ASSERT_FLOAT_EQ(embryo.volume.value, initial_volume);
 
-	ASSERT_FLOAT_EQ(neonate_1.body.metabolism.energy.value(), neonate_2.body.metabolism.energy.value());
+	ASSERT_FLOAT_EQ(neonate_1.body.metabolism.energy.value(),
+					neonate_2.body.metabolism.energy.value());
 	ASSERT_FLOAT_EQ(neonate_1.body.vital.life.value(), neonate_2.body.vital.life.value());
 	ASSERT_FLOAT_EQ(neonate_1.body.vital.health.value(), neonate_2.body.vital.health.value());
 	ASSERT_FLOAT_EQ(neonate_1.position.x, neonate_2.position.x);
@@ -126,12 +126,12 @@ TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 
 TEST(CreatureGrowingPhysiology, Idempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
 	OrganismRegistry registry;
 	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
@@ -176,10 +176,8 @@ TEST(CreatureGrowingPhysiology, Idempotency) {
 	ASSERT_FLOAT_EQ(max_life_1.gain, max_life_2.gain);
 	ASSERT_FLOAT_EQ(max_life_1.cost.reserved_energy, max_life_2.cost.reserved_energy);
 
-	const auto muscle_1 =
-		CreatureGrowingPhysiology::get_new_muscle_increment(creature, registry);
-	const auto muscle_2 =
-		CreatureGrowingPhysiology::get_new_muscle_increment(creature, registry);
+	const auto muscle_1 = CreatureGrowingPhysiology::get_new_muscle_increment(creature, registry);
+	const auto muscle_2 = CreatureGrowingPhysiology::get_new_muscle_increment(creature, registry);
 	ASSERT_FLOAT_EQ(muscle_1.gain, muscle_2.gain);
 	ASSERT_FLOAT_EQ(muscle_1.cost.reserved_energy, muscle_2.cost.reserved_energy);
 
@@ -195,19 +193,19 @@ TEST(CreatureGrowingPhysiology, Idempotency) {
 
 TEST(CorpsePhysiology, GenerateCorpseFromCreatureIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{1.0f, 2.0f, 3.0f}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{1.0f, 2.0f, 3.0f}});
 
 	OrganismRegistry registry;
 	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
 	const auto &creature = registry.entities.at_creature(EntityIDF::create_creature_id(id));
 
 	const float initial_energy = creature.body.metabolism.energy.value();
-	const float initial_life = creature.body.vital.life.value();
+	const float initial_life   = creature.body.vital.life.value();
 
 	Corpse corpse_1 = CorpsePhysiology::generate_corpse(creature);
 	Corpse corpse_2 = CorpsePhysiology::generate_corpse(creature);
@@ -226,25 +224,24 @@ TEST(CorpsePhysiology, GenerateCorpseFromCreatureIdempotency) {
 
 TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
-	const Embryo embryo{
-		.id = 42,
-		.energy = Energy{50.0f, 100.0f},
-		.life = Life{80.0f, 100.0f},
-		.health = Health{0.9f},
-		.volume = Volume{0.5f},
-		.genome = creat.genome,
-		.age = 5,
-		.position = Vec3{4.0f, 5.0f, 6.0f}};
+	const Embryo embryo{.id       = 42,
+						.energy   = Energy{50.0f, 100.0f},
+						.life     = Life{80.0f, 100.0f},
+						.health   = Health{0.9f},
+						.volume   = Volume{0.5f},
+						.genome   = creat.genome,
+						.age      = 5,
+						.position = Vec3{4.0f, 5.0f, 6.0f}};
 
 	const float initial_energy = embryo.energy.value();
-	const float initial_life = embryo.life.value();
+	const float initial_life   = embryo.life.value();
 
 	Corpse corpse_1 = CorpsePhysiology::generate_corpse(embryo);
 	Corpse corpse_2 = CorpsePhysiology::generate_corpse(embryo);
@@ -265,22 +262,21 @@ TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
 
 TEST(EmbryoPhysiology, IsDeadIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
-	Embryo embryo{
-		.id = 42,
-		.energy = Energy{50.0f, 100.0f},
-		.life = Life{80.0f, 100.0f},
-		.health = Health{0.9f},
-		.volume = Volume{0.5f},
-		.genome = creat.genome,
-		.age = 5,
-		.position = Vec3{1.0f, 2.0f, 3.0f}};
+	Embryo embryo{.id       = 42,
+				  .energy   = Energy{50.0f, 100.0f},
+				  .life     = Life{80.0f, 100.0f},
+				  .health   = Health{0.9f},
+				  .volume   = Volume{0.5f},
+				  .genome   = creat.genome,
+				  .age      = 5,
+				  .position = Vec3{1.0f, 2.0f, 3.0f}};
 
 	const bool dead_1 = EmbryoPhysiology::is_dead(embryo);
 	const bool dead_2 = EmbryoPhysiology::is_dead(embryo);
@@ -303,22 +299,21 @@ TEST(EmbryoPhysiology, IsDeadIdempotency) {
 
 TEST(EmbryoPhysiology, BasalMetabolismIdempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
-	const Embryo embryo{
-		.id = 42,
-		.energy = Energy{50.0f, 100.0f},
-		.life = Life{80.0f, 100.0f},
-		.health = Health{0.9f},
-		.volume = Volume{0.5f},
-		.genome = creat.genome,
-		.age = 5,
-		.position = Vec3{1.0f, 2.0f, 3.0f}};
+	const Embryo embryo{.id       = 42,
+						.energy   = Energy{50.0f, 100.0f},
+						.life     = Life{80.0f, 100.0f},
+						.health   = Health{0.9f},
+						.volume   = Volume{0.5f},
+						.genome   = creat.genome,
+						.age      = 5,
+						.position = Vec3{1.0f, 2.0f, 3.0f}};
 
 	const float meta_1 = EmbryoPhysiology::basal_metabolism(embryo);
 	const float meta_2 = EmbryoPhysiology::basal_metabolism(embryo);
@@ -329,27 +324,26 @@ TEST(EmbryoPhysiology, BasalMetabolismIdempotency) {
 
 TEST(EmbryoGrowingPhysiology, Idempotency) {
 	const auto id = gen_id();
-	auto creat = CreatureConstructor::from_blueprint(CreatureBlueprint{
-		.specie = CreatureSpecies::CRAB,
-		.id = id,
-		.name = "A3",
-		.gender = Gender::FEMALE,
-		.position = Vec3{0.0, 0.0, 0.0}});
+	auto       creat =
+		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
+															  .id       = id,
+															  .name     = "A3",
+															  .gender   = Gender::FEMALE,
+															  .position = Vec3{0.0, 0.0, 0.0}});
 
-	const Embryo embryo{
-		.id = 42,
-		.energy = Energy{50.0f, 100.0f},
-		.life = Life{80.0f, 100.0f},
-		.health = Health{0.9f},
-		.volume = Volume{0.5f},
-		.genome = creat.genome,
-		.age = 5,
-		.position = Vec3{1.0f, 2.0f, 3.0f}};
+	const Embryo embryo{.id       = 42,
+						.energy   = Energy{50.0f, 100.0f},
+						.life     = Life{80.0f, 100.0f},
+						.health   = Health{0.9f},
+						.volume   = Volume{0.5f},
+						.genome   = creat.genome,
+						.age      = 5,
+						.position = Vec3{1.0f, 2.0f, 3.0f}};
 
-	const auto inc_1 =
-		EmbryoGrowingPhysiology::get_increment(NormalizedValue<float>{0.4f}, BASE_VALUE_LIFE_INCREMENT);
-	const auto inc_2 =
-		EmbryoGrowingPhysiology::get_increment(NormalizedValue<float>{0.4f}, BASE_VALUE_LIFE_INCREMENT);
+	const auto inc_1 = EmbryoGrowingPhysiology::get_increment(NormalizedValue<float>{0.4f},
+															  BASE_VALUE_LIFE_INCREMENT);
+	const auto inc_2 = EmbryoGrowingPhysiology::get_increment(NormalizedValue<float>{0.4f},
+															  BASE_VALUE_LIFE_INCREMENT);
 	ASSERT_FLOAT_EQ(inc_1.value(), inc_2.value());
 
 	const auto max_energy_1 = EmbryoGrowingPhysiology::get_new_max_energy_increment(embryo);

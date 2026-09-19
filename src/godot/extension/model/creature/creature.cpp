@@ -8,30 +8,31 @@
 void GodotCreature::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_id"), &GodotCreature::get_id);
 	godot::ClassDB::bind_method(godot::D_METHOD("set_id", "id"), &GodotCreature::set_id);
-	godot::ClassDB::add_property(
-		"GodotCreature",
-		godot::PropertyInfo(godot::Variant::INT, "id"),
-		"set_id",
-		"get_id");
+	godot::ClassDB::add_property("GodotCreature",
+								 godot::PropertyInfo(godot::Variant::INT, "id"),
+								 "set_id",
+								 "get_id");
 
 	godot::ClassDB::bind_method(godot::D_METHOD("get_gender"), &GodotCreature::get_gender);
-	godot::ClassDB::bind_method(godot::D_METHOD("set_gender", "gender"), &GodotCreature::set_gender);
-	godot::ClassDB::add_property(
-		"GodotCreature",
-		godot::PropertyInfo(godot::Variant::INT, "gender"),
-		"set_gender",
-		"get_gender");
+	godot::ClassDB::bind_method(godot::D_METHOD("set_gender", "gender"),
+								&GodotCreature::set_gender);
+	godot::ClassDB::add_property("GodotCreature",
+								 godot::PropertyInfo(godot::Variant::INT, "gender"),
+								 "set_gender",
+								 "get_gender");
 
 	godot::ClassDB::bind_method(godot::D_METHOD("get_specie"), &GodotCreature::get_specie);
-	godot::ClassDB::bind_method(godot::D_METHOD("set_specie", "specie"), &GodotCreature::set_specie);
-	godot::ClassDB::add_property(
-		"GodotCreature",
-		godot::PropertyInfo(godot::Variant::INT, "specie"),
-		"set_specie",
-		"get_specie");
+	godot::ClassDB::bind_method(godot::D_METHOD("set_specie", "specie"),
+								&GodotCreature::set_specie);
+	godot::ClassDB::add_property("GodotCreature",
+								 godot::PropertyInfo(godot::Variant::INT, "specie"),
+								 "set_specie",
+								 "get_specie");
 
-	godot::ClassDB::bind_method(godot::D_METHOD("get_gender_name"), &GodotCreature::get_gender_name);
-	godot::ClassDB::bind_method(godot::D_METHOD("get_specie_name"), &GodotCreature::get_specie_name);
+	godot::ClassDB::bind_method(godot::D_METHOD("get_gender_name"),
+								&GodotCreature::get_gender_name);
+	godot::ClassDB::bind_method(godot::D_METHOD("get_specie_name"),
+								&GodotCreature::get_specie_name);
 }
 
 GodotCreature::GodotCreature()
@@ -90,8 +91,8 @@ godot::String GodotCreature::get_specie_name() const {
 	}
 }
 
-godot::Ref<GodotCreature> GodotCreature::from_deserialized(const DesserializedCreature &deserialized,
-														  std::uint64_t                id) {
+godot::Ref<GodotCreature>
+GodotCreature::from_deserialized(const DesserializedCreature &deserialized, std::uint64_t id) {
 	godot::Ref<GodotCreature> creature;
 	creature.instantiate();
 	creature->set_id(id);

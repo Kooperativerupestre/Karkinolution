@@ -1,6 +1,5 @@
-#include "karkinolution.hpp"
-
 #include "binary/frame.hpp"
+#include "karkinolution.hpp"
 #include "model/creature/creature.hpp"
 
 #include <godot_cpp/core/class_db.hpp>

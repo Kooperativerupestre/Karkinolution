@@ -27,23 +27,23 @@ class GodotParsedFrame : public godot::RefCounted {
 
 		GodotParsedFrame();
 
-		[[nodiscard]] std::uint32_t          get_size() const;
-		void                                 set_size(std::uint32_t size);
+		[[nodiscard]] std::uint32_t get_size() const;
+		void                        set_size(std::uint32_t size);
 
-		[[nodiscard]] std::uint8_t           get_type() const;
-		void                                 set_type(std::uint8_t type);
+		[[nodiscard]] std::uint8_t get_type() const;
+		void                       set_type(std::uint8_t type);
 
-		[[nodiscard]] std::uint32_t          get_sub_type() const;
-		void                                 set_sub_type(std::uint32_t sub_type);
+		[[nodiscard]] std::uint32_t get_sub_type() const;
+		void                        set_sub_type(std::uint32_t sub_type);
 
 		[[nodiscard]] godot::PackedByteArray get_payload() const;
-		void set_payload(const godot::PackedByteArray &payload);
+		void                                 set_payload(const godot::PackedByteArray &payload);
 
-		[[nodiscard]] bool                   is_request() const;
-		[[nodiscard]] bool                   is_error() const;
-		[[nodiscard]] bool                   is_response() const;
+		[[nodiscard]] bool is_request() const;
+		[[nodiscard]] bool is_error() const;
+		[[nodiscard]] bool is_response() const;
 
-		[[nodiscard]] godot::String          get_payload_string() const;
+		[[nodiscard]] godot::String get_payload_string() const;
 
-		static godot::Ref<GodotParsedFrame>  from_core(const ::ParsedFrame &frame);
+		static godot::Ref<GodotParsedFrame> from_core(const ::ParsedFrame &frame);
 };

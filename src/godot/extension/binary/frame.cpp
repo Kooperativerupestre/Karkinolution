@@ -8,37 +8,33 @@
 void GodotParsedFrame::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_size"), &GodotParsedFrame::get_size);
 	godot::ClassDB::bind_method(godot::D_METHOD("set_size", "size"), &GodotParsedFrame::set_size);
-	godot::ClassDB::add_property(
-		"GodotParsedFrame",
-		godot::PropertyInfo(godot::Variant::INT, "size"),
-		"set_size",
-		"get_size");
+	godot::ClassDB::add_property("GodotParsedFrame",
+								 godot::PropertyInfo(godot::Variant::INT, "size"),
+								 "set_size",
+								 "get_size");
 
 	godot::ClassDB::bind_method(godot::D_METHOD("get_type"), &GodotParsedFrame::get_type);
 	godot::ClassDB::bind_method(godot::D_METHOD("set_type", "type"), &GodotParsedFrame::set_type);
-	godot::ClassDB::add_property(
-		"GodotParsedFrame",
-		godot::PropertyInfo(godot::Variant::INT, "type"),
-		"set_type",
-		"get_type");
+	godot::ClassDB::add_property("GodotParsedFrame",
+								 godot::PropertyInfo(godot::Variant::INT, "type"),
+								 "set_type",
+								 "get_type");
 
 	godot::ClassDB::bind_method(godot::D_METHOD("get_sub_type"), &GodotParsedFrame::get_sub_type);
 	godot::ClassDB::bind_method(godot::D_METHOD("set_sub_type", "sub_type"),
 								&GodotParsedFrame::set_sub_type);
-	godot::ClassDB::add_property(
-		"GodotParsedFrame",
-		godot::PropertyInfo(godot::Variant::INT, "sub_type"),
-		"set_sub_type",
-		"get_sub_type");
+	godot::ClassDB::add_property("GodotParsedFrame",
+								 godot::PropertyInfo(godot::Variant::INT, "sub_type"),
+								 "set_sub_type",
+								 "get_sub_type");
 
 	godot::ClassDB::bind_method(godot::D_METHOD("get_payload"), &GodotParsedFrame::get_payload);
 	godot::ClassDB::bind_method(godot::D_METHOD("set_payload", "payload"),
 								&GodotParsedFrame::set_payload);
-	godot::ClassDB::add_property(
-		"GodotParsedFrame",
-		godot::PropertyInfo(godot::Variant::PACKED_BYTE_ARRAY, "payload"),
-		"set_payload",
-		"get_payload");
+	godot::ClassDB::add_property("GodotParsedFrame",
+								 godot::PropertyInfo(godot::Variant::PACKED_BYTE_ARRAY, "payload"),
+								 "set_payload",
+								 "get_payload");
 
 	godot::ClassDB::bind_method(godot::D_METHOD("is_request"), &GodotParsedFrame::is_request);
 	godot::ClassDB::bind_method(godot::D_METHOD("is_error"), &GodotParsedFrame::is_error);
@@ -105,8 +101,11 @@ godot::Ref<GodotParsedFrame> GodotParsedFrame::from_core(const ::ParsedFrame &fr
 	result.instantiate();
 	result->set_size(frame.size);
 	result->set_type(static_cast<std::uint8_t>(frame.type));
-	result->set_sub_type(std::visit([](auto code) { return static_cast<std::uint32_t>(code); },
-									frame.sub_type));
+	result->set_sub_type(std::visit(
+		[](auto code) {
+			return static_cast<std::uint32_t>(code);
+		},
+		frame.sub_type));
 
 	godot::PackedByteArray payload;
 	payload.resize(static_cast<std::int64_t>(frame.payload.size()));

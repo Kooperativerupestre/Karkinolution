@@ -16,7 +16,7 @@ class ReproductiveState {
 	public:
 
 		ReproductiveOrgan state;
-		ReproductiveWays reproductive_way;
+		ReproductiveWays  reproductive_way;
 
 		bool is_pregnant() const {
 			if (std::holds_alternative<std::monostate>(state)) {
@@ -26,14 +26,14 @@ class ReproductiveState {
 			}
 		}
 
-		ReproductiveState(ReproductiveOrgan&& state, ReproductiveWays way)
+		ReproductiveState(ReproductiveOrgan &&state, ReproductiveWays way)
 			: state(state)
-			  , reproductive_way(way) {}
+			, reproductive_way(way) {}
 
-		ReproductiveState(Gender gender,
-		                  ReproductiveWays input_reproductive_way,
-		                  Energy initial_energy,
-		                  Health initial_health) {
+		ReproductiveState(Gender           gender,
+						  ReproductiveWays input_reproductive_way,
+						  Energy           initial_energy,
+						  Health           initial_health) {
 			switch (gender) {
 				case Gender::MALE:
 					state = std::monostate();
@@ -48,6 +48,5 @@ class ReproductiveState {
 			}
 
 			reproductive_way = input_reproductive_way;
-
 		}
 };

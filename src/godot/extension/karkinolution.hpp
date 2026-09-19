@@ -19,6 +19,6 @@ class Karkinolution : public godot::Node {
 
 		static godot::Ref<GodotParsedFrame> parse_frame(const godot::PackedByteArray &bytes);
 		static godot::Ref<GodotCreature>    parse_creature(const godot::PackedByteArray &payload,
-													       std::uint64_t                id = 0);
-		static godot::PackedByteArray  build_get_creature_request(std::uint64_t id);
+														   std::uint64_t                 id = 0);
+		static godot::PackedByteArray       build_get_creature_request(std::uint64_t id);
 };
