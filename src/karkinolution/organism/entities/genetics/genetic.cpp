@@ -106,7 +106,7 @@ void CreatureGenomes::add(CreatureSpecies c_s, CreatureGenome &&g) {
 }
 
 void CreatureGenomes::add(CreatureSpecies c_s, EmbryoGenome &&g) {
-	g_embryos.emplace(c_s, std::move(g));
+	g_embryos.emplace(c_s, g);
 }
 
 void CreatureGenomes::add(CreatureSpecies c_s, CoreGenome &&g) {
@@ -114,7 +114,7 @@ void CreatureGenomes::add(CreatureSpecies c_s, CoreGenome &&g) {
 }
 
 void CreatureGenomes::add(CreatureSpecies c_s, BrainGenome &&g) {
-	g_brain.emplace(c_s, std::move(g));
+	g_brain.emplace(c_s, g);
 }
 
 void Populate::populate_crocodile(CreatureGenomes &creature_genomes) {

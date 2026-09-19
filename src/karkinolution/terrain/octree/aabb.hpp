@@ -42,7 +42,7 @@ class OctreeNode {
 	private:
 
 		AABB                                                         bounds_;
-		std::vector<OctreeEntry>                                     entries{};
+		std::vector<OctreeEntry>                                     entries;
 		std::array<std::unique_ptr<OctreeNode>, MAX_OCTREE_CHILDREN> children{};
 
 		void find(const AABB &aabb, std::vector<OctreeEntry*> &output_entries);

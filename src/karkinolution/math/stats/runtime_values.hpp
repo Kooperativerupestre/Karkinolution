@@ -154,15 +154,17 @@ template <typename T> class IntegerWithMax {
 		auto operator<=>(const IntegerWithMax&) const = default;
 
 		void pass() {
-			if (_value < _max)
+			if (_value < _max) {
 				++_value;
+			}
 
 			clamp();
 		}
 
 		NormalizedValue<float> ratio() const {
-			if (_max == T(0))
+			if (_max == T(0)) {
 				return NormalizedValue<float>(0.0f);
+			}
 
 			return NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
 		}
@@ -176,10 +178,11 @@ template <typename T> class IntegerWithMax {
 		}
 
 		void clamp() {
-			if (_value < T(0))
+			if (_value < T(0)) {
 				_value = T(0);
-			else if (_value > _max)
+			} else if (_value > _max) {
 				_value = _max;
+			}
 		}
 
 		void full() {
@@ -191,8 +194,9 @@ template <typename T> class IntegerWithMax {
 		}
 
 		T remaining_to_max() const {
-			if (_value >= _max)
+			if (_value >= _max) {
 				return T(0);
+			}
 
 			return _max - _value;
 		}
@@ -244,8 +248,9 @@ template <typename T> class IntegerLimited {
 		auto operator<=>(const IntegerLimited&) const = default;
 
 		void pass() {
-			if (_value < _max)
+			if (_value < _max) {
 				++_value;
+			}
 
 			clamp();
 		}
@@ -267,10 +272,11 @@ template <typename T> class IntegerLimited {
 		}
 
 		void clamp() {
-			if (_value < T(0))
+			if (_value < T(0)) {
 				_value = T(0);
-			else if (_value > _max)
+			} else if (_value > _max) {
 				_value = _max;
+			}
 		}
 
 		void full() {

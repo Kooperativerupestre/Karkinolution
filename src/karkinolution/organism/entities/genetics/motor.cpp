@@ -226,7 +226,7 @@ ReproductiveGenome GenomeMotor::scramble(const ReproductiveGenome &g1,
 		const auto chosen = Choices::choice({g1, g2});
 
 		return ReproductiveGenome{
-			.reproductive_way_genome = std::move(chosen.reproductive_way_genome),
+			.reproductive_way_genome = chosen.reproductive_way_genome,
 			.average_children_count  = children,
 			.average_gestation_limit = average_gestation_limit,
 			.fertility_limit         = fertility_limit,

@@ -51,8 +51,8 @@ Embryo ReproductionStatePhysiology::generate_embryo(const Creature &female, cons
 
 	return Embryo{
 		.id     = gen_id(),
-		.energy = std::move(energy),
-		.life   = std::move(life),
+		.energy = energy,
+		.life   = life,
 		.health = new_genome.embryo_genome.body.average_health.value(),
 		.volume = Volume{init_average_volume},
 		.genome = std::move(new_genome),

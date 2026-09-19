@@ -5,15 +5,17 @@ namespace Vec3F {
 	[[nodiscard]] constexpr double angle_between(const Vec3 &a, const Vec3 &b) noexcept {
 		const double dot_val     = a.dot(b);
 		const double len_product = a.length() * b.length();
-		if (len_product <= 0.0)
+		if (len_product <= 0.0) {
 			return 0.0;
+		}
 		return std::acos(std::clamp(dot_val / len_product, -1.0, 1.0));
 	}
 
 	[[nodiscard]] constexpr Vec3 project_onto(const Vec3 &a, const Vec3 &b) noexcept {
 		const double b_len_sq = b.length_squared();
-		if (b_len_sq <= 0.0)
+		if (b_len_sq <= 0.0) {
 			return Vec3(0.0, 0.0, 0.0);
+		}
 		const double scale = a.dot(b) / b_len_sq;
 		return b * scale;
 	}
@@ -29,8 +31,9 @@ namespace Vec3F {
 													 double      G = 6.67430e-11) noexcept {
 		const Vec3   delta   = pos2 - pos1;
 		const double dist_sq = delta.length_squared();
-		if (dist_sq <= 0.0)
+		if (dist_sq <= 0.0) {
 			return Vec3(0.0, 0.0, 0.0);
+		}
 		const double force_magnitude = G * mass1 * mass2 / dist_sq;
 		return delta.normalized() * force_magnitude;
 	}
@@ -47,8 +50,9 @@ namespace Vec3F {
 
 	[[nodiscard]] constexpr Vec3
 	friction_force(const Vec3 &velocity, double mu, double normal_force) noexcept {
-		if (velocity.is_zero())
+		if (velocity.is_zero()) {
 			return Vec3(0.0, 0.0, 0.0);
+		}
 		const double friction_magnitude = mu * normal_force;
 		return velocity.normalized() * (-friction_magnitude);
 	}
@@ -56,8 +60,9 @@ namespace Vec3F {
 	[[nodiscard]] constexpr Vec3 centripetal_acceleration(const Vec3 &velocity,
 														  const Vec3 &position) noexcept {
 		const double radius = position.length();
-		if (radius <= 0.0)
+		if (radius <= 0.0) {
 			return Vec3(0.0, 0.0, 0.0);
+		}
 		const double speed_sq = velocity.length_squared();
 		return position.normalized() * (-speed_sq / radius);
 	}
