@@ -93,7 +93,7 @@ jobs:
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: clang20-tidy
+          key: clang21-tidy
           max-size: 1G
 
       - name: Set up Docker Buildx
@@ -120,8 +120,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-tidy \
               -G Ninja \
-              -DCMAKE_C_COMPILER=clang-20 \
-              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER=clang-21 \
+              -DCMAKE_CXX_COMPILER=clang++-21 \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
@@ -149,7 +149,7 @@ jobs:
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: clang20
+          key: clang21
           max-size: 1G
 
       - name: Set up Docker Buildx
@@ -176,8 +176,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-ci \
               -G Ninja \
-              -DCMAKE_C_COMPILER=clang-20 \
-              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER=clang-21 \
+              -DCMAKE_CXX_COMPILER=clang++-21 \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
@@ -219,7 +219,7 @@ jobs:
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: clang20-asan-ubsan
+          key: clang21-asan-ubsan
           max-size: 1G
 
       - name: Set up Docker Buildx
@@ -246,8 +246,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-sanitizers \
               -G Ninja \
-              -DCMAKE_C_COMPILER=clang-20 \
-              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER=clang-21 \
+              -DCMAKE_CXX_COMPILER=clang++-21 \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
@@ -376,14 +376,14 @@ jobs:
           path: |
             src/godot/godot-cpp/bin
             src/godot/godot-cpp/gen/include
-          key: godot-cpp-${{ runner.os }}-clang20-template-debug-api4.7-${{ steps.godot-cpp.outputs.revision }}
+          key: godot-cpp-${{ runner.os }}-clang21-template-debug-api4.7-${{ steps.godot-cpp.outputs.revision }}
           restore-keys: |
-            godot-cpp-${{ runner.os }}-clang20-template-debug-api4.7-
+            godot-cpp-${{ runner.os }}-clang21-template-debug-api4.7-
 
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: godot-clang20
+          key: godot-clang21
           max-size: 1G
 
       - name: Set up Docker Buildx
@@ -431,8 +431,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-godot \
               -G Ninja \
-              -DCMAKE_C_COMPILER=clang-20 \
-              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER=clang-21 \
+              -DCMAKE_CXX_COMPILER=clang++-21 \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
