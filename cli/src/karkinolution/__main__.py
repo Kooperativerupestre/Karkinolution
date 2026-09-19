@@ -42,8 +42,17 @@ def tidy_check(
         "-b",
         help="Path to the build directory containing compile_commands.json.",
     ),
+    warnings_as_errors: bool = typer.Option(
+        True,
+        "--warnings-as-errors/--no-warnings-as-errors",
+        help="Treat warnings as errors.",
+    ),
 ) -> None:
-    tidy.check(tuple(paths), build_dir=build_dir)
+    tidy.check(
+        tuple(paths),
+        build_dir=build_dir,
+        warnings_as_errors=warnings_as_errors,
+    )
 
 
 @tidy_app.command(

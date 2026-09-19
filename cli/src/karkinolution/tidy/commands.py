@@ -83,6 +83,7 @@ def run_tidy(
     files: list[Path],
     build_dir: Path = Path("build"),
     fix: bool = False,
+    warnings_as_errors: bool = True,
 ) -> None:
     if not files:
         typer.echo("No source files found.")
@@ -102,6 +103,8 @@ def run_tidy(
             "-p",
             str(tmp_path),
         ]
+        if warnings_as_errors:
+            cmd.append("--warnings-as-errors=*")
         if fix:
             cmd.append("--fix")
 
@@ -114,9 +117,13 @@ def run_tidy(
     complete()
 
 
-def check(paths: tuple[Path, ...], build_dir: Path = Path("build")) -> None:
+def check(
+    paths: tuple[Path, ...],
+    build_dir: Path = Path("build"),
+    warnings_as_errors: bool = True,
+) -> None:
     files = collect_source_files(paths)
-    run_tidy(files, build_dir=build_dir, fix=False)
+    run_tidy(files, build_dir=build_dir, fix=False, warnings_as_errors=warnings_as_errors)
 
 
 def fix(paths: tuple[Path, ...], build_dir: Path = Path("build")) -> None:
