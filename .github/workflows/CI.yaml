@@ -75,6 +75,7 @@ jobs:
             cmake \
               --build /workspace/build-ci \
               --target karkinolution_tests \
+              --target karkinolution_app \
               --parallel "$(nproc)"
 
       - name: Test
@@ -146,6 +147,7 @@ jobs:
             cmake \
               --build /workspace/build-sanitizers \
               --target karkinolution_tests \
+              --target karkinolution_app \
               --parallel "$(nproc)"
 
       - name: Test with sanitizers
