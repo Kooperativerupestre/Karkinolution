@@ -147,7 +147,7 @@ struct Creature {
 
 		Creature(Genome &&genome, Brain &&brain, Ontology &&ontology, Body &&body, Vec3 position)
 			: genome(std::move(genome))
-			, brain(std::move(brain))
+			, brain(brain)
 			, ontology(std::move(ontology))
 			, body(std::move(body))
 			, position(position) {}
@@ -158,7 +158,7 @@ struct Creature {
 				 Body        &&body,
 				 Vec3          position)
 			: genome(genome)
-			, brain(std::move(brain))
+			, brain(brain)
 			, ontology(std::move(ontology))
 			, body(std::move(body))
 			, position(position) {}

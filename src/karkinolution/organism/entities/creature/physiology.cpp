@@ -276,12 +276,12 @@ Creature CreaturePhysiology::hatch_embryo(const Embryo &embryo) {
 	};
 
 	Body body{
-		.metabolism   = std::move(metabolism),
-		.vital        = std::move(vital),
+		.metabolism   = metabolism,
+		.vital        = vital,
 		.reproductive = std::move(reproductive),
-		.morphology   = std::move(morphology),
-		.skeleton     = std::move(skeleton),
-		.muscle       = std::move(muscle),
+		.morphology   = morphology,
+		.skeleton     = skeleton,
+		.muscle       = muscle,
 		.age          = Age{0.0f},
 	};
 
