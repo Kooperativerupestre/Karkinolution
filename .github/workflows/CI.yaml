@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit-tests:
     name: Unit Tests
@@ -45,7 +49,8 @@ jobs:
               -G Ninja \
               -DCMAKE_C_COMPILER=clang-20 \
               -DCMAKE_CXX_COMPILER=clang++-20 \
-              -DCMAKE_BUILD_TYPE=Debug
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF
 
       - name: Build
         run: |
@@ -98,6 +103,7 @@ jobs:
               -DCMAKE_C_COMPILER=clang-20 \
               -DCMAKE_CXX_COMPILER=clang++-20 \
               -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF \
               -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
               -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
 
@@ -154,7 +160,8 @@ jobs:
               -G Ninja \
               -DCMAKE_C_COMPILER=gcc-15 \
               -DCMAKE_CXX_COMPILER=g++-15 \
-              -DCMAKE_BUILD_TYPE=Debug
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF
 
       - name: Build
         run: |
@@ -174,3 +181,65 @@ jobs:
               --track-origins=yes \
               --error-exitcode=1 \
               /workspace/build-valgrind/tests/karkinolution_tests
+
+  godot-extension:
+    name: Godot Extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: karkinolution-ci:latest
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Build godot-cpp
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            bash -c 'cd /workspace/src/godot/godot-cpp && \
+              scons -j"$(nproc)" \
+                platform=linux \
+                target=template_debug'
+
+      - name: Verify godot-cpp
+        run: |
+          test -f \
+            src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a
+
+      - name: Configure
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake \
+              -S /workspace \
+              -B /workspace/build-godot \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=ON
+
+      - name: Build Godot extension
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            karkinolution-ci:latest \
+            cmake \
+              --build /workspace/build-godot \
+              --target karkinolution_godot \
+              -j"$(nproc)"

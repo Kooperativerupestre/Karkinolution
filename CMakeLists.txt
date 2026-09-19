@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
+option(BUILD_GODOT_EXTENSION "Build the Godot GDExtension" OFF)
 
 enable_testing()
 
@@ -17,71 +18,76 @@ enable_testing()
 set(FASTNOISE2_TOOLS OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(
-    "${CMAKE_SOURCE_DIR}/dependencies/FastNoise2"
+        "${CMAKE_SOURCE_DIR}/dependencies/FastNoise2"
 )
 
 add_library(asio INTERFACE)
 
 target_include_directories(asio INTERFACE
-    "${CMAKE_SOURCE_DIR}/dependencies/asio/asio/include"
+        "${CMAKE_SOURCE_DIR}/dependencies/asio/asio/include"
 )
 
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
+        "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
 )
 
 add_library(karkinolution)
+
 set_target_properties(karkinolution PROPERTIES
-    POSITION_INDEPENDENT_CODE ON
+        POSITION_INDEPENDENT_CODE ON
 )
 
 target_sources(karkinolution
-    PRIVATE
+        PRIVATE
         ${KARKINOLUTION_SOURCES}
 )
 
 target_include_directories(karkinolution PUBLIC
-    "${CMAKE_SOURCE_DIR}/src"
+        "${CMAKE_SOURCE_DIR}/src"
 )
 
 target_link_libraries(karkinolution
-    PUBLIC
+        PUBLIC
         FastNoise
         asio
 )
 
 # ---------------- Godot Extension ----------------
 
-add_library(karkinolution_godot SHARED
-    src/godot/extension/register_types.cpp
-    src/godot/extension/karkinolution.cpp
-    src/godot/extension/binary/frame.cpp
-    src/godot/extension/model/creature/creature.cpp
-)
-target_include_directories(karkinolution_godot PRIVATE
-    "${CMAKE_SOURCE_DIR}/src"
-    "${CMAKE_SOURCE_DIR}/src/godot/extension"
-    "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/include"
-    "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/gen/include"
-)
+if (BUILD_GODOT_EXTENSION)
+    add_library(karkinolution_godot SHARED
+            src/godot/extension/register_types.cpp
+            src/godot/extension/karkinolution.cpp
+            src/godot/extension/binary/frame.cpp
+            src/godot/extension/model/creature/creature.cpp
+    )
 
-set_target_properties(karkinolution_godot PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/src/godot/karkinolution/bin"
-)
+    target_include_directories(karkinolution_godot PRIVATE
+            "${CMAKE_SOURCE_DIR}/src"
+            "${CMAKE_SOURCE_DIR}/src/godot/extension"
+            "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/include"
+            "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/gen/include"
+    )
 
-target_link_libraries(karkinolution_godot PRIVATE
-    karkinolution
-    "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a"
-)
+    set_target_properties(karkinolution_godot PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY
+            "${CMAKE_SOURCE_DIR}/src/godot/karkinolution/bin"
+    )
+
+    target_link_libraries(karkinolution_godot PRIVATE
+            karkinolution
+            "${CMAKE_SOURCE_DIR}/src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a"
+    )
+endif ()
 
 # ---------------- Main executable ----------------
 
 add_executable(karkinolution_app main.cpp)
 
 target_link_libraries(karkinolution_app PRIVATE
-    karkinolution
+        karkinolution
 )
 
 # ---------------- Tests ----------------
