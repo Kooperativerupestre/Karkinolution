@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
 import shlex
+import shutil
 import subprocess
 import tempfile
 
 import typer
 
-from karkinolution.paths import collect_source_files, complete
+from karkinolution.paths import collect_source_files, complete, find_config_file
 
 MODULE_FLAGS_TO_REMOVE = {
     "-fmodules-ts",
@@ -84,6 +85,7 @@ def run_tidy(
     build_dir: Path = Path("build"),
     fix: bool = False,
     warnings_as_errors: bool = True,
+    config_file: Path | None = None,
 ) -> None:
     if not files:
         typer.echo("No source files found.")
@@ -94,15 +96,22 @@ def run_tidy(
         typer.echo(f"Compilation database not found at: {source_db}", err=True)
         raise typer.Exit(code=1)
 
+    resolved_config = config_file or find_config_file(".clang-tidy")
+
     with tempfile.TemporaryDirectory(prefix="karkinolution_tidy_") as tmpdir:
         tmp_path = Path(tmpdir)
         sanitize_compile_commands(source_db, tmp_path)
+
+        if resolved_config and resolved_config.is_file():
+            shutil.copy(resolved_config, tmp_path / ".clang-tidy")
 
         cmd = [
             "clang-tidy",
             "-p",
             str(tmp_path),
         ]
+        if resolved_config and resolved_config.is_file():
+            cmd.append(f"--config-file={resolved_config.resolve()}")
         if warnings_as_errors:
             cmd.append("--warnings-as-errors=*")
         if fix:
@@ -121,12 +130,28 @@ def check(
     paths: tuple[Path, ...],
     build_dir: Path = Path("build"),
     warnings_as_errors: bool = True,
+    config_file: Path | None = None,
 ) -> None:
     files = collect_source_files(paths)
-    run_tidy(files, build_dir=build_dir, fix=False, warnings_as_errors=warnings_as_errors)
+    run_tidy(
+        files,
+        build_dir=build_dir,
+        fix=False,
+        warnings_as_errors=warnings_as_errors,
+        config_file=config_file,
+    )
 
 
-def fix(paths: tuple[Path, ...], build_dir: Path = Path("build")) -> None:
+def fix(
+    paths: tuple[Path, ...],
+    build_dir: Path = Path("build"),
+    config_file: Path | None = None,
+) -> None:
     files = collect_source_files(paths)
-    run_tidy(files, build_dir=build_dir, fix=True)
+    run_tidy(
+        files,
+        build_dir=build_dir,
+        fix=True,
+        config_file=config_file,
+    )
 
