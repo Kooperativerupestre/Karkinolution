@@ -287,8 +287,7 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -w /workspace/src/godot/godot-cpp \
-            -e CC=clang-20 \
-            -e CXX=clang++-20 \
+            -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
             scons \
               -j"$(nproc)" \
