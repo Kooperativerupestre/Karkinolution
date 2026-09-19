@@ -34,16 +34,32 @@ def style_format(paths: list[Path]) -> None:
     "check",
     help="Run clang-tidy checks on source files.",
 )
-def tidy_check(paths: list[Path]) -> None:
-    tidy.check(tuple(paths))
+def tidy_check(
+    paths: list[Path],
+    build_dir: Path = typer.Option(
+        Path("build"),
+        "--build-dir",
+        "-b",
+        help="Path to the build directory containing compile_commands.json.",
+    ),
+) -> None:
+    tidy.check(tuple(paths), build_dir=build_dir)
 
 
 @tidy_app.command(
     "fix",
     help="Run clang-tidy and apply available fixes.",
 )
-def tidy_fix(paths: list[Path]) -> None:
-    tidy.fix(tuple(paths))
+def tidy_fix(
+    paths: list[Path],
+    build_dir: Path = typer.Option(
+        Path("build"),
+        "--build-dir",
+        "-b",
+        help="Path to the build directory containing compile_commands.json.",
+    ),
+) -> None:
+    tidy.fix(tuple(paths), build_dir=build_dir)
 
 
 if __name__ == "__main__":
