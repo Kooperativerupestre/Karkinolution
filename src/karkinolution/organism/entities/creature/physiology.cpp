@@ -195,6 +195,10 @@ CreatureFunction CreaturePhysiology::get_diseases_effect(const Creature         
 	return {};
 }
 
+bool CreaturePhysiology::is_dead(const Creature &creature) {
+	return creature.body.vital.life.is_zero() || creature.body.metabolism.energy.is_zero();
+}
+
 bool BrainPhysiology::should_stop_intent(const Brain &brain) {
 	const auto intent = brain.intent();
 

@@ -31,6 +31,14 @@ class RSTService {
 			return registry_;
 		}
 
+		auto soils() {
+			return registry_.values();
+		}
+
+		auto soils() const {
+			return registry_.values();
+		}
+
 		const RStarTree<ID> &tree() const {
 			return tree_;
 		}
