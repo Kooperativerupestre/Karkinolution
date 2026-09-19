@@ -206,40 +206,46 @@ jobs:
           cache-to: type=gha,mode=max,scope=karkinolution-ci
 
       - name: Build godot-cpp
+        if: steps.godot-cpp-cache.outputs.cache-hit != 'true'
         run: |
           docker run --rm \
-            -v "$PWD:/workspace" \
-            karkinolution-ci:latest \
-            bash -c 'cd /workspace/src/godot/godot-cpp && \
-              scons -j"$(nproc)" \
-                platform=linux \
-                target=template_debug'
+          --user "$(id -u):$(id -g)" \
+          -v "$PWD:/workspace" \
+          -e CCACHE_DIR=/workspace/.ccache \
+          ${{ env.DOCKER_IMAGE }} \
+          bash -c '
+           cd /workspace/src/godot/godot-cpp &&
+           scons -j"$(nproc)" \
+             platform=linux \
+             target=template_debug \
+             api_version=4.7
+          '
 
-      - name: Verify godot-cpp
-        run: |
-          test -f \
-            src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a
+          - name: Verify godot-cpp
+            run: |
+              test -f \
+                src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a
 
-      - name: Configure
-        run: |
-          docker run --rm \
-            -v "$PWD:/workspace" \
-            karkinolution-ci:latest \
-            cmake \
-              -S /workspace \
-              -B /workspace/build-godot \
-              -G Ninja \
-              -DCMAKE_C_COMPILER=clang-20 \
-              -DCMAKE_CXX_COMPILER=clang++-20 \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DBUILD_GODOT_EXTENSION=ON
+          - name: Configure
+            run: |
+              docker run --rm \
+                -v "$PWD:/workspace" \
+                karkinolution-ci:latest \
+                cmake \
+                  -S /workspace \
+                  -B /workspace/build-godot \
+                  -G Ninja \
+                  -DCMAKE_C_COMPILER=clang-20 \
+                  -DCMAKE_CXX_COMPILER=clang++-20 \
+                  -DCMAKE_BUILD_TYPE=Debug \
+                  -DBUILD_GODOT_EXTENSION=ON
 
-      - name: Build Godot extension
-        run: |
-          docker run --rm \
-            -v "$PWD:/workspace" \
-            karkinolution-ci:latest \
-            cmake \
-              --build /workspace/build-godot \
-              --target karkinolution_godot \
-              -j"$(nproc)"
+          - name: Build Godot extension
+            run: |
+              docker run --rm \
+                -v "$PWD:/workspace" \
+                karkinolution-ci:latest \
+                cmake \
+                  --build /workspace/build-godot \
+                  --target karkinolution_godot \
+                  -j"$(nproc)"
