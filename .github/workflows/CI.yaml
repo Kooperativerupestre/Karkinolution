@@ -288,15 +288,15 @@ jobs:
             -v "$PWD:/workspace" \
             -w /workspace/src/godot/godot-cpp \
             -e CCACHE_DIR=/workspace/.ccache \
-            -e CC="ccache clang-20" \
-            -e CXX="ccache clang++-20" \
             ${{ env.DOCKER_IMAGE }} \
             scons \
               -j"$(nproc)" \
               platform=linux \
               target=template_debug \
               api_version=4.7 \
-              use_llvm=yes
+              use_llvm=yes \
+              CC=clang-20 \
+              CXX=clang++-20
 
       - name: Verify godot-cpp
         run: |
