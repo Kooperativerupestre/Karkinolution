@@ -27,6 +27,13 @@ class BufferError : public NetworkingError {
 };
 
 // MAIN SUBDOMAINS
+class ByteError : public SimulationError {
+	public:
+
+		explicit ByteError(const std::string &message)
+			: SimulationError(message) {}
+};
+
 class IdError : public SimulationError {
 	public:
 

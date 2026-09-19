@@ -34,3 +34,11 @@ add_test(
         ${CMAKE_CURRENT_SOURCE_DIR}/networking/integration/test_client.py
         $<TARGET_FILE:karkinolution_app>
 )
+
+find_program(GODOT_BIN NAMES godot godot4)
+if(GODOT_BIN)
+    add_test(
+        NAME godot_offline_tests
+        COMMAND ${GODOT_BIN} --headless --path ${CMAKE_SOURCE_DIR}/src/godot/karkinolution -s ${CMAKE_CURRENT_SOURCE_DIR}/godot/test_karkinolution.gd
+    )
+endif()

@@ -12,7 +12,7 @@
 std::vector<std::byte> CreatureAPIBYA::get_creature(const World                  &world,
 													const std::vector<std::byte> &request) {
 
-	const auto id = CreatureDSI::interpret_like_get_creature(request);
+	const auto id = CreatureRequestDSI::interpret_like_get_creature(request);
 
 	auto creature = CreatureAPI::get_creature(world, id);
 
