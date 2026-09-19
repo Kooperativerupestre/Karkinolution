@@ -5,7 +5,7 @@ on:
   pull_request:
   schedule:
     - cron: '0 21 * * *'
-      timezone: 'America/Sao_Paulo'
+  timezone: 'America/Sao_Paulo'
 
 permissions:
   contents: read
@@ -47,29 +47,35 @@ jobs:
           cache-from: type=gha,scope=karkinolution-ci
           cache-to: type=gha,mode=max,scope=karkinolution-ci
 
-      - name: Configure and build tests
+      - name: Configure
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            bash -c '
-              cmake \
-                -S /workspace \
-                -B /workspace/build-ci \
-                -G Ninja \
-                -DCMAKE_C_COMPILER=clang-20 \
-                -DCMAKE_CXX_COMPILER=clang++-20 \
-                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
-                -DBUILD_GODOT_EXTENSION=OFF &&
-              cmake \
-                --build /workspace/build-ci \
-                --target karkinolution_tests \
-                --parallel "$(nproc)"
-            '
+            cmake \
+              -S /workspace \
+              -B /workspace/build-ci \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF
+
+      - name: Build tests
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake \
+              --build /workspace/build-ci \
+              --target karkinolution_tests \
+              --parallel "$(nproc)"
 
       - name: Test
         run: |
@@ -110,31 +116,37 @@ jobs:
           cache-from: type=gha,scope=karkinolution-ci
           cache-to: type=gha,mode=max,scope=karkinolution-ci
 
-      - name: Configure and build tests
+      - name: Configure
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            bash -c '
-              cmake \
-                -S /workspace \
-                -B /workspace/build-sanitizers \
-                -G Ninja \
-                -DCMAKE_C_COMPILER=clang-20 \
-                -DCMAKE_CXX_COMPILER=clang++-20 \
-                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
-                -DBUILD_GODOT_EXTENSION=OFF \
-                -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined" &&
-              cmake \
-                --build /workspace/build-sanitizers \
-                --target karkinolution_tests \
-                --parallel "$(nproc)"
-            '
+            cmake \
+              -S /workspace \
+              -B /workspace/build-sanitizers \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF \
+              -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+              -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+
+      - name: Build tests
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake \
+              --build /workspace/build-sanitizers \
+              --target karkinolution_tests \
+              --parallel "$(nproc)"
 
       - name: Test with sanitizers
         run: |
@@ -178,29 +190,35 @@ jobs:
           cache-from: type=gha,scope=karkinolution-ci
           cache-to: type=gha,mode=max,scope=karkinolution-ci
 
-      - name: Configure and build tests
+      - name: Configure
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            bash -c '
-              cmake \
-                -S /workspace \
-                -B /workspace/build-valgrind \
-                -G Ninja \
-                -DCMAKE_C_COMPILER=gcc-15 \
-                -DCMAKE_CXX_COMPILER=g++-15 \
-                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
-                -DBUILD_GODOT_EXTENSION=OFF &&
-              cmake \
-                --build /workspace/build-valgrind \
-                --target karkinolution_tests \
-                --parallel "$(nproc)"
-            '
+            cmake \
+              -S /workspace \
+              -B /workspace/build-valgrind \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=gcc-15 \
+              -DCMAKE_CXX_COMPILER=g++-15 \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=OFF
+
+      - name: Build tests
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake \
+              --build /workspace/build-valgrind \
+              --target karkinolution_tests \
+              --parallel "$(nproc)"
 
       - name: Run Valgrind
         run: |
@@ -266,44 +284,47 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace/src/godot/godot-cpp \
             -e CCACHE_DIR=/workspace/.ccache \
-            -e CC="ccache clang-20" \
-            -e CXX="ccache clang++-20" \
             ${{ env.DOCKER_IMAGE }} \
-            bash -c '
-              cd /workspace/src/godot/godot-cpp &&
-              scons \
-                -j"$(nproc)" \
-                platform=linux \
-                target=template_debug \
-                api_version=4.7
-            '
+            scons \
+              -j"$(nproc)" \
+              platform=linux \
+              target=template_debug \
+              api_version=4.7 \
+              use_llvm=yes
 
       - name: Verify godot-cpp
         run: |
           test -f \
             src/godot/godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a
 
-      - name: Configure and build Godot extension
+      - name: Configure
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            bash -c '
-              cmake \
-                -S /workspace \
-                -B /workspace/build-godot \
-                -G Ninja \
-                -DCMAKE_C_COMPILER=clang-20 \
-                -DCMAKE_CXX_COMPILER=clang++-20 \
-                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
-                -DBUILD_GODOT_EXTENSION=ON &&
-              cmake \
-                --build /workspace/build-godot \
-                --target karkinolution_godot \
-                --parallel "$(nproc)"
-            '
+            cmake \
+              -S /workspace \
+              -B /workspace/build-godot \
+              -G Ninja \
+              -DCMAKE_C_COMPILER=clang-20 \
+              -DCMAKE_CXX_COMPILER=clang++-20 \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DBUILD_GODOT_EXTENSION=ON
+
+      - name: Build Godot extension
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake \
+              --build /workspace/build-godot \
+              --target karkinolution_godot \
+              --parallel "$(nproc)"
