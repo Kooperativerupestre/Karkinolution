@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     libc6-dbg \
     && rm -rf /var/lib/apt/lists/*
 
-ENV CC=clang-20
-ENV CXX=clang++-20
+RUN ln -s /usr/bin/clang-20 /usr/local/bin/clang && \
+    ln -s /usr/bin/clang++-20 /usr/local/bin/clang++
 
 WORKDIR /workspace
