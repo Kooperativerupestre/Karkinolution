@@ -119,9 +119,8 @@ namespace GeneticDisturbs {
 
 				Relation<Trait> relation = lhs_relation;
 
-				relation.efficiency = std::invoke(function,
-												  lhs_relation.efficiency,
-												  rhs_it->efficiency);
+				relation.efficiency =
+					std::invoke(function, lhs_relation.efficiency, rhs_it->efficiency);
 
 				result.add(resource, std::move(relation));
 			}
