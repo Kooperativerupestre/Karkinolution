@@ -9,10 +9,17 @@
 #include <karkinolution/terrain/terrain.hpp>
 
 struct World {
+	public:
+
 		EntityMap        entity_map;
 		OrganismRegistry organism_registry;
 		NaturesMap       natures;
 		Territory        territory;
+		int              time = 0;
+
+		void pass_time() {
+			++time;
+		}
 };
 
 struct WorldPreset {

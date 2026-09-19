@@ -30,6 +30,10 @@ NormalizedValue<float> Body::reproductive_maturity() const {
 	return mass.value / volume().value;
 }
 
+[[nodiscard]] Volume Morphology::volume() const noexcept {
+	return size.volume();
+}
+
 [[nodiscard]] Strength Body::strength() const noexcept {
 	return muscle.muscle.value * muscle.efficiency.value() * muscle.quality.value();
 }
@@ -50,12 +54,16 @@ NormalizedValue<float> Body::reproductive_maturity() const {
 	return body.morphology.mass.value / genome.creature_genome.morphology.average_mass.value;
 }
 
+[[nodiscard]] float Creature::specie_relative_muscle() const noexcept {
+	return body.muscle.muscle.value / genome.creature_genome.muscle.average_muscles.value;
+}
+
 [[nodiscard]] float Creature::specie_relative_volume() const noexcept {
 	return body.morphology.volume().value
 		/ Size::volume(genome.creature_genome.morphology.average_lateral,
-					   genome.creature_genome.morphology.average_height,
-					   genome.creature_genome.morphology.average_back)
-			  .value;
+		               genome.creature_genome.morphology.average_height,
+		               genome.creature_genome.morphology.average_back)
+		.value;
 }
 
 [[nodiscard]] float Creature::specie_relative_age() const noexcept {
