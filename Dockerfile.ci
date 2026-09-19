@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     ninja-build \
     ccache \
+    scons \
+    python3 \
     valgrind \
     git \
     ca-certificates \
@@ -17,4 +19,5 @@ RUN apt-get update && apt-get install -y \
 
 ENV CC=clang-20
 ENV CXX=clang++-20
+
 WORKDIR /workspace
