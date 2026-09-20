@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <numeric>
 #include <variant>
-
 /*
 
 Protocol
@@ -44,3 +44,6 @@ namespace BinarySubTypes {
 	using CodeSubTypes = std::variant<Request, Error, Response>;
 
 } // namespace BinarySubTypes
+
+static_assert(sizeof(double) == 8);
+static_assert(std::numeric_limits<double>::is_iec559);

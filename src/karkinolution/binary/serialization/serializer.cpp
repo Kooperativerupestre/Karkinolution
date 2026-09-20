@@ -1,6 +1,12 @@
 #include <cstddef>
 #include <karkinolution/binary/serialization/serializer.hpp>
 
+using SerializerTypes::DoubleBytes;
+using SerializerTypes::StringBytes;
+using SerializerTypes::Uint32tBytes;
+using SerializerTypes::Uint64tBytes;
+using SerializerTypes::Uint8tByte;
+
 Uint32tBytes Serializer::convert_uint32_t(std::uint32_t value) {
 	Uint32tBytes bytes;
 
@@ -38,4 +44,9 @@ StringBytes Serializer::convert_string(const std::string &value) {
 	}
 
 	return bytes;
+}
+
+DoubleBytes Serializer::convert_double(double value) {
+	const auto bits = std::bit_cast<std::uint64_t>(value);
+	return convert_uint64_t(bits);
 }

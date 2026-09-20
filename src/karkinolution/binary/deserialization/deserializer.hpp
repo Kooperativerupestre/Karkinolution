@@ -36,6 +36,14 @@ namespace Deserializer {
 			| std::to_integer<std::uint64_t>(bytes[offset + 7]);
 	}
 
+	template <ByteRange T> double read_double(const T &bytes, std::size_t offset) {
+		assert(bytes.size() >= offset + sizeof(double));
+
+		const auto bits = read_uint64_t(bytes, offset);
+
+		return std::bit_cast<double>(bits);
+	}
+
 	template <ByteRange T> std::uint8_t read_uint8_t(const T &bytes, std::size_t offset) {
 		assert(bytes.size() > offset);
 
