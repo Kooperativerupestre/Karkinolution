@@ -29,6 +29,14 @@ void GodotCreature::_bind_methods() {
 								 "set_specie",
 								 "get_specie");
 
+	godot::ClassDB::bind_method(godot::D_METHOD("get_position"), &GodotCreature::get_position);
+	godot::ClassDB::bind_method(godot::D_METHOD("set_position", "position"),
+								&GodotCreature::set_position);
+	godot::ClassDB::add_property("GodotCreature",
+								 godot::PropertyInfo(godot::Variant::VECTOR3, "position"),
+								 "set_position",
+								 "get_position");
+
 	godot::ClassDB::bind_method(godot::D_METHOD("get_gender_name"),
 								&GodotCreature::get_gender_name);
 	godot::ClassDB::bind_method(godot::D_METHOD("get_specie_name"),
@@ -38,12 +46,17 @@ void GodotCreature::_bind_methods() {
 GodotCreature::GodotCreature()
 	: id_(0)
 	, gender_(0)
-	, specie_(0) {}
+	, specie_(0)
+	, position_(0.0, 0.0, 0.0) {}
 
-GodotCreature::GodotCreature(std::uint64_t id, std::uint8_t gender, std::uint8_t specie)
+GodotCreature::GodotCreature(std::uint64_t        id,
+							 std::uint8_t         gender,
+							 std::uint8_t         specie,
+							 const godot::Vector3 &position)
 	: id_(id)
 	, gender_(gender)
-	, specie_(specie) {}
+	, specie_(specie)
+	, position_(position) {}
 
 std::uint64_t GodotCreature::get_id() const {
 	return id_;
@@ -67,6 +80,14 @@ std::uint8_t GodotCreature::get_specie() const {
 
 void GodotCreature::set_specie(std::uint8_t specie) {
 	specie_ = specie;
+}
+
+godot::Vector3 GodotCreature::get_position() const {
+	return position_;
+}
+
+void GodotCreature::set_position(const godot::Vector3 &position) {
+	position_ = position;
 }
 
 godot::String GodotCreature::get_gender_name() const {
@@ -98,6 +119,9 @@ GodotCreature::from_deserialized(const DesserializedCreature &deserialized, std:
 	creature->set_id(id);
 	creature->set_gender(static_cast<std::uint8_t>(deserialized.gender));
 	creature->set_specie(static_cast<std::uint8_t>(deserialized.specie));
+	creature->set_position(godot::Vector3(static_cast<godot::real_t>(deserialized.position.x),
+										 static_cast<godot::real_t>(deserialized.position.y),
+										 static_cast<godot::real_t>(deserialized.position.z)));
 	return creature;
 }
 
@@ -107,5 +131,8 @@ godot::Ref<GodotCreature> GodotCreature::from_core(const ::Creature &creature) {
 	result->set_id(creature.ontology.id);
 	result->set_gender(static_cast<std::uint8_t>(creature.ontology.gender));
 	result->set_specie(static_cast<std::uint8_t>(creature.genome.core_genome.specie));
+	result->set_position(godot::Vector3(static_cast<godot::real_t>(creature.position.x),
+										static_cast<godot::real_t>(creature.position.y),
+										static_cast<godot::real_t>(creature.position.z)));
 	return result;
 }

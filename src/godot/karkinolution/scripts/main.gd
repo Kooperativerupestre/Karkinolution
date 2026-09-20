@@ -22,7 +22,8 @@ func _on_network_client_disconnected_from_server() -> void:
 func _on_network_client_creature_received(creature: GodotCreature) -> void:
 	print("[Main] Creature received: ID=", creature.get_id(),
 		" | Specie=", creature.get_specie_name(), "(", creature.get_specie(), ")",
-		" | Gender=", creature.get_gender_name(), "(", creature.get_gender(), ")")
+		" | Gender=", creature.get_gender_name(), "(", creature.get_gender(), ")",
+		" | Position=", creature.get_position())
 
 
 func _on_network_client_error_received(sub_type: int, message: String) -> void:
