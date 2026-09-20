@@ -1,5 +1,5 @@
 CompileFlags:
-  CompilationDatabase: build
+  CompilationDatabase: cmake-build-debug
   Add:
     - -std=c++23
 
@@ -7,12 +7,14 @@ Diagnostics:
   UnusedIncludes: None
 
 ---
+# Não indexar nada do godot-cpp em background — evita varrer milhares de arquivos
 If:
-  PathMatch: .*src/godot/godot-cpp/gen/.*
+  PathMatch: .*src/godot/godot-cpp/.*
 Index:
   Background: Skip
 
 ---
+# Injetar os includes do godot-cpp nos arquivos da extensão
 If:
   PathMatch: .*src/godot/extension/.*
 CompileFlags:
