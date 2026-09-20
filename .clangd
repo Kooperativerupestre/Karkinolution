@@ -1,3 +1,22 @@
 CompileFlags:
+  CompilationDatabase: build
   Add:
     - -std=c++23
+
+Diagnostics:
+  UnusedIncludes: None
+
+---
+If:
+  PathMatch: .*src/godot/godot-cpp/gen/.*
+Index:
+  Background: Skip
+
+---
+If:
+  PathMatch: .*src/godot/extension/.*
+CompileFlags:
+  Add:
+    - -I/home/enzo/Documentos/Programming/Karkinos/Karkino/src/godot/godot-cpp/include
+    - -I/home/enzo/Documentos/Programming/Karkinos/Karkino/src/godot/godot-cpp/gen/include
+    - -I/home/enzo/Documentos/Programming/Karkinos/Karkino/src

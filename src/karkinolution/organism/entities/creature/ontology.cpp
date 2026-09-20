@@ -6,8 +6,8 @@
 
 // Diet
 
-const NormalizedValue<float> &Diet::grass_score() const {
-	return _grass_score;
+const NormalizedValue<float> &Diet::grass_matter_score() const {
+	return _grass_matter_score;
 }
 
 const NormalizedValue<float> &Diet::raw_meat_score() const {
@@ -15,8 +15,8 @@ const NormalizedValue<float> &Diet::raw_meat_score() const {
 }
 
 const NormalizedValue<float> &Diet::operator[](FoodHint food_hint) const {
-	if (food_hint == FoodHint::GRASS) {
-		return _grass_score;
+	if (food_hint == FoodHint::GRASS_MATTER) {
+		return _grass_matter_score;
 	} else if (food_hint == FoodHint::RAW_MEAT) {
 		return _raw_meat_score;
 	} else {

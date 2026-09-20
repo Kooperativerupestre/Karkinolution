@@ -132,3 +132,19 @@ These values can frequently change their bounds at runtime, unlike `NormalizedVa
 
 I chose R*-tree for the territory because I needed a spatial data structure that makes area-based searches, easy and efficient. Octree was chosen because I needed the same properties as R*-tree, plus one additional requirement: The creature's position is often updated, so I looked into the Octree and I realized that the insertion and updates are faster than an6 R*-tree. I'm open to changes if my reasoning is proven wrong.
 
+# 1.3
+
+### Why did I create a R*tree service?
+
+Because I realized that some invariants don't just belong to the territory. Some concepts that I defined as requiring atomicity are required for all structures that use an R*tree with a Registry.
+
+(Note: I couldn't separate the grass feature and the R*tree service feature)
+
+### Why did I create a PerceptionView instead of having only Perception?
+
+First, in my old python project I had just the perception. Over time, I realized that copying a dict whenever we realize an analysis on the perception uses too much memory because of the allocation of hashmaps. So the decision was to split the responsabilities between Perception and PerceptionView. The perception is the source of truth, and it should never be modified after being created; the PerceptionView only references the things in the perception -- wich avoids making copies.
+
+### Why did I choose uint64_t for BaseIdType?
+
+Because it can represent a large range.
+

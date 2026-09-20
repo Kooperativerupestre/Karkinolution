@@ -23,13 +23,13 @@ namespace EntityMapMotor {
 	bool
 	add(Entity &&entity, OrganismRegistry &registry, EntityMap &map, const Territory &territory);
 
-	bool remove(Id id, OrganismRegistry &registry, EntityMap &map, const AABB &old_aabb);
-	bool remove(Id id, OrganismRegistry &registry, EntityMap &map);
+	bool remove(EntityId id, OrganismRegistry &registry, EntityMap &map, const AABB &old_aabb);
+	bool remove(EntityId id, OrganismRegistry &registry, EntityMap &map);
 
-	std::vector<Id>
+	std::vector<EntityId>
 	find(const GeometryForms::Radius &radius, const Vec3 &position, const EntityMap &map);
 
-	bool update_coord(Id                id,
+	bool update_coord(EntityId          id,
 					  OrganismRegistry &registry,
 					  EntityMap        &map,
 					  const Vec3       &new_coord,
