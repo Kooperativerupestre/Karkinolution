@@ -113,8 +113,8 @@ Diet GenomeMotor::scramble(const Diet &d1, const Diet &d2) {
 						 // max_base/min_base: bounds for random multiplication factor
 						 // distance_multiplier: scales the difference between inputs
 						 GeneticDisturbs::scramble(
-							 d1[FoodHint::GRASS],
-							 d2[FoodHint::GRASS],
+							 d1[FoodHint::GRASS_MATTER],
+							 d2[FoodHint::GRASS_MATTER],
 							 ScrambleContext{.max_base = GeneticDisturbs::LOW_SCRAMBLE_MAX_BASE,
 											 .min_base = GeneticDisturbs::LOW_SCRAMBLE_MIN_BASE,
 											 .distance_multiplier = 0.75f}),
@@ -226,7 +226,7 @@ ReproductiveGenome GenomeMotor::scramble(const ReproductiveGenome &g1,
 		const auto chosen = Choices::choice({g1, g2});
 
 		return ReproductiveGenome{
-			.reproductive_way_genome = std::move(chosen.reproductive_way_genome),
+			.reproductive_way_genome = chosen.reproductive_way_genome,
 			.average_children_count  = children,
 			.average_gestation_limit = average_gestation_limit,
 			.fertility_limit         = fertility_limit,

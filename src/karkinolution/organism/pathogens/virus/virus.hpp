@@ -5,7 +5,7 @@
 #include <concepts>
 #include <cstdint>
 #include <karkinolution/core/basestorage.hpp>
-#include <karkinolution/core/id_generator.hpp>
+#include <karkinolution/core/id.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>

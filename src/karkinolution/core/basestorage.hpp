@@ -155,3 +155,6 @@ template <typename K, typename V> class BaseStorage {
 			return nullptr;
 		}
 };
+
+template <typename T, typename K, typename V>
+concept BaseStorageChild = std::derived_from<T, BaseStorage<K, V>>;

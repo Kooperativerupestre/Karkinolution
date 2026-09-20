@@ -56,13 +56,14 @@ namespace Choices {
 		std::vector<ItemType> selected;
 		selected.reserve(k);
 
-		std::discrete_distribution<size_t> dist(std::begin(std::forward<WeightsContainer>(weights)),
-												std::end(std::forward<WeightsContainer>(weights)));
+		std::discrete_distribution<size_t> dist(std::begin(weights), std::end(weights));
 
 		for (size_t i = 0; i < k; ++i) {
 			size_t sampled_index = dist(gen);
-			auto   it            = std::begin(std::forward<ItemsContainer>(items));
+
+			auto it = std::begin(items);
 			std::advance(it, sampled_index);
+
 			selected.push_back(*it);
 		}
 
@@ -74,8 +75,9 @@ namespace Choices {
 
 		size_t num_items = std::distance(std::begin(items), std::end(items));
 
-		if (num_items == 0 || k == 0)
+		if (num_items == 0 || k == 0) {
 			return std::vector<ItemType>{};
+		}
 
 		std::vector<double> uniform_weights(num_items, 1.0);
 		return choices(items, uniform_weights, k);
@@ -120,14 +122,14 @@ struct SuppressContext {
 
 enum class SupressOneOutput : uint8_t {
 	V1_HAS_SUPRESSED,
-	V2_HAS_SUPPRESSED,
-	NOTHING_HAS_SUPPRESSED
+	V2_HAS_SUPRESSED,
+	NOTHING_HAS_SUPRESSED
 };
 
 enum class SuppressTwoOutput : uint8_t {
 	V1_HAS_SUPRESSED,
-	V2_HAS_SUPPRESSED,
-	NOTHING_HAS_SUPPRESSED,
+	V2_HAS_SUPRESSED,
+	NOTHING_HAS_SUPRESSED,
 	ALL_VALUES_HAS_SUPRESSED
 };
 
@@ -174,9 +176,9 @@ namespace RandomGenerators {
 			return SupressOneOutput::V1_HAS_SUPRESSED;
 		} else if (Choices::choice_bool(context.chance_of_v2_being_suppressed)) {
 			v2 *= context.suppressed_multiplier;
-			return SupressOneOutput::V2_HAS_SUPPRESSED;
+			return SupressOneOutput::V2_HAS_SUPRESSED;
 		} else {
-			return SupressOneOutput::NOTHING_HAS_SUPPRESSED;
+			return SupressOneOutput::NOTHING_HAS_SUPRESSED;
 		}
 	}
 
@@ -198,10 +200,9 @@ namespace RandomGenerators {
 		} else if (v1_has_suppressed) {
 			return SuppressTwoOutput::V1_HAS_SUPRESSED;
 		} else if (v2_has_suppressed) {
-			return SuppressTwoOutput::V2_HAS_SUPPRESSED;
+			return SuppressTwoOutput::V2_HAS_SUPRESSED;
 		} else {
-			return SuppressTwoOutput::NOTHING_HAS_SUPPRESSED;
+			return SuppressTwoOutput::NOTHING_HAS_SUPRESSED;
 		}
 	}
-
 } // namespace RandomGenerators

@@ -1,20 +1,29 @@
-FROM ubuntu:25.04
+FROM ubuntu:26.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    clang-20 \
+    clang-21 \
+    clang-format-21 \
+    clang-tidy-21 \
     gcc-15 \
     g++-15 \
     cmake \
     ninja-build \
     ccache \
+    scons \
+    python3 \
     valgrind \
     git \
     ca-certificates \
     libc6-dbg \
     && rm -rf /var/lib/apt/lists/*
 
-ENV CC=clang-20
-ENV CXX=clang++-20
+RUN ln -s /usr/bin/clang-21 /usr/local/bin/clang && \
+    ln -s /usr/bin/clang++-21 /usr/local/bin/clang++ && \
+    ln -s /usr/bin/clang-format-21 /usr/local/bin/clang-format && \
+    ln -s /usr/bin/clang-tidy-21 /usr/local/bin/clang-tidy
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 WORKDIR /workspace

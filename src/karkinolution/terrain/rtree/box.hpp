@@ -7,7 +7,7 @@ enum class Bound : uint8_t {
 };
 
 struct Box3D {
-		Vec3 max{}, min{};
+		Vec3 max, min;
 
 		const Vec3 &operator[](Bound) const noexcept;
 		Vec3 &operator[](Bound) noexcept;

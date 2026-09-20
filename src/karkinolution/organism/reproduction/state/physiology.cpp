@@ -1,4 +1,4 @@
-#include "karkinolution/core/id_generator.hpp"
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/genetics/motor.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
@@ -27,7 +27,7 @@ float ReproductionStatePhysiology::needed_energy_of_all_embryos(const Reproducti
 	const auto &uterus       = std::get<Uterus>(organ.state);
 
 	for (auto id : uterus.get_pregnant_uterus().embryos) {
-		const auto &embryo = organisms.entities.at_embryo(IDF::create_embryo_id(id));
+		const auto &embryo = organisms.entities.at_embryo(EntityIDF::create_embryo_id(id));
 		total_energy += (embryo.energy.max() - embryo.energy.value());
 	}
 	return total_energy;
@@ -51,8 +51,8 @@ Embryo ReproductionStatePhysiology::generate_embryo(const Creature &female, cons
 
 	return Embryo{
 		.id     = gen_id(),
-		.energy = std::move(energy),
-		.life   = std::move(life),
+		.energy = energy,
+		.life   = life,
 		.health = new_genome.embryo_genome.body.average_health.value(),
 		.volume = Volume{init_average_volume},
 		.genome = std::move(new_genome),

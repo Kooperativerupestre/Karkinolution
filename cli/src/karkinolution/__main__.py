@@ -1,0 +1,104 @@
+from pathlib import Path
+
+import typer
+
+from karkinolution import style, tidy
+
+app = typer.Typer(help="Development tools for the Karkinolution project.")
+
+style_app = typer.Typer(help="Format and check source code using clang-format.")
+
+tidy_app = typer.Typer(help="Analyze and fix source code using clang-tidy.")
+
+app.add_typer(style_app, name="style")
+app.add_typer(tidy_app, name="tidy")
+
+
+@style_app.command(
+    "check",
+    help="Check whether source files are correctly formatted.",
+)
+def style_check(
+    paths: list[Path],
+    style_file: Path | None = typer.Option(
+        None,
+        "--style-file",
+        "-s",
+        help="Path to .clang-format file.",
+    ),
+) -> None:
+    style.check(tuple(paths), style_file=style_file)
+
+
+@style_app.command(
+    "format",
+    help="Format source files in-place.",
+)
+def style_format(
+    paths: list[Path],
+    style_file: Path | None = typer.Option(
+        None,
+        "--style-file",
+        "-s",
+        help="Path to .clang-format file.",
+    ),
+) -> None:
+    style.format(tuple(paths), style_file=style_file)
+
+
+@tidy_app.command(
+    "check",
+    help="Run clang-tidy checks on source files.",
+)
+def tidy_check(
+    paths: list[Path],
+    build_dir: Path = typer.Option(
+        Path("build"),
+        "--build-dir",
+        "-b",
+        help="Path to the build directory containing compile_commands.json.",
+    ),
+    warnings_as_errors: bool = typer.Option(
+        True,
+        "--warnings-as-errors/--no-warnings-as-errors",
+        help="Treat warnings as errors.",
+    ),
+    config_file: Path | None = typer.Option(
+        None,
+        "--config-file",
+        "-c",
+        help="Path to .clang-tidy file.",
+    ),
+) -> None:
+    tidy.check(
+        tuple(paths),
+        build_dir=build_dir,
+        warnings_as_errors=warnings_as_errors,
+        config_file=config_file,
+    )
+
+
+@tidy_app.command(
+    "fix",
+    help="Run clang-tidy and apply available fixes.",
+)
+def tidy_fix(
+    paths: list[Path],
+    build_dir: Path = typer.Option(
+        Path("build"),
+        "--build-dir",
+        "-b",
+        help="Path to the build directory containing compile_commands.json.",
+    ),
+    config_file: Path | None = typer.Option(
+        None,
+        "--config-file",
+        "-c",
+        help="Path to .clang-tidy file.",
+    ),
+) -> None:
+    tidy.fix(tuple(paths), build_dir=build_dir, config_file=config_file)
+
+
+if __name__ == "__main__":
+    app()

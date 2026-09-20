@@ -184,16 +184,6 @@ CreatureGrowingPhysiology::get_new_skeleton_increment(const Creature         &cr
 							   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 }
 
-// ============================================================================
-// CreatureMetabolismPhysiology
-// ============================================================================
-
-Trade CreatureMetabolismPhysiology::metabolize(const Creature         &creature,
-											   const RawMeat          &raw_meat,
-											   const EntitiesRegistry &entities) {
-	return {};
-}
-
 CreatureFunction CreaturePhysiology::get_to_age_effects(Creature &creature, int age) {
 	return [](Creature &creature) {
 		creature.body.age.value++;
@@ -203,6 +193,10 @@ CreatureFunction CreaturePhysiology::get_to_age_effects(Creature &creature, int 
 CreatureFunction CreaturePhysiology::get_diseases_effect(const Creature         &creature,
 														 const EntitiesRegistry &entities) {
 	return {};
+}
+
+bool CreaturePhysiology::is_dead(const Creature &creature) {
+	return creature.body.vital.life.is_zero() || creature.body.metabolism.energy.is_zero();
 }
 
 bool BrainPhysiology::should_stop_intent(const Brain &brain) {
@@ -282,12 +276,12 @@ Creature CreaturePhysiology::hatch_embryo(const Embryo &embryo) {
 	};
 
 	Body body{
-		.metabolism   = std::move(metabolism),
-		.vital        = std::move(vital),
+		.metabolism   = metabolism,
+		.vital        = vital,
 		.reproductive = std::move(reproductive),
-		.morphology   = std::move(morphology),
-		.skeleton     = std::move(skeleton),
-		.muscle       = std::move(muscle),
+		.morphology   = morphology,
+		.skeleton     = skeleton,
+		.muscle       = muscle,
 		.age          = Age{0.0f},
 	};
 

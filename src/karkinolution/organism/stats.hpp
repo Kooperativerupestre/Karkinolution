@@ -1,5 +1,5 @@
 #pragma once
-#include <cstdint>
+
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/math/units.hpp>
 
@@ -22,6 +22,11 @@ namespace OrganismStats {
 		class Damage : public FloatValue {
 				using FloatValue::FloatValue;
 		};
+
+		class RawMeat : public FloatValue {
+				using FloatValue::FloatValue;
+		};
+
 	} // namespace Body
 
 	class Life : public RuntimeLimitedValue<Life, float> {

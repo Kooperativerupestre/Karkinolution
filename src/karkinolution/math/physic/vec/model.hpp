@@ -129,8 +129,9 @@ class Vec3 {
 
 		[[nodiscard]] constexpr Vec3 clamped(double max_length) const noexcept {
 			const double len_sq = length_squared();
-			if (len_sq <= max_length * max_length)
+			if (len_sq <= max_length * max_length) {
 				return *this;
+			}
 			const double scale = max_length / std::sqrt(len_sq);
 			return Vec3(x * scale, y * scale, z * scale);
 		}
@@ -180,18 +181,22 @@ class Vec3 {
 		}
 
 		[[nodiscard]] constexpr size_t max_component_index() const noexcept {
-			if (x >= y && x >= z)
+			if (x >= y && x >= z) {
 				return 0;
-			if (y >= z)
+			}
+			if (y >= z) {
 				return 1;
+			}
 			return 2;
 		}
 
 		[[nodiscard]] constexpr size_t min_component_index() const noexcept {
-			if (x <= y && x <= z)
+			if (x <= y && x <= z) {
 				return 0;
-			if (y <= z)
+			}
+			if (y <= z) {
 				return 1;
+			}
 			return 2;
 		}
 };

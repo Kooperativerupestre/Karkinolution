@@ -149,6 +149,10 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 			clamp();
 		}
 
+		T constexpr remaining() const {
+			return max - _value;
+		}
+
 		NormalizedValue<T> ratio() const;
 
 		SignedNormalizedValue<T> ratio_min() const;

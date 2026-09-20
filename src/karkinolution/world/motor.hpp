@@ -2,5 +2,5 @@
 #include <karkinolution/world/world.hpp>
 
 namespace WorldMotor {
-	void remove(Id id, World &world);
+	void remove(EntityId id, World &world);
 } // namespace WorldMotor

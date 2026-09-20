@@ -34,15 +34,15 @@ struct AABB {
 };
 
 struct OctreeEntry {
-		Id   entity_id;
-		AABB bound;
+		EntityId entity_id;
+		AABB     bound;
 };
 
 class OctreeNode {
 	private:
 
 		AABB                                                         bounds_;
-		std::vector<OctreeEntry>                                     entries{};
+		std::vector<OctreeEntry>                                     entries;
 		std::array<std::unique_ptr<OctreeNode>, MAX_OCTREE_CHILDREN> children{};
 
 		void find(const AABB &aabb, std::vector<OctreeEntry*> &output_entries);
@@ -86,22 +86,22 @@ class OctreeNode {
 		void               subdivide();
 		std::optional<int> child_containing(const AABB &bounds) const;
 		OctreeNode        &insert(const OctreeEntry &entry);
-		bool               remove(Id id);
+		bool               remove(EntityId id);
 
-		bool remove(Id id, const AABB &old_box);
+		bool remove(EntityId id, const AABB &old_box);
 
-		bool update(Id id, const AABB &old_box, const AABB &new_box);
-		bool update(Id id, const AABB &new_box);
+		bool update(EntityId id, const AABB &old_box, const AABB &new_box);
+		bool update(EntityId id, const AABB &new_box);
 
 		// Update is logically atomic
 
-		bool exists(Id id) const;
-		bool exists(Id id, const AABB &old_box) const;
+		bool exists(EntityId id) const;
+		bool exists(EntityId id, const AABB &old_box) const;
 
 		std::vector<OctreeEntry*>       find(const AABB &aabb);
 		std::vector<const OctreeEntry*> find(const AABB &aabb) const;
 
-		std::vector<Id> find_ids(const AABB &aabb) const;
+		std::vector<EntityId> find_ids(const AABB &aabb) const;
 
 		/*
 	func(...) -> Do if it exists

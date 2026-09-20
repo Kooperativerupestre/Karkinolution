@@ -27,7 +27,9 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 			, _max(max) {
 			if (_min > _max) {
 				throw std::invalid_argument(
-					std::format("Invalid RuntimeLimitedValue range. Min() > Max()", _min, _max));
+					std::format("Invalid RuntimeLimitedValue range. Min() > Max(): {} > {}",
+								_min,
+								_max));
 			}
 
 			clamp();
@@ -116,6 +118,10 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 
 			return NormalizedValue<T>((_value - _min) / (_max - _min));
 		}
+
+		T constexpr remaining() const {
+			return _max - _value;
+		}
 };
 
 template <typename T> class IntegerWithMax {
@@ -124,7 +130,6 @@ template <typename T> class IntegerWithMax {
 
 		T _value;
 		T _max;
-
 
 	public:
 
@@ -149,15 +154,17 @@ template <typename T> class IntegerWithMax {
 		auto operator<=>(const IntegerWithMax &) const = default;
 
 		void pass() {
-			if (_value < _max)
+			if (_value < _max) {
 				++_value;
+			}
 
 			clamp();
 		}
 
 		NormalizedValue<float> ratio() const {
-			if (_max == T(0))
+			if (_max == T(0)) {
 				return NormalizedValue<float>(0.0f);
+			}
 
 			return NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
 		}
@@ -171,10 +178,11 @@ template <typename T> class IntegerWithMax {
 		}
 
 		void clamp() {
-			if (_value < T(0))
+			if (_value < T(0)) {
 				_value = T(0);
-			else if (_value > _max)
+			} else if (_value > _max) {
 				_value = _max;
+			}
 		}
 
 		void full() {
@@ -186,8 +194,9 @@ template <typename T> class IntegerWithMax {
 		}
 
 		T remaining_to_max() const {
-			if (_value >= _max)
+			if (_value >= _max) {
 				return T(0);
+			}
 
 			return _max - _value;
 		}
@@ -216,7 +225,6 @@ template <typename T> class IntegerLimited {
 		T _value;
 		T _max;
 
-
 	public:
 
 		IntegerLimited(T value, T max)
@@ -240,8 +248,9 @@ template <typename T> class IntegerLimited {
 		auto operator<=>(const IntegerLimited &) const = default;
 
 		void pass() {
-			if (_value < _max)
+			if (_value < _max) {
 				++_value;
+			}
 
 			clamp();
 		}
@@ -263,10 +272,11 @@ template <typename T> class IntegerLimited {
 		}
 
 		void clamp() {
-			if (_value < T(0))
+			if (_value < T(0)) {
 				_value = T(0);
-			else if (_value > _max)
+			} else if (_value > _max) {
 				_value = _max;
+			}
 		}
 
 		void full() {

@@ -1,7 +1,7 @@
 #include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 
-#include <karkinolution/core/id_generator.hpp>
+#include <karkinolution/core/id.hpp>
 #include <karkinolution/terrain/soil.hpp>
 
 // Blueprint

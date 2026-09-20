@@ -1,4 +1,7 @@
 #pragma once
+#include "karkinolution/organism/entities/creature/actions/presets.hpp"
+
+#include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/entities.hpp>
 #include <karkinolution/organism/registry.hpp>
@@ -10,5 +13,8 @@ namespace BrainMotor {
 
 namespace CreatureMotor {
 	void run(Creature &creature, World &);
+	void update_map(const Creature &creature, World &world);
 	void grow(Creature &creature, const OrganismRegistry &);
+	std::optional<AllPresets>
+	resolve_presets(Creature &creature, const Perception &perception, World &world);
 } // namespace CreatureMotor
