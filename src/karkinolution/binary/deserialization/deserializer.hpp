@@ -3,46 +3,75 @@
 
 #include <cstdint>
 #include <deque>
+#include <karkinolution/binary/byte_range.hpp>
 #include <string>
 #include <vector>
 
+#pragma once
+
+#include <cassert>
+#include <cstddef>
+
 namespace Deserializer {
-	std::uint32_t read_uint32_t(const std::vector<std::byte> &bytes, std::size_t offset);
-	std::uint64_t read_uint64_t(const std::vector<std::byte> &bytes, std::size_t offset);
-	std::uint8_t  read_uint8_t(const std::vector<std::byte> &bytes, std::size_t offset);
-	std::string
-	read_string(const std::vector<std::byte> &bytes, std::size_t offset, std::size_t length);
 
-	std::uint32_t read_uint32_t(const std::deque<std::byte> &bytes, std::size_t offset);
-	std::uint64_t read_uint64_t(const std::deque<std::byte> &bytes, std::size_t offset);
-	std::uint8_t  read_uint8_t(const std::deque<std::byte> &bytes, std::size_t offset);
-	std::string
-	read_string(const std::deque<std::byte> &bytes, std::size_t offset, std::size_t length);
+	template <ByteRange T> std::uint32_t read_uint32_t(const T &bytes, std::size_t offset) {
+		assert(bytes.size() > offset + 3);
 
-	// utility function. It doesn't have logic
+		return (std::to_integer<std::uint32_t>(bytes[offset]) << 24)
+			| (std::to_integer<std::uint32_t>(bytes[offset + 1]) << 16)
+			| (std::to_integer<std::uint32_t>(bytes[offset + 2]) << 8)
+			| std::to_integer<std::uint32_t>(bytes[offset + 3]);
+	}
 
-	void append_bytes(std::vector<std::byte> &bytes, const std::vector<std::byte> &value);
+	template <ByteRange T> std::uint64_t read_uint64_t(const T &bytes, std::size_t offset) {
+		assert(bytes.size() > offset + 7);
 
-	template <size_t size>
-	void append_bytes(std::vector<std::byte> &bytes, const std::array<std::byte, size> &value) {
-		for (size_t i = 0; i < size; i++) {
-			bytes.push_back(value[i]);
+		return (std::to_integer<std::uint64_t>(bytes[offset]) << 56)
+			| (std::to_integer<std::uint64_t>(bytes[offset + 1]) << 48)
+			| (std::to_integer<std::uint64_t>(bytes[offset + 2]) << 40)
+			| (std::to_integer<std::uint64_t>(bytes[offset + 3]) << 32)
+			| (std::to_integer<std::uint64_t>(bytes[offset + 4]) << 24)
+			| (std::to_integer<std::uint64_t>(bytes[offset + 5]) << 16)
+			| (std::to_integer<std::uint64_t>(bytes[offset + 6]) << 8)
+			| std::to_integer<std::uint64_t>(bytes[offset + 7]);
+	}
+
+	template <ByteRange T> std::uint8_t read_uint8_t(const T &bytes, std::size_t offset) {
+		assert(bytes.size() > offset);
+
+		return std::to_integer<std::uint8_t>(bytes[offset]);
+	}
+
+	template <ByteRange T>
+	std::string read_string(const T &bytes, std::size_t offset, std::size_t length) {
+		std::string result;
+		result.reserve(length);
+
+		for (std::size_t i = 0; i < length; ++i) {
+			result.push_back(std::to_integer<char>(bytes[offset + i]));
+		}
+
+		return result;
+	}
+
+	template <ByteRange T> void append_bytes(std::vector<std::byte> &bytes, const T &value) {
+		for (const auto &byte : value) {
+			bytes.push_back(byte);
 		}
 	}
 
-	void append_bytes(std::vector<std::byte> &bytes, std::byte value);
+	inline void append_bytes(std::vector<std::byte> &bytes, std::byte value) {
+		bytes.push_back(value);
+	}
 
-	void append_bytes(std::deque<std::byte> &bytes, const std::vector<std::byte> &value);
-
-	template <size_t size>
-	void append_bytes(std::deque<std::byte> &bytes, const std::array<std::byte, size> &value) {
-		for (size_t i = 0; i < size; i++) {
-			bytes.push_back(value[i]);
+	template <ByteRange T> void append_bytes(std::deque<std::byte> &bytes, const T &value) {
+		for (const auto &byte : value) {
+			bytes.push_back(byte);
 		}
 	}
 
-	void append_bytes(std::deque<std::byte> &bytes, const std::deque<std::byte> &value);
-
-	void append_bytes(std::deque<std::byte> &bytes, std::byte value);
+	inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
+		bytes.push_back(value);
+	}
 
 } // namespace Deserializer
