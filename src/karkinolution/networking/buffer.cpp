@@ -1,6 +1,7 @@
 #include "karkinolution/binary/message_type_size.hpp"
 
 #include <karkinolution/binary/frames/parser.hpp>
+#include <karkinolution/core/error.hpp>
 #include <karkinolution/networking/buffer.hpp>
 
 BufferExistence FrameBufferAnalyzer::has_size(const RequestBuffer &buffer) {
@@ -77,13 +78,12 @@ std::optional<BinaryTypes> FrameBufferAnalyzer::get_type(const RequestBuffer &bu
 BufferExistence FrameBufferAnalyzer::has_payload(const RequestBuffer &buffer) {
 	const auto &view = buffer.view();
 
-	const auto header_size = MESSAGE_SIZE_BYTES + MESSAGE_SUB_TYPE_BYTES + MESSAGE_TYPE_BYTES;
+	const auto frame_size   = MESSAGE_SIZE_BYTES + get_size(buffer).value();
+	const auto payload_size = frame_size - MESSAGE_HEADER_BYTES;
 
-	if (view.size() < header_size) {
-		return BufferExistence::NO;
+	if (payload_size > MAX_PAYLOAD_BYTES) {
+		throw BufferError("The size of the frame payload is bigger than allowed");
 	}
-
-	const auto frame_size = MESSAGE_SIZE_BYTES + get_size(buffer).value();
 
 	if (view.size() < frame_size) {
 		return BufferExistence::INCOMPLETE;

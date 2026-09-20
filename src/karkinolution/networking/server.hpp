@@ -15,6 +15,14 @@ using AsioErrorCode = asio::error_code;
 
 inline constexpr size_t RESPONSE_BUFFER_MAX_SIZE = 20;
 
+enum class ReceiveOverflowMode : uint8_t {
+	VERIFY_ALL_BYTES,
+	VERIFY_BYTE_PER_BYTE
+};
+
+inline constexpr ReceiveOverflowMode GLOBAL_RECEIVE_OVERFLOW_MODE =
+	ReceiveOverflowMode::VERIFY_BYTE_PER_BYTE;
+
 class ResponseBuffer {
 	private:
 
@@ -26,6 +34,10 @@ class ResponseBuffer {
 
 		const std::deque<std::vector<std::byte>> &view() const {
 			return buffer_;
+		}
+
+		void clear() {
+			buffer_.clear();
 		}
 
 		bool add(const std::vector<std::byte> &bytes) {
@@ -90,7 +102,11 @@ struct SendingState {
 
 		bool is_sending = false;
 
-		std::unique_ptr<std::vector<std::byte>> bytes = nullptr;
+		std::vector<std::byte> bytes;
+
+		SendingState() {
+			bytes.reserve(RESPONSE_BUFFER_MAX_SIZE);
+		}
 };
 
 class Server {
@@ -106,13 +122,31 @@ class Server {
 
 	private:
 
+		void on_error(const std::string &error_message);
+		void on_overflow_error(std::span<const std::byte> bytes) const;
+
+		void on_error(const AsioErrorCode &error) {
+			on_error(error.message());
+		}
+
+		void clear_sending_state();
+
+		void clear_buffers();
+
+		void clear();
+
+		void close() {
+			socket_.close();
+		}
 
 		void accept();
+
 		void receive();
+
 		void send_next();
+
 		void send(const std::vector<std::byte> &);
 
-		void move_temporary_buffer_to_request_buffer();
 
 		World   &world;
 		Acceptor acceptor_;
@@ -124,7 +158,5 @@ class Server {
 
 		SendingState sending_state;
 
-		FrameProcessor frame_processor;
-
-		std::array<char, BUFFER_SIZE> temporary_buffer;
+		std::array<std::byte, REQUEST_BUFFER_MAX_SIZE> request_temporary_buffer;
 };

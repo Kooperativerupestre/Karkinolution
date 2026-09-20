@@ -3,7 +3,7 @@
 #include <karkinolution/binary/message_type_size.hpp>
 #include <optional>
 #include <vector>
-inline constexpr int BUFFER_SIZE = 4096;
+inline constexpr int REQUEST_BUFFER_MAX_SIZE = 4096;
 
 
 enum class BufferExistence : uint8_t {
@@ -50,7 +50,7 @@ class RequestBuffer {
 		}
 
 		bool add(std::byte byte) {
-			if (buffer_.size() == BUFFER_SIZE) {
+			if (buffer_.size() >= REQUEST_BUFFER_MAX_SIZE) {
 				return false;
 			}
 			buffer_.push_back(byte);
@@ -58,7 +58,7 @@ class RequestBuffer {
 		}
 
 		bool add(char byte) {
-			if (buffer_.size() > BUFFER_SIZE) {
+			if (buffer_.size() >= REQUEST_BUFFER_MAX_SIZE) {
 				return false;
 			}
 			buffer_.push_back(std::byte(static_cast<unsigned char>(byte)));
@@ -66,7 +66,7 @@ class RequestBuffer {
 		}
 
 		bool add(std::vector<char> bytes) {
-			if (buffer_.size() + bytes.size() > BUFFER_SIZE) {
+			if (buffer_.size() + bytes.size() > REQUEST_BUFFER_MAX_SIZE) {
 				return false;
 			}
 			for (char byte : bytes) {
@@ -76,7 +76,7 @@ class RequestBuffer {
 		}
 
 		template <size_t Size> bool add(std::array<char, Size> bytes) {
-			if (buffer_.size() + Size > BUFFER_SIZE) {
+			if (buffer_.size() + Size > REQUEST_BUFFER_MAX_SIZE) {
 				return false;
 			}
 
@@ -87,22 +87,31 @@ class RequestBuffer {
 		}
 };
 
+inline constexpr std::size_t MAX_PAYLOAD_BYTES =
+	std::min(static_cast<std::size_t>(UINT32_MAX) - MESSAGE_HEADER_BYTES,
+			 REQUEST_BUFFER_MAX_SIZE - MESSAGE_HEADER_BYTES);
+
 namespace FrameBufferAnalyzer {
 
-	BufferExistence            has_size(const RequestBuffer &buffer);
+	BufferExistence has_size(const RequestBuffer &buffer);
+
 	std::optional<std::size_t> get_size(const RequestBuffer &buffer);
 
-	BufferExistence                             has_sub_type(const RequestBuffer &buffer);
+	BufferExistence has_sub_type(const RequestBuffer &buffer);
+
 	std::optional<BinarySubTypes::CodeSubTypes> get_sub_type(const RequestBuffer &buffer);
 
-	BufferExistence            has_type(const RequestBuffer &buffer);
+	BufferExistence has_type(const RequestBuffer &buffer);
+
 	std::optional<BinaryTypes> get_type(const RequestBuffer &buffer);
 
-	BufferExistence                       has_payload(const RequestBuffer &buffer);
+	BufferExistence has_payload(const RequestBuffer &buffer);
+
 	std::optional<std::vector<std::byte>> get_payload(const RequestBuffer &buffer);
 
 
-	BufferExistence                       has_frame(const RequestBuffer &buffer);
+	BufferExistence has_frame(const RequestBuffer &buffer);
+
 	std::optional<std::vector<std::byte>> get_frame(RequestBuffer &buffer);
 
 } // namespace FrameBufferAnalyzer

@@ -17,6 +17,10 @@ inline constexpr std::size_t MESSAGE_SUB_TYPE_BYTES = sizeof(std::uint32_t); // 
 inline constexpr std::size_t MESSAGE_TYPE_BYTES     = sizeof(std::uint8_t);  // bytes
 inline constexpr std::size_t MESSAGE_SIZE_BYTES     = sizeof(std::uint32_t); // bytes
 
+inline constexpr std::size_t MESSAGE_HEADER_BYTES =
+	MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES;
+
+
 enum class BinaryTypes : uint8_t {
 	Request  = 1,
 	Error    = 2,
