@@ -62,6 +62,7 @@ if (BUILD_GODOT_EXTENSION)
             src/godot/extension/karkinolution.cpp
             src/godot/extension/binary/frame.cpp
             src/godot/extension/model/creature/creature.cpp
+            src/godot/extension/storage/entity_storage.cpp
     )
 
     target_include_directories(karkinolution_godot PRIVATE

@@ -1,6 +1,7 @@
 #include "binary/frame.hpp"
 #include "karkinolution.hpp"
 #include "model/creature/creature.hpp"
+#include "storage/entity_storage.hpp"
 
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/godot.hpp>
@@ -14,6 +15,7 @@ void initialize_karkinolution(ModuleInitializationLevel level) {
 
 	GDREGISTER_CLASS(GodotParsedFrame);
 	GDREGISTER_CLASS(GodotCreature);
+	GDREGISTER_CLASS(GodotEntityStorage);
 	GDREGISTER_CLASS(Karkinolution);
 }
 
