@@ -1,5 +1,6 @@
 #include "karkinolution/binary/serialization/interpreters/creature.hpp"
 
+#include "karkinolution/binary/deserialization/deserializer.hpp"
 #include "karkinolution/binary/serialization/serializer.hpp"
 #include "karkinolution/organism/entities/creature/ontology.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
@@ -34,13 +35,12 @@ CreatureBytes CreatureSRI::serialize_creature(const Creature &creature) {
 
 	// Position
 
-	const auto x = Serializer::convert_double(creature.position.x);
-	const auto y = Serializer::convert_double(creature.position.y);
-	const auto z = Serializer::convert_double(creature.position.z);
+	const auto vec = VecSRI::serialize_vec(creature.position);
 
-	std::copy(x.begin(), x.end(), bytes.begin() + 2);
-	std::copy(y.begin(), y.end(), bytes.begin() + 10);
-	std::copy(z.begin(), z.end(), bytes.begin() + 18);
+	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_X_OFFSET);
+	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_Y_OFFSET);
+	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_Z_OFFSET);
+
 
 	return bytes;
 }

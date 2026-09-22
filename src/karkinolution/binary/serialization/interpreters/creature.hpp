@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include "math/ vec.hpp"
+
 #include <array>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 
@@ -24,7 +26,7 @@ namespace CreatureSRI {
 	inline constexpr size_t SPECIE_BYTES = 1;
 
 
-	inline constexpr size_t POSITION_AXIS_BYTES = 8;
+	inline constexpr size_t POSITION_AXIS_BYTES = VecSRI::AXIS_BYTES;
 	inline constexpr size_t POSITION_BYTES      = POSITION_AXIS_BYTES * 3;
 
 
@@ -35,6 +37,8 @@ namespace CreatureSRI {
 		GENDER_BYTES + SPECIE_BYTES + POSITION_AXIS_BYTES;
 	inline constexpr size_t TO_GET_POSITION_Z_OFFSET =
 		GENDER_BYTES + SPECIE_BYTES + POSITION_AXIS_BYTES * 2;
+
+	inline constexpr size_t TO_GET_POSITION = GENDER_BYTES + SPECIE_BYTES;
 
 	static_assert(CREATURE_BYTES == TO_GET_POSITION_Z_OFFSET + POSITION_AXIS_BYTES);
 

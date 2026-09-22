@@ -1,16 +1,13 @@
 #pragma once
 
 
+#include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <karkinolution/binary/byte_range.hpp>
 #include <string>
 #include <vector>
-
-#pragma once
-
-#include <cassert>
-#include <cstddef>
 
 namespace Deserializer {
 
@@ -37,7 +34,13 @@ namespace Deserializer {
 	}
 
 	template <ByteRange T> double read_double(const T &bytes, std::size_t offset) {
-		assert(bytes.size() >= offset + sizeof(double));
+		if (bytes.size() >= offset + sizeof(double)) {
+			throw ByteError(std::format(
+				"Error on read double: bytes size ({}) < offset ({}) + sizeof(double) (8)",
+				bytes.size(),
+				offset));
+		}
+
 
 		const auto bits = read_uint64_t(bytes, offset);
 
@@ -78,8 +81,16 @@ namespace Deserializer {
 		}
 	}
 
+	template <ByteRange T, size_t Size>
+	void append_bytes(std::array<std::byte, Size> &bytes, const T &value, size_t offset) {
+		for (size_t i = 0; i < value.size(); i++) {
+			bytes[offset + i] = value[i];
+		}
+	}
+
 	inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
 		bytes.push_back(value);
 	}
+
 
 } // namespace Deserializer
