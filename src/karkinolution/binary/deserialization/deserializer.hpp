@@ -5,7 +5,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <format>
 #include <karkinolution/binary/byte_range.hpp>
+#include <karkinolution/core/error.hpp>
 #include <string>
 #include <vector>
 

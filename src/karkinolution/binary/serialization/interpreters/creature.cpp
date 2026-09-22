@@ -1,37 +1,48 @@
 #include "karkinolution/binary/serialization/interpreters/creature.hpp"
 
 #include "karkinolution/binary/deserialization/deserializer.hpp"
-#include "karkinolution/binary/serialization/serializer.hpp"
 #include "karkinolution/organism/entities/creature/ontology.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
 
+#include <format>
 
 using CreatureSRI::CreatureBytes;
 
 using CreatureSRI::CreatureBytes;
+
+std::byte CreatureSRI::serialize_gender(const Gender &gender) {
+	if (gender == Gender::FEMALE) {
+		return std::byte(0x01);
+	} else if (gender == Gender::MALE) {
+		return std::byte(0x02);
+	}
+	throw ByteError(
+		std::format("Invalid creature gender byte: {}", static_cast<unsigned int>(gender)));
+}
+
+std::byte CreatureSRI::serialize_specie(const CreatureSpecies &specie) {
+	if (specie == CreatureSpecies::CRAB) {
+		return std::byte(0x01);
+	} else if (specie == CreatureSpecies::HIPPOPOTAMUS) {
+		return std::byte(0x02);
+	} else if (specie == CreatureSpecies::CROCODILE) {
+		return std::byte(0x03);
+	} else if (specie == CreatureSpecies::FISH) {
+		return std::byte(0x04);
+	}
+	throw ByteError(std::format("Invalid creature specie: {}", static_cast<unsigned int>(specie)));
+}
 
 CreatureBytes CreatureSRI::serialize_creature(const Creature &creature) {
 	CreatureBytes bytes;
 
 	// Gender
 
-	if (creature.ontology.gender == Gender::FEMALE) {
-		bytes[0] = std::byte(0x01);
-	} else {
-		bytes[0] = std::byte(0x02);
-	}
+	bytes[CreatureSRI::TO_GET_GENDER_OFFSET] = serialize_gender(creature.ontology.gender);
 
 	// Specie
 
-	if (creature.genome.core_genome.specie == CreatureSpecies::CRAB) {
-		bytes[1] = std::byte(0x01);
-	} else if (creature.genome.core_genome.specie == CreatureSpecies::HIPPOPOTAMUS) {
-		bytes[1] = std::byte(0x02);
-	} else if (creature.genome.core_genome.specie == CreatureSpecies::CROCODILE) {
-		bytes[1] = std::byte(0x03);
-	} else {
-		bytes[1] = std::byte(0x04);
-	}
+	bytes[CreatureSRI::TO_GET_SPECIE_OFFSET] = serialize_specie(creature.genome.core_genome.specie);
 
 	// Position
 

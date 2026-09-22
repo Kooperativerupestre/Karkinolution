@@ -43,5 +43,9 @@ namespace CreatureSRI {
 	static_assert(CREATURE_BYTES == TO_GET_POSITION_Z_OFFSET + POSITION_AXIS_BYTES);
 
 	using CreatureBytes = std::array<std::byte, CREATURE_BYTES>;
+
+	std::byte serialize_gender(const Gender &gender);
+	std::byte serialize_specie(const CreatureSpecies &specie);
+
 	CreatureBytes serialize_creature(const Creature &creature);
 } // namespace CreatureSRI
