@@ -38,7 +38,7 @@ namespace CreatureSRI {
 	inline constexpr size_t TO_GET_POSITION_Z_OFFSET =
 		GENDER_BYTES + SPECIE_BYTES + POSITION_AXIS_BYTES * 2;
 
-	inline constexpr size_t TO_GET_POSITION = GENDER_BYTES + SPECIE_BYTES;
+	inline constexpr size_t TO_GET_POSITION_OFFSET = GENDER_BYTES + SPECIE_BYTES;
 
 	static_assert(CREATURE_BYTES == TO_GET_POSITION_Z_OFFSET + POSITION_AXIS_BYTES);
 
