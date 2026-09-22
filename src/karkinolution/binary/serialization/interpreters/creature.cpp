@@ -48,9 +48,7 @@ CreatureBytes CreatureSRI::serialize_creature(const Creature &creature) {
 
 	const auto vec = VecSRI::serialize_vec(creature.position);
 
-	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_X_OFFSET);
-	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_Y_OFFSET);
-	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_Z_OFFSET);
+	Deserializer::append_bytes(bytes, vec, CreatureSRI::TO_GET_POSITION_OFFSET);
 
 
 	return bytes;
