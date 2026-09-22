@@ -21,7 +21,7 @@ enum class ReceiveOverflowMode : uint8_t {
 };
 
 inline constexpr ReceiveOverflowMode GLOBAL_RECEIVE_OVERFLOW_MODE =
-	ReceiveOverflowMode::VERIFY_BYTE_PER_BYTE;
+	ReceiveOverflowMode::VERIFY_ALL_BYTES;
 
 class ResponseBuffer {
 	private:
