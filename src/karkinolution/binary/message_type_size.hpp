@@ -83,8 +83,8 @@ namespace BinaryValidator {
 			validate_response_sub_type(value);
 		} else if (type == BinaryTypes::Error) {
 			validate_error_sub_type(value);
+		} else {
+			throw ByteError(std::format("Invalid type: {}", static_cast<uint8_t>(type)));
 		}
-
-		throw ByteError(std::format("Invalid type: {}", static_cast<uint8_t>(type)));
 	}
 } // namespace BinaryValidator

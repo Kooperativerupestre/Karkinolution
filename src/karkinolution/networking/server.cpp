@@ -112,6 +112,7 @@ void Server::receive() {
 				return;
 			}
 
+
 			if constexpr (GLOBAL_RECEIVE_OVERFLOW_MODE
 						  == ReceiveOverflowMode::VERIFY_BYTE_PER_BYTE) {
 				for (std::size_t i = 0; i < bytes_received; ++i) {
@@ -132,16 +133,20 @@ void Server::receive() {
 				}
 			}
 
-			while (FrameBufferAnalyzer::has_frame(request_buffer_) == BufferExistence::YES) {
-				auto frame = FrameBufferAnalyzer::get_frame(request_buffer_);
+			try {
+				while (FrameBufferAnalyzer::has_frame(request_buffer_) == BufferExistence::YES) {
+					auto frame = FrameBufferAnalyzer::get_frame(request_buffer_);
 
-				auto parsed_frame = FrameParser::parse_frame(frame.value());
+					auto parsed_frame = FrameParser::parse_frame(frame.value());
 
-				auto response = FrameProcessor::process(parsed_frame, world);
+					auto response = FrameProcessor::process(parsed_frame, world);
 
-				send(response);
+					send(response);
+				}
+			} catch (const std::exception &e) {
+				on_error(std::string("Malformed frame: ") + e.what());
+				return;
 			}
-
 			receive();
 		});
 }

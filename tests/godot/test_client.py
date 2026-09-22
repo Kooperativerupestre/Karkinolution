@@ -34,8 +34,6 @@ def main():
     try:
         server = subprocess.Popen(
             [server_app],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
         )
 
         with wait_for_server():
