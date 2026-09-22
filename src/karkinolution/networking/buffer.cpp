@@ -78,6 +78,11 @@ std::optional<BinaryTypes> FrameBufferAnalyzer::get_type(const RequestBuffer &bu
 BufferExistence FrameBufferAnalyzer::has_payload(const RequestBuffer &buffer) {
 	const auto &view = buffer.view();
 
+	const auto has_size_output = has_size(buffer);
+	if (has_size_output != BufferExistence::YES) {
+		return has_size_output;
+	}
+
 	const auto frame_size   = MESSAGE_SIZE_BYTES + get_size(buffer).value();
 	const auto payload_size = frame_size - MESSAGE_HEADER_BYTES;
 
