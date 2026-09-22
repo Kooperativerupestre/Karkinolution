@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <deque>
 #include <format>
+#include <karkinolution/binary/binary_error.hpp>
 #include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/core/error.hpp>
 #include <string>
@@ -14,8 +15,13 @@
 namespace Deserializer {
 
 	template <ByteRange T> std::uint32_t read_uint32_t(const T &bytes, std::size_t offset) {
-		assert(bytes.size() > offset + 3);
-
+		if (bytes.size() < offset + 4) {
+			throw ByteError(BinaryErrorFactory::failed_conversion(
+				std::format("the size of bytes ({}) are lower than required {}",
+							bytes.size(),
+							offset),
+				"uint32_t"));
+		}
 		return (std::to_integer<std::uint32_t>(bytes[offset]) << 24)
 			| (std::to_integer<std::uint32_t>(bytes[offset + 1]) << 16)
 			| (std::to_integer<std::uint32_t>(bytes[offset + 2]) << 8)
@@ -23,8 +29,13 @@ namespace Deserializer {
 	}
 
 	template <ByteRange T> std::uint64_t read_uint64_t(const T &bytes, std::size_t offset) {
-		assert(bytes.size() > offset + 7);
-
+		if (bytes.size() < offset + 8) {
+			throw ByteError(BinaryErrorFactory::failed_conversion(
+				std::format("the size of bytes ({}) are lower than required {}",
+							bytes.size(),
+							offset),
+				"uint64_t"));
+		}
 		return (std::to_integer<std::uint64_t>(bytes[offset]) << 56)
 			| (std::to_integer<std::uint64_t>(bytes[offset + 1]) << 48)
 			| (std::to_integer<std::uint64_t>(bytes[offset + 2]) << 40)
@@ -36,11 +47,12 @@ namespace Deserializer {
 	}
 
 	template <ByteRange T> double read_double(const T &bytes, std::size_t offset) {
-		if (bytes.size() >= offset + sizeof(double)) {
-			throw ByteError(std::format(
-				"Error on read double: bytes size ({}) < offset ({}) + sizeof(double) (8)",
-				bytes.size(),
-				offset));
+		if (bytes.size() < offset + sizeof(double)) {
+			throw ByteError(BinaryErrorFactory::failed_conversion(
+				std::format("the size of bytes ({}) is lower than required {}",
+							bytes.size(),
+							offset),
+				"double"));
 		}
 
 
@@ -50,13 +62,26 @@ namespace Deserializer {
 	}
 
 	template <ByteRange T> std::uint8_t read_uint8_t(const T &bytes, std::size_t offset) {
-		assert(bytes.size() > offset);
+		if (bytes.size() <= offset) {
+			throw ByteError(BinaryErrorFactory::failed_conversion(
+				std::format("the size of bytes ({}) is lower than required {}",
+							bytes.size(),
+							offset),
+				"uint8_t"));
+		}
 
 		return std::to_integer<std::uint8_t>(bytes[offset]);
 	}
 
 	template <ByteRange T>
 	std::string read_string(const T &bytes, std::size_t offset, std::size_t length) {
+		if (bytes.size() < offset + length) {
+			throw ByteError(BinaryErrorFactory::failed_conversion(
+				std::format("the size of bytes ({}) is lower than required {}",
+							bytes.size(),
+							offset),
+				"string"));
+		}
 		std::string result;
 		result.reserve(length);
 
