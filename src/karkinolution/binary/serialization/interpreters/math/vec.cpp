@@ -13,6 +13,6 @@ VecSRI::VecBytes VecSRI::serialize_vec(const Vec3 &vec) {
 	Deserializer::append_bytes(result, y, VecSRI::TO_GET_Y_OFFSET);
 
 	const auto z = Serializer::convert_double(vec.z);
-	Deserializer::append_bytes(result, y, TO_GET_Z_OFFSET);
+	Deserializer::append_bytes(result, z, TO_GET_Z_OFFSET);
 	return result;
 }
