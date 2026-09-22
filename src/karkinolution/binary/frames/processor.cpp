@@ -6,7 +6,9 @@
 
 std::vector<std::byte> FrameProcessor::process(const ParsedFrame &frame, const World &world) {
 
-
+	if (!std::holds_alternative<BinarySubTypes::Request>(frame.sub_type)) {
+		throw BufferError("Server received a non-Request frame type");
+	}
 	const auto sub_type = std::get<BinarySubTypes::Request>(frame.sub_type);
 
 	switch (sub_type) {
