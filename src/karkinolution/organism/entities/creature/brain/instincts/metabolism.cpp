@@ -16,7 +16,7 @@ NormalizedValue<float> MetabolismInstincts::get_diet_preference(const Diet &diet
 }
 
 NormalizedValue<float> MetabolismInstincts::get_diet_weight(const Creature &creature) {
-	return 1.0f - creature.body.hungry();
+	return 1.0f - creature.body.hungry().value();
 }
 
 NormalizedValue<float> MetabolismInstincts::get_normalized_energy(float           energy,
@@ -30,7 +30,7 @@ NormalizedValue<float> MetabolismInstincts::preference(const FoodCandidate &food
 													   const Creature      &creature,
 													   const Perception    &perception) {
 	const auto &diet             = creature.body.metabolism.diet;
-	const float diet_prefference = get_diet_preference(diet, food_candidate.hint);
+	const float diet_prefference = get_diet_preference(diet, food_candidate.hint).value();
 
 	auto diet_weight = get_diet_weight(creature);
 

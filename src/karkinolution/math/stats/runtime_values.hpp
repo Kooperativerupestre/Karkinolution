@@ -27,35 +27,45 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 			, _max(max) {
 			if (_min > _max) {
 				throw std::invalid_argument(
-					std::format("Invalid RuntimeLimitedValue range. Min() > Max(): {} > {}",
+					std::format("Invalid RuntimeLimitedValue range. Min > Max: {} > {}",
 								_min,
 								_max));
+			}
+
+			if (_min > T(0)) {
+				throw std::invalid_argument(
+					std::format("Invalid RuntimeLimitedValue range. Min must accept zero: {}",
+								_min));
 			}
 
 			clamp();
 		}
 
-		T value() const noexcept {
+		constexpr explicit operator T() const {
+			return value();
+		}
+
+		constexpr T value() const noexcept {
 			return _value;
 		}
 
-		T min() const noexcept {
+		constexpr T min() const noexcept {
 			return _min;
 		}
 
-		T max() const noexcept {
+		constexpr T max() const noexcept {
 			return _max;
 		}
 
-		T &max_ref() noexcept {
+		constexpr T &max_ref() noexcept {
 			return _max;
 		}
 
-		T &min_ref() noexcept {
+		constexpr T &min_ref() noexcept {
 			return _min;
 		}
 
-		void clamp() noexcept {
+		constexpr void clamp() noexcept {
 			if (_value < _min) {
 				_value = _min;
 			} else if (_value > _max) {
@@ -63,38 +73,39 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 			}
 		}
 
-		template <typename U> Derived &set(U new_value) {
+		template <typename U> constexpr Derived &set(U new_value) {
 			_value = static_cast<T>(new_value);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived &operator+=(U other) {
+		template <typename U> constexpr Derived &operator+=(U other) {
 			_value += static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived &operator-=(U other) {
+		template <typename U> constexpr Derived &operator-=(U other) {
 			_value -= static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived &operator*=(U other) {
+		template <typename U> constexpr Derived &operator*=(U other) {
 			_value *= static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
-		template <typename U> Derived &operator/=(U other) {
+		template <typename U> constexpr Derived &operator/=(U other) {
 			_value /= static_cast<T>(other);
 			clamp();
 			return derived();
 		}
 
 		Derived &zero() {
-			_value = _min;
+			_value = T(0);
+			clamp();
 			return derived();
 		}
 
@@ -103,29 +114,36 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 			return derived();
 		}
 
-		bool is_zero() const {
-			return _value == Approx<T>(_min);
+		constexpr bool is_zero() const {
+			if constexpr (std::floating_point<T>) {
+				return _value == Approx<T>(T(0));
+			} else {
+				return _value == T(0);
+			}
 		}
 
-		bool is_full() const {
-			return _value == Approx<T>(_max);
+		constexpr bool is_full() const {
+			if constexpr (std::floating_point<T>) {
+				return _value == Approx<T>(_max);
+			} else {
+				return _value == _max;
+			}
+		}
+
+		constexpr T remaining() const {
+			return _max - _value;
 		}
 
 		NormalizedValue<T> ratio() const {
 			if (_max == _min) {
-				return NormalizedValue<T>(0);
+				return NormalizedValue<T>(T(0));
 			}
 
 			return NormalizedValue<T>((_value - _min) / (_max - _min));
 		}
-
-		T constexpr remaining() const {
-			return _max - _value;
-		}
 };
 
 template <typename T> class IntegerWithMax {
-
 	private:
 
 		T _value;
@@ -143,7 +161,7 @@ template <typename T> class IntegerWithMax {
 			clamp();
 		}
 
-		IntegerWithMax(T max)
+		explicit IntegerWithMax(T max)
 			: _value(T(0))
 			, _max(max) {
 			if (_max < T(0)) {
@@ -151,14 +169,58 @@ template <typename T> class IntegerWithMax {
 			}
 		}
 
-		auto operator<=>(const IntegerWithMax &) const = default;
+		constexpr explicit operator T() const noexcept {
+			return value();
+		}
+
+		constexpr T value() const noexcept {
+			return _value;
+		}
+
+		constexpr T max() const noexcept {
+			return _max;
+		}
+
+		constexpr void clamp() noexcept {
+			if (_value < T(0)) {
+				_value = T(0);
+			} else if (_value > _max) {
+				_value = _max;
+			}
+		}
 
 		void pass() {
 			if (_value < _max) {
 				++_value;
 			}
+		}
 
-			clamp();
+		void zero() noexcept {
+			_value = T(0);
+		}
+
+		void full() noexcept {
+			_value = _max;
+		}
+
+		constexpr T remaining_to_max() const noexcept {
+			return _max - _value;
+		}
+
+		constexpr bool is_above_max() const noexcept {
+			return _value > _max;
+		}
+
+		constexpr bool is_below_max() const noexcept {
+			return _value < _max;
+		}
+
+		constexpr bool is_full() const noexcept {
+			return _value == _max;
+		}
+
+		constexpr bool is_zero() const noexcept {
+			return _value == T(0);
 		}
 
 		NormalizedValue<float> ratio() const {
@@ -168,58 +230,9 @@ template <typename T> class IntegerWithMax {
 
 			return NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
 		}
-
-		T value() const {
-			return _value;
-		}
-
-		T max() const {
-			return _max;
-		}
-
-		void clamp() {
-			if (_value < T(0)) {
-				_value = T(0);
-			} else if (_value > _max) {
-				_value = _max;
-			}
-		}
-
-		void full() {
-			_value = _max;
-		}
-
-		void zero() {
-			_value = T(0);
-		}
-
-		T remaining_to_max() const {
-			if (_value >= _max) {
-				return T(0);
-			}
-
-			return _max - _value;
-		}
-
-		bool is_above_max() const {
-			return _value > _max;
-		}
-
-		bool is_below_max() const {
-			return _value < _max;
-		}
-
-		bool is_at_point() const {
-			return _value == _max;
-		}
-
-		bool is_zero() const {
-			return _value == T(0);
-		}
 };
 
 template <typename T> class IntegerLimited {
-
 	private:
 
 		T _value;
@@ -237,41 +250,27 @@ template <typename T> class IntegerLimited {
 			clamp();
 		}
 
-		IntegerLimited(T max)
-			: _value(0)
+		explicit IntegerLimited(T max)
+			: _value(T(0))
 			, _max(max) {
 			if (_max < T(0)) {
 				throw std::invalid_argument("Invalid IntegerLimited");
 			}
 		}
 
-		auto operator<=>(const IntegerLimited &) const = default;
-
-		void pass() {
-			if (_value < _max) {
-				++_value;
-			}
-
-			clamp();
+		constexpr explicit operator T() const noexcept {
+			return value();
 		}
 
-		NormalizedValue<float> ratio() const {
-			if (_max == 0) {
-				return NormalizedValue<float>(0.0f);
-			}
-
-			return NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
-		}
-
-		T value() const {
+		constexpr T value() const noexcept {
 			return _value;
 		}
 
-		T max() const {
+		constexpr T max() const noexcept {
 			return _max;
 		}
 
-		void clamp() {
+		constexpr void clamp() noexcept {
 			if (_value < T(0)) {
 				_value = T(0);
 			} else if (_value > _max) {
@@ -279,32 +278,51 @@ template <typename T> class IntegerLimited {
 			}
 		}
 
-		void full() {
-			_value = _max;
+		void pass() {
+			if (_value < _max) {
+				++_value;
+			}
 		}
 
-		void zero() {
+		void zero() noexcept {
 			_value = T(0);
 		}
 
-		T remaining_to_max() const {
+		void full() noexcept {
+			_value = _max;
+		}
+
+		constexpr T remaining_to_max() const noexcept {
 			return std::max(T(0), _max - _value);
 		}
 
-		bool is_below_max() const {
+		constexpr bool is_below_max() const noexcept {
 			return _value < _max;
 		}
 
-		bool is_full() const {
-			return _value == Approx<T>(_max);
+		constexpr bool is_full() const noexcept {
+			return _value == _max;
 		}
 
-		bool is_zero() const {
-			return _value == Approx<T>(T(0));
+		constexpr bool is_zero() const noexcept {
+			return _value == T(0);
+		}
+
+		NormalizedValue<float> ratio() const {
+			if (_max == T(0)) {
+				return NormalizedValue<float>(0.0f);
+			}
+
+			return NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
 		}
 };
 
-// Generic runtime value
-template <typename T> class RuntimeFactor : public RuntimeLimitedValue<RuntimeFactor<T>, T> {
-		using RuntimeLimitedValue<RuntimeFactor, T>::RuntimeLimitedValue;
+template <typename T>
+class GenericRuntimeValue : public RuntimeLimitedValue<GenericRuntimeValue<T>, T> {
+
+		using Base = RuntimeLimitedValue<GenericRuntimeValue<T>, T>;
+
+	public:
+
+		using Base::Base;
 };

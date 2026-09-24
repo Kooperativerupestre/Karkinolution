@@ -7,7 +7,7 @@
 #include <vector>
 
 
-using BornCount = IntegerLimited<uint8_t>;
+using BornCount = IntegerLimited<int>;
 using OrganismStats::Energy;
 using OrganismStats::Life;
 using OrganismStats::Health::Health;

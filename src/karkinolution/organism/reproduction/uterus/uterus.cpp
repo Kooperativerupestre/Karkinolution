@@ -32,7 +32,7 @@ bool PregnantUterus::is_full() const {
 // Uterus
 
 NormalizedValue<float> Uterus::hungry() const {
-	return 1 - energy.ratio();
+	return 1 - energy.ratio().value();
 }
 
 float Uterus::pregnancy_cost() const {

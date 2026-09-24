@@ -9,7 +9,7 @@
 
 NormalizedValue<float> UterusPhysiology::embryotrophy_energy(const Uterus &uterus,
 															 const Embryo &embryo) {
-	float dist = embryo.hungry().ratio() - 0.85; // max = 0.15 (1 - 0.85)
+	float dist = embryo.hungry().ratio().value() - 0.85; // max = 0.15 (1 - 0.85)
 	return RandomGenerators::generate(0.85 - dist, 1.0)
 		/ uterus.get_pregnant_uterus().embryos_count()
 		+ dist;
