@@ -148,3 +148,8 @@ First, in my old python project I had just the perception. Over time, I realized
 
 Because it can represent a large range.
 
+### Server
+
+#### Why only one client?
+
+Because I don't have any needy to justificate more than one client.
