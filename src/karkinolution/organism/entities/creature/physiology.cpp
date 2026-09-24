@@ -90,7 +90,7 @@ CreatureGrowingPhysiology::get_new_max_life_increment(const Creature         &cr
 
 	const GrowthRate growth = vital_genome.growth_rates.life.value;
 
-	const NormalizedValue<float> nutrition = 0.2f + body.metabolism.reserved.ratio();
+	const NormalizedValue<float> nutrition = 0.2f + body.metabolism.reserved.ratio().value();
 
 	const float gain = remaining.value() * max_life * growth.value * nutrition.value();
 
@@ -111,7 +111,7 @@ float CreatureGrowingPhysiology::get_new_lateral_increment(const Creature       
 
 	const NormalizedValue<float> remaining =
 		1.0f - body.morphology.size.lateral.value / morphology_genome.average_lateral.value;
-	const Factor<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
+	const GenericLimitedValue<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
 
 	return remaining.value() * muscle_factor.value();
 }
@@ -124,7 +124,7 @@ float CreatureGrowingPhysiology::get_new_depth_increment(const Creature         
 
 	const NormalizedValue<float> remaining =
 		1.0f - body.morphology.size.back.value / morphology_genome.average_back.value;
-	const Factor<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
+	const GenericLimitedValue<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
 
 	return remaining.value() * muscle_factor.value();
 }
@@ -137,7 +137,7 @@ float CreatureGrowingPhysiology::get_new_height_increment(const Creature        
 
 	const NormalizedValue<float> remaining =
 		1.0f - body.morphology.size.height.value / morphology_genome.average_back.value;
-	const Factor<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
+	const GenericLimitedValue<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
 
 	return remaining.value() * muscle_factor.value();
 }
@@ -155,7 +155,7 @@ CreatureGrowingPhysiology::get_new_muscle_increment(const Creature         &crea
 		muscle_genome.transformations.at(Resource::RESERVED_ENERGY, MuscleTrait::MUSCLE)
 			.efficiency.value();
 
-	const float gain = muscle_factor.value() * body.metabolism.reserved.ratio();
+	const float gain = muscle_factor.value() * body.metabolism.reserved.ratio().value();
 
 	const float reserved_energy_cost = gain / efficiency;
 
@@ -176,7 +176,7 @@ CreatureGrowingPhysiology::get_new_skeleton_increment(const Creature         &cr
 		skeleton_genome.transformations.at(Resource::RESERVED_ENERGY, SkeletonTrait::BONES)
 			.efficiency.value();
 
-	const float gain = skeleton_factor.value() * body.metabolism.reserved.ratio();
+	const float gain = skeleton_factor.value() * body.metabolism.reserved.ratio().value();
 
 	const float reserved_energy_cost = gain / efficiency;
 

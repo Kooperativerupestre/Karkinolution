@@ -27,6 +27,7 @@ void ReproductionStateMotor::prepair_to_conceive(Creature &creature) {
 
 	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
 
+	auto number_of_children = ReproductionStatePhysiology::get_children_count(creature);
 	UterusMotor::transfer_energy_to_uterus(creature,
 										   NormalizedValue<float>(0.3f),
 										   NormalizedValue<float>(0.5f));
@@ -37,7 +38,7 @@ void ReproductionStateMotor::prepair_to_conceive(Creature &creature) {
 			Gestation{0,
 					  static_cast<uint16_t>(
 						  creature.genome.creature_genome.reproductive.average_gestation_limit)},
-		.born_count = 0,
+		.born_count = BornCount{number_of_children},
 	};
 }
 

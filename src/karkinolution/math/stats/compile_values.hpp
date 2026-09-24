@@ -1,7 +1,5 @@
 #pragma once
-#include <compare>
 #include <karkinolution/core/global_epsilon.hpp>
-#include <stdexcept>
 
 
 /*
@@ -16,10 +14,11 @@ template <typename T> class NormalizedValue;
 template <typename T> class SignedNormalizedValue;
 
 template <typename Derived, typename T, T max, T min> class LimitedValue {
+		static_assert(min <= max, "min must be less than or equal to max");
+
 	private:
 
 		T _value;
-
 
 	protected:
 
@@ -31,19 +30,14 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 			return static_cast<const Derived &>(*this);
 		}
 
-
 	public:
 
 		constexpr LimitedValue(T value = T(0))
 			: _value(value) {
-			if (min > Approx<T>(max)) {
-				throw std::invalid_argument("Invalid LimitedValue range");
-			}
-
 			clamp();
 		}
 
-		constexpr operator T() const {
+		constexpr explicit operator T() const {
 			return value();
 		}
 
@@ -75,7 +69,6 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 		Derived operator+(const LimitedValue<OtherDerived, U, other_max, other_min> &other) const {
 			Derived result = derived();
 			result += other.value();
-			result.clamp();
 
 			return result;
 		}
@@ -83,7 +76,6 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 		template <typename U> Derived operator+(U other) const {
 			Derived result = derived();
 			result += other;
-			result.clamp();
 
 			return result;
 		}
@@ -98,7 +90,6 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 		Derived operator-(const LimitedValue<OtherDerived, U, other_max, other_min> &other) const {
 			Derived result = derived();
 			result -= other.value();
-			result.clamp();
 
 			return result;
 		}
@@ -106,7 +97,6 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 		template <typename U> constexpr Derived operator-(U other) const {
 			Derived result = derived();
 			result -= other;
-			result.clamp();
 
 			return result;
 		}
@@ -120,7 +110,6 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 		template <typename U> constexpr Derived operator*(U other) const {
 			Derived result = derived();
 			result *= other;
-			result.clamp();
 			return result;
 		}
 
@@ -130,17 +119,60 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 			return derived();
 		}
 
-		template <typename U> constexpr Derived operator/(U other) {
+		template <typename U> constexpr Derived operator/(U other) const {
 			Derived result = derived();
 			result /= other;
-			result.clamp();
 			return result;
 		}
 
-		constexpr auto operator<=>(const LimitedValue<Derived, T, max, min> &) const = default;
+		constexpr bool operator==(const LimitedValue &other) const {
+			if constexpr (std::floating_point<T>) {
+				return value() == Approx<T>(other.value());
+			} else {
+				return value() == other.value();
+			}
+		}
+
+		constexpr bool operator!=(const LimitedValue &other) const {
+			return !(*this == other);
+		}
+
+		constexpr bool operator<(const LimitedValue &other) const {
+			if constexpr (std::floating_point<T>) {
+				return value() < Approx<T>(other.value());
+			} else {
+				return value() < other.value();
+			}
+		}
+
+		constexpr bool operator>(const LimitedValue &other) const {
+			if constexpr (std::floating_point<T>) {
+				return value() > Approx<T>(other.value());
+			} else {
+				return value() > other.value();
+			}
+		}
+
+		constexpr bool operator<=(const LimitedValue &other) const {
+			if constexpr (std::floating_point<T>) {
+				return value() <= Approx<T>(other.value());
+			} else {
+				return value() <= other.value();
+			}
+		}
+
+		constexpr bool operator>=(const LimitedValue &other) const {
+			if constexpr (std::floating_point<T>) {
+				return value() >= Approx<T>(other.value());
+			} else {
+				return value() >= other.value();
+			}
+		}
 
 		void zero() {
-			_value = min;
+			static_assert(min <= T(0), "Min should accept zero to zero the value on LimitedValue");
+
+			_value = T(0);
 			clamp();
 		}
 
@@ -149,20 +181,34 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 			clamp();
 		}
 
-		T constexpr remaining() const {
+		constexpr T remaining() const {
 			return max - _value;
 		}
 
+		template <typename D = Derived>
+			requires(!std::same_as<D, NormalizedValue<T>>
+					 && !std::same_as<D, SignedNormalizedValue<T>>)
 		NormalizedValue<T> ratio() const;
 
+		template <typename D = Derived>
+			requires(!std::same_as<D, NormalizedValue<T>>
+					 && !std::same_as<D, SignedNormalizedValue<T>>)
 		SignedNormalizedValue<T> ratio_min() const;
 
 		bool is_full() const {
-			return value() == Approx<T>(max());
+			if constexpr (std::floating_point<T>) {
+				return value() == Approx<T>(max);
+			} else {
+				return value() == max;
+			}
 		}
 
 		bool is_zero() const {
-			return value() == Approx<T>(T(0));
+			if constexpr (std::floating_point<T>) {
+				return value() == Approx<T>(T(0));
+			} else {
+				return value() == T(0);
+			}
 		}
 };
 
@@ -183,19 +229,26 @@ class SignedNormalizedValue : public LimitedValue<SignedNormalizedValue<T>, T, T
 };
 
 template <typename Derived, typename T, T max, T min>
+template <typename D>
+	requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 NormalizedValue<T> LimitedValue<Derived, T, max, min>::ratio() const {
 	return NormalizedValue<T>(static_cast<T>(_value - min) / static_cast<T>(max - min));
 }
 
 template <typename Derived, typename T, T max, T min>
+template <typename D>
+	requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 SignedNormalizedValue<T> LimitedValue<Derived, T, max, min>::ratio_min() const {
 	return SignedNormalizedValue<T>(static_cast<T>(_value - min) / static_cast<T>(max - min) * T(2)
 									- T(1));
 }
 
-// Generic LimitedValue
-
 template <typename T, T max, T min>
-class Factor : public LimitedValue<Factor<T, max, min>, T, max, min> {
-		using LimitedValue<Factor, T, max, min>::LimitedValue;
+class GenericLimitedValue : public LimitedValue<GenericLimitedValue<T, max, min>, T, max, min> {
+
+		using Base = LimitedValue<GenericLimitedValue<T, max, min>, T, max, min>;
+
+	public:
+
+		using Base::Base;
 };

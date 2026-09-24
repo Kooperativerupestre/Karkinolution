@@ -5,8 +5,8 @@
 #include <karkinolution/organism/foods/foods.hpp>
 
 FoodDivision MetabolismPhysiology::divide(float energy) {
-	return FoodDivision{.for_energy          = energy * FOOD_RATIO_FOR_ENERGY,
-						.for_reserved_energy = energy * FOOD_RATIO_FOR_RESERVED_ENERGY};
+	return FoodDivision{.for_energy          = energy * FOOD_RATIO_FOR_ENERGY.value(),
+						.for_reserved_energy = energy * FOOD_RATIO_FOR_RESERVED_ENERGY.value()};
 }
 
 FoodDivision MetabolismPhysiology::divide(const Energy &energy) {

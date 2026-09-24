@@ -64,7 +64,7 @@ float ScorerIntents::score_find_food(const Creature &creature) {
 					  .gestation.ratio()
 			* 0.4;
 	}
-	return factor;
+	return factor.value();
 }
 
 float ScorerIntents::score_nothing(const Creature &creature) {

@@ -8,7 +8,7 @@ TEST(Factor, AdditionClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor += max * 2;
 
@@ -19,7 +19,7 @@ TEST(Factor, AdditionClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor += min * 2;
 
@@ -30,7 +30,7 @@ TEST(Factor, SubtractionClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor -= min * 2;
 
@@ -41,7 +41,7 @@ TEST(Factor, SubtractionClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor -= max * 2;
 
@@ -52,7 +52,7 @@ TEST(Factor, MultiplicationClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor += 1.0f;
 	factor *= max * 2;
@@ -64,7 +64,7 @@ TEST(Factor, MultiplicationClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor += 1.0f;
 	factor *= min * 2;
@@ -76,7 +76,7 @@ TEST(Factor, DivisionClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor += 1.0f;
 	factor /= (1 / (max * 2.0f));
@@ -88,7 +88,7 @@ TEST(Factor, DivisionClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	Factor<float, max, min> factor;
+	GenericLimitedValue<float, max, min> factor;
 
 	factor += 1.0f;
 	factor /= -max / 2;
@@ -101,7 +101,7 @@ TEST(RuntimeFactor, AdditionClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor += max * 2;
 
@@ -112,7 +112,7 @@ TEST(RuntimeFactor, AdditionClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor += min * 2;
 
@@ -123,7 +123,7 @@ TEST(RuntimeFactor, SubtractionClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor -= min * 2;
 
@@ -134,7 +134,7 @@ TEST(RuntimeFactor, SubtractionClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor -= max * 2;
 
@@ -145,7 +145,7 @@ TEST(RuntimeFactor, MultiplicationClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor += 1.0f;
 	factor *= max * 2;
@@ -157,7 +157,7 @@ TEST(RuntimeFactor, MultiplicationClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor += 1.0f;
 	factor *= min * 2;
@@ -169,7 +169,7 @@ TEST(RuntimeFactor, DivisionClampsToMaximum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor += 1.0f;
 	factor /= (1 / (max * 2.0f));
@@ -181,7 +181,7 @@ TEST(RuntimeFactor, DivisionClampsToMinimum) {
 	constexpr float max = 2.0f;
 	constexpr float min = -1.0f;
 
-	RuntimeFactor<float> factor{0.0f, max, min};
+	GenericRuntimeValue<float> factor{0.0f, max, min};
 
 	factor += 1.0f;
 	factor /= -max / 2;

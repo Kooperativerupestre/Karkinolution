@@ -99,9 +99,9 @@ namespace Choices {
 	}
 
 	template <typename T>
-	bool choice_bool(const NormalizedValue<float> &true_weight, const NormalizedValue<float> &v2) {
+	bool choice_bool(const NormalizedValue<T> &true_weight, const NormalizedValue<T> &v2) {
 		return Choices::choices(std::array<bool, 2>{true, false},
-								std::array<float, 2>{true_weight.value(), v2.value()},
+								std::array<T, 2>{true_weight.value(), v2.value()},
 								1)[0];
 	}
 
@@ -171,10 +171,10 @@ namespace RandomGenerators {
 
 	template <typename T, typename U>
 	SupressOneOutput suppress_one(T &v1, U &v2, const SuppressContext &context) {
-		if (Choices::choice_bool(context.chance_of_v1_being_suppressed)) {
+		if (Choices::choice_bool(context.chance_of_v1_being_suppressed.value())) {
 			v1 *= context.suppressed_multiplier;
 			return SupressOneOutput::V1_HAS_SUPRESSED;
-		} else if (Choices::choice_bool(context.chance_of_v2_being_suppressed)) {
+		} else if (Choices::choice_bool(context.chance_of_v2_being_suppressed.value())) {
 			v2 *= context.suppressed_multiplier;
 			return SupressOneOutput::V2_HAS_SUPRESSED;
 		} else {
