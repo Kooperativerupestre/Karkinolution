@@ -1,0 +1,39 @@
+# Text files
+
+* text=auto
+
+# C++
+
+*.cpp text eol=lf
+*.hpp text eol=lf
+*.h   text eol=lf
+*.c   text eol=lf
+
+# Python
+
+*.py text eol=lf
+
+# Godot
+
+*.gd text eol=lf
+
+# CMake
+
+*.cmake        text eol=lf
+CMakeLists.txt text eol=lf
+
+# Documentation
+
+*.md  text eol=lf
+*.txt text eol=lf
+
+# Shell scripts
+
+*.sh text eol=lf
+
+# Binary assets
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
