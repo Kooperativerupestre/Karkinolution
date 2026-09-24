@@ -1,11 +1,8 @@
 Karkinolution
 
-
 Copyright 2026 Koöperative Rüpestrën
 
-
-Third-Party Software
---------------------
+## Third-Party Software
 
 GoogleTest v1.17.0
 
@@ -14,7 +11,6 @@ Copyright Google Inc. and contributors.
 
 The full license text is available in the GoogleTest distribution:
 https://github.com/google/googletest/blob/v1.17.0/LICENSE
-
 
 FastNoise2
 
@@ -27,7 +23,6 @@ dependencies/FastNoise2/LICENSE
 FastNoise2 repository:
 https://github.com/Auburn/FastNoise2
 
-
 Asio
 
 Asio is distributed under the Boost Software License 1.0.
@@ -38,6 +33,16 @@ dependencies/asio/LICENSE_1_0.txt
 Asio repository:
 https://github.com/chriskohlhoff/asio
 
+Godot Engine
+
+Godot Engine is distributed under the MIT License.
+Copyright (c) 2014-present Godot Engine contributors.
+
+The full license text is available in the Godot Engine distribution:
+https://github.com/godotengine/godot/blob/master/LICENSE.md
+
+Godot Engine repository:
+https://github.com/godotengine/godot
 
 godot-cpp
 
