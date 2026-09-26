@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <karkinolution/binary/deserialization/interpreters/math/vec.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/ vec.hpp>
+#include <karkinolution/binary/serialization/interpreters/math/vec.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/utils/k_random.hpp>
 #include <vector>

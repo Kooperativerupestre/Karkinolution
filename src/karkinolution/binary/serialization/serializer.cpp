@@ -1,38 +1,23 @@
 #include <cstddef>
 #include <karkinolution/binary/serialization/serializer.hpp>
 
-using SerializerTypes::DoubleBytes;
-using SerializerTypes::StringBytes;
-using SerializerTypes::Uint32tBytes;
-using SerializerTypes::Uint64tBytes;
-using SerializerTypes::Uint8tByte;
+using Serializer::Types::DoubleBytes;
+using Serializer::Types::FloatBytes;
+using Serializer::Types::StringBytes;
+using Serializer::Types::Uint32tBytes;
+using Serializer::Types::Uint64tBytes;
+using Serializer::Types::Uint8tByte;
 
 Uint32tBytes Serializer::convert_uint32_t(std::uint32_t value) {
-	Uint32tBytes bytes;
-
-	bytes[0] = std::byte(value >> 24 & 0xFF);
-	bytes[1] = std::byte(value >> 16 & 0xFF);
-	bytes[2] = std::byte(value >> 8 & 0xFF);
-	bytes[3] = std::byte(value & 0xFF);
-	return bytes;
+	return Core::convert_4_bytes(value);
 }
 
 Uint8tByte Serializer::convert_uint8_t(std::uint8_t value) {
-	return std::byte(value);
+	return Core::convert_1_byte(value);
 }
 
 Uint64tBytes Serializer::convert_uint64_t(std::uint64_t value) {
-	Uint64tBytes bytes;
-
-	bytes[0] = std::byte(value >> 56 & 0xFF);
-	bytes[1] = std::byte(value >> 48 & 0xFF);
-	bytes[2] = std::byte(value >> 40 & 0xFF);
-	bytes[3] = std::byte(value >> 32 & 0xFF);
-	bytes[4] = std::byte(value >> 24 & 0xFF);
-	bytes[5] = std::byte(value >> 16 & 0xFF);
-	bytes[6] = std::byte(value >> 8 & 0xFF);
-	bytes[7] = std::byte(value & 0xFF);
-	return bytes;
+	return Core::convert_8_bytes(value);
 }
 
 StringBytes Serializer::convert_string(const std::string &value) {
@@ -47,6 +32,9 @@ StringBytes Serializer::convert_string(const std::string &value) {
 }
 
 DoubleBytes Serializer::convert_double(double value) {
-	const auto bits = std::bit_cast<std::uint64_t>(value);
-	return convert_uint64_t(bits);
+	return Core::convert_8_bytes(std::bit_cast<std::uint64_t>(value));
+}
+
+FloatBytes Serializer::convert_float(float value) {
+	return Core::convert_4_bytes(std::bit_cast<std::uint32_t>(value));
 }
