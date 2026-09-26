@@ -1,6 +1,6 @@
 #pragma once
 
-#include "model/creature/creature.hpp"
+#include "godot/extension/model/creature/creature.hpp"
 
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/variant/variant.hpp>
@@ -13,7 +13,7 @@ namespace GodotEntityConversion {
 
 	template <typename... Ts>
 	inline std::optional<GodotEntity> from_variant(const godot::Variant &variant,
-												  std::variant<Ts...> *) {
+												   std::variant<Ts...>*) {
 		std::optional<GodotEntity> result = std::nullopt;
 
 		auto try_cast = [&]<typename T>() {
@@ -36,7 +36,7 @@ namespace GodotEntityConversion {
 		if (variant.get_type() != godot::Variant::OBJECT) {
 			return std::nullopt;
 		}
-		return from_variant(variant, static_cast<GodotEntity *>(nullptr));
+		return from_variant(variant, static_cast<GodotEntity*>(nullptr));
 	}
 
 } // namespace GodotEntityConversion

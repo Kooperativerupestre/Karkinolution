@@ -48,7 +48,14 @@ Vec3 CreatureResponseDSI::get_position(const std::vector<std::byte> &payload) {
 DesserializedCreature CreatureResponseDSI::get_creature(const std::vector<std::byte> &payload) {
 	return DesserializedCreature{.gender   = get_gender(payload),
 								 .specie   = get_specie(payload),
-								 .position = get_position(payload)};
+								 .position = get_position(payload),
+								 .name     = get_name(payload)};
+}
+
+std::string CreatureResponseDSI::get_name(const std::vector<std::byte> &payload) {
+	return Deserializer::read_string(payload,
+									 CreatureSRI::TO_GET_NAME_OFFSET,
+									 CreatureSRI::NAME_BYTES);
 }
 
 BaseIdType CreatureRequestDSI::interpret_like_get_creature(const std::vector<std::byte> &payload) {

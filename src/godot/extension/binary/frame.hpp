@@ -17,7 +17,7 @@ class GodotParsedFrame : public godot::RefCounted {
 		std::uint32_t          size_{0};
 		std::uint8_t           type_{0};
 		std::uint32_t          sub_type_{0};
-		godot::PackedByteArray payload_{};
+		godot::PackedByteArray payload_;
 
 	protected:
 

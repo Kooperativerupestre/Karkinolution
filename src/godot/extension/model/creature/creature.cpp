@@ -1,4 +1,4 @@
-#include "model/creature/creature.hpp"
+#include "godot/extension/model/creature/creature.hpp"
 
 #include <karkinolution/binary/deserialization/interpreters/models.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -10,6 +10,7 @@ void GodotCreature::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_gender"), &GodotCreature::get_gender);
 	godot::ClassDB::bind_method(godot::D_METHOD("get_specie"), &GodotCreature::get_specie);
 	godot::ClassDB::bind_method(godot::D_METHOD("get_position"), &GodotCreature::get_position);
+	godot::ClassDB::bind_method(godot::D_METHOD("get_name"), &GodotCreature::get_name);
 	godot::ClassDB::bind_method(godot::D_METHOD("get_gender_name"),
 								&GodotCreature::get_gender_name);
 	godot::ClassDB::bind_method(godot::D_METHOD("get_specie_name"),
@@ -20,16 +21,19 @@ GodotCreature::GodotCreature()
 	: id_(0)
 	, gender_(0)
 	, specie_(0)
-	, position_(0.0, 0.0, 0.0) {}
+	, position_(0.0, 0.0, 0.0)
+	, name_() {}
 
-GodotCreature::GodotCreature(std::uint64_t        id,
-							 std::uint8_t         gender,
-							 std::uint8_t         specie,
-							 const godot::Vector3 &position)
+GodotCreature::GodotCreature(std::uint64_t         id,
+							 std::uint8_t          gender,
+							 std::uint8_t          specie,
+							 const godot::Vector3 &position,
+							 const godot::String  &name)
 	: id_(id)
 	, gender_(gender)
 	, specie_(specie)
-	, position_(position) {}
+	, position_(position)
+	, name_(name) {}
 
 std::uint64_t GodotCreature::get_id() const {
 	return id_;
@@ -45,6 +49,10 @@ std::uint8_t GodotCreature::get_specie() const {
 
 godot::Vector3 GodotCreature::get_position() const {
 	return position_;
+}
+
+godot::String GodotCreature::get_name() const {
+	return name_;
 }
 
 godot::String GodotCreature::get_gender_name() const {
@@ -79,6 +87,7 @@ GodotCreature::from_deserialized(const DesserializedCreature &deserialized, std:
 	creature->position_ = godot::Vector3(static_cast<godot::real_t>(deserialized.position.x),
 										 static_cast<godot::real_t>(deserialized.position.y),
 										 static_cast<godot::real_t>(deserialized.position.z));
+	creature->name_     = godot::String(deserialized.name.c_str());
 	return creature;
 }
 
@@ -91,5 +100,6 @@ godot::Ref<GodotCreature> GodotCreature::from_core(const ::Creature &creature) {
 	result->position_ = godot::Vector3(static_cast<godot::real_t>(creature.position.x),
 									   static_cast<godot::real_t>(creature.position.y),
 									   static_cast<godot::real_t>(creature.position.z));
+	result->name_     = godot::String(creature.ontology.name.c_str());
 	return result;
 }

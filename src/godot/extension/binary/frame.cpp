@@ -1,4 +1,4 @@
-#include "binary/frame.hpp"
+#include "godot/extension/binary/frame.hpp"
 
 #include <cstring>
 #include <karkinolution/binary/frames/parser.hpp>
@@ -43,10 +43,7 @@ void GodotParsedFrame::_bind_methods() {
 								&GodotParsedFrame::get_payload_string);
 }
 
-GodotParsedFrame::GodotParsedFrame()
-	: size_(0)
-	, type_(0)
-	, sub_type_(0) {}
+GodotParsedFrame::GodotParsedFrame() {}
 
 std::uint32_t GodotParsedFrame::get_size() const {
 	return size_;
