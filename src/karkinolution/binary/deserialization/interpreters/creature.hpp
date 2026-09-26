@@ -12,6 +12,7 @@ namespace CreatureResponseDSI {
 	double                get_position_y(const std::vector<std::byte> &payload);
 	double                get_position_z(const std::vector<std::byte> &payload);
 	Vec3                  get_position(const std::vector<std::byte> &payload);
+	std::string           get_name(const std::vector<std::byte> &payload);
 	DesserializedCreature get_creature(const std::vector<std::byte> &payload);
 } // namespace CreatureResponseDSI
 

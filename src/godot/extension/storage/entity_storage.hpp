@@ -1,6 +1,6 @@
 #pragma once
 
-#include "model/creature/creature.hpp"
+#include "godot/extension/model/creature/creature.hpp"
 #include "model/entity.hpp"
 
 #include <cstdint>
@@ -16,7 +16,7 @@ class GodotEntityStorage : public godot::RefCounted {
 
 	private:
 
-		std::unordered_map<std::uint64_t, GodotEntity> entities_{};
+		std::unordered_map<std::uint64_t, GodotEntity> entities_;
 
 	protected:
 
@@ -26,14 +26,14 @@ class GodotEntityStorage : public godot::RefCounted {
 
 		GodotEntityStorage() = default;
 
-		bool                         add_creature(std::uint64_t id, const godot::Ref<GodotCreature> &creature);
-		bool                         remove(std::uint64_t id);
-		void                         clear();
+		bool add_creature(std::uint64_t id, const godot::Ref<GodotCreature> &creature);
+		bool remove(std::uint64_t id);
+		void clear();
 		[[nodiscard]] godot::Variant get(std::uint64_t id) const;
 		[[nodiscard]] godot::Array   list_ids() const;
 		[[nodiscard]] godot::Array   list_entities() const;
-		bool                         replace(std::uint64_t old_id, std::uint64_t new_id, const godot::Variant &entity);
+		bool replace(std::uint64_t old_id, std::uint64_t new_id, const godot::Variant &entity);
 
-		[[nodiscard]] bool           has(std::uint64_t id) const;
-		[[nodiscard]] std::int64_t   size() const;
+		[[nodiscard]] bool         has(std::uint64_t id) const;
+		[[nodiscard]] std::int64_t size() const;
 };

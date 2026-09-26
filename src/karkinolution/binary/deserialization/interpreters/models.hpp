@@ -7,4 +7,5 @@ struct DesserializedCreature {
 		Gender          gender;
 		CreatureSpecies specie;
 		Vec3            position;
+		std::string     name;
 };
