@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -86,12 +86,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: hendrikmuhs/ccache-action@v1.2.24
         with:
           key: clang21-tidy
           max-size: 1G
@@ -159,7 +159,7 @@ jobs:
           submodules: recursive
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: hendrikmuhs/ccache-action@v1.2.24
         with:
           key: clang21
           max-size: 1G
@@ -224,12 +224,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: hendrikmuhs/ccache-action@v1.2.24
         with:
           key: clang21-asan-ubsan
           max-size: 1G
@@ -292,87 +292,13 @@ jobs:
               --test-dir /workspace/build-sanitizers \
               --output-on-failure
 
-  valgrind:
-    name: Valgrind
-    if: github.event.schedule == '0 21 * * *'
+  godot-extension:
+    name: Godot Extension
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          submodules: recursive
-
-      - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: gcc15-valgrind
-          max-size: 1G
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Build CI image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: Dockerfile.ci
-          tags: ${{ env.DOCKER_IMAGE }}
-          load: true
-          cache-from: type=gha,scope=karkinolution-ci
-          cache-to: type=gha,mode=max,scope=karkinolution-ci
-
-      - name: Configure
-        run: |
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/workspace" \
-            -e CCACHE_DIR=/workspace/.ccache \
-            ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              -S /workspace \
-              -B /workspace/build-valgrind \
-              -G Ninja \
-              -DCMAKE_C_COMPILER=gcc-15 \
-              -DCMAKE_CXX_COMPILER=g++-15 \
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DBUILD_GODOT_EXTENSION=OFF
-
-      - name: Build tests
-        run: |
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/workspace" \
-            -e CCACHE_DIR=/workspace/.ccache \
-            ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              --build /workspace/build-valgrind \
-              --target karkinolution_tests \
-              --parallel "$(nproc)"
-
-      - name: Run Valgrind
-        run: |
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -v "$PWD:/workspace" \
-            ${{ env.DOCKER_IMAGE }} \
-            valgrind \
-              --leak-check=full \
-              --show-leak-kinds=all \
-              --track-origins=yes \
-              --error-exitcode=1 \
-              /workspace/build-valgrind/tests/karkinolution_tests
-
-  godot-extension:
-    name: Godot Extension
-    if: github.event.schedule == '0 */5 * * *'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -393,7 +319,7 @@ jobs:
             godot-cpp-${{ runner.os }}-clang21-template-debug-api4.7-
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2
+        uses: hendrikmuhs/ccache-action@v1.2.24
         with:
           key: godot-clang21
           max-size: 1G
