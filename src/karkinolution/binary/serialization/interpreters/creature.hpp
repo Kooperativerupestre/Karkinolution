@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "math/ vec.hpp"
+#include "math/vec.hpp"
 
 #include <array>
 #include <karkinolution/organism/entities/creature/creature.hpp>

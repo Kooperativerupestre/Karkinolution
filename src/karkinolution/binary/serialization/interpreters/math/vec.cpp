@@ -1,7 +1,7 @@
 #include "karkinolution/binary/deserialization/deserializer.hpp"
 #include "karkinolution/binary/serialization/serializer.hpp"
 
-#include <karkinolution/binary/serialization/interpreters/math/ vec.hpp>
+#include <karkinolution/binary/serialization/interpreters/math/vec.hpp>
 
 VecSRI::VecBytes VecSRI::serialize_vec(const Vec3 &vec) {
 	VecBytes result;
