@@ -1,0 +1,28 @@
+version: "1.0"
+project: "Karkino / Karkinolution (Karkino is an abbreviation)"
+
+# Mandatory reading order for incoming agents before performing any work
+workflow:
+  required_reading:
+    - file: "CONTRIBUTING.md"
+      purpose: "Commit message conventions: type(scope): imperative description."
+    - file: "docs/currently_architecture.md"
+      purpose: "Core architectural boundaries, naming, model/physiology/motor, comments, doc standards."
+    - file: "docs/skills/"
+      purpose: "Operational skills that govern development and agent behavior."
+    - file: "src/godot/context.md"
+      purpose: "Godot extension architecture, immutable DTOs, and conversion flow."
+
+# Hard agent boundaries that cannot be violated
+boundaries:
+  compilation_and_tests:
+    allowed: true
+    rule: "Agents must compile the project and run tests to verify changes."
+  dependencies:
+    godot_cpp: "Never inspect, list, or modify files in src/godot/godot-cpp."
+  requirements:
+    uncertainty: "Never assume. Ask the active programmer clarifying questions when in doubt."
+  language: "English only for all code, comments, documentation, and commits."
+
+git:
+  commits: "Must strictly follow CONTRIBUTING.md."
