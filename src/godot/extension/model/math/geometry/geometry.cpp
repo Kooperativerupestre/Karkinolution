@@ -5,9 +5,9 @@
 void GodotRadius::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_value"), &GodotRadius::get_value);
 	godot::ClassDB::bind_static_method("GodotRadius",
-	                                   godot::D_METHOD("create", "value"),
-	                                   &GodotRadius::create,
-	                                   DEFVAL(0.0));
+									   godot::D_METHOD("create", "value"),
+									   &GodotRadius::create,
+									   DEFVAL(0.0));
 }
 
 GodotRadius::GodotRadius()
@@ -32,9 +32,9 @@ godot::Ref<GodotRadius> GodotRadius::create(double value) {
 void GodotCircumference::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_value"), &GodotCircumference::get_value);
 	godot::ClassDB::bind_static_method("GodotCircumference",
-	                                   godot::D_METHOD("create", "value"),
-	                                   &GodotCircumference::create,
-	                                   DEFVAL(0.0));
+									   godot::D_METHOD("create", "value"),
+									   &GodotCircumference::create,
+									   DEFVAL(0.0));
 }
 
 GodotCircumference::GodotCircumference()
@@ -59,9 +59,9 @@ godot::Ref<GodotCircumference> GodotCircumference::create(double value) {
 void GodotDiameter::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_value"), &GodotDiameter::get_value);
 	godot::ClassDB::bind_static_method("GodotDiameter",
-	                                   godot::D_METHOD("create", "value"),
-	                                   &GodotDiameter::create,
-	                                   DEFVAL(0.0));
+									   godot::D_METHOD("create", "value"),
+									   &GodotDiameter::create,
+									   DEFVAL(0.0));
 }
 
 GodotDiameter::GodotDiameter()
@@ -86,9 +86,9 @@ godot::Ref<GodotDiameter> GodotDiameter::create(double value) {
 void GodotArea::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_value"), &GodotArea::get_value);
 	godot::ClassDB::bind_static_method("GodotArea",
-	                                   godot::D_METHOD("create", "value"),
-	                                   &GodotArea::create,
-	                                   DEFVAL(0.0));
+									   godot::D_METHOD("create", "value"),
+									   &GodotArea::create,
+									   DEFVAL(0.0));
 }
 
 GodotArea::GodotArea()
