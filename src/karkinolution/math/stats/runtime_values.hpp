@@ -21,6 +21,8 @@ template <typename Derived, typename T> class RuntimeLimitedValue {
 
 	public:
 
+		using value_type = T;
+
 		RuntimeLimitedValue(T value, T max, T min = T(0))
 			: _value(value)
 			, _min(min)

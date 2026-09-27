@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <cstdint>
+#include <karkinolution/binary/binary_supported_types.hpp>
 #include <string>
 #include <vector>
 
@@ -68,6 +69,9 @@ namespace Serializer {
 		using Uint64tBytes = Core::EightBytes;
 		using StringBytes  = std::vector<std::byte>;
 		using Uint8tByte   = std::byte;
+		using IntBytes     = Core::FourBytes;
+
+
 	} // namespace Types
 
 	Types::Uint32tBytes convert_uint32_t(std::uint32_t value);
@@ -76,6 +80,28 @@ namespace Serializer {
 	Types::FloatBytes   convert_float(float value);
 	Types::Uint64tBytes convert_uint64_t(std::uint64_t value);
 	Types::Uint8tByte   convert_uint8_t(std::uint8_t value);
+	Types::IntBytes     convert_int(int value);
+
 
 	Types::StringBytes convert_string(const std::string &string);
+
+	template <BinarySupportedType T> auto serialize(T value) {
+		if constexpr (std::same_as<T, double>) {
+			return convert_double(value);
+		} else if constexpr (std::same_as<T, float>) {
+			return convert_float(value);
+		} else if constexpr (std::same_as<T, std::uint8_t>) {
+			return convert_uint8_t(value);
+		} else if constexpr (std::same_as<T, std::uint16_t>) {
+			return convert_uint16_t(value);
+		} else if constexpr (std::same_as<T, std::uint32_t>) {
+			return convert_uint32_t(value);
+		} else if constexpr (std::same_as<T, std::uint64_t>) {
+			return convert_uint64_t(value);
+		} else if constexpr (std::same_as<T, int>) {
+			return convert_int(value);
+		} else if constexpr (std::same_as<T, std::string>) {
+			return convert_string(value);
+		}
+	}
 } // namespace Serializer

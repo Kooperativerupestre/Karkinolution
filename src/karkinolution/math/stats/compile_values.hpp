@@ -32,6 +32,8 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 
 	public:
 
+		using value_type = T;
+
 		constexpr LimitedValue(T value = T(0))
 			: _value(value) {
 			clamp();
