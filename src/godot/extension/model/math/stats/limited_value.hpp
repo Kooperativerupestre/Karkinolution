@@ -38,7 +38,6 @@ class GodotLimitedValue : public godot::RefCounted {
 		[[nodiscard]] bool is_full() const;
 		[[nodiscard]] bool is_zero() const;
 
-		static godot::Ref<GodotLimitedValue> create(double value = 0.0,
-													double min   = 0.0,
-													double max   = 1.0);
+		static godot::Ref<GodotLimitedValue>
+		create(double value = 0.0, double min = 0.0, double max = 1.0);
 };

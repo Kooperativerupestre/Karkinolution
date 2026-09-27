@@ -152,4 +152,3 @@ class GodotSize : public godot::RefCounted {
 		static godot::Ref<GodotSize>
 		from_values(double lateral = 0.0, double height = 0.0, double depth = 0.0);
 };
-

@@ -10,8 +10,7 @@ void GodotMeter::_bind_methods() {
 									   DEFVAL(0.0));
 }
 
-GodotMeter::GodotMeter()
-	: value_(0.0) {}
+GodotMeter::GodotMeter() {}
 
 GodotMeter::GodotMeter(double value)
 	: value_(value) {}
@@ -85,8 +84,7 @@ void GodotVolume::_bind_methods() {
 									   DEFVAL(0.0));
 }
 
-GodotVolume::GodotVolume()
-	: value_(0.0) {}
+GodotVolume::GodotVolume() {}
 
 GodotVolume::GodotVolume(double value)
 	: value_(value) {}
@@ -221,10 +219,8 @@ godot::Ref<GodotSize> GodotSize::create(const godot::Ref<GodotLateral> &lateral,
 	return ref;
 }
 
-godot::Ref<GodotSize>
-GodotSize::from_values(double lateral, double height, double depth) {
+godot::Ref<GodotSize> GodotSize::from_values(double lateral, double height, double depth) {
 	return create(GodotLateral::create(lateral),
 				  GodotHeight::create(height),
 				  GodotDepth::create(depth));
 }
-

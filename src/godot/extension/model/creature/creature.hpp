@@ -33,7 +33,7 @@ class GodotCreature : public godot::RefCounted {
 					  std::uint8_t          gender,
 					  std::uint8_t          specie,
 					  const godot::Vector3 &position = godot::Vector3(),
-					  const godot::String &name      = godot::String());
+					  const godot::String  &name     = godot::String());
 
 		[[nodiscard]] std::uint64_t  get_id() const;
 		[[nodiscard]] std::uint8_t   get_gender() const;
