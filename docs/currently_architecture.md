@@ -84,3 +84,20 @@ Every operation that depends on more than one system, must be atomic (if it's po
 - Operation B
 
 If operation A or B fails, the state must be rolled back.
+
+# Comments
+
+Comments must be simple and concise. Organizational comments must be minimal and never oversized or decorative (no ASCII banner bars).
+
+# Documentation Standards
+
+- Format: Concise, direct, and factual. Use Q&A or structured technical outlines.
+- Prohibited: Flowery pleasantries, patronizing greetings, hand-holding introductions, and emotional padding.
+- Scope: Document timeless architectural patterns and rules. Never document temporary or perishable details such as active file inventories.
+
+# File Grouping & Mirroring
+
+- When exposing simulator models to extensions (e.g. Godot), mirror the core's file grouping.
+- Do not fragment tightly coupled unit families into individual micro-files when the core simulator maintains them in a single cohesive file (e.g., keep Size and physical units together in `units.hpp`).
+
+
