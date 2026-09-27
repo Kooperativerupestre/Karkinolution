@@ -4,6 +4,11 @@
 #include <karkinolution/math/geometry/models.hpp>
 
 namespace GeometrySRI {
+	inline constexpr std::size_t RADIUS_BYTES        = 8;
+	inline constexpr std::size_t CIRCUMFERENCE_BYTES = 8;
+	inline constexpr std::size_t DIAMETER_BYTES      = 8;
+	inline constexpr std::size_t AREA_BYTES          = 8;
+
 	Serializer::Types::DoubleBytes serialize_radius(GeometryForms::Radius radius);
 	Serializer::Types::DoubleBytes
 	serialize_circumference(GeometryForms::Circumference circumference);

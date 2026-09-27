@@ -1,8 +1,11 @@
 #pragma once
+#include "byte_range.hpp"
+
 #include <bit>
 #include <cstddef>
 #include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/core/error.hpp>
+#include <format>
 
 namespace ByteUtils {
 	inline std::byte char_to_byte(char byte) {
@@ -11,6 +14,19 @@ namespace ByteUtils {
 
 	inline unsigned int byte_to_int(std::byte byte) {
 		return std::to_integer<unsigned int>(byte);
+	}
+
+	template <ByteRange T> constexpr void zero_padding(T &payload, std::size_t offset) {
+		if (offset > payload.size()) {
+			throw ByteError(
+				std::format("Failed to apply zero padding on array that has {} size with offset {}",
+							payload.size(),
+							offset));
+		}
+
+		for (std::size_t i = offset; i < payload.size(); ++i) {
+			payload[i] = std::byte{0};
+		}
 	}
 } // namespace ByteUtils
 
