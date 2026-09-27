@@ -7,7 +7,7 @@
 
 namespace StatsDSI {
 	inline BinaryNLT get_type(const std::vector<std::byte> &payload,
-	                          std::size_t                  offset = StatsSRI::TO_GET_TYPE_OFFSET) {
+							  std::size_t                   offset = StatsSRI::TO_GET_TYPE_OFFSET) {
 		return static_cast<BinaryNLT>(Deserializer::read_uint8_t(payload, offset));
 	}
 
