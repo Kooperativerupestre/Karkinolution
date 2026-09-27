@@ -5,6 +5,8 @@
 #include "model/math/stats/limited_value.hpp"
 #include "model/math/stats/stats.hpp"
 #include "model/math/unit/units.hpp"
+#include "model/properties/properties.hpp"
+#include "model/terrain/soil.hpp"
 #include "storage/entity_storage.hpp"
 
 #include <godot_cpp/core/class_db.hpp>
@@ -19,6 +21,8 @@ void initialize_karkinolution(ModuleInitializationLevel level) {
 
 	GDREGISTER_CLASS(GodotParsedFrame);
 	GDREGISTER_CLASS(GodotCreature);
+	GDREGISTER_CLASS(GodotGenericProperty);
+	GDREGISTER_CLASS(GodotSoilPiece);
 	GDREGISTER_CLASS(GodotEntityStorage);
 
 	GDREGISTER_CLASS(GodotLimitedValue);
