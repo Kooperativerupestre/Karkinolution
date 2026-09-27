@@ -8,7 +8,7 @@ int main() {
 
 	WorldPreset preset{
 		.seed    = 1,
-		.size    = Size{.lateral = Lateral{100.0}, .height = Height{100.0}, .back = Back{100.0}},
+		.size    = Size{.lateral = Lateral{100.0}, .height = Height{100.0}, .depth = Depth{100.0}},
 		.epsilon = 5.0f};
 
 	auto   world = WorldFactory::create_world(preset);

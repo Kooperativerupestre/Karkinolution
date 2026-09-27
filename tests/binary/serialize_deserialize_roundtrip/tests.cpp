@@ -8,8 +8,10 @@
 #include <karkinolution/binary/binary_error.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/stats/stats.hpp>
+#include <karkinolution/binary/deserialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/vec.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/stats/stats.hpp>
+#include <karkinolution/binary/serialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/vec.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
@@ -287,7 +289,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FullValueRoundtrip) {
 	// GenericRuntimeValue<double>
 	{
 		GenericRuntimeValue<double>  stat(50.0, 100.0, 0.0);
-		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 		const auto deserialized = StatsDSI::get_stats<double>(buffer);
@@ -299,7 +301,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FullValueRoundtrip) {
 	// GenericRuntimeValue<float>
 	{
 		GenericRuntimeValue<float>   stat(25.5f, 50.0f, -10.0f);
-		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 		const auto deserialized = StatsDSI::get_stats<float>(buffer);
@@ -311,7 +313,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FullValueRoundtrip) {
 	// GenericRuntimeValue<uint32_t>
 	{
 		GenericRuntimeValue<std::uint32_t> stat(75U, 200U, 0U);
-		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                         bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
 
 		const auto deserialized = StatsDSI::get_stats<std::uint32_t>(buffer);
@@ -323,7 +325,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FullValueRoundtrip) {
 	// GenericRuntimeValue<uint64_t>
 	{
 		GenericRuntimeValue<std::uint64_t> stat(123456789ULL, 999999999ULL, 0ULL);
-		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                         bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
 
 		const auto deserialized = StatsDSI::get_stats<std::uint64_t>(buffer);
@@ -335,7 +337,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FullValueRoundtrip) {
 	// GenericRuntimeValue<uint8_t>
 	{
 		GenericRuntimeValue<std::uint8_t> stat(15, 100, 0);
-		const auto                        bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                        bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte>      buffer(bytes.begin(), bytes.end());
 
 		const auto deserialized = StatsDSI::get_stats<std::uint8_t>(buffer);
@@ -351,7 +353,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 	// GenericRuntimeValue<double>
 	{
 		GenericRuntimeValue<double>  stat(50.0, 100.0, 0.0);
-		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::DOUBLE);
@@ -364,7 +366,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 	// GenericRuntimeValue<float>
 	{
 		GenericRuntimeValue<float>   stat(25.5f, 50.0f, -10.0f);
-		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::FLOAT);
@@ -377,7 +379,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 	// GenericRuntimeValue<uint32_t>
 	{
 		GenericRuntimeValue<std::uint32_t> stat(75U, 200U, 0U);
-		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                         bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
 
 		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::UINT32_T);
@@ -390,7 +392,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 	// GenericRuntimeValue<uint64_t>
 	{
 		GenericRuntimeValue<std::uint64_t> stat(123456789ULL, 999999999ULL, 0ULL);
-		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                         bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
 
 		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::UINT64_T);
@@ -403,7 +405,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 	// GenericRuntimeValue<uint8_t>
 	{
 		GenericRuntimeValue<std::uint8_t> stat(15, 100, 0);
-		const auto                        bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const auto                        bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte>      buffer(bytes.begin(), bytes.end());
 
 		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::UINT8_T);
@@ -412,4 +414,399 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 		EXPECT_EQ(StatsDSI::get_max<std::uint8_t>(buffer), stat.max());
 		EXPECT_EQ(StatsDSI::get_min<std::uint8_t>(buffer), stat.min());
 	}
+}
+
+// Math: PhysicsUnits Roundtrip
+
+TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits) {
+	// Volume
+	{
+		const Volume                 original{42.5};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_volume(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_volume(buffer);
+		EXPECT_DOUBLE_EQ(result.value, original.value);
+	}
+
+	// Mass
+	{
+		const PhysicsStats::Mass     original{123.456};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_mass(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_mass(buffer);
+		EXPECT_DOUBLE_EQ(result.value, original.value);
+	}
+
+	// Density
+	{
+		const PhysicsStats::Density  original{78.9};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_density(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_density(buffer);
+		EXPECT_DOUBLE_EQ(result.value, original.value);
+	}
+
+	// Meter
+	{
+		const Meter                  original{9.81};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_meter(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_meter(buffer);
+		EXPECT_DOUBLE_EQ(result.value, original.value);
+	}
+
+	// Lateral, Height, Depth
+	{
+		const Lateral original_lat{1.2};
+		const Height  original_h{3.4};
+		const Depth   original_d{5.6};
+
+		const auto bytes_lat = PhysicsUnitsSRI::serialize_lateral(original_lat);
+		const auto bytes_h   = PhysicsUnitsSRI::serialize_height(original_h);
+		const auto bytes_d   = PhysicsUnitsSRI::serialize_depth(original_d);
+
+		const std::vector<std::byte> buffer_lat(bytes_lat.begin(), bytes_lat.end());
+		const std::vector<std::byte> buffer_h(bytes_h.begin(), bytes_h.end());
+		const std::vector<std::byte> buffer_d(bytes_d.begin(), bytes_d.end());
+
+		EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_lateral(buffer_lat).value, original_lat.value);
+		EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_height(buffer_h).value, original_h.value);
+		EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_depth(buffer_d).value, original_d.value);
+	}
+
+	// Size
+	{
+		const Size original{.lateral = Lateral{2.5}, .height = Height{4.0}, .depth = Depth{1.5}};
+		const auto bytes = PhysicsUnitsSRI::serialize_size(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_size(buffer);
+		EXPECT_DOUBLE_EQ(result.lateral.value, original.lateral.value);
+		EXPECT_DOUBLE_EQ(result.height.value, original.height.value);
+		EXPECT_DOUBLE_EQ(result.depth.value, original.depth.value);
+	}
+
+	// SharedVolume
+	{
+		const PhysicsStats::SharedVolume original{0.75};
+		const auto                       bytes = PhysicsUnitsSRI::serialize_shared_volume(original);
+		const std::vector<std::byte>     buffer(bytes.begin(), bytes.end());
+		const auto                       result = PhysicsUnitsDSI::deserialize_shared_volume(buffer);
+		EXPECT_DOUBLE_EQ(result.value(), original.value());
+	}
+
+	// Efficiency
+	{
+		const Efficiency             original{0.85f};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_efficiency(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_efficiency(buffer);
+		EXPECT_FLOAT_EQ(result.value(), original.value());
+	}
+
+	// Quality
+	{
+		const Quality                original{0.92f};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_quality(original);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   result = PhysicsUnitsDSI::deserialize_quality(buffer);
+		EXPECT_FLOAT_EQ(result.value(), original.value());
+	}
+}
+
+// Math: Stats - NormalizedValue Roundtrip (serialize_normalized_value)
+
+TEST(MathSerializeDeserializeRoundtrip, Stats_NormalizedValueRoundtrip) {
+	// NormalizedValue<double>
+	{
+		for (double val : {0.0, 0.25, 0.5, 0.75, 1.0}) {
+			NormalizedValue<double>      original(val);
+			const auto                   bytes = StatsSRI::serialize_normalized_value(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+			EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::DOUBLE);
+			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+			                 original.value());
+			EXPECT_DOUBLE_EQ(StatsDSI::get_max<double>(buffer), 1.0);
+			EXPECT_DOUBLE_EQ(StatsDSI::get_min<double>(buffer), 0.0);
+
+			const auto stats = StatsDSI::get_stats<double>(buffer);
+			EXPECT_DOUBLE_EQ(stats.value, original.value());
+			EXPECT_DOUBLE_EQ(stats.max, 1.0);
+			EXPECT_DOUBLE_EQ(stats.min, 0.0);
+		}
+
+		// Clamping behavior
+		{
+			NormalizedValue<double>      clamped_high(5.0);
+			const auto                   bytes_h = StatsSRI::serialize_normalized_value(clamped_high);
+			const std::vector<std::byte> buffer_h(bytes_h.begin(), bytes_h.end());
+			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer_h, StatsSRI::TO_GET_VALUE_OFFSET), 1.0);
+
+			NormalizedValue<double>      clamped_low(-3.0);
+			const auto                   bytes_l = StatsSRI::serialize_normalized_value(clamped_low);
+			const std::vector<std::byte> buffer_l(bytes_l.begin(), bytes_l.end());
+			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer_l, StatsSRI::TO_GET_VALUE_OFFSET), 0.0);
+		}
+	}
+
+	// NormalizedValue<float>
+	{
+		for (float val : {0.0f, 0.33f, 0.66f, 1.0f}) {
+			NormalizedValue<float>       original(val);
+			const auto                   bytes = StatsSRI::serialize_normalized_value(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+			EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::FLOAT);
+			EXPECT_FLOAT_EQ(StatsDSI::get_value<float>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+			                original.value());
+			EXPECT_FLOAT_EQ(StatsDSI::get_max<float>(buffer), 1.0f);
+			EXPECT_FLOAT_EQ(StatsDSI::get_min<float>(buffer), 0.0f);
+
+			const auto stats = StatsDSI::get_stats<float>(buffer);
+			EXPECT_FLOAT_EQ(stats.value, original.value());
+			EXPECT_FLOAT_EQ(stats.max, 1.0f);
+			EXPECT_FLOAT_EQ(stats.min, 0.0f);
+		}
+	}
+}
+
+// Math: Stats - SignedNormalizedValue Roundtrip (serialize_signed_normalized_value)
+
+TEST(MathSerializeDeserializeRoundtrip, Stats_SignedNormalizedValueRoundtrip) {
+	// SignedNormalizedValue<double>
+	{
+		for (double val : {-1.0, -0.5, 0.0, 0.5, 1.0}) {
+			SignedNormalizedValue<double> original(val);
+			const auto                    bytes = StatsSRI::serialize_signed_normalized_value(original);
+			const std::vector<std::byte>  buffer(bytes.begin(), bytes.end());
+
+			EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::DOUBLE);
+			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+			                 original.value());
+			EXPECT_DOUBLE_EQ(StatsDSI::get_max<double>(buffer), 1.0);
+			EXPECT_DOUBLE_EQ(StatsDSI::get_min<double>(buffer), -1.0);
+
+			const auto stats = StatsDSI::get_stats<double>(buffer);
+			EXPECT_DOUBLE_EQ(stats.value, original.value());
+			EXPECT_DOUBLE_EQ(stats.max, 1.0);
+			EXPECT_DOUBLE_EQ(stats.min, -1.0);
+		}
+
+		// Clamping behavior
+		{
+			SignedNormalizedValue<double> clamped_high(10.0);
+			const auto                    bytes_h = StatsSRI::serialize_signed_normalized_value(clamped_high);
+			const std::vector<std::byte>  buffer_h(bytes_h.begin(), bytes_h.end());
+			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer_h, StatsSRI::TO_GET_VALUE_OFFSET), 1.0);
+
+			SignedNormalizedValue<double> clamped_low(-10.0);
+			const auto                    bytes_l = StatsSRI::serialize_signed_normalized_value(clamped_low);
+			const std::vector<std::byte>  buffer_l(bytes_l.begin(), bytes_l.end());
+			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer_l, StatsSRI::TO_GET_VALUE_OFFSET), -1.0);
+		}
+	}
+
+	// SignedNormalizedValue<float>
+	{
+		for (float val : {-1.0f, -0.5f, 0.0f, 0.5f, 1.0f}) {
+			SignedNormalizedValue<float> original(val);
+			const auto                   bytes = StatsSRI::serialize_signed_normalized_value(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+			EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::FLOAT);
+			EXPECT_FLOAT_EQ(StatsDSI::get_value<float>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+			                original.value());
+			EXPECT_FLOAT_EQ(StatsDSI::get_max<float>(buffer), 1.0f);
+			EXPECT_FLOAT_EQ(StatsDSI::get_min<float>(buffer), -1.0f);
+
+			const auto stats = StatsDSI::get_stats<float>(buffer);
+			EXPECT_FLOAT_EQ(stats.value, original.value());
+			EXPECT_FLOAT_EQ(stats.max, 1.0f);
+			EXPECT_FLOAT_EQ(stats.min, -1.0f);
+		}
+	}
+}
+
+// Math: PhysicsUnits - Randomized Multi-iteration Roundtrip
+
+TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_RandomizedRoundtrip) {
+	for (int iteration = 0; iteration < 10; ++iteration) {
+		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
+
+		const double rand_val1 = RandomGenerators::generate<double>();
+		const double rand_val2 = RandomGenerators::generate<double>();
+		const double rand_val3 = RandomGenerators::generate<double>();
+		const double rand_val4 = RandomGenerators::generate<double>();
+
+		// Volume
+		{
+			const Volume                 original{rand_val1};
+			const auto                   bytes = PhysicsUnitsSRI::serialize_volume(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_volume(buffer).value, original.value);
+		}
+
+		// Mass
+		{
+			const PhysicsStats::Mass     original{rand_val2};
+			const auto                   bytes = PhysicsUnitsSRI::serialize_mass(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_mass(buffer).value, original.value);
+		}
+
+		// Density
+		{
+			const PhysicsStats::Density  original{rand_val3};
+			const auto                   bytes = PhysicsUnitsSRI::serialize_density(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_density(buffer).value, original.value);
+		}
+
+		// Meter, Lateral, Height, Depth
+		{
+			const Meter   orig_meter{rand_val4};
+			const Lateral orig_lat{rand_val1};
+			const Height  orig_h{rand_val2};
+			const Depth   orig_d{rand_val3};
+
+			const auto b_m   = PhysicsUnitsSRI::serialize_meter(orig_meter);
+			const auto b_lat = PhysicsUnitsSRI::serialize_lateral(orig_lat);
+			const auto b_h   = PhysicsUnitsSRI::serialize_height(orig_h);
+			const auto b_d   = PhysicsUnitsSRI::serialize_depth(orig_d);
+
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_meter(std::vector<std::byte>(b_m.begin(), b_m.end())).value,
+			                 orig_meter.value);
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_lateral(std::vector<std::byte>(b_lat.begin(), b_lat.end())).value,
+			                 orig_lat.value);
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_height(std::vector<std::byte>(b_h.begin(), b_h.end())).value,
+			                 orig_h.value);
+			EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_depth(std::vector<std::byte>(b_d.begin(), b_d.end())).value,
+			                 orig_d.value);
+		}
+
+		// Size
+		{
+			const Size original{.lateral = Lateral{rand_val1},
+			                    .height  = Height{rand_val2},
+			                    .depth   = Depth{rand_val3}};
+			const auto bytes = PhysicsUnitsSRI::serialize_size(original);
+			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+			const auto result = PhysicsUnitsDSI::deserialize_size(buffer);
+			EXPECT_DOUBLE_EQ(result.lateral.value, original.lateral.value);
+			EXPECT_DOUBLE_EQ(result.height.value, original.height.value);
+			EXPECT_DOUBLE_EQ(result.depth.value, original.depth.value);
+		}
+	}
+}
+
+// Math: PhysicsUnits - Stream With Offsets
+
+TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
+	const Volume                     orig_vol{10.5};
+	const PhysicsStats::Mass         orig_mass{200.0};
+	const PhysicsStats::Density      orig_dens{1.25};
+	const Meter                      orig_meter{55.0};
+	const Size                       orig_size{.lateral = Lateral{2.0}, .height = Height{3.0}, .depth = Depth{4.0}};
+	const PhysicsStats::SharedVolume orig_shared{0.6};
+	const Efficiency                 orig_eff{0.8f};
+	const Quality                    orig_qual{0.9f};
+
+	std::vector<std::byte> stream = {std::byte{0xDE}, std::byte{0xAD}};
+
+	const size_t off_vol = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_volume(orig_vol));
+
+	const size_t off_mass = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_mass(orig_mass));
+
+	const size_t off_dens = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_density(orig_dens));
+
+	const size_t off_meter = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_meter(orig_meter));
+
+	const size_t off_size = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_size(orig_size));
+
+	const size_t off_shared = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_shared_volume(orig_shared));
+
+	const size_t off_eff = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_efficiency(orig_eff));
+
+	const size_t off_qual = stream.size();
+	append_to_buffer(stream, PhysicsUnitsSRI::serialize_quality(orig_qual));
+
+	stream.push_back(std::byte{0xBE});
+	stream.push_back(std::byte{0xEF});
+
+	EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_volume(stream, off_vol).value, orig_vol.value);
+	EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_mass(stream, off_mass).value, orig_mass.value);
+	EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_density(stream, off_dens).value, orig_dens.value);
+	EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_meter(stream, off_meter).value, orig_meter.value);
+
+	const auto deserialized_size = PhysicsUnitsDSI::deserialize_size(stream, off_size);
+	EXPECT_DOUBLE_EQ(deserialized_size.lateral.value, orig_size.lateral.value);
+	EXPECT_DOUBLE_EQ(deserialized_size.height.value, orig_size.height.value);
+	EXPECT_DOUBLE_EQ(deserialized_size.depth.value, orig_size.depth.value);
+
+	EXPECT_DOUBLE_EQ(PhysicsUnitsDSI::deserialize_shared_volume(stream, off_shared).value(), orig_shared.value());
+	EXPECT_FLOAT_EQ(PhysicsUnitsDSI::deserialize_efficiency(stream, off_eff).value(), orig_eff.value());
+	EXPECT_FLOAT_EQ(PhysicsUnitsDSI::deserialize_quality(stream, off_qual).value(), orig_qual.value());
+}
+
+// Math: PhysicsUnits - Size Operations and Volume Calculation
+
+TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_SizeOperations) {
+	const Size size{.lateral = Lateral{2.0}, .height = Height{3.0}, .depth = Depth{4.0}};
+
+	const auto                   bytes = PhysicsUnitsSRI::serialize_size(size);
+	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+	const auto                   deserialized = PhysicsUnitsDSI::deserialize_size(buffer);
+
+	EXPECT_DOUBLE_EQ(deserialized.volume().value, 24.0);
+	EXPECT_DOUBLE_EQ(deserialized.volume().value, size.volume().value);
+
+	const auto static_vol = Size::volume(deserialized.lateral, deserialized.height, deserialized.depth);
+	EXPECT_DOUBLE_EQ(static_vol.value, 24.0);
+
+	Size modified = deserialized;
+	modified.modify(NormalizedValue<float>(0.5f));
+	EXPECT_DOUBLE_EQ(modified.lateral.value, 1.0);
+	EXPECT_DOUBLE_EQ(modified.height.value, 1.5);
+	EXPECT_DOUBLE_EQ(modified.depth.value, 2.0);
+	EXPECT_DOUBLE_EQ(modified.volume().value, 3.0);
+
+	const auto                   mod_bytes = PhysicsUnitsSRI::serialize_size(modified);
+	const std::vector<std::byte> mod_buffer(mod_bytes.begin(), mod_bytes.end());
+	const auto                   mod_deserialized = PhysicsUnitsDSI::deserialize_size(mod_buffer);
+	EXPECT_DOUBLE_EQ(mod_deserialized.volume().value, 3.0);
+}
+
+// Math: PhysicsUnits - Insufficient Buffer Size Throws Error
+
+TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_InsufficientBufferSizeThrowsError) {
+	const std::vector<std::byte> empty_buffer;
+	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}, std::byte{0x03}};
+
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_volume(empty_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_volume(short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_mass(short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_density(short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_meter(short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_lateral(short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_height(short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_depth(short_buffer), ByteError);
+
+	std::vector<std::byte> size_short_buffer(16, std::byte{0x01});
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_size(size_short_buffer), ByteError);
+
+	// shared_volume reads double (8 bytes) at TO_GET_VALUE_OFFSET=1 -> needs 9 bytes minimum
+	std::vector<std::byte> shared_vol_short_buffer(8, std::byte{0x01});
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_shared_volume(shared_vol_short_buffer), ByteError);
+
+	// efficiency/quality read float (4 bytes) at TO_GET_VALUE_OFFSET=1 -> needs 5 bytes minimum
+	std::vector<std::byte> stat_float_short_buffer(4, std::byte{0x01});
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_efficiency(stat_float_short_buffer), ByteError);
+	EXPECT_THROW(PhysicsUnitsDSI::deserialize_quality(stat_float_short_buffer), ByteError);
 }

@@ -46,7 +46,7 @@ Territory TerrainFactory::gen_terrain(const Size                  &size,
 	Territory territory{size};
 
 	for (double lateral = 0.0; lateral <= size.lateral.value; lateral += epsilon) {
-		for (double depth = 0.0; depth <= size.back.value; depth += epsilon) {
+		for (double depth = 0.0; depth <= size.depth.value; depth += epsilon) {
 			for (double height = 0.0; height <= size.height.value; height += epsilon) {
 
 				const Vec3 coord{lateral, depth, height};

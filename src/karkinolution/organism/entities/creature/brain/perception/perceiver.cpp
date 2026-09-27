@@ -95,6 +95,6 @@ Perception Perceiver::perceive(const Creature &perceiver, const World &world) {
 	farthest.z = world.territory.size().height.value;
 	farthest.x =
 		std::min(radius.value + perceiver.position.x, world.territory.size().lateral.value);
-	farthest.y = std::min(radius.value + perceiver.position.y, world.territory.size().back.value);
+	farthest.y = std::min(radius.value + perceiver.position.y, world.territory.size().depth.value);
 	return Perception{data, radius, p_entities, p_soils, p_natures, perceiver.position, farthest};
 }

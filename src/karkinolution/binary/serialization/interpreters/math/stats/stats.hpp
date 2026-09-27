@@ -3,6 +3,7 @@
 #include "karkinolution/binary/binary_validators.hpp"
 #include "karkinolution/binary/deserialization/deserializer.hpp"
 #include "karkinolution/binary/serialization/serializer.hpp"
+#include "karkinolution/math/stats/compile_values.hpp"
 
 #include <array>
 #include <karkinolution/binary/byte_utils.hpp>
@@ -35,7 +36,11 @@ namespace StatsSRI {
 
 	using StatBytes = std::array<std::byte, TypeBytes + ValueBytes + MaxBytes + MinBytes>;
 
-	template <StatLike T> StatBytes serialize_generic_limited_value(const T &limited_value) {
+	constexpr std::byte serialize_nlt_type(BinaryNLT type) {
+		return static_cast<std::byte>(static_cast<std::uint8_t>(type));
+	}
+
+	template <StatLike T> StatBytes serialize_limited_value(const T &limited_value) {
 		StatBytes bytes{};
 
 		using ValueType = typename T::value_type;
@@ -44,7 +49,7 @@ namespace StatsSRI {
 
 		constexpr auto NTL_Type = BinaryNLTUtils::get<ValueType>();
 
-		bytes[TO_GET_TYPE_OFFSET] = static_cast<std::byte>(static_cast<std::uint8_t>(NTL_Type));
+		bytes[TO_GET_TYPE_OFFSET] = serialize_nlt_type(NTL_Type);
 
 		const auto stat = StatsGetter::get(limited_value);
 
@@ -56,6 +61,42 @@ namespace StatsSRI {
 		Deserializer::append_bytes(bytes, serialized_max, TO_GET_MAX_OFFSET);
 		Deserializer::append_bytes(bytes, serialized_min, TO_GET_MIN_OFFSET);
 
+		return bytes;
+	}
+
+	template <typename T> StatBytes serialize_normalized_value(const NormalizedValue<T> value) {
+		StatBytes bytes{};
+
+		BinaryNLTValidator::validate_dynamic_type_exists<T>();
+		constexpr auto NLT_Type = BinaryNLTUtils::get<T>();
+
+		bytes[TO_GET_TYPE_OFFSET]   = serialize_nlt_type(NLT_Type);
+		const auto serialized_value = Serializer::serialize(value.value());
+		const auto serialize_max    = Serializer::serialize(T(1));
+		const auto serialized_min   = Serializer::serialize(T(0));
+
+		Deserializer::append_bytes(bytes, serialized_value, TO_GET_VALUE_OFFSET);
+		Deserializer::append_bytes(bytes, serialize_max, TO_GET_MAX_OFFSET);
+		Deserializer::append_bytes(bytes, serialized_min, TO_GET_MIN_OFFSET);
+
+		return bytes;
+	}
+
+	template <typename T>
+	StatBytes serialize_signed_normalized_value(const SignedNormalizedValue<T> value) {
+		StatBytes bytes{};
+
+		BinaryNLTValidator::validate_dynamic_type_exists<T>();
+		constexpr auto NLT_Type = BinaryNLTUtils::get<T>();
+
+		bytes[TO_GET_TYPE_OFFSET]   = serialize_nlt_type(NLT_Type);
+		const auto serialized_value = Serializer::serialize(value.value());
+		const auto serialize_max    = Serializer::serialize(T(1));
+		const auto serialized_min   = Serializer::serialize(T(-1));
+
+		Deserializer::append_bytes(bytes, serialized_value, TO_GET_VALUE_OFFSET);
+		Deserializer::append_bytes(bytes, serialize_max, TO_GET_MAX_OFFSET);
+		Deserializer::append_bytes(bytes, serialized_min, TO_GET_MIN_OFFSET);
 		return bytes;
 	}
 } // namespace StatsSRI

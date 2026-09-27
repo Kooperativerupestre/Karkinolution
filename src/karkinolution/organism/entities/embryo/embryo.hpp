@@ -42,7 +42,7 @@ struct Embryo {
 		[[nodiscard]] Size size() const noexcept {
 			return Size{.lateral = volume.value * 0.8,
 						.height  = volume.value * 0.5,
-						.back    = volume.value};
+						.depth   = volume.value};
 		}
 
 		[[nodiscard]] EntityId build_id() const noexcept {

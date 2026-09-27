@@ -87,7 +87,7 @@ struct Height : public Meter {
 		using Meter::Meter;
 };
 
-struct Back : public Meter {
+struct Depth : public Meter {
 		using Meter::Meter;
 };
 
@@ -96,19 +96,19 @@ class Size {
 
 		Lateral lateral;
 		Height  height;
-		Back    back;
+		Depth   depth;
 
-		static Volume volume(Lateral lateral, Height height, Back back) {
+		static Volume volume(Lateral lateral, Height height, Depth back) {
 			return Volume{lateral.value * height.value * back.value};
 		}
 
 		void modify(const NormalizedValue<float> &ratio) {
 			lateral.value *= ratio.value();
 			height.value *= ratio.value();
-			back.value *= ratio.value();
+			depth.value *= ratio.value();
 		}
 
 		Volume volume() const {
-			return Size::volume(lateral, height, back);
+			return Size::volume(lateral, height, depth);
 		}
 };
