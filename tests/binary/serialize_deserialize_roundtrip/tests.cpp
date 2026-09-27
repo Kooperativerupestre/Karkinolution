@@ -6,19 +6,25 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 #include <karkinolution/binary/binary_error.hpp>
+#include <karkinolution/binary/byte_utils.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/geometry/geometry.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/stats/stats.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/vec.hpp>
+#include <karkinolution/binary/deserialization/interpreters/properties/properties.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/geometry/geometry.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/stats/stats.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/vec.hpp>
+#include <karkinolution/binary/serialization/interpreters/properties/properties.hpp>
+#include <karkinolution/binary/serialization/interpreters/terrain/soil.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
 #include <karkinolution/math/geometry/models.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
+#include <karkinolution/organism/entities/properties/properties.hpp>
+#include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/utils/k_random.hpp>
 #include <string>
 #include <vector>
@@ -424,7 +430,7 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
 TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits) {
 	// Volume
 	{
-		const Volume                 original{42.5};
+		constexpr Volume             original{42.5};
 		const auto                   bytes = PhysicsUnitsSRI::serialize_volume(original);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 		const auto                   result = PhysicsUnitsDSI::deserialize_volume(buffer);
@@ -480,8 +486,10 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits) {
 
 	// Size
 	{
-		const Size original{.lateral = Lateral{2.5}, .height = Height{4.0}, .depth = Depth{1.5}};
-		const auto bytes = PhysicsUnitsSRI::serialize_size(original);
+		constexpr Size               original{.lateral = Lateral{2.5},
+											  .height  = Height{4.0},
+											  .depth   = Depth{1.5}};
+		const auto                   bytes = PhysicsUnitsSRI::serialize_size(original);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 		const auto                   result = PhysicsUnitsDSI::deserialize_size(buffer);
 		EXPECT_DOUBLE_EQ(result.lateral.value, original.lateral.value);
@@ -972,4 +980,219 @@ TEST(MathSerializeDeserializeRoundtrip, Geometry_InsufficientBufferSizeThrowsErr
 	EXPECT_THROW(GeometryDSI::deserialize_circumference(valid_size_buffer, 1), ByteError);
 	EXPECT_THROW(GeometryDSI::deserialize_diameter(valid_size_buffer, 1), ByteError);
 	EXPECT_THROW(GeometryDSI::deserialize_area(valid_size_buffer, 1), ByteError);
+}
+
+// ByteUtils: Zero Padding
+
+TEST(ByteUtilsRoundtrip, ZeroPadding) {
+	std::array<std::byte, 5> array = {std::byte{0x01},
+									  std::byte{0x02},
+									  std::byte{0x03},
+									  std::byte{0x04},
+									  std::byte{0x05}};
+
+	ByteUtils::zero_padding(array, 2);
+	EXPECT_EQ(array[0], std::byte{0x01});
+	EXPECT_EQ(array[1], std::byte{0x02});
+	EXPECT_EQ(array[2], std::byte{0x00});
+	EXPECT_EQ(array[3], std::byte{0x00});
+	EXPECT_EQ(array[4], std::byte{0x00});
+
+	ByteUtils::zero_padding(array, 0);
+	for (const auto &byte : array) {
+		EXPECT_EQ(byte, std::byte{0x00});
+	}
+
+	std::vector<std::byte> vec = {std::byte{0xAA}, std::byte{0xBB}};
+	ByteUtils::zero_padding(vec, 2);
+	EXPECT_EQ(vec[0], std::byte{0xAA});
+	EXPECT_EQ(vec[1], std::byte{0xBB});
+
+	EXPECT_THROW(ByteUtils::zero_padding(vec, 3), ByteError);
+}
+
+// Properties: Capabilities Move Roundtrip
+
+TEST(PropertiesSerializeDeserializeRoundtrip, CapabilitiesMove_Roundtrip) {
+	{
+		const auto move = Properties::Capabilities::Move::SWIMM;
+		const auto byte = PropertiesSRI::serialize(move);
+		EXPECT_EQ(byte, std::byte{0x01});
+
+		const auto deserialized = PropertiesDSI::deserialize(byte);
+		EXPECT_TRUE(std::holds_alternative<Properties::Capabilities::Move>(deserialized));
+		EXPECT_EQ(std::get<Properties::Capabilities::Move>(deserialized), move);
+	}
+
+	{
+		const auto move = Properties::Capabilities::Move::WALK;
+		const auto byte = PropertiesSRI::serialize(move);
+		EXPECT_EQ(byte, std::byte{0x02});
+
+		const auto deserialized = PropertiesDSI::deserialize(byte);
+		EXPECT_TRUE(std::holds_alternative<Properties::Capabilities::Move>(deserialized));
+		EXPECT_EQ(std::get<Properties::Capabilities::Move>(deserialized), move);
+	}
+}
+
+// Properties: GenericProperty Roundtrip
+
+TEST(PropertiesSerializeDeserializeRoundtrip, GenericProperty_Roundtrip) {
+	const GenericProperty prop_swimm = Properties::Capabilities::Move::SWIMM;
+	const auto            byte_swimm = PropertiesSRI::serialize(prop_swimm);
+	EXPECT_EQ(byte_swimm, std::byte{0x01});
+	EXPECT_EQ(PropertiesDSI::deserialize(byte_swimm), prop_swimm);
+
+	const GenericProperty prop_walk = Properties::Capabilities::Move::WALK;
+	const auto            byte_walk = PropertiesSRI::serialize(prop_walk);
+	EXPECT_EQ(byte_walk, std::byte{0x02});
+	EXPECT_EQ(PropertiesDSI::deserialize(byte_walk), prop_walk);
+}
+
+// Properties: Stream With Offsets
+
+TEST(PropertiesSerializeDeserializeRoundtrip, StreamWithOffsets) {
+	std::vector<std::byte> stream = {std::byte{0xAA}, std::byte{0xBB}};
+
+	const size_t offset_swimm = stream.size();
+	append_to_buffer(stream, PropertiesSRI::serialize(Properties::Capabilities::Move::SWIMM));
+
+	const size_t offset_walk = stream.size();
+	append_to_buffer(stream, PropertiesSRI::serialize(Properties::Capabilities::Move::WALK));
+
+	stream.push_back(std::byte{0xCC});
+
+	const auto deserialized_swimm = PropertiesDSI::deserialize(stream, offset_swimm);
+	const auto deserialized_walk  = PropertiesDSI::deserialize(stream, offset_walk);
+
+	EXPECT_EQ(std::get<Properties::Capabilities::Move>(deserialized_swimm),
+			  Properties::Capabilities::Move::SWIMM);
+	EXPECT_EQ(std::get<Properties::Capabilities::Move>(deserialized_walk),
+			  Properties::Capabilities::Move::WALK);
+}
+
+// Properties: Error Handling
+
+TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
+	EXPECT_THROW(PropertiesDSI::deserialize(std::byte{0x00}), ByteError);
+	EXPECT_THROW(PropertiesDSI::deserialize(std::byte{0x03}), ByteError);
+	EXPECT_THROW(PropertiesDSI::deserialize(std::byte{0xFF}), ByteError);
+
+	const std::array<std::byte, 1> invalid_stream = {std::byte{0x99}};
+	EXPECT_THROW(PropertiesDSI::deserialize(invalid_stream, 0), ByteError);
+}
+
+// Terrain Soil: Types and Properties Serialization
+
+TEST(SoilSerializeDeserializeRoundtrip, TypesAndPropertiesSerialization) {
+	EXPECT_EQ(SoilSRI::serialize_type(SoilTypes::DIRT), std::byte{0x01});
+	EXPECT_EQ(SoilSRI::serialize_type(SoilTypes::ROCK), std::byte{0x02});
+	EXPECT_EQ(SoilSRI::serialize_type(SoilTypes::SAND), std::byte{0x03});
+	EXPECT_EQ(SoilSRI::serialize_type(SoilTypes::WATER), std::byte{0x04});
+	EXPECT_THROW(SoilSRI::serialize_type(static_cast<SoilTypes>(99)), ByteError);
+
+	EXPECT_EQ(SoilSRI::serialize_property(SoilProperties::DANGEROUS), std::byte{0x01});
+	EXPECT_THROW(SoilSRI::serialize_property(static_cast<SoilProperties>(99)), ByteError);
+
+	const std::vector<SoilProperties> valid_props = {SoilProperties::DANGEROUS};
+	const auto                        props_bytes = SoilSRI::serialize_properties(valid_props);
+	EXPECT_EQ(props_bytes[0], std::byte{0x01});
+
+	std::vector<SoilProperties> oversized_props(SoilSRI::PROPERTIES_BYTE + 1,
+												SoilProperties::DANGEROUS);
+	EXPECT_THROW(SoilSRI::serialize_properties(oversized_props), ByteError);
+}
+
+// Terrain Soil: Required Capabilities Roundtrip
+
+TEST(SoilSerializeDeserializeRoundtrip, RequiredCapabilities_Roundtrip) {
+	const std::vector<GenericProperty> capabilities = {Properties::Capabilities::Move::WALK,
+													   Properties::Capabilities::Move::SWIMM};
+
+	const auto bytes = SoilSRI::serialize_required_capabilities(capabilities);
+
+	const auto deserialized_0 =
+		PropertiesDSI::deserialize(bytes, 0 * PropertiesSRI::PROPERTY_BYTES);
+	const auto deserialized_1 =
+		PropertiesDSI::deserialize(bytes, 1 * PropertiesSRI::PROPERTY_BYTES);
+
+	EXPECT_EQ(deserialized_0, capabilities[0]);
+	EXPECT_EQ(deserialized_1, capabilities[1]);
+
+	std::vector<GenericProperty> oversized_capabilities(SoilSRI::REQUIRED_CAPABILITIES_BYTES + 1,
+														Properties::Capabilities::Move::WALK);
+	EXPECT_THROW(SoilSRI::serialize_required_capabilities(oversized_capabilities), ByteError);
+}
+
+// Terrain Soil: Components and ID Roundtrip
+
+TEST(SoilSerializeDeserializeRoundtrip, ComponentsAndId) {
+	SoilPiece soil_with_components{.type                  = SoilTypes::DIRT,
+								   .properties            = {SoilProperties::DANGEROUS},
+								   .required_capabilities = {Properties::Capabilities::Move::WALK},
+								   .components            = {},
+								   .radius                = GeometryForms::Radius{10.0},
+								   .position              = Vec3{1.0, 2.0, 3.0},
+								   .id                    = 987654321ULL};
+
+	soil_with_components.components.add(SoilPieceComponents::Damage(25.5f));
+	soil_with_components.components.add(SoilPieceComponents::MovementCost(1.75f));
+
+	const auto damage_bytes = SoilSRI::serialize_damage(soil_with_components);
+	EXPECT_FLOAT_EQ(Deserializer::read_float(damage_bytes, 1), 25.5f);
+
+	const auto movement_cost_bytes = SoilSRI::serialize_movement_cost(soil_with_components);
+	EXPECT_FLOAT_EQ(Deserializer::read_float(movement_cost_bytes, 1), 1.75f);
+
+	const auto id_bytes = SoilSRI::serialize_id(soil_with_components);
+	EXPECT_EQ(Deserializer::read_uint64_t(id_bytes, 0), 987654321ULL);
+
+	SoilPiece empty_soil{.type                  = SoilTypes::SAND,
+						 .properties            = {},
+						 .required_capabilities = {},
+						 .components            = {},
+						 .radius                = GeometryForms::Radius{1.0},
+						 .position              = Vec3{0.0, 0.0, 0.0},
+						 .id                    = 0ULL};
+
+	const auto empty_damage = SoilSRI::serialize_damage(empty_soil);
+	for (const auto &byte : empty_damage) {
+		EXPECT_EQ(byte, std::byte{0x00});
+	}
+
+	const auto empty_cost = SoilSRI::serialize_movement_cost(empty_soil);
+	for (const auto &byte : empty_cost) {
+		EXPECT_EQ(byte, std::byte{0x00});
+	}
+}
+
+// Terrain Soil: Full SoilPiece Serialization Roundtrip
+
+TEST(SoilSerializeDeserializeRoundtrip, FullSoilPiece_SerializationRoundtrip) {
+	SoilPiece soil{.type                  = SoilTypes::ROCK,
+				   .properties            = {SoilProperties::DANGEROUS},
+				   .required_capabilities = {Properties::Capabilities::Move::SWIMM},
+				   .components            = {},
+				   .radius                = GeometryForms::Radius{12.5},
+				   .position              = Vec3{4.0, 5.0, 6.0},
+				   .id                    = 1122334455667788ULL};
+
+	soil.components.add(SoilPieceComponents::Damage(50.0f));
+	soil.components.add(SoilPieceComponents::MovementCost(3.0f));
+
+	const auto bytes = SoilSRI::serialize_soil(soil);
+
+	EXPECT_EQ(bytes[SoilSRI::TO_GET_TYPE_OFFSET], SoilSRI::serialize_type(SoilTypes::ROCK));
+	EXPECT_EQ(bytes[SoilSRI::TO_GET_PROPERTIES_OFFSET], std::byte{0x01});
+
+	const auto deserialized_cap =
+		PropertiesDSI::deserialize(bytes, SoilSRI::TO_GET_REQUIRED_CAPABILITIES_OFFSET);
+	EXPECT_EQ(deserialized_cap, GenericProperty(Properties::Capabilities::Move::SWIMM));
+
+	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+	const auto deserialized_pos = VecDSI::deserialize_vec(buffer, SoilSRI::TO_GET_POSITION_OFFSET);
+	EXPECT_EQ(deserialized_pos, (Vec3{4.0, 5.0, 6.0}));
+
+	const auto deserialized_id = Deserializer::read_uint64_t(bytes, SoilSRI::TO_GET_ID_OFFSET);
+	EXPECT_EQ(deserialized_id, 1122334455667788ULL);
 }
