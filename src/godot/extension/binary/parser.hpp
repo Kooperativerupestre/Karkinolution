@@ -1,6 +1,7 @@
 #pragma once
 
 #include "binary/frame.hpp"
+#include "godot/extension/model/math/geometry/geometry.hpp"
 #include "godot/extension/model/math/stats/limited_value.hpp"
 #include "godot/extension/model/math/stats/stats.hpp"
 #include "godot/extension/model/math/unit/units.hpp"
@@ -12,6 +13,7 @@
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <karkinolution/binary/deserialization/interpreters/creature.hpp>
+#include <karkinolution/binary/deserialization/interpreters/math/geometry/geometry.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/frames/parser.hpp>
@@ -123,6 +125,30 @@ namespace GodotBinaryParser {
 		const auto core_val =
 			PhysicsUnitsDSI::deserialize_quality(to_bytes(payload), offset);
 		return GodotQuality::create(static_cast<double>(core_val.value()));
+	}
+
+	inline godot::Ref<GodotRadius> parse_radius(const godot::PackedByteArray &payload,
+	                                            std::size_t                   offset = 0) {
+		const auto core_val = GeometryDSI::deserialize_radius(to_bytes(payload), offset);
+		return GodotRadius::create(core_val.value);
+	}
+
+	inline godot::Ref<GodotCircumference>
+	parse_circumference(const godot::PackedByteArray &payload, std::size_t offset = 0) {
+		const auto core_val = GeometryDSI::deserialize_circumference(to_bytes(payload), offset);
+		return GodotCircumference::create(core_val.value);
+	}
+
+	inline godot::Ref<GodotDiameter> parse_diameter(const godot::PackedByteArray &payload,
+	                                                std::size_t                   offset = 0) {
+		const auto core_val = GeometryDSI::deserialize_diameter(to_bytes(payload), offset);
+		return GodotDiameter::create(core_val.value);
+	}
+
+	inline godot::Ref<GodotArea> parse_area(const godot::PackedByteArray &payload,
+	                                        std::size_t                   offset = 0) {
+		const auto core_val = GeometryDSI::deserialize_area(to_bytes(payload), offset);
+		return GodotArea::create(core_val.value);
 	}
 
 } // namespace GodotBinaryParser
