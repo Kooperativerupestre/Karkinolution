@@ -154,7 +154,7 @@ void Populate::populate_crocodile(CreatureGenomes &creature_genomes) {
 												  .transformations =
 													  skeleton_transformations(0.80f)},
 			.morphology   = Morphology::MorphologyGenome{.average_lateral = Lateral{2.20f},
-														 .average_back    = Back{1.10f},
+														 .average_back    = Depth{1.10f},
 														 .average_height  = Height{0.80f},
 														 .average_mass    = Mass{1.25f},
 														 .transformations = {}},
@@ -219,7 +219,7 @@ void Populate::populate_fish(CreatureGenomes &creature_genomes) {
 												  .transformations =
 													  skeleton_transformations(0.65f)},
 			.morphology   = Morphology::MorphologyGenome{.average_lateral = Lateral{1.20f},
-														 .average_back    = Back{0.50f},
+														 .average_back    = Depth{0.50f},
 														 .average_height  = Height{0.45f},
 														 .average_mass    = Mass{1.0f},
 														 .transformations = {}},
@@ -284,7 +284,7 @@ void Populate::populate_crab(CreatureGenomes &creature_genomes) {
 												  .transformations =
 													  skeleton_transformations(0.70f)},
 			.morphology   = Morphology::MorphologyGenome{.average_lateral = Lateral{1.40f},
-														 .average_back    = Back{1.00f},
+														 .average_back    = Depth{1.00f},
 														 .average_height  = Height{0.55f},
 														 .average_mass    = Mass{1.10f},
 														 .transformations = {}},
@@ -349,7 +349,7 @@ void Populate::populate_hippopotamus(CreatureGenomes &creature_genomes) {
 												  .transformations =
 													  skeleton_transformations(0.75f)},
 			.morphology   = Morphology::MorphologyGenome{.average_lateral = Lateral{1.80f},
-														 .average_back    = Back{1.40f},
+														 .average_back    = Depth{1.40f},
 														 .average_height  = Height{1.30f},
 														 .average_mass    = Mass{1.60f},
 														 .transformations = {}},

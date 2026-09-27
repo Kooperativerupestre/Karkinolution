@@ -219,7 +219,7 @@ TEST(CorpsePhysiology, GenerateCorpseFromCreatureIdempotency) {
 	ASSERT_FLOAT_EQ(corpse_1.position.z, corpse_2.position.z);
 	ASSERT_FLOAT_EQ(corpse_1.size.lateral.value, corpse_2.size.lateral.value);
 	ASSERT_FLOAT_EQ(corpse_1.size.height.value, corpse_2.size.height.value);
-	ASSERT_FLOAT_EQ(corpse_1.size.back.value, corpse_2.size.back.value);
+	ASSERT_FLOAT_EQ(corpse_1.size.depth.value, corpse_2.size.depth.value);
 }
 
 TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
@@ -255,7 +255,7 @@ TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
 	ASSERT_FLOAT_EQ(corpse_1.position.z, corpse_2.position.z);
 	ASSERT_FLOAT_EQ(corpse_1.size.lateral.value, corpse_2.size.lateral.value);
 	ASSERT_FLOAT_EQ(corpse_1.size.height.value, corpse_2.size.height.value);
-	ASSERT_FLOAT_EQ(corpse_1.size.back.value, corpse_2.size.back.value);
+	ASSERT_FLOAT_EQ(corpse_1.size.depth.value, corpse_2.size.depth.value);
 }
 
 // --- EmbryoPhysiology ---

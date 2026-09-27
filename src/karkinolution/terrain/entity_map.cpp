@@ -17,7 +17,7 @@
 #include <karkinolution/terrain/terrain.hpp>
 
 AABB AABBConversion::to_aabb(const Size &size, const Vec3 &position) {
-	const Vec3 half_size{size.lateral.value / 2.0, size.height.value / 2.0, size.back.value / 2.0};
+	const Vec3 half_size{size.lateral.value / 2.0, size.height.value / 2.0, size.depth.value / 2.0};
 
 	return AABB{.max = position + half_size, .min = position - half_size};
 }

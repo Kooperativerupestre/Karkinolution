@@ -43,8 +43,7 @@ Creature CreatureConstructor::from_blueprint(const CreatureBlueprint &blueprint)
 			Size{
 				.lateral = Lateral{cg.morphology.average_lateral.value * NEONATE_FRACTION},
 				.height  = Height{cg.morphology.average_height.value * NEONATE_FRACTION},
-				.back    = Back{cg.morphology.average_back.value * NEONATE_FRACTION},
-
+				.depth   = Depth{cg.morphology.average_back.value * NEONATE_FRACTION},
 			},
 		.mass = Mass{cg.morphology.average_mass.value * NEONATE_FRACTION},
 	};

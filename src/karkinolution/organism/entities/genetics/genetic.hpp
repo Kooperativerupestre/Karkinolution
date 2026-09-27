@@ -226,7 +226,7 @@ namespace Genomes {
 
 			struct MorphologyGenome {
 					Lateral         average_lateral;
-					Back            average_back;
+					Depth           average_back;
 					Height          average_height;
 					Mass            average_mass;
 					Transformations transformations;

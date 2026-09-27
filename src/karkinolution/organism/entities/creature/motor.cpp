@@ -48,7 +48,7 @@ void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) 
 	auto height_grow  = CreatureGrowingPhysiology::get_new_height_increment(creature, organisms);
 
 	body.morphology.size.height.value += height_grow;
-	body.morphology.size.back.value += depth_grow;
+	body.morphology.size.depth.value += depth_grow;
 	body.morphology.size.lateral.value += lateral_grow;
 
 	auto max_energy_grow =

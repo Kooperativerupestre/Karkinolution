@@ -123,7 +123,7 @@ float CreatureGrowingPhysiology::get_new_depth_increment(const Creature         
 	const auto &body              = creature.body;
 
 	const NormalizedValue<float> remaining =
-		1.0f - body.morphology.size.back.value / morphology_genome.average_back.value;
+		1.0f - body.morphology.size.depth.value / morphology_genome.average_back.value;
 	const GenericLimitedValue<float, 2.0f, 0.0f> muscle_factor{creature.specie_relative_muscle()};
 
 	return remaining.value() * muscle_factor.value();

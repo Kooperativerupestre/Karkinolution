@@ -24,7 +24,7 @@ Box3D BoxConversion::to_box(const Nature &nature) {
 }
 
 Box3D BoxConversion::to_box(const Size &size, const Vec3 &position) {
-	Vec3 half_extents{size.lateral.value / 2, size.height.value / 2, size.back.value / 2};
+	Vec3 half_extents{size.lateral.value / 2, size.height.value / 2, size.depth.value / 2};
 	return Box3D{.max = position + half_extents, .min = position - half_extents};
 }
 

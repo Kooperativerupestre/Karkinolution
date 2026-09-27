@@ -1,6 +1,9 @@
 #include "binary/frame.hpp"
 #include "karkinolution.hpp"
 #include "model/creature/creature.hpp"
+#include "model/math/stats/limited_value.hpp"
+#include "model/math/stats/stats.hpp"
+#include "model/math/unit/units.hpp"
 #include "storage/entity_storage.hpp"
 
 #include <godot_cpp/core/class_db.hpp>
@@ -16,6 +19,21 @@ void initialize_karkinolution(ModuleInitializationLevel level) {
 	GDREGISTER_CLASS(GodotParsedFrame);
 	GDREGISTER_CLASS(GodotCreature);
 	GDREGISTER_CLASS(GodotEntityStorage);
+
+	GDREGISTER_CLASS(GodotLimitedValue);
+	GDREGISTER_CLASS(GodotSharedVolume);
+	GDREGISTER_CLASS(GodotEfficiency);
+	GDREGISTER_CLASS(GodotQuality);
+
+	GDREGISTER_CLASS(GodotMeter);
+	GDREGISTER_CLASS(GodotLateral);
+	GDREGISTER_CLASS(GodotHeight);
+	GDREGISTER_CLASS(GodotDepth);
+	GDREGISTER_CLASS(GodotVolume);
+	GDREGISTER_CLASS(GodotMass);
+	GDREGISTER_CLASS(GodotDensity);
+	GDREGISTER_CLASS(GodotSize);
+
 	GDREGISTER_CLASS(Karkinolution);
 }
 
