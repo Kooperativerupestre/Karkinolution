@@ -38,3 +38,7 @@ DoubleBytes Serializer::convert_double(double value) {
 FloatBytes Serializer::convert_float(float value) {
 	return Core::convert_4_bytes(std::bit_cast<std::uint32_t>(value));
 }
+
+Serializer::Types::IntBytes Serializer::convert_int(int value) {
+	return Core::convert_4_bytes(std::bit_cast<int>(value));
+}

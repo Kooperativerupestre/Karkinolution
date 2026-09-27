@@ -7,7 +7,13 @@
 #include <gtest/gtest.h>
 #include <karkinolution/binary/binary_error.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/deserialization/interpreters/math/stats/stats.hpp>
+#include <karkinolution/binary/deserialization/interpreters/math/vec.hpp>
+#include <karkinolution/binary/serialization/interpreters/math/stats/stats.hpp>
+#include <karkinolution/binary/serialization/interpreters/math/vec.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
+#include <karkinolution/math/physic/vec/model.hpp>
+#include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/utils/k_random.hpp>
 #include <string>
 #include <vector>
@@ -43,9 +49,7 @@ namespace {
 	}
 } // namespace
 
-// ============================================================================
 // High-level API Roundtrip Tests
-// ============================================================================
 
 TEST(SerializeDeserializeRoundtrip, HighLevel_AllTypesRoundtrip) {
 	for (int iteration = 0; iteration < 10; iteration++) {
@@ -87,9 +91,7 @@ TEST(SerializeDeserializeRoundtrip, HighLevel_AllTypesRoundtrip) {
 	}
 }
 
-// ============================================================================
 // Core Functions: Exact Byte Order & Value Interpretation Tests
-// ============================================================================
 
 TEST(SerializeDeserializeRoundtrip, Core_ByteOrderAndValueInterpretation) {
 	// 8 Bytes: 0x0102030405060708ULL -> Big-endian byte representation
@@ -149,9 +151,7 @@ TEST(SerializeDeserializeRoundtrip, Core_ByteOrderAndValueInterpretation) {
 	}
 }
 
-// ============================================================================
 // Core Functions: Random Values Roundtrip with Offsets
-// ============================================================================
 
 TEST(SerializeDeserializeRoundtrip, Core_RandomValuesRoundtripWithOffsets) {
 	for (int iteration = 0; iteration < 10; iteration++) {
@@ -184,9 +184,7 @@ TEST(SerializeDeserializeRoundtrip, Core_RandomValuesRoundtripWithOffsets) {
 	}
 }
 
-// ============================================================================
 // Core Types: Multi-type Interpretations (Unsigned, Signed, Floating-point)
-// ============================================================================
 
 TEST(SerializeDeserializeRoundtrip, Core_TypesInterpretation) {
 	// 8-byte interpretation: uint64, int64, double
@@ -242,9 +240,7 @@ TEST(SerializeDeserializeRoundtrip, Core_TypesInterpretation) {
 	}
 }
 
-// ============================================================================
 // Core Functions: Boundary / Error Handling
-// ============================================================================
 
 TEST(SerializeDeserializeRoundtrip, Core_InsufficientBufferSizeThrowsError) {
 	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}};
@@ -266,4 +262,154 @@ TEST(SerializeDeserializeRoundtrip, Core_InsufficientBufferSizeThrowsError) {
 	EXPECT_THROW(Deserializer::Core::deserialize_4_bytes(short_buffer, 100), ByteError);
 	EXPECT_THROW(Deserializer::Core::deserialize_2_bytes(short_buffer, 100), ByteError);
 	EXPECT_THROW(Deserializer::Core::deserialize_1_byte(short_buffer, 100), ByteError);
+}
+
+// Math: Vec
+
+TEST(MathSerializeDeserializeRoundtrip, Vec3) {
+	for (int iteration = 0; iteration < 10; iteration++) {
+		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
+
+		const Vec3 original = RandomGenerators::generate<Vec3>();
+
+		const auto                   vec_bytes = VecSRI::serialize_vec(original);
+		const std::vector<std::byte> buffer(vec_bytes.begin(), vec_bytes.end());
+
+		const Vec3 result = VecDSI::deserialize_vec(buffer, 0);
+
+		EXPECT_EQ(result, original);
+	}
+}
+
+// Math: Stats - Full Value Roundtrip
+
+TEST(MathSerializeDeserializeRoundtrip, Stats_FullValueRoundtrip) {
+	// GenericRuntimeValue<double>
+	{
+		GenericRuntimeValue<double>  stat(50.0, 100.0, 0.0);
+		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+		const auto deserialized = StatsDSI::get_stats<double>(buffer);
+		EXPECT_DOUBLE_EQ(deserialized.value, stat.value());
+		EXPECT_DOUBLE_EQ(deserialized.max, stat.max());
+		EXPECT_DOUBLE_EQ(deserialized.min, stat.min());
+	}
+
+	// GenericRuntimeValue<float>
+	{
+		GenericRuntimeValue<float>   stat(25.5f, 50.0f, -10.0f);
+		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+		const auto deserialized = StatsDSI::get_stats<float>(buffer);
+		EXPECT_FLOAT_EQ(deserialized.value, stat.value());
+		EXPECT_FLOAT_EQ(deserialized.max, stat.max());
+		EXPECT_FLOAT_EQ(deserialized.min, stat.min());
+	}
+
+	// GenericRuntimeValue<uint32_t>
+	{
+		GenericRuntimeValue<std::uint32_t> stat(75U, 200U, 0U);
+		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
+
+		const auto deserialized = StatsDSI::get_stats<std::uint32_t>(buffer);
+		EXPECT_EQ(deserialized.value, stat.value());
+		EXPECT_EQ(deserialized.max, stat.max());
+		EXPECT_EQ(deserialized.min, stat.min());
+	}
+
+	// GenericRuntimeValue<uint64_t>
+	{
+		GenericRuntimeValue<std::uint64_t> stat(123456789ULL, 999999999ULL, 0ULL);
+		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
+
+		const auto deserialized = StatsDSI::get_stats<std::uint64_t>(buffer);
+		EXPECT_EQ(deserialized.value, stat.value());
+		EXPECT_EQ(deserialized.max, stat.max());
+		EXPECT_EQ(deserialized.min, stat.min());
+	}
+
+	// GenericRuntimeValue<uint8_t>
+	{
+		GenericRuntimeValue<std::uint8_t> stat(15, 100, 0);
+		const auto                        bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte>      buffer(bytes.begin(), bytes.end());
+
+		const auto deserialized = StatsDSI::get_stats<std::uint8_t>(buffer);
+		EXPECT_EQ(deserialized.value, stat.value());
+		EXPECT_EQ(deserialized.max, stat.max());
+		EXPECT_EQ(deserialized.min, stat.min());
+	}
+}
+
+// Math: Stats - Field Getters and Type
+
+TEST(MathSerializeDeserializeRoundtrip, Stats_FieldGettersAndType) {
+	// GenericRuntimeValue<double>
+	{
+		GenericRuntimeValue<double>  stat(50.0, 100.0, 0.0);
+		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::DOUBLE);
+		EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+		                 stat.value());
+		EXPECT_DOUBLE_EQ(StatsDSI::get_max<double>(buffer), stat.max());
+		EXPECT_DOUBLE_EQ(StatsDSI::get_min<double>(buffer), stat.min());
+	}
+
+	// GenericRuntimeValue<float>
+	{
+		GenericRuntimeValue<float>   stat(25.5f, 50.0f, -10.0f);
+		const auto                   bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::FLOAT);
+		EXPECT_FLOAT_EQ(StatsDSI::get_value<float>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+		                stat.value());
+		EXPECT_FLOAT_EQ(StatsDSI::get_max<float>(buffer), stat.max());
+		EXPECT_FLOAT_EQ(StatsDSI::get_min<float>(buffer), stat.min());
+	}
+
+	// GenericRuntimeValue<uint32_t>
+	{
+		GenericRuntimeValue<std::uint32_t> stat(75U, 200U, 0U);
+		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
+
+		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::UINT32_T);
+		EXPECT_EQ(StatsDSI::get_value<std::uint32_t>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+		          stat.value());
+		EXPECT_EQ(StatsDSI::get_max<std::uint32_t>(buffer), stat.max());
+		EXPECT_EQ(StatsDSI::get_min<std::uint32_t>(buffer), stat.min());
+	}
+
+	// GenericRuntimeValue<uint64_t>
+	{
+		GenericRuntimeValue<std::uint64_t> stat(123456789ULL, 999999999ULL, 0ULL);
+		const auto                         bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte>       buffer(bytes.begin(), bytes.end());
+
+		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::UINT64_T);
+		EXPECT_EQ(StatsDSI::get_value<std::uint64_t>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+		          stat.value());
+		EXPECT_EQ(StatsDSI::get_max<std::uint64_t>(buffer), stat.max());
+		EXPECT_EQ(StatsDSI::get_min<std::uint64_t>(buffer), stat.min());
+	}
+
+	// GenericRuntimeValue<uint8_t>
+	{
+		GenericRuntimeValue<std::uint8_t> stat(15, 100, 0);
+		const auto                        bytes = StatsSRI::serialize_generic_limited_value(stat);
+		const std::vector<std::byte>      buffer(bytes.begin(), bytes.end());
+
+		EXPECT_EQ(StatsDSI::get_type(buffer), BinaryNLT::UINT8_T);
+		EXPECT_EQ(StatsDSI::get_value<std::uint8_t>(buffer, StatsSRI::TO_GET_VALUE_OFFSET),
+		          stat.value());
+		EXPECT_EQ(StatsDSI::get_max<std::uint8_t>(buffer), stat.max());
+		EXPECT_EQ(StatsDSI::get_min<std::uint8_t>(buffer), stat.min());
+	}
 }

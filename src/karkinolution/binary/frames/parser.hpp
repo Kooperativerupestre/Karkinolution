@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <deque>
+#include <karkinolution/binary/binary_validators.hpp>
 #include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
 #include <karkinolution/binary/message_type_size.hpp>

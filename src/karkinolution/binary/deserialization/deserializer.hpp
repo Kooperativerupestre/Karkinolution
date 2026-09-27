@@ -1,6 +1,7 @@
 #pragma once
 
 #include "karkinolution/binary/binary_error.hpp"
+#include "karkinolution/binary/binary_supported_types.hpp"
 #include "karkinolution/binary/byte_range.hpp"
 #include "karkinolution/binary/type_string.hpp"
 
@@ -133,6 +134,10 @@ namespace Deserializer {
 					return std::bit_cast<std::int32_t>(real_value);
 				}
 
+				constexpr int as_int() const {
+					return std::bit_cast<int>(real_value);
+				}
+
 				constexpr float as_float() const {
 					return std::bit_cast<float>(real_value);
 				}
@@ -219,6 +224,10 @@ namespace Deserializer {
 		return Types::Bytes1Deserialized(bytes, offset).as_uint8_t();
 	}
 
+	template <ByteRange T> constexpr int read_int(const T &bytes, std::size_t offset) {
+		return Types::Bytes4Deserialized(bytes, offset).as_int();
+	}
+
 	template <ByteRange T>
 	constexpr std::string read_string(const T &bytes, std::size_t offset, std::size_t length) {
 		if (offset > bytes.size() || bytes.size() - offset < length) {
@@ -239,6 +248,29 @@ namespace Deserializer {
 		}
 
 		return result;
+	}
+
+	template <BinarySupportedType T, ByteRange U>
+	constexpr T deserialize(const U &bytes, std::size_t offset) {
+		if constexpr (std::same_as<T, double>) {
+			return read_double(bytes, offset);
+		} else if constexpr (std::same_as<T, float>) {
+			return read_float(bytes, offset);
+		} else if constexpr (std::same_as<T, std::uint8_t>) {
+			return read_uint8_t(bytes, offset);
+		} else if constexpr (std::same_as<T, std::uint16_t>) {
+			return read_uint16_t(bytes, offset);
+		} else if constexpr (std::same_as<T, std::uint32_t>) {
+			return read_uint32_t(bytes, offset);
+		} else if constexpr (std::same_as<T, std::uint64_t>) {
+			return read_uint64_t(bytes, offset);
+		} else if constexpr (std::same_as<T, int>) {
+			return read_int(bytes, offset);
+		} else if constexpr (std::same_as<T, std::string>) {
+			throw ByteError(BinaryErrorFactory::type_is_not_supported<std::string>(
+				"deserialize<std::string> requires a string length"));
+		}
+		throw ByteError(BinaryErrorFactory::type_is_not_supported<T>("generic deserialize"));
 	}
 
 	template <ByteRange T> void append_bytes(std::vector<std::byte> &bytes, const T &value) {
@@ -266,5 +298,10 @@ namespace Deserializer {
 
 	inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
 		bytes.push_back(value);
+	}
+
+	template <std::size_t Size>
+	void append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
+		bytes[offset] = value;
 	}
 } // namespace Deserializer
