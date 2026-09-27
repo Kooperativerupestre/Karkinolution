@@ -66,6 +66,7 @@ if (BUILD_GODOT_EXTENSION)
             src/godot/extension/model/math/stats/limited_value.cpp
             src/godot/extension/model/math/stats/stats.cpp
             src/godot/extension/model/math/unit/units.cpp
+            src/godot/extension/model/math/geometry/geometry.cpp
     )
 
     target_include_directories(karkinolution_godot PRIVATE

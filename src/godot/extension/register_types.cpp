@@ -1,6 +1,7 @@
 #include "binary/frame.hpp"
 #include "karkinolution.hpp"
 #include "model/creature/creature.hpp"
+#include "model/math/geometry/geometry.hpp"
 #include "model/math/stats/limited_value.hpp"
 #include "model/math/stats/stats.hpp"
 #include "model/math/unit/units.hpp"
@@ -33,6 +34,11 @@ void initialize_karkinolution(ModuleInitializationLevel level) {
 	GDREGISTER_CLASS(GodotMass);
 	GDREGISTER_CLASS(GodotDensity);
 	GDREGISTER_CLASS(GodotSize);
+
+	GDREGISTER_CLASS(GodotRadius);
+	GDREGISTER_CLASS(GodotCircumference);
+	GDREGISTER_CLASS(GodotDiameter);
+	GDREGISTER_CLASS(GodotArea);
 
 	GDREGISTER_CLASS(Karkinolution);
 }
