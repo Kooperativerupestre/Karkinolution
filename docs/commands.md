@@ -1,24 +1,10 @@
 # Development Commands
 
-Run these commands from the repository root.
-
-`-j$(nproc)` is optional for build commands. When used, it enables parallel compilation using all available CPU threads.
-
-For example:
-
-```bash
-cmake --build build
-```
-
-or, for a faster parallel build:
-
-```bash
-cmake --build build -j$(nproc)
-```
+Run from the repository root. Append `-j$(nproc)` to any build command for parallel compilation.
 
 ## Local Development
 
-### Configure a Debug build
+### Configure (Debug)
 
 ```bash
 cmake -S . -B build -G Ninja \
@@ -27,111 +13,53 @@ cmake -S . -B build -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++
 ```
 
-The test dependency (GoogleTest) is downloaded by CMake through `FetchContent`, so the first configuration requires network access.
+GoogleTest is fetched automatically on first configure; network access required.
 
-### Build everything
+### Build
 
 ```bash
 cmake --build build
-```
-
-### Build a specific target
-
-```bash
 cmake --build build --target karkinolution_app
 cmake --build build --target karkinolution_tests
 ```
 
-### Run the application
+### Run
 
 ```bash
 ./build/karkinolution_app
-```
-
-### Run all tests
-
-```bash
 ctest --test-dir build --output-on-failure
+ctest --test-dir build -R '<regex>' --output-on-failure
 ```
 
-Alternatively, use the CMake test target:
+### Rebuild from scratch
 
 ```bash
-cmake --build build --target test
+rm -rf build && cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug && cmake --build build
 ```
 
-### List and run selected tests
+### Godot extension
 
 ```bash
-ctest --test-dir build -N
-ctest --test-dir build -R '<test-name-or-regex>' --output-on-failure
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_GODOT_EXTENSION=ON
+cmake --build build --target karkinolution_godot
 ```
 
-Build the tests first if the test executable is not available:
+### `compile_commands.json`
 
-```bash
-cmake --build build --target karkinolution_tests
-```
+Regenerated on every reconfigure. Re-run `cmake -S . -B build ...` when stale.
 
-### Rebuild from a clean build directory
-
-```bash
-rm -rf build
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-```
-
-Only remove the build directory; it contains generated files and compiled artifacts.
-
-### Generate or refresh `compile_commands.json`
-
-`CMAKE_EXPORT_COMPILE_COMMANDS` is enabled in the project configuration. Reconfigure the build when the file is missing or stale:
-
-```bash
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
-```
-
-## Optimized Builds
-
-Use a `Release` build when you want compiler optimizations enabled and a build suitable for performance testing.
-
-### Configure a Release build
+## Release Build
 
 ```bash
 cmake -S . -B build-release -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_C_COMPILER=clang \
   -DCMAKE_CXX_COMPILER=clang++
-```
-
-### Build the Release version
-
-```bash
 cmake --build build-release
-```
-
-### Build a specific Release target
-
-```bash
-cmake --build build-release --target karkinolution_app
-cmake --build build-release --target karkinolution_tests
-```
-
-### Run the Release application
-
-```bash
-./build-release/karkinolution_app
-```
-
-### Run Release tests
-
-```bash
 ctest --test-dir build-release --output-on-failure
 ```
 
-### Configure a highly optimized build
-
-For performance benchmarking, configure a `Release` build with native CPU optimizations:
+### Native-optimized (benchmarking only — not portable)
 
 ```bash
 cmake -S . -B build-native -G Ninja \
@@ -139,82 +67,62 @@ cmake -S . -B build-native -G Ninja \
   -DCMAKE_C_COMPILER=clang \
   -DCMAKE_CXX_COMPILER=clang++ \
   -DCMAKE_CXX_FLAGS="-march=native"
-```
-
-### Build the native-optimized version
-
-```bash
 cmake --build build-native
 ```
 
-`-march=native` enables instructions specific to the CPU of the machine performing the build. Such binaries may not run on older or different CPUs, so this configuration should not be used for portable distribution builds.
-
 ## Docker Compose
 
-### Start an interactive development container
+### Development container
 
 ```bash
 docker compose build development
 docker compose run --rm development
 ```
 
-Inside the container, the source is mounted at `/workspace`:
+Inside the container (`/workspace` is the source root):
 
 ```bash
 cmake --build /workspace/build
 ctest --test-dir /workspace/build --output-on-failure
-/workspace/build/karkinolution_app
 ```
 
-The build directory and ccache are stored in named Docker volumes.
+Build artifacts and ccache live in named Docker volumes.
 
-### Build and run the test image
+### Test image
 
 ```bash
 docker compose build test
 docker compose run --rm test
 ```
 
-The test image builds the project while the image is created. Rebuild the image after changing source files:
+Rebuild after source changes:
 
 ```bash
-docker compose build --no-cache test
-docker compose run --rm test
+docker compose build --no-cache test && docker compose run --rm test
 ```
 
-### Open a shell in the development service
+### Other
 
 ```bash
-docker compose run --rm development bash
+docker compose run --rm development bash   # shell
+docker compose down                        # stop services
+docker compose down -v                     # stop + delete volumes
 ```
 
-### Stop Compose services
+## CI (Docker)
 
-```bash
-docker compose down
-```
-
-To remove the named build and ccache volumes as well, use the following only when those cached artifacts are no longer needed:
-
-```bash
-docker compose down -v
-```
-
-## CI Checks in Docker
-
-### Build the CI image
+### Build image
 
 ```bash
 docker build -f Dockerfile.ci -t karkinolution-ci .
 ```
 
-### Configure and build a CI test tree
+### Configure, build, test
 
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   cmake -S /workspace -B /workspace/build-ci -G Ninja \
-  -DCMAKE_C_COMPILER=clang-21 \
-  -DCMAKE_CXX_COMPILER=clang++-21 \
+  -DCMAKE_C_COMPILER=clang-21 -DCMAKE_CXX_COMPILER=clang++-21 \
   -DCMAKE_BUILD_TYPE=Debug
 
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
@@ -224,13 +132,12 @@ docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   ctest --test-dir /workspace/build-ci --output-on-failure
 ```
 
-### Run the sanitizer configuration and tests
+### Sanitizers
 
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   cmake -S /workspace -B /workspace/build-sanitizers -G Ninja \
-  -DCMAKE_C_COMPILER=clang-21 \
-  -DCMAKE_CXX_COMPILER=clang++-21 \
+  -DCMAKE_C_COMPILER=clang-21 -DCMAKE_CXX_COMPILER=clang++-21 \
   -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
   -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
@@ -245,13 +152,12 @@ docker run --rm -v "$PWD:/workspace" \
   ctest --test-dir /workspace/build-sanitizers --output-on-failure
 ```
 
-### Run Valgrind against the test executable
+### Valgrind
 
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   cmake -S /workspace -B /workspace/build-valgrind -G Ninja \
-  -DCMAKE_C_COMPILER=gcc-15 \
-  -DCMAKE_CXX_COMPILER=g++-15 \
+  -DCMAKE_C_COMPILER=gcc-15 -DCMAKE_CXX_COMPILER=g++-15 \
   -DCMAKE_BUILD_TYPE=Debug
 
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
