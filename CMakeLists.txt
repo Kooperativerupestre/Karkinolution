@@ -70,7 +70,9 @@ if (BUILD_GODOT_EXTENSION)
             src/godot/extension/model/math/geometry/geometry.cpp
             src/godot/extension/model/properties/properties.cpp
             src/godot/extension/model/terrain/soil.cpp
+            src/godot/extension/model/terrain/terrain.cpp
     )
+
 
     target_include_directories(karkinolution_godot PRIVATE
             "${CMAKE_SOURCE_DIR}/src"
