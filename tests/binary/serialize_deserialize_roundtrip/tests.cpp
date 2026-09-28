@@ -14,6 +14,7 @@
 #include <karkinolution/binary/deserialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/vec.hpp>
 #include <karkinolution/binary/deserialization/interpreters/properties/properties.hpp>
+#include <karkinolution/binary/deserialization/interpreters/territory/territory.hpp>
 #include <karkinolution/binary/serialization/interpreters/corpse.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/geometry/geometry.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/stats/stats.hpp>
@@ -21,6 +22,7 @@
 #include <karkinolution/binary/serialization/interpreters/math/vec.hpp>
 #include <karkinolution/binary/serialization/interpreters/properties/properties.hpp>
 #include <karkinolution/binary/serialization/interpreters/terrain/soil.hpp>
+#include <karkinolution/binary/serialization/interpreters/territory/territory.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
 #include <karkinolution/math/geometry/models.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
@@ -1319,4 +1321,59 @@ TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
 
 	const auto interpreted_id = CorpseRequestDSI::interpret_like_get_corpse(buffer);
 	EXPECT_EQ(interpreted_id, corpse_id);
+}
+
+// Territory: Full Territory Roundtrip
+
+TEST(TerritorySerializeDeserializeRoundtrip, FullTerritoryRoundtrip) {
+	for (int iteration = 0; iteration < 10; ++iteration) {
+		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
+
+		const Size rand_size{.lateral = Lateral{RandomGenerators::generate<double>()},
+							 .height  = Height{RandomGenerators::generate<double>()},
+							 .depth   = Depth{RandomGenerators::generate<double>()}};
+
+		const Territory original(rand_size);
+		const auto      bytes = TerritorySRI::serialize_territory(original);
+
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   deserialized = TerritoryDSI::deserialize_territory(buffer);
+
+		EXPECT_DOUBLE_EQ(deserialized.size().lateral.value, original.size().lateral.value);
+		EXPECT_DOUBLE_EQ(deserialized.size().height.value, original.size().height.value);
+		EXPECT_DOUBLE_EQ(deserialized.size().depth.value, original.size().depth.value);
+	}
+}
+
+// Territory: Stream With Offsets
+
+TEST(TerritorySerializeDeserializeRoundtrip, StreamWithOffsets) {
+	const Size      size{.lateral = Lateral{10.0}, .height = Height{20.0}, .depth = Depth{30.0}};
+	const Territory territory(size);
+
+	std::vector<std::byte> stream = {std::byte{0xDE},
+									 std::byte{0xAD},
+									 std::byte{0xBE},
+									 std::byte{0xEF}};
+	const size_t           offset = stream.size();
+
+	const auto territory_bytes = TerritorySRI::serialize_territory(territory);
+	append_to_buffer(stream, territory_bytes);
+	stream.push_back(std::byte{0xFF});
+
+	const auto deserialized = TerritoryDSI::deserialize_territory(stream, offset);
+
+	EXPECT_DOUBLE_EQ(deserialized.size().lateral.value, territory.size().lateral.value);
+	EXPECT_DOUBLE_EQ(deserialized.size().height.value, territory.size().height.value);
+	EXPECT_DOUBLE_EQ(deserialized.size().depth.value, territory.size().depth.value);
+}
+
+// Territory: Insufficient Buffer Size Throws Error
+
+TEST(TerritorySerializeDeserializeRoundtrip, InsufficientBufferSizeThrowsError) {
+	const std::vector<std::byte> empty_buffer;
+	const std::vector<std::byte> short_buffer(TerritorySRI::TERRITORY_BYTES - 1, std::byte{0x01});
+
+	EXPECT_THROW(TerritoryDSI::deserialize_territory(empty_buffer), ByteError);
+	EXPECT_THROW(TerritoryDSI::deserialize_territory(short_buffer), ByteError);
 }
