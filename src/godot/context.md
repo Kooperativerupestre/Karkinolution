@@ -22,3 +22,7 @@ Compile-time template classes cannot be registered dynamically into Godot's `Cla
 2. **Godot Model**: Create an independent, immutable `RefCounted` DTO with const getters and a static factory. Do not include simulator headers.
 3. **Conversion**: In the conversion namespace, add a function that calls the core DSI and passes the resulting values to the Godot DTO factory.
 4. **Registration**: Register the Godot class in `register_types.cpp` via `GDREGISTER_CLASS`.
+
+## Q: Why are spatial data structures (R*-tree, Octree) omitted from the Godot client?
+Spatial index performance bottlenecks and spatial queries are strictly resolved server-side in the simulation engine. The Godot client only handles presentation, rendering, and state storage; duplicating complex spatial structures like R*-trees or Octrees on the client introduces unnecessary overhead and synchronization complexity. The Godot-side `GodotTerrain` fuses the territory's dimensions (`GodotSize`) and soil collection without replicating server spatial trees.
+

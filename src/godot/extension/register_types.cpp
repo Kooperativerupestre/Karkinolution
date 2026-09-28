@@ -8,6 +8,7 @@
 #include "model/math/unit/units.hpp"
 #include "model/properties/properties.hpp"
 #include "model/terrain/soil.hpp"
+#include "model/terrain/terrain.hpp"
 #include "storage/entity_storage.hpp"
 
 #include <godot_cpp/core/class_db.hpp>
@@ -26,6 +27,7 @@ void initialize_karkinolution(ModuleInitializationLevel level) {
 
 	GDREGISTER_CLASS(GodotGenericProperty);
 	GDREGISTER_CLASS(GodotSoilPiece);
+	GDREGISTER_CLASS(GodotTerrain);
 	GDREGISTER_CLASS(GodotEntityStorage);
 
 	GDREGISTER_CLASS(GodotLimitedValue);
