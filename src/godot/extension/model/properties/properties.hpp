@@ -12,7 +12,7 @@ class GodotGenericProperty : public godot::RefCounted {
 	public:
 
 		enum MoveCapability {
-			WALK = 0,
+			WALK  = 0,
 			SWIMM = 1
 		};
 

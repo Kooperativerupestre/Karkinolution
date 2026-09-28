@@ -63,8 +63,8 @@ godot::Ref<GodotCorpse> GodotCorpse::create(std::uint64_t                id,
 	return corpse;
 }
 
-godot::Ref<GodotCorpse>
-GodotCorpse::from_deserialized(const DesserializedCorpse &deserialized, std::uint64_t id) {
+godot::Ref<GodotCorpse> GodotCorpse::from_deserialized(const DesserializedCorpse &deserialized,
+													   std::uint64_t              id) {
 	godot::Ref<GodotCorpse> corpse;
 	corpse.instantiate();
 	corpse->id_       = (id != 0) ? id : deserialized.id;
@@ -73,8 +73,8 @@ GodotCorpse::from_deserialized(const DesserializedCorpse &deserialized, std::uin
 									   static_cast<godot::real_t>(deserialized.position.y),
 									   static_cast<godot::real_t>(deserialized.position.z));
 	corpse->size_     = GodotSize::from_values(deserialized.size.lateral.value,
-											   deserialized.size.height.value,
-											   deserialized.size.depth.value);
+                                           deserialized.size.height.value,
+                                           deserialized.size.depth.value);
 	return corpse;
 }
 
@@ -87,7 +87,7 @@ godot::Ref<GodotCorpse> GodotCorpse::from_core(const ::Corpse &corpse) {
 									   static_cast<godot::real_t>(corpse.position.y),
 									   static_cast<godot::real_t>(corpse.position.z));
 	result->size_     = GodotSize::from_values(corpse.size.lateral.value,
-											   corpse.size.height.value,
-											   corpse.size.depth.value);
+                                           corpse.size.height.value,
+                                           corpse.size.depth.value);
 	return result;
 }

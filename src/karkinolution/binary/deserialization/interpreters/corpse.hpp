@@ -10,10 +10,10 @@
 #include <vector>
 
 namespace CorpseResponseDSI {
-	std::uint64_t      get_id(const std::vector<std::byte> &payload, std::size_t offset = 0);
-	RawMeat            get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset = 0);
-	Vec3               get_position(const std::vector<std::byte> &payload, std::size_t offset = 0);
-	Size               get_size(const std::vector<std::byte> &payload, std::size_t offset = 0);
+	std::uint64_t       get_id(const std::vector<std::byte> &payload, std::size_t offset = 0);
+	RawMeat             get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset = 0);
+	Vec3                get_position(const std::vector<std::byte> &payload, std::size_t offset = 0);
+	Size                get_size(const std::vector<std::byte> &payload, std::size_t offset = 0);
 	DesserializedCorpse get_corpse(const std::vector<std::byte> &payload, std::size_t offset = 0);
 } // namespace CorpseResponseDSI
 

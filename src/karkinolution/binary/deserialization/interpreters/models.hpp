@@ -17,4 +17,3 @@ struct DesserializedCorpse {
 		Vec3          position;
 		Size          size;
 };
-

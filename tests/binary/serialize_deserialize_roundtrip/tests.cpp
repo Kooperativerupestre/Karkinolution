@@ -1293,12 +1293,15 @@ TEST(CorpseSerializeDeserializeRoundtrip, InsufficientBufferSizeThrowsError) {
 
 	// Each buffer is one byte too short for the specific getter's required range
 	const std::vector<std::byte> short_for_id(CorpseSRI::TO_GET_ID_OFFSET, std::byte{0x01});
-	const std::vector<std::byte> short_for_raw_meat(CorpseSRI::TO_GET_RAW_MEAT_OFFSET + CorpseSRI::RAW_MEAT_BYTES - 1,
-	                                                std::byte{0x01});
-	const std::vector<std::byte> short_for_position(CorpseSRI::TO_GET_POSITION_OFFSET + CorpseSRI::POSITION_BYTES - 1,
-	                                                std::byte{0x01});
-	const std::vector<std::byte> short_for_size(CorpseSRI::TO_GET_SIZE_OFFSET + CorpseSRI::SIZE_BYTES - 1,
-	                                            std::byte{0x01});
+	const std::vector<std::byte> short_for_raw_meat(CorpseSRI::TO_GET_RAW_MEAT_OFFSET
+														+ CorpseSRI::RAW_MEAT_BYTES - 1,
+													std::byte{0x01});
+	const std::vector<std::byte> short_for_position(CorpseSRI::TO_GET_POSITION_OFFSET
+														+ CorpseSRI::POSITION_BYTES - 1,
+													std::byte{0x01});
+	const std::vector<std::byte> short_for_size(CorpseSRI::TO_GET_SIZE_OFFSET
+													+ CorpseSRI::SIZE_BYTES - 1,
+												std::byte{0x01});
 
 	EXPECT_THROW(CorpseResponseDSI::get_id(empty_buffer), ByteError);
 	EXPECT_THROW(CorpseResponseDSI::get_raw_meat(short_for_raw_meat), ByteError);

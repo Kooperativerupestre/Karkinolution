@@ -2,18 +2,18 @@
 
 void GodotEntityStorage::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("add_creature", "id", "creature"),
-	                            &GodotEntityStorage::add_creature);
+								&GodotEntityStorage::add_creature);
 	godot::ClassDB::bind_method(godot::D_METHOD("add_corpse", "id", "corpse"),
-	                            &GodotEntityStorage::add_corpse);
+								&GodotEntityStorage::add_corpse);
 	godot::ClassDB::bind_method(godot::D_METHOD("delete", "id"), &GodotEntityStorage::remove);
 	godot::ClassDB::bind_method(godot::D_METHOD("remove", "id"), &GodotEntityStorage::remove);
 	godot::ClassDB::bind_method(godot::D_METHOD("clear"), &GodotEntityStorage::clear);
 	godot::ClassDB::bind_method(godot::D_METHOD("get", "id"), &GodotEntityStorage::get);
 	godot::ClassDB::bind_method(godot::D_METHOD("list_ids"), &GodotEntityStorage::list_ids);
 	godot::ClassDB::bind_method(godot::D_METHOD("list_entities"),
-	                            &GodotEntityStorage::list_entities);
+								&GodotEntityStorage::list_entities);
 	godot::ClassDB::bind_method(godot::D_METHOD("replace", "old_id", "new_id", "entity"),
-	                            &GodotEntityStorage::replace);
+								&GodotEntityStorage::replace);
 	godot::ClassDB::bind_method(godot::D_METHOD("has", "id"), &GodotEntityStorage::has);
 	godot::ClassDB::bind_method(godot::D_METHOD("size"), &GodotEntityStorage::size);
 }

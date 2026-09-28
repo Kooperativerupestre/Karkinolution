@@ -17,9 +17,9 @@ class GodotSoilPiece : public godot::RefCounted {
 	public:
 
 		enum SoilType {
-			SAND = 0,
-			ROCK = 1,
-			DIRT = 2,
+			SAND  = 0,
+			ROCK  = 1,
+			DIRT  = 2,
 			WATER = 3
 		};
 
@@ -73,11 +73,11 @@ class GodotSoilPiece : public godot::RefCounted {
 												 std::uint8_t          type                  = 0,
 												 const godot::Array   &properties            = {},
 												 const godot::Array   &required_capabilities = {},
-												 bool                  has_damage            = false,
-												 float                 damage                = 0.0f,
-												 bool                  has_movement_cost     = false,
-												 float                 movement_cost         = 0.0f,
-												 double                radius                = 0.0,
+												 bool                  has_damage        = false,
+												 float                 damage            = 0.0f,
+												 bool                  has_movement_cost = false,
+												 float                 movement_cost     = 0.0f,
+												 double                radius            = 0.0,
 												 const godot::Vector3 &position = godot::Vector3());
 };
 

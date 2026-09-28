@@ -3,9 +3,9 @@
 
 #include <bit>
 #include <cstddef>
+#include <format>
 #include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/core/error.hpp>
-#include <format>
 
 namespace ByteUtils {
 	inline std::byte char_to_byte(char byte) {
