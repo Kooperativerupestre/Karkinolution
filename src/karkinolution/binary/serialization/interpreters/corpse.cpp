@@ -20,7 +20,7 @@ PhysicsUnitsSRI::SizeBytes CorpseSRI::serialize_size(const Size &size) {
 }
 
 CorpseSRI::CorpseBytes CorpseSRI::serialize_corpse(const Corpse &corpse) {
-	CorpseBytes bytes;
+	CorpseBytes bytes{};
 
 	const auto id_bytes = serialize_id(corpse.id);
 	Deserializer::append_bytes(bytes, id_bytes, TO_GET_ID_OFFSET);
