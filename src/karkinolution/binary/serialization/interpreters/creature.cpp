@@ -41,7 +41,7 @@ NameBytes CreatureSRI::serialize_name(const std::string &name) {
 			std::format("The size of the name {} is bigger than allowed {}", name, NAME_BYTES));
 	}
 
-	NameBytes bytes;
+	NameBytes bytes{};
 
 	const auto serialized_name = Serializer::convert_string(name);
 
@@ -50,7 +50,7 @@ NameBytes CreatureSRI::serialize_name(const std::string &name) {
 }
 
 CreatureBytes CreatureSRI::serialize_creature(const Creature &creature) {
-	CreatureBytes bytes;
+	CreatureBytes bytes{};
 
 	// Gender
 
