@@ -17,30 +17,29 @@ void GodotSoilPiece::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("get_radius_ref"), &GodotSoilPiece::get_radius_ref);
 	godot::ClassDB::bind_method(godot::D_METHOD("get_position"), &GodotSoilPiece::get_position);
 
-	godot::ClassDB::bind_static_method(
-		"GodotSoilPiece",
-		godot::D_METHOD("create",
-						"id",
-						"type",
-						"properties",
-						"required_capabilities",
-						"has_damage",
-						"damage",
-						"has_movement_cost",
-						"movement_cost",
-						"radius",
-						"position"),
-		&GodotSoilPiece::create,
-		DEFVAL(0),
-		DEFVAL(0),
-		DEFVAL(godot::Array()),
-		DEFVAL(godot::Array()),
-		DEFVAL(false),
-		DEFVAL(0.0f),
-		DEFVAL(false),
-		DEFVAL(0.0f),
-		DEFVAL(0.0),
-		DEFVAL(godot::Vector3()));
+	godot::ClassDB::bind_static_method("GodotSoilPiece",
+									   godot::D_METHOD("create",
+													   "id",
+													   "type",
+													   "properties",
+													   "required_capabilities",
+													   "has_damage",
+													   "damage",
+													   "has_movement_cost",
+													   "movement_cost",
+													   "radius",
+													   "position"),
+									   &GodotSoilPiece::create,
+									   DEFVAL(0),
+									   DEFVAL(0),
+									   DEFVAL(godot::Array()),
+									   DEFVAL(godot::Array()),
+									   DEFVAL(false),
+									   DEFVAL(0.0f),
+									   DEFVAL(false),
+									   DEFVAL(0.0f),
+									   DEFVAL(0.0),
+									   DEFVAL(godot::Vector3()));
 
 	BIND_ENUM_CONSTANT(SAND);
 	BIND_ENUM_CONSTANT(ROCK);
@@ -142,17 +141,16 @@ godot::Vector3 GodotSoilPiece::get_position() const {
 	return position_;
 }
 
-godot::Ref<GodotSoilPiece>
-GodotSoilPiece::create(std::uint64_t         id,
-					   std::uint8_t          type,
-					   const godot::Array   &properties,
-					   const godot::Array   &required_capabilities,
-					   bool                  has_damage,
-					   float                 damage,
-					   bool                  has_movement_cost,
-					   float                 movement_cost,
-					   double                radius,
-					   const godot::Vector3 &position) {
+godot::Ref<GodotSoilPiece> GodotSoilPiece::create(std::uint64_t         id,
+												  std::uint8_t          type,
+												  const godot::Array   &properties,
+												  const godot::Array   &required_capabilities,
+												  bool                  has_damage,
+												  float                 damage,
+												  bool                  has_movement_cost,
+												  float                 movement_cost,
+												  double                radius,
+												  const godot::Vector3 &position) {
 	godot::Ref<GodotSoilPiece> ref;
 	ref.instantiate();
 	ref->id_                    = id;

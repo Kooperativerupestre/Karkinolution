@@ -16,10 +16,10 @@ class GodotCorpse : public godot::RefCounted {
 
 	private:
 
-		std::uint64_t          id_{0};
-		float                  raw_meat_{0.0f};
-		godot::Vector3         position_{0.0, 0.0, 0.0};
-		godot::Ref<GodotSize>  size_;
+		std::uint64_t         id_{0};
+		float                 raw_meat_{0.0f};
+		godot::Vector3        position_{0.0, 0.0, 0.0};
+		godot::Ref<GodotSize> size_;
 
 	protected:
 
@@ -28,22 +28,22 @@ class GodotCorpse : public godot::RefCounted {
 	public:
 
 		GodotCorpse();
-		GodotCorpse(std::uint64_t                  id,
-					float                          raw_meat,
-					const godot::Vector3          &position = godot::Vector3(),
-					const godot::Ref<GodotSize>   &size     = {});
+		GodotCorpse(std::uint64_t                id,
+					float                        raw_meat,
+					const godot::Vector3        &position = godot::Vector3(),
+					const godot::Ref<GodotSize> &size     = {});
 
 		[[nodiscard]] std::uint64_t         get_id() const;
 		[[nodiscard]] float                 get_raw_meat() const;
 		[[nodiscard]] godot::Vector3        get_position() const;
 		[[nodiscard]] godot::Ref<GodotSize> get_size() const;
 
-		static godot::Ref<GodotCorpse> create(std::uint64_t                id       = 0,
-											  float                        raw_meat = 0.0f,
-											  const godot::Vector3        &position = godot::Vector3(),
-											  const godot::Ref<GodotSize> &size     = {});
+		static godot::Ref<GodotCorpse> create(std::uint64_t         id          = 0,
+											  float                 raw_meat    = 0.0f,
+											  const godot::Vector3 &position    = godot::Vector3(),
+											  const godot::Ref<GodotSize> &size = {});
 
-		static godot::Ref<GodotCorpse>
-		from_deserialized(const DesserializedCorpse &deserialized, std::uint64_t id = 0);
+		static godot::Ref<GodotCorpse> from_deserialized(const DesserializedCorpse &deserialized,
+														 std::uint64_t              id = 0);
 		static godot::Ref<GodotCorpse> from_core(const ::Corpse &corpse);
 };

@@ -14,15 +14,13 @@
 namespace GodotBinaryParser {
 
 	inline godot::Ref<GodotCorpse> parse_corpse(const godot::PackedByteArray &payload,
-	                                             std::uint64_t                 id = 0) {
-		return GodotCorpse::from_deserialized(
-			CorpseResponseDSI::get_corpse(to_bytes(payload)),
-			id);
+												std::uint64_t                 id = 0) {
+		return GodotCorpse::from_deserialized(CorpseResponseDSI::get_corpse(to_bytes(payload)), id);
 	}
 
 	inline godot::PackedByteArray build_get_corpse_request(std::uint64_t id) {
 		return to_packed_byte_array(FrameMotor::build(BinarySubTypes::Request::GET_CORPSE,
-		                                              Serializer::convert_uint64_t(id)));
+													  Serializer::convert_uint64_t(id)));
 	}
 
 } // namespace GodotBinaryParser
