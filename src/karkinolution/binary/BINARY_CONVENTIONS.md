@@ -28,6 +28,7 @@ An SRI defines binary layout protocols and converts domain types into byte seque
 6. **Implementation**:
    - Primitives: delegate to `Serializer::convert_<type>()` or `Serializer::serialize()`.
    - Compounds: construct fixed array and append fields using `Deserializer::append_bytes(bytes, field_bytes, TO_GET_<FIELD>_OFFSET)`.
+   - No Duplication: Do not define duplicate serializers for existing types; delegate directly to their domain SRI.
 
 ---
 
@@ -46,3 +47,4 @@ A DSI reads raw byte payloads and reconstructs domain objects.
 5. **Implementation**:
    - Primitives: read with `Deserializer::read_<type>(payload, offset)`.
    - Compounds: delegate each field using `offset + <Domain>SRI::TO_GET_<FIELD>_OFFSET`.
+   - No Duplication: Do not define duplicate deserializers for existing types; delegate directly to their domain DSI.
