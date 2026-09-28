@@ -1,5 +1,6 @@
 #pragma once
 
+#include "godot/extension/model/corpse/corpse.hpp"
 #include "godot/extension/model/creature/creature.hpp"
 
 #include <godot_cpp/classes/ref.hpp>
@@ -7,7 +8,7 @@
 #include <optional>
 #include <variant>
 
-using GodotEntity = std::variant<godot::Ref<GodotCreature>>;
+using GodotEntity = std::variant<godot::Ref<GodotCreature>, godot::Ref<GodotCorpse>>;
 
 namespace GodotEntityConversion {
 

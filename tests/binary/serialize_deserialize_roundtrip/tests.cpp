@@ -8,11 +8,13 @@
 #include <karkinolution/binary/binary_error.hpp>
 #include <karkinolution/binary/byte_utils.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/deserialization/interpreters/corpse.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/geometry/geometry.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/stats/stats.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/unit/unit.hpp>
 #include <karkinolution/binary/deserialization/interpreters/math/vec.hpp>
 #include <karkinolution/binary/deserialization/interpreters/properties/properties.hpp>
+#include <karkinolution/binary/serialization/interpreters/corpse.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/geometry/geometry.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/stats/stats.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/unit/unit.hpp>
@@ -23,6 +25,7 @@
 #include <karkinolution/math/geometry/models.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
+#include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil.hpp>
 #include <karkinolution/utils/k_random.hpp>
@@ -1195,4 +1198,122 @@ TEST(SoilSerializeDeserializeRoundtrip, FullSoilPiece_SerializationRoundtrip) {
 
 	const auto deserialized_id = Deserializer::read_uint64_t(bytes, SoilSRI::TO_GET_ID_OFFSET);
 	EXPECT_EQ(deserialized_id, 1122334455667788ULL);
+}
+
+// Corpse: Individual Fields Roundtrip
+
+TEST(CorpseSerializeDeserializeRoundtrip, IndividualFields) {
+	constexpr std::uint64_t test_id  = 123456789ULL;
+	const auto              id_bytes = CorpseSRI::serialize_id(test_id);
+	std::vector<std::byte>  id_buf(id_bytes.begin(), id_bytes.end());
+	EXPECT_EQ(CorpseResponseDSI::get_id(id_buf), test_id);
+
+	const RawMeat test_meat{42.5f};
+	const auto    meat_bytes = CorpseSRI::serialize_raw_meat(test_meat);
+	// Place with appropriate offset to test reading at TO_GET_RAW_MEAT_OFFSET
+	std::vector<std::byte> meat_buf(CorpseSRI::CORPSE_BYTES, std::byte{0});
+	Deserializer::append_bytes(meat_buf, meat_bytes, CorpseSRI::TO_GET_RAW_MEAT_OFFSET);
+	EXPECT_FLOAT_EQ(CorpseResponseDSI::get_raw_meat(meat_buf).value, test_meat.value);
+
+	const Vec3             test_pos{1.5, 2.5, 3.5};
+	const auto             pos_bytes = CorpseSRI::serialize_position(test_pos);
+	std::vector<std::byte> pos_buf(CorpseSRI::CORPSE_BYTES, std::byte{0});
+	Deserializer::append_bytes(pos_buf, pos_bytes, CorpseSRI::TO_GET_POSITION_OFFSET);
+	EXPECT_EQ(CorpseResponseDSI::get_position(pos_buf), test_pos);
+
+	const Size test_size{.lateral = Lateral{2.0}, .height = Height{3.0}, .depth = Depth{4.0}};
+	const auto size_bytes = CorpseSRI::serialize_size(test_size);
+	std::vector<std::byte> size_buf(CorpseSRI::CORPSE_BYTES, std::byte{0});
+	Deserializer::append_bytes(size_buf, size_bytes, CorpseSRI::TO_GET_SIZE_OFFSET);
+	const auto deserialized_size = CorpseResponseDSI::get_size(size_buf);
+	EXPECT_DOUBLE_EQ(deserialized_size.lateral.value, test_size.lateral.value);
+	EXPECT_DOUBLE_EQ(deserialized_size.height.value, test_size.height.value);
+	EXPECT_DOUBLE_EQ(deserialized_size.depth.value, test_size.depth.value);
+}
+
+// Corpse: Full Corpse Roundtrip
+
+TEST(CorpseSerializeDeserializeRoundtrip, FullCorpseRoundtrip) {
+	for (int iteration = 0; iteration < 10; ++iteration) {
+		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
+
+		const auto rand_id   = RandomGenerators::generate<std::uint64_t>();
+		const auto rand_meat = RandomGenerators::generate<float>();
+		const auto rand_pos  = RandomGenerators::generate<Vec3>();
+		const Size rand_size{.lateral = Lateral{RandomGenerators::generate<double>()},
+							 .height  = Height{RandomGenerators::generate<double>()},
+							 .depth   = Depth{RandomGenerators::generate<double>()}};
+
+		const Corpse original(rand_size, rand_pos, RawMeat{rand_meat}, rand_id);
+		const auto   bytes = CorpseSRI::serialize_corpse(original);
+
+		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+		const auto                   deserialized = CorpseResponseDSI::get_corpse(buffer);
+
+		EXPECT_EQ(deserialized.id, original.id);
+		EXPECT_FLOAT_EQ(deserialized.raw_meat.value, original.raw_meat.value);
+		EXPECT_EQ(deserialized.position, original.position);
+		EXPECT_DOUBLE_EQ(deserialized.size.lateral.value, original.size.lateral.value);
+		EXPECT_DOUBLE_EQ(deserialized.size.height.value, original.size.height.value);
+		EXPECT_DOUBLE_EQ(deserialized.size.depth.value, original.size.depth.value);
+	}
+}
+
+// Corpse: Stream With Offsets
+
+TEST(CorpseSerializeDeserializeRoundtrip, StreamWithOffsets) {
+	const Size   size{.lateral = Lateral{1.0}, .height = Height{2.0}, .depth = Depth{3.0}};
+	const Vec3   pos{10.0, 20.0, 30.0};
+	const Corpse corpse(size, pos, RawMeat{50.0f}, 9999ULL);
+
+	std::vector<std::byte> stream = {std::byte{0xDE},
+									 std::byte{0xAD},
+									 std::byte{0xBE},
+									 std::byte{0xEF}};
+	const size_t           offset = stream.size();
+
+	const auto corpse_bytes = CorpseSRI::serialize_corpse(corpse);
+	append_to_buffer(stream, corpse_bytes);
+	stream.push_back(std::byte{0xFF});
+
+	const auto deserialized = CorpseResponseDSI::get_corpse(stream, offset);
+
+	EXPECT_EQ(deserialized.id, corpse.id);
+	EXPECT_FLOAT_EQ(deserialized.raw_meat.value, corpse.raw_meat.value);
+	EXPECT_EQ(deserialized.position, corpse.position);
+	EXPECT_DOUBLE_EQ(deserialized.size.lateral.value, corpse.size.lateral.value);
+	EXPECT_DOUBLE_EQ(deserialized.size.height.value, corpse.size.height.value);
+	EXPECT_DOUBLE_EQ(deserialized.size.depth.value, corpse.size.depth.value);
+}
+
+// Corpse: Insufficient Buffer Size Throws Error
+
+TEST(CorpseSerializeDeserializeRoundtrip, InsufficientBufferSizeThrowsError) {
+	const std::vector<std::byte> empty_buffer;
+
+	// Each buffer is one byte too short for the specific getter's required range
+	const std::vector<std::byte> short_for_id(CorpseSRI::TO_GET_ID_OFFSET, std::byte{0x01});
+	const std::vector<std::byte> short_for_raw_meat(CorpseSRI::TO_GET_RAW_MEAT_OFFSET + CorpseSRI::RAW_MEAT_BYTES - 1,
+	                                                std::byte{0x01});
+	const std::vector<std::byte> short_for_position(CorpseSRI::TO_GET_POSITION_OFFSET + CorpseSRI::POSITION_BYTES - 1,
+	                                                std::byte{0x01});
+	const std::vector<std::byte> short_for_size(CorpseSRI::TO_GET_SIZE_OFFSET + CorpseSRI::SIZE_BYTES - 1,
+	                                            std::byte{0x01});
+
+	EXPECT_THROW(CorpseResponseDSI::get_id(empty_buffer), ByteError);
+	EXPECT_THROW(CorpseResponseDSI::get_raw_meat(short_for_raw_meat), ByteError);
+	EXPECT_THROW(CorpseResponseDSI::get_position(short_for_position), ByteError);
+	EXPECT_THROW(CorpseResponseDSI::get_size(short_for_size), ByteError);
+	EXPECT_THROW(CorpseResponseDSI::get_corpse(short_for_size), ByteError);
+}
+
+// Corpse: Request DSI
+
+TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
+	constexpr std::uint64_t      corpse_id = 88887777ULL;
+	const auto                   bytes     = Serializer::convert_uint64_t(corpse_id);
+	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
+
+	const auto interpreted_id = CorpseRequestDSI::interpret_like_get_corpse(buffer);
+	EXPECT_EQ(interpreted_id, corpse_id);
 }

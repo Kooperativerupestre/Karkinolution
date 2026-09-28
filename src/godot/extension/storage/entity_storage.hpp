@@ -1,5 +1,6 @@
 #pragma once
 
+#include "godot/extension/model/corpse/corpse.hpp"
 #include "godot/extension/model/creature/creature.hpp"
 #include "model/entity.hpp"
 
@@ -27,6 +28,7 @@ class GodotEntityStorage : public godot::RefCounted {
 		GodotEntityStorage() = default;
 
 		bool add_creature(std::uint64_t id, const godot::Ref<GodotCreature> &creature);
+		bool add_corpse(std::uint64_t id, const godot::Ref<GodotCorpse> &corpse);
 		bool remove(std::uint64_t id);
 		void clear();
 		[[nodiscard]] godot::Variant get(std::uint64_t id) const;

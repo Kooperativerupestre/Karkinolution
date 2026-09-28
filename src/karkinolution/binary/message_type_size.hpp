@@ -29,15 +29,18 @@ enum class BinaryTypes : uint8_t {
 namespace BinarySubTypes {
 	enum class Request : uint32_t {
 		GET_CREATURE = 1,
+		GET_CORPSE   = 2,
 	};
 
 
 	enum class Error : uint32_t {
-		CREATURE_WAS_NOT_FOUND = 1
+		CREATURE_WAS_NOT_FOUND = 1,
+		CORPSE_WAS_NOT_FOUND   = 2,
 	};
 
 	enum class Response : uint32_t {
-		CREATURE
+		CREATURE = 0,
+		CORPSE   = 1,
 	};
 
 	using CodeSubTypes = std::variant<Request, Error, Response>;

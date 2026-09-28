@@ -1,5 +1,6 @@
 #include "binary/frame.hpp"
 #include "karkinolution.hpp"
+#include "model/corpse/corpse.hpp"
 #include "model/creature/creature.hpp"
 #include "model/math/geometry/geometry.hpp"
 #include "model/math/stats/limited_value.hpp"
@@ -21,6 +22,8 @@ void initialize_karkinolution(ModuleInitializationLevel level) {
 
 	GDREGISTER_CLASS(GodotParsedFrame);
 	GDREGISTER_CLASS(GodotCreature);
+	GDREGISTER_CLASS(GodotCorpse);
+
 	GDREGISTER_CLASS(GodotGenericProperty);
 	GDREGISTER_CLASS(GodotSoilPiece);
 	GDREGISTER_CLASS(GodotEntityStorage);
