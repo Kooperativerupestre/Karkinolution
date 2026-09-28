@@ -296,6 +296,13 @@ namespace Deserializer {
 		}
 	}
 
+	template <ByteRange T>
+	void append_bytes(std::vector<std::byte> &bytes, const T &value, std::size_t offset) {
+		for (std::size_t i = 0; i < value.size(); i++) {
+			bytes[offset + i] = value[i];
+		}
+	}
+
 	inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
 		bytes.push_back(value);
 	}

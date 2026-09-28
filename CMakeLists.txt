@@ -62,6 +62,7 @@ if (BUILD_GODOT_EXTENSION)
             src/godot/extension/karkinolution.cpp
             src/godot/extension/binary/frame.cpp
             src/godot/extension/model/creature/creature.cpp
+            src/godot/extension/model/corpse/corpse.cpp
             src/godot/extension/storage/entity_storage.cpp
             src/godot/extension/model/math/stats/limited_value.cpp
             src/godot/extension/model/math/stats/stats.cpp
