@@ -5,10 +5,10 @@
 
 namespace TerritoryDSI {
 
-Territory deserialize_territory(const std::vector<std::byte> &payload, std::size_t offset) {
-	const auto size =
-		PhysicsUnitsDSI::deserialize_size(payload, offset + TerritorySRI::TO_GET_SIZE_OFFSET);
-	return Territory{size};
-}
+	Territory deserialize_territory(const std::vector<std::byte> &payload, std::size_t offset) {
+		const auto size =
+			PhysicsUnitsDSI::deserialize_size(payload, offset + TerritorySRI::TO_GET_SIZE_OFFSET);
+		return Territory{size};
+	}
 
 } // namespace TerritoryDSI
