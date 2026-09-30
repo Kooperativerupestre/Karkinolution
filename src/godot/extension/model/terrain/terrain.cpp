@@ -75,7 +75,7 @@ bool GodotTerrain::add_soil(const godot::Ref<GodotSoilPiece> &soil) {
 	if (soil.is_null()) {
 		return false;
 	}
-	const auto id = soil->get_id();
+	const auto id       = soil->get_id();
 	auto [it, inserted] = soils_.emplace(id, soil);
 	return inserted;
 }
