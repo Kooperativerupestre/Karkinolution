@@ -59,5 +59,5 @@ std::string CreatureResponseDSI::get_name(const std::vector<std::byte> &payload)
 }
 
 BaseIdType CreatureRequestDSI::interpret_like_get_creature(const std::vector<std::byte> &payload) {
-	return BaseIdType{Deserializer::read_uint64_t(payload, 0)};
+	return BaseIdType{Deserializer::read_uint64_t(payload, REQUEST_RESOURCE_BYTES)};
 }

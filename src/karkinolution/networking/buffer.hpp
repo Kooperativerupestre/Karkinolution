@@ -1,4 +1,6 @@
 #pragma once
+#include "karkinolution/binary/frames/parser.hpp"
+
 #include <deque>
 #include <karkinolution/binary/message_type_size.hpp>
 #include <optional>
@@ -6,11 +8,7 @@
 inline constexpr int REQUEST_BUFFER_MAX_SIZE = 4096;
 
 
-enum class BufferExistence : uint8_t {
-	YES,
-	NO,
-	INCOMPLETE
-};
+using BufferExistence = FrameParser::FrameFieldExistence;
 
 class RequestBuffer {
 	private:
@@ -22,8 +20,8 @@ class RequestBuffer {
 		RequestBuffer() {}
 
 		RequestBuffer(std::deque<char> &buffer) {
-			for (std::size_t i = buffer.size(); i > 0; --i) {
-				buffer_.push_back(std::byte{static_cast<unsigned char>(buffer[i - 1])});
+			for (std::size_t i = 0; i < buffer.size(); i++) {
+				buffer_.push_back(std::byte{static_cast<unsigned char>(buffer[i])});
 			}
 		}
 

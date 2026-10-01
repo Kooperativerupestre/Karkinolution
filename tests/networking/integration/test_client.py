@@ -8,19 +8,19 @@ HOST = "127.0.0.1"
 PORT = 9000
 
 creature_id = 1
-
 frame = (
-        struct.pack(">I", 13)
-        + struct.pack(">B", 1)
-        + struct.pack(">I", 1)
-        + struct.pack(">Q", creature_id)
+    struct.pack(">I", 11)
+    + struct.pack(">B", 1)
+    + struct.pack(">B", 1)
+    + struct.pack(">B", 1)
+    + struct.pack(">Q", creature_id)
 )
 
 expected_response = (
-        struct.pack(">I", 25)
-        + struct.pack(">B", 2)
-        + struct.pack(">I", 1)
-        + b"Creature with id = 1"
+    struct.pack(">I", 22)
+    + struct.pack(">B", 2)
+    + struct.pack(">B", 1)
+    + b"Creature with id = 1"
 )
 
 
@@ -39,6 +39,9 @@ server = None
 try:
     server = subprocess.Popen(
         [sys.argv[1]],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
     )
 
     with wait_for_server() as sock:
@@ -62,3 +65,11 @@ finally:
     if server is not None:
         server.terminate()
         server.wait()
+
+        stdout, stderr = server.communicate()
+
+        print("SERVER STDOUT:")
+        print(stdout)
+
+        print("SERVER STDERR:")
+        print(stderr)

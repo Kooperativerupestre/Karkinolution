@@ -1,5 +1,6 @@
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/buffer.hpp"
+#include "karkinolution/networking/port.hpp"
 
 #include <asio/write.hpp>
 #include <iomanip>
@@ -49,6 +50,7 @@ Server::Server(IoContext &io_context, Port port, World &world)
 		std::cout << "The receive overflow mode is: verify all bytes before receive\n";
 	} else if constexpr (GLOBAL_RECEIVE_OVERFLOW_MODE
 						 == ReceiveOverflowMode::VERIFY_BYTE_PER_BYTE) {
+		std::cout << "Karkinolution server is initializing 🦀 at port: " << PORT << "\n";
 		std::cout << "The receive overflow mode is: verify byte per byte while receiving\n";
 	}
 
@@ -154,7 +156,7 @@ void Server::receive() {
 void Server::accept() {
 	acceptor_.async_accept(socket_, [this](const AsioErrorCode &error) {
 		if (!error) {
-			std::cout << "I'm fucking alive🦀\n";
+			std::cout << "Connected 🦀\n";
 			receive();
 		} else {
 			on_error(error);
