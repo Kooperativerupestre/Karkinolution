@@ -14,7 +14,7 @@ std::vector<std::byte> CreatureAPIBYA::get_creature(const World                 
 
 	const auto id = CreatureRequestDSI::interpret_like_get_creature(request);
 
-	auto creature = CreatureAPI::get_creature(world, id);
+	auto creature = CreatureAPI::see_creature(world, id);
 
 	if (creature == nullptr) {
 		return FrameMotor::build(

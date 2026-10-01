@@ -5,7 +5,7 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/world/world.hpp>
 
-const Creature* CreatureAPI::get_creature(const World &world, BaseIdType id) {
+const Creature* CreatureAPI::see_creature(const World &world, BaseIdType id) {
 	const auto creature =
 		world.organism_registry.entities.try_at(EntityIDF::create_creature_id(id));
 

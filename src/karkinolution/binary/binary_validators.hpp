@@ -14,25 +14,40 @@ namespace BinaryValidator {
 		}
 	}
 
-	constexpr void validate_error_sub_type(uint32_t value) {
-		if (value != static_cast<uint32_t>(BinarySubTypes::Error::CREATURE_WAS_NOT_FOUND)) {
+	constexpr void validate_error_sub_type(uint8_t value) {
+		if (value != static_cast<uint8_t>(BinarySubTypes::Error::CREATURE_WAS_NOT_FOUND)
+			&& value != static_cast<uint8_t>(BinarySubTypes::Error::CORPSE_WAS_NOT_FOUND)) {
 			throw ByteError(std::format("Invalid frame sub type: {}", value));
 		}
 	}
 
-	constexpr void validate_request_sub_type(uint32_t value) {
-		if (value != static_cast<uint32_t>(BinarySubTypes::Request::GET_CREATURE)) {
+	constexpr void validate_request_sub_type(uint8_t value) {
+		if (value != static_cast<uint8_t>(BinarySubTypes::Request::SEE)
+			&& value != static_cast<uint8_t>(BinarySubTypes::Request::CREATE)
+			&& value != static_cast<uint8_t>(BinarySubTypes::Request::ERASE)
+			&& value != static_cast<uint8_t>(BinarySubTypes::Request::CYCLE)
+			&& value != static_cast<uint8_t>(BinarySubTypes::Request::WANT)) {
 			throw ByteError(std::format("Invalid frame sub type: {}", value));
 		}
 	}
 
-	constexpr void validate_response_sub_type(uint32_t value) {
-		if (value != static_cast<uint32_t>(BinarySubTypes::Response::CREATURE)) {
+	constexpr void validate_response_sub_type(uint8_t value) {
+		if (value != static_cast<uint8_t>(BinarySubTypes::Response::CREATURE)) {
 			throw ByteError(std::format("Invalid frame sub type: {}", value));
 		}
 	}
 
-	constexpr void validate_sub_type(BinaryTypes type, uint32_t value) {
+	constexpr void validate_request_sub_type_and_resource(uint8_t sub_type, uint8_t resource) {
+		if (sub_type == static_cast<uint8_t>(BinarySubTypes::Request::SEE)) {
+			if (resource != static_cast<uint8_t>(RequestResource::CREATURE)) {
+				throw ByteError(std::format("Invalid request sub type {} with resource {}",
+											sub_type,
+											resource));
+			}
+		}
+	}
+
+	constexpr void validate_sub_type(BinaryTypes type, uint8_t value) {
 		if (type == BinaryTypes::Request) {
 			validate_request_sub_type(value);
 		} else if (type == BinaryTypes::Response) {

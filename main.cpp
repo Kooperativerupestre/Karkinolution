@@ -2,6 +2,7 @@
 #include "karkinolution/world/world.hpp"
 
 #include <asio/io_context.hpp>
+#include <karkinolution/networking/port.hpp>
 
 int main() {
 	asio::io_context io_context;
@@ -12,7 +13,7 @@ int main() {
 		.epsilon = 5.0f};
 
 	auto   world = WorldFactory::create_world(preset);
-	Server server(io_context, 9000, world);
+	Server server(io_context, PORT, world);
 
 	io_context.run();
 

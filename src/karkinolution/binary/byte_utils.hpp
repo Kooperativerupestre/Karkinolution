@@ -28,6 +28,27 @@ namespace ByteUtils {
 			payload[i] = std::byte{0};
 		}
 	}
+
+	uint8_t constexpr cast_numeric(RequestResource resource) {
+		return static_cast<uint8_t>(resource);
+	}
+
+	uint8_t constexpr cast_numeric(BinaryTypes type) {
+		return static_cast<uint8_t>(type);
+	}
+
+	uint8_t constexpr cast_numeric(BinarySubTypes::CodeSubTypes sub_type) {
+		if (std::holds_alternative<BinarySubTypes::Request>(sub_type)) {
+			return static_cast<uint8_t>(std::get<BinarySubTypes::Request>(sub_type));
+		} else if (std::holds_alternative<BinarySubTypes::Error>(sub_type)) {
+			return static_cast<uint8_t>(std::get<BinarySubTypes::Error>(sub_type));
+		} else if (std::holds_alternative<BinarySubTypes::Response>(sub_type)) {
+			return static_cast<uint8_t>(std::get<BinarySubTypes::Response>(sub_type));
+		}
+		throw ByteError("Invalid sub type");
+	}
+
+
 } // namespace ByteUtils
 
 namespace BinaryNLTUtils {

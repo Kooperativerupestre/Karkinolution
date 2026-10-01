@@ -13,22 +13,25 @@
 #include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
 
-namespace GodotBinaryParser {
+namespace CreatureGodotBinaryParser {
 
 	inline godot::Ref<GodotParsedFrame> parse_frame(const godot::PackedByteArray &bytes) {
-		return GodotParsedFrame::from_core(FrameParser::parse_frame(to_bytes(bytes)));
+		return GodotParsedFrame::from_core(
+			FrameParser::parse_frame(GodotBinaryParser::to_bytes(bytes)));
 	}
 
 	inline godot::Ref<GodotCreature> parse_creature(const godot::PackedByteArray &payload,
 													std::uint64_t                 id = 0) {
 		return GodotCreature::from_deserialized(
-			CreatureResponseDSI::get_creature(to_bytes(payload)),
+			CreatureResponseDSI::get_creature(GodotBinaryParser::to_bytes(payload)),
 			id);
 	}
 
-	inline godot::PackedByteArray build_get_creature_request(std::uint64_t id) {
-		return to_packed_byte_array(FrameMotor::build(BinarySubTypes::Request::GET_CREATURE,
-													  Serializer::convert_uint64_t(id)));
+	inline godot::PackedByteArray build_see_creature_request(std::uint64_t id) {
+		return GodotBinaryParser::to_packed_byte_array(
+			FrameMotor::build(BinarySubTypes::Request::SEE,
+							  RequestResource::CREATURE,
+							  Serializer::convert_uint64_t(id)));
 	}
 
-} // namespace GodotBinaryParser
+} // namespace CreatureGodotBinaryParser

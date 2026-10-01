@@ -4,7 +4,7 @@
 - **SRI**: Serializer Interpreter
 - **NLT**: Numeric Language Types
 - **Endianness**: Big-endian
-- **Zero-padding**: On the right
+- **Zero-padding**: On the left
 
 ---
 

@@ -1,7 +1,6 @@
 #include "karkinolution.hpp"
 
-#include "binary/parser.hpp"
-
+#include <godot/extension/binary/parsers/creature.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 void Karkinolution::_bind_methods() {
@@ -18,14 +17,14 @@ void Karkinolution::_bind_methods() {
 }
 
 godot::Ref<GodotParsedFrame> Karkinolution::parse_frame(const godot::PackedByteArray &bytes) {
-	return GodotBinaryParser::parse_frame(bytes);
+	return CreatureGodotBinaryParser::parse_frame(bytes);
 }
 
 godot::Ref<GodotCreature> Karkinolution::parse_creature(const godot::PackedByteArray &payload,
 														std::uint64_t                 id) {
-	return GodotBinaryParser::parse_creature(payload, id);
+	return CreatureGodotBinaryParser::parse_creature(payload, id);
 }
 
 godot::PackedByteArray Karkinolution::build_get_creature_request(std::uint64_t id) {
-	return GodotBinaryParser::build_get_creature_request(id);
+	return CreatureGodotBinaryParser::build_see_creature_request(id);
 }
