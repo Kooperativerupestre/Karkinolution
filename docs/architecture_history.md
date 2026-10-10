@@ -1,4 +1,4 @@
-# 1.0
+# 1.0 - Python version
 
 # Organism
 
@@ -88,7 +88,7 @@ I created a dedicated perception class to standardize the perception API and int
 
 *Note: `Perception` now lives under the `brain` module, alongside `Planners` and `Instincts`.*
 
-# 1.1
+# 1.1 - C++ version (after migration)
 
 ## Folder Organization
 
@@ -128,12 +128,9 @@ These limited values may vary depending on the requirements of the object that i
 
 These values can frequently change their bounds at runtime, unlike `NormalizedValue` or `LimitedValue`, whose bounds are much more stable and therefore make more sense as part of the type itself.
 
-# 1.2
+# 1.2 - After great reorganization of project
 
 I chose R*-tree for the territory because I needed a spatial data structure that makes area-based searches, easy and efficient. Octree was chosen because I needed the same properties as R*-tree, plus one additional requirement: The creature's position is often updated, so I looked into the Octree and I realized that the insertion and updates are faster than an6 R*-tree. I'm open to changes if my reasoning is proven wrong.
-
-# 1.3
-
 ### Why did I create a R*tree service?
 
 Because I realized that some invariants don't just belong to the territory. Some concepts that I defined as requiring atomicity are required for all structures that use an R*tree with a Registry.
@@ -148,8 +145,50 @@ First, in my old python project I had just the perception. Over time, I realized
 
 Because it can represent a large range.
 
+# 1.3 - Connecting to Godot
+
 ### Server
 
 #### Why only one client?
 
 Because I don't have any needy to justificate more than one client.
+
+### Why did I change int64_t for BaseIdtype? 
+
+Because the >0 restriction of uint64_t was possibly dangerous when it would be sent do Godot.
+
+### Why did I choose Godot for the interface?
+
+First, it's equally important say which alternatives I considered.
+
+#### TUI (terminal)
+
+I already had some experience with TUI when I was working on the Python version of _Karkinolution_. I used the Rich library. And I liked it, but quickly the sensation of the game started to become more crammed as the complexity of the entities grew. 
+
+#### Own engine
+
+Based on my goals, an engine isn't something _necessary_, nor is it aligned with the project's vision.
+
+#### Unity
+
+I didn't consider about.
+
+#### Unreal
+
+The trade-off between complexity and more advanced graphics and features wasn't worth it for my goals. Given that my mainly goal was only a _visualizer_ of the simulation. 
+
+#### Godot
+
+I chose it because I wanted a simple engine, that I could connect to C++ and build 2D/2.5D views. And I think that Godot really offers to this project the simplicity and portability that the project needs.
+
+##### Why didn't I make the simulation inside Godot?
+
+Because I wanted to actually keep the simulation separated and view as it was in Python. Karkinolution must be able to run independently of the visualization.
+
+#### Why did I choose 2.5D instead of 3D camera?
+
+My main inspiration is worldbox and I actually appreciate this type of cammera. 
+
+#### Who makes the sprites?
+
+The owner of this project. There are no artists.
