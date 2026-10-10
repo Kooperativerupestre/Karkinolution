@@ -1,0 +1,203 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "clang-21",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-21",
+        "CMAKE_CXX_COMPILER": "clang++-21"
+      }
+    },
+    {
+      "name": "ccache",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
+      }
+    },
+    {
+      "name": "sanitizer-flags",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined"
+      }
+    },
+    {
+      "name": "godot-extension",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_GODOT_EXTENSION": "ON"
+      }
+    },
+    {
+      "name": "ci-base",
+      "hidden": true,
+      "inherits": ["base", "clang-21", "ccache"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "inherits": ["base", "clang"],
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "inherits": ["base", "clang"],
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "native",
+      "displayName": "Release, native CPU (benchmarking only, not portable)",
+      "inherits": ["base", "clang"],
+      "binaryDir": "${sourceDir}/build-native",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS": "-march=native"
+      }
+    },
+    {
+      "name": "sanitizers",
+      "displayName": "Debug with AddressSanitizer and UBSan",
+      "inherits": ["base", "clang", "sanitizer-flags"],
+      "binaryDir": "${sourceDir}/build-sanitizers",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "godot",
+      "displayName": "Debug with the Godot extension",
+      "inherits": ["base", "clang", "godot-extension"],
+      "binaryDir": "${sourceDir}/build-godot",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "ci-tidy",
+      "displayName": "CI: Debug build used by clang-tidy",
+      "inherits": "ci-base",
+      "binaryDir": "${sourceDir}/build-tidy"
+    },
+    {
+      "name": "ci",
+      "displayName": "CI: Debug build for unit tests",
+      "inherits": "ci-base",
+      "binaryDir": "${sourceDir}/build-ci"
+    },
+    {
+      "name": "ci-sanitizers",
+      "displayName": "CI: Debug with AddressSanitizer and UBSan",
+      "inherits": ["ci-base", "sanitizer-flags"],
+      "binaryDir": "${sourceDir}/build-ci-sanitizers"
+    },
+    {
+      "name": "ci-godot",
+      "displayName": "CI: Debug with the Godot extension",
+      "inherits": ["ci-base", "godot-extension"],
+      "binaryDir": "${sourceDir}/build-ci-godot"
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "debug" },
+    { "name": "release", "configurePreset": "release" },
+    { "name": "native", "configurePreset": "native" },
+    { "name": "sanitizers", "configurePreset": "sanitizers" },
+    {
+      "name": "godot",
+      "configurePreset": "godot",
+      "targets": ["karkinolution_godot"]
+    },
+    {
+      "name": "ci-tidy",
+      "configurePreset": "ci-tidy",
+      "targets": ["karkinolution_app"]
+    },
+    {
+      "name": "ci",
+      "configurePreset": "ci",
+      "targets": ["karkinolution_tests", "karkinolution_app"]
+    },
+    {
+      "name": "ci-sanitizers",
+      "configurePreset": "ci-sanitizers",
+      "targets": ["karkinolution_tests", "karkinolution_app"]
+    },
+    {
+      "name": "ci-godot",
+      "configurePreset": "ci-godot",
+      "targets": ["karkinolution_godot"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test-base",
+      "hidden": true,
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "sanitizer-environment",
+      "hidden": true,
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      }
+    },
+    {
+      "name": "debug",
+      "inherits": "test-base",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "inherits": "test-base",
+      "configurePreset": "release"
+    },
+    {
+      "name": "sanitizers",
+      "inherits": ["test-base", "sanitizer-environment"],
+      "configurePreset": "sanitizers"
+    },
+    {
+      "name": "ci",
+      "inherits": "test-base",
+      "configurePreset": "ci"
+    },
+    {
+      "name": "ci-sanitizers",
+      "inherits": ["test-base", "sanitizer-environment"],
+      "configurePreset": "ci-sanitizers"
+    }
+  ]
+}
