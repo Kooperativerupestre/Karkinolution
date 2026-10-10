@@ -89,6 +89,27 @@ jobs:
         uses: actions/checkout@v7
         with:
           submodules: recursive
+          fetch-depth: 0
+
+      # An empty sha means there is no usable base, so tidy checks every file.
+      - name: Resolve diff base
+        id: diff-base
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          case "$EVENT_NAME" in
+            pull_request) base="$PULL_REQUEST_BASE_SHA" ;;
+            push)         base="$PUSH_BEFORE_SHA" ;;
+            *)            base="" ;;
+          esac
+
+          if [ -n "$base" ] && ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            base=""
+          fi
+
+          echo "sha=$base" >> "$GITHUB_OUTPUT"
 
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2.24
@@ -140,13 +161,23 @@ jobs:
               --parallel "$(nproc)"
 
       - name: Run tidy check
+        env:
+          DIFF_BASE_SHA: ${{ steps.diff-base.outputs.sha }}
         run: |
+          changed_since_args=()
+          if [ -n "$DIFF_BASE_SHA" ]; then
+            changed_since_args=(--changed-since "$DIFF_BASE_SHA")
+          fi
+
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution tidy check src/karkinolution main.cpp --build-dir /workspace/build-tidy --config-file /workspace/.clang-tidy
+            uv run karkinolution tidy check src/karkinolution main.cpp \
+              --build-dir /workspace/build-tidy \
+              --config-file /workspace/.clang-tidy \
+              "${changed_since_args[@]}"
 
   unit-tests:
     name: Unit Tests
