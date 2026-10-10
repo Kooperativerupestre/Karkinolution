@@ -3,6 +3,7 @@
 - **DSI**: Deserializer Interpreter
 - **SRI**: Serializer Interpreter
 - **NLT**: Numeric Language Types
+- **SO**: Serialize output
 - **Endianness**: Big-endian
 - **Zero-padding**: On the left
 
@@ -48,3 +49,12 @@ A DSI reads raw byte payloads and reconstructs domain objects.
    - Primitives: read with `Deserializer::read_<type>(payload, offset)`.
    - Compounds: delegate each field using `offset + <Domain>SRI::TO_GET_<FIELD>_OFFSET`.
    - No Duplication: Do not define duplicate deserializers for existing types; delegate directly to their domain DSI.
+
+### SO Pattern (Serialized output)
+
+A SO resolves the following problem: How can we know which sub type the serialized thing has? 
+
+#### Conventions
+
+.payload -> Bytes
+.sub_type (or sub_type())

@@ -1,12 +1,7 @@
 # Godot Integration Architecture
 
 ## Q: What is the end-to-end data flow from Godot bytes to storage?
-1. `NetworkTransport` reads raw bytes from `StreamPeerTCP`.
-2. Raw bytes pass to `FrameParser::parse_frame()`, returning a framed packet.
-3. Domain API inspects the frame type/subtype and invokes the conversion namespace.
-4. The conversion namespace invokes the simulator's existing deserializer (DSI), which parses the binary payload into raw values.
-5. The conversion namespace populates an immutable Godot DTO struct with those values.
-6. The resulting Godot DTO is saved into `GodotEntityStorage` by ID.
+Pending
 
 ## Q: How are Godot models decoupled from simulator core models?
 Godot models must never include or depend on simulator core headers. They are completely standalone Godot `RefCounted` structs. A dedicated conversion namespace bridges the two: it calls the simulator deserializers (DSI) and passes the extracted primitive data into the Godot structs.

@@ -7,7 +7,7 @@
 #include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/core/error.hpp>
 
-namespace ByteUtils {
+namespace BinaryUtils {
 	inline std::byte char_to_byte(char byte) {
 		return static_cast<std::byte>(static_cast<unsigned char>(byte));
 	}
@@ -29,42 +29,43 @@ namespace ByteUtils {
 		}
 	}
 
-	uint8_t constexpr cast_numeric(RequestResource resource) {
+	uint8_t constexpr cast_numeric(Frames::Types::RequestResource resource) {
 		return static_cast<uint8_t>(resource);
 	}
 
-	uint8_t constexpr cast_numeric(BinaryTypes type) {
+	uint8_t constexpr cast_numeric(Frames::Types::BinaryTypes type) {
 		return static_cast<uint8_t>(type);
 	}
 
-	uint8_t constexpr cast_numeric(BinarySubTypes::CodeSubTypes sub_type) {
-		if (std::holds_alternative<BinarySubTypes::Request>(sub_type)) {
-			return static_cast<uint8_t>(std::get<BinarySubTypes::Request>(sub_type));
-		} else if (std::holds_alternative<BinarySubTypes::Error>(sub_type)) {
-			return static_cast<uint8_t>(std::get<BinarySubTypes::Error>(sub_type));
-		} else if (std::holds_alternative<BinarySubTypes::Response>(sub_type)) {
-			return static_cast<uint8_t>(std::get<BinarySubTypes::Response>(sub_type));
+	uint8_t constexpr cast_numeric(Frames::Types::BinarySubTypes::CodeSubTypes sub_type) {
+		if (std::holds_alternative<Frames::Types::BinarySubTypes::Request>(sub_type)) {
+			return static_cast<uint8_t>(std::get<Frames::Types::BinarySubTypes::Request>(sub_type));
+		} else if (std::holds_alternative<Frames::Types::BinarySubTypes::Error>(sub_type)) {
+			return static_cast<uint8_t>(std::get<Frames::Types::BinarySubTypes::Error>(sub_type));
+		} else if (std::holds_alternative<Frames::Types::BinarySubTypes::Response>(sub_type)) {
+			return static_cast<uint8_t>(
+				std::get<Frames::Types::BinarySubTypes::Response>(sub_type));
 		}
 		throw ByteError("Invalid sub type");
 	}
 
 
-} // namespace ByteUtils
+} // namespace BinaryUtils
 
 namespace BinaryNLTUtils {
-	template <typename T> constexpr BinaryNLT get() {
+	template <typename T> constexpr Frames::Types::BinaryNLT get() {
 		if constexpr (std::is_same<T, float>()) {
-			return BinaryNLT::FLOAT;
+			return Frames::Types::BinaryNLT::FLOAT;
 		} else if constexpr (std::is_same<T, double>()) {
-			return BinaryNLT::DOUBLE;
+			return Frames::Types::BinaryNLT::DOUBLE;
 		} else if constexpr (std::is_same<T, uint8_t>()) {
-			return BinaryNLT::UINT8_T;
+			return Frames::Types::BinaryNLT::UINT8_T;
 		} else if constexpr (std::is_same<T, uint32_t>()) {
-			return BinaryNLT::UINT32_T;
+			return Frames::Types::BinaryNLT::UINT32_T;
 		} else if constexpr (std::is_same<T, uint64_t>()) {
-			return BinaryNLT::UINT64_T;
+			return Frames::Types::BinaryNLT::UINT64_T;
 		} else if constexpr (std::is_same<T, int>()) {
-			return BinaryNLT::INT;
+			return Frames::Types::BinaryNLT::INT;
 		}
 
 		throw ByteError(

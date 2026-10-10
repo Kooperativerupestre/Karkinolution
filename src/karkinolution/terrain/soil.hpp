@@ -1,4 +1,5 @@
 #pragma once
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/math/geometry/models.hpp"
 
 #include <cstdint>
@@ -148,7 +149,7 @@ inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
 			   .properties          = {},
 			   .required_properties = {Properties::Capabilities::Move::SWIMM}}}};
 
-using SoilPieceId = uint64_t;
+using SoilPieceId = BaseIdType;
 
 struct SoilPiece {
 		SoilTypes                    type;

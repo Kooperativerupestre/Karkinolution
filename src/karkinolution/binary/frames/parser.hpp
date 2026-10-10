@@ -1,293 +1,345 @@
 #pragma once
+#include "karkinolution/binary/frames/invariants.hpp"
 #include "karkinolution/core/error.hpp"
 
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <karkinolution/binary/binary_validators.hpp>
 #include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/binary/byte_utils.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/frames/models.hpp>
 #include <karkinolution/binary/message_type_size.hpp>
+#include <string>
+#include <utility>
 #include <vector>
 
-struct ParsedFrame {
-		std::uint32_t                size;
-		BinaryTypes                  type;
-		BinarySubTypes::CodeSubTypes sub_type;
-		std::vector<std::byte>       payload;
+namespace Frames {
+	namespace Parser {
+		constexpr std::uint32_t get_payload_bytes(std::uint32_t              declared_size,
+												  Frames::Types::BinaryTypes type) {
+			constexpr auto common_bytes = Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE
+				+ Frames::FieldsBytes::RequestTypes::Request::ID;
 
-		std::optional<RequestResource> resource;
 
-		// this must exist if type == request
-		// don't verify directly, use this function below
-
-		bool has_resource() {
-			if (type == BinaryTypes::Request) {
-				if (!resource.has_value()) {
-					throw SimulationError(
-						"The resource of a parsed frame must exist if the type is request");
-				}
-				return true;
+			if (declared_size < common_bytes) {
+				throw ByteError(
+					std::format("Cannot get payload bytes because size {} < common bytes {}",
+								declared_size,
+								common_bytes));
 			}
-			return false;
-		}
-};
+			if (type == Frames::Types::BinaryTypes::Request) {
+				const auto minimum_bytes =
+					common_bytes + Frames::FieldsBytes::RequestTypes::Request::RESOURCE;
 
-namespace FrameParser {
-	std::uint32_t constexpr get_payload_bytes(uint32_t size) {
-		return size - static_cast<uint32_t>(MESSAGE_TYPE_BYTES)
-			- static_cast<uint32_t>(MESSAGE_SUB_TYPE_BYTES);
-	}
+				if (declared_size < minimum_bytes) {
+					throw ByteError(
+						std::format("Cannot get payload bytes because size {} < common bytes {}",
+									declared_size,
+									common_bytes));
+				}
+				return declared_size - common_bytes
+					- Frames::FieldsBytes::RequestTypes::Request::RESOURCE;
+			}
 
-	template <ByteRange T> std::uint32_t get_size(const T &bytes) {
-		return Deserializer::read_uint32_t(bytes, 0);
-	}
+			if (type == Frames::Types::BinaryTypes::Error
+				|| type == Frames::Types::BinaryTypes::Response) {
+				if (declared_size < common_bytes) {
+					throw ByteError(
+						std::format("Cannot get payload bytes because size {} < common bytes {}",
+									declared_size,
+									common_bytes));
+				}
+				return declared_size - common_bytes;
+			}
 
-	template <ByteRange T> BinaryTypes get_type(const T &bytes) {
-		const auto raw = Deserializer::read_uint8_t(bytes, MESSAGE_SIZE_BYTES);
-
-		BinaryValidator::validate_type(raw);
-		return static_cast<BinaryTypes>(raw);
-	}
-
-	template <ByteRange T> BinarySubTypes::CodeSubTypes get_sub_type(const T &bytes) {
-		const auto type = get_type(bytes);
-		const auto read =
-			Deserializer::read_uint8_t(bytes, MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES);
-
-		BinaryValidator::validate_sub_type(type, read);
-
-		if (type == BinaryTypes::Error) {
-
-			return BinarySubTypes::Error{read};
-		} else if (type == BinaryTypes::Request) {
-			return BinarySubTypes::Request{read};
-		} else if (type == BinaryTypes::Response) {
-			return BinarySubTypes::Response{read};
-		}
-		throw ByteError("Unexpected error");
-	}
-
-	template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
-		std::vector<std::byte> payload;
-
-		const auto offset = MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES;
-
-		payload.insert(payload.end(), bytes.begin() + offset, bytes.end());
-
-		return payload;
-	}
-
-	template <ByteRange T> RequestResource get_resource(const T &bytes) {
-		const auto type = get_type(bytes);
-
-		if (type != BinaryTypes::Request) {
-			throw ByteError("Only request has a resource type");
+			throw ByteError("Invalid type of frame");
 		}
 
-		const auto read = Deserializer::read_uint8_t(bytes, FrameOffsets::TO_GET_REQUEST_RESOURCE);
-
-		RequestResource resource;
-		if (read == static_cast<uint8_t>(RequestResource::CREATURE)) {
-			resource = RequestResource::CREATURE;
-		} else if (read == static_cast<uint8_t>(RequestResource::CORPSE)) {
-			resource = RequestResource::CORPSE;
-		} else if (read == static_cast<uint8_t>(RequestResource::EMBRYO)) {
-			resource = RequestResource::EMBRYO;
-		} else if (read == static_cast<uint8_t>(RequestResource::SOIL)) {
-			resource = RequestResource::SOIL;
-		} else if (read == static_cast<uint8_t>(RequestResource::EGG)) {
-			resource = RequestResource::EGG;
-		} else {
-			throw ByteError(std::format("Invalid request resource: ", read));
-		}
-		return resource;
-	}
-
-	template <ByteRange T> std::uint32_t get_frame_size(const T &bytes) {
-		return MESSAGE_HEADER_BYTES + get_payload_bytes(bytes);
-	}
-
-	template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-
-		// verify if the bytes have enough size to get size, type and sub type
-		if (bytes.size() < MESSAGE_HEADER_BYTES) {
-			throw ByteError(
-				std::format("The size of the bytes {} is lower than required (not including the "
-							"size of payload) to get size, type and sub type {}",
-							bytes.size(),
-							MESSAGE_HEADER_BYTES));
+		template <ByteRange T> std::uint32_t get_size(const T &bytes) {
+			return Deserializer::read_uint32_t(bytes, 0);
 		}
 
-		const auto size = get_size(bytes);
+		template <ByteRange T> Frames::Types::BinaryTypes get_type(const T &bytes) {
+			const auto raw = Deserializer::read_uint8_t(bytes, Frames::FieldsBytes::DECLARED_SIZE);
 
-		if (size <= MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES) {
-			throw ByteError(std::format("The declared size {} is lower than required {}",
-										size,
-										MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES));
+			BinaryValidator::validate_type(raw);
+			return static_cast<Frames::Types::BinaryTypes>(raw);
+		}
+
+		template <ByteRange T>
+		Frames::Types::BinarySubTypes::CodeSubTypes get_sub_type(const T &bytes) {
+			const auto type = get_type(bytes);
+			const auto read = Deserializer::read_uint8_t(bytes, Frames::Offsets::TO_GET_SUB_TYPE);
+
+			BinaryValidator::validate_sub_type(type, read);
+
+			if (type == Frames::Types::BinaryTypes::Error) {
+
+				return Frames::Types::BinarySubTypes::Error{read};
+			} else if (type == Frames::Types::BinaryTypes::Request) {
+				return Frames::Types::BinarySubTypes::Request{read};
+			} else if (type == Frames::Types::BinaryTypes::Response) {
+				return Frames::Types::BinarySubTypes::Response{read};
+			}
+			throw ByteError("Unexpected error");
+		}
+
+		namespace Request {
+			template <ByteRange T> Frames::Types::RequestId get_id(const T &bytes) {
+				return Deserializer::deserialize<Frames::Types::RequestId>(
+					bytes,
+					Frames::Offsets::RequestTypes::Request::TO_GET_ID);
+			}
+
+			template <ByteRange T> Frames::Types::RequestResource get_resource(const T &bytes) {
+				auto read = Deserializer::deserialize<Frames::Types::RequestResourceEnumType>(
+					bytes,
+					Frames::Offsets::RequestTypes::Request::TO_GET_RESOURCE);
+
+				BinaryValidator::Request::validate_resource(read);
+				return Frames::Types::RequestResource(read);
+			}
+
+			template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+				std::vector<std::byte> payload;
+				payload.insert(payload.end(),
+							   bytes.begin()
+								   + Frames::Offsets::RequestTypes::Request::TO_GET_PAYLOAD,
+							   bytes.end());
+				return payload;
+			}
+		} // namespace Request
+
+		namespace Response {
+			template <ByteRange T> Frames::Types::RequestId get_id(const T &bytes) {
+				return Deserializer::deserialize<Frames::Types::RequestId>(
+					bytes,
+					Frames::Offsets::ResponseTypes::TO_GET_REQUEST_ID);
+			}
+
+			template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+				std::vector<std::byte> payload;
+				payload.insert(payload.end(),
+							   bytes.begin() + Frames::Offsets::ResponseTypes::TO_GET_PAYLOAD,
+							   bytes.end());
+				return payload;
+			}
+		} // namespace Response
+
+		template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+			const auto             type = get_type(bytes);
+			std::vector<std::byte> payload;
+
+
+			if (type == Frames::Types::BinaryTypes::Request) {
+				payload = Request::get_payload(bytes);
+			} else if (type == Frames::Types::BinaryTypes::Error
+					   || type == Frames::Types::BinaryTypes::Response) {
+				payload = Response::get_payload(bytes);
+			} else {
+				throw ByteError("Invalid frame type");
+			}
+			return payload;
+			std::unreachable();
+		}
+
+		template <ByteRange T> std::uint32_t get_frame_size(const T &bytes) {
+			return Frames::FieldsBytes::DECLARED_SIZE + get_size(bytes);
+		}
+
+		template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
+
+			// verify if the bytes have enough size to get size, type and sub type
+			if (bytes.size() < Frames::FieldsBytes::MESSAGE_HEADER_BYTES) {
+				throw ByteError(std::format(
+					"The size of the bytes {} is lower than required (not including the "
+					"size of payload) to get size, type and sub type {}",
+					bytes.size(),
+					Frames::FieldsBytes::MESSAGE_HEADER_BYTES));
+			}
+
+			const auto declared_size = get_size(bytes);
+
+			if (declared_size <= Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE) {
+				throw ByteError(
+					std::format("The declared size {} is lower than required {}",
+								declared_size,
+								Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE));
+			}
+
+			const auto type = get_type(bytes);
+
+			const auto payload_size = get_payload_bytes(declared_size, type);
+			const auto frame_size   = get_frame_size(bytes);
+
+			if (bytes.size() < frame_size) {
+				throw ByteError(
+					std::format("The size of bytes {} is lower than the frame size value {}",
+								bytes.size(),
+								frame_size));
+			}
+
+			// verify if the bytes have enough size to get the payload
+			if (bytes.size() < Frames::FieldsBytes::DECLARED_SIZE + Frames::FieldsBytes::TYPE
+					+ Frames::FieldsBytes::SUB_TYPE + payload_size) {
+				throw ByteError(std::format(
+					"The size of bytes {} is lower than required (including "
+					"the size of payload) to get payload {}",
+					bytes.size(),
+					Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE + payload_size));
+			}
+
+			std::vector<std::byte> output;
+			output.reserve(frame_size);
+			output.insert(output.end(), bytes.begin(), bytes.begin() + frame_size);
+
+			return output;
+		}
+
+		template <ByteRange T> Models::Request parse_request_frame(const T &bytes) {
+			const auto sub_type = std::get<RequestSubTypes>(get_sub_type(bytes));
+			const auto resource = Request::get_resource(bytes);
+
+			BinaryValidator::Request::validate_request_sub_type_and_resource(
+				BinaryUtils::cast_numeric(sub_type),
+				BinaryUtils::cast_numeric(resource));
+
+			return Models::Request{.size     = get_size(bytes),
+								   .id       = Request::get_id(bytes),
+								   .sub_type = sub_type,
+								   .payload  = get_payload(bytes),
+								   .resource = resource};
+		}
+
+		template <ByteRange T> Models::ResponseGeneric parse_response_frame(const T &bytes) {
+
+			return Models::ResponseGeneric{.size       = get_size(bytes),
+										   .request_id = Response::get_id(bytes),
+										   .sub_type   = get_sub_type(bytes),
+										   .payload    = Response::get_payload(bytes)};
+		}
+
+		template <ByteRange T> Models::GenericFrame parse_frame(const T &bytes) {
+			const auto type = get_type(bytes);
+			BinaryValidator::validate_type(type);
+			if (type
+				== static_cast<Frames::Types::FrameType>(Frames::Types::BinaryTypes::Request)) {
+				return Models::GenericFrame{parse_request_frame(bytes), type};
+			} else if (type
+						   == static_cast<Frames::Types::FrameType>(
+							   Frames::Types::BinaryTypes::Response)
+					   || type
+						   == static_cast<Frames::Types::FrameType>(
+							   Frames::Types::BinaryTypes::Error)) {
+				return Models::GenericFrame{parse_response_frame(bytes), type};
+			}
+			std::unreachable();
 		}
 
 
-		const auto payload_size = get_payload_bytes(size);
-		const auto frame_size   = MESSAGE_HEADER_BYTES + payload_size;
+		enum class FrameFieldExistence : uint8_t {
+			YES,
+			INCOMPLETE,
+			NO
+		};
 
-		if (bytes.size() < frame_size) {
-			throw ByteError(
-				std::format("The size of bytes {} is lower than the frame size value {}",
-							bytes.size(),
-							frame_size));
+		template <ByteRange T> FrameFieldExistence has_size(const T &byte) {
+			if (byte.size() == 0) {
+				return FrameFieldExistence::NO;
+			} else if (byte.size() < Frames::FieldsBytes::DECLARED_SIZE) {
+				return FrameFieldExistence::INCOMPLETE;
+			} else {
+				return FrameFieldExistence::YES;
+			}
 		}
 
-		// verify if the bytes have enough size to get the payload
-		if (bytes.size()
-			< MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES + payload_size) {
-			throw ByteError(
-				std::format("The size of bytes {} is lower than required (including "
-							"the size of payload) to get payload {}",
-							bytes.size(),
-							MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES + payload_size));
+		template <ByteRange T> FrameFieldExistence has_type(const T &byte) {
+			const auto v_has_size = has_size(byte);
+
+			if (v_has_size != FrameFieldExistence::YES) {
+				return FrameFieldExistence::NO;
+			}
+
+			if (byte.size() == Frames::FieldsBytes::DECLARED_SIZE) {
+				return FrameFieldExistence::NO;
+			} else if (byte.size()
+					   < Frames::FieldsBytes::DECLARED_SIZE + Frames::FieldsBytes::TYPE) {
+				return FrameFieldExistence::INCOMPLETE;
+			} else {
+				return FrameFieldExistence::YES;
+			}
 		}
 
-		std::vector<std::byte> output;
-		output.reserve(frame_size);
-		output.insert(output.end(), bytes.begin(), bytes.begin() + frame_size);
+		template <ByteRange T> FrameFieldExistence has_sub_type(const T &byte) {
+			const auto v_has_type = has_type(byte);
 
-		return output;
-	}
+			if (v_has_type != FrameFieldExistence::YES) {
+				return FrameFieldExistence::NO;
+			}
 
-	template <ByteRange T> ParsedFrame parse_frame(const T &bytes) {
-		const auto                     type     = get_type(bytes);
-		std::optional<RequestResource> resource = std::nullopt;
-		const auto                     sub_type = get_sub_type(bytes);
-		if (type == BinaryTypes::Request) {
-			resource = get_resource(bytes);
-			BinaryValidator::validate_request_sub_type_and_resource(
-				ByteUtils::cast_numeric(sub_type),
-				ByteUtils::cast_numeric(resource.value()));
+			if (byte.size() == Frames::FieldsBytes::DECLARED_SIZE + Frames::FieldsBytes::TYPE) {
+				return FrameFieldExistence::NO;
+			} else if (byte.size() < Frames::FieldsBytes::DECLARED_SIZE + Frames::FieldsBytes::TYPE
+						   + Frames::FieldsBytes::SUB_TYPE) {
+				return FrameFieldExistence::INCOMPLETE;
+			} else {
+				return FrameFieldExistence::YES;
+			}
 		}
 
+		template <ByteRange T> FrameFieldExistence has_payload(const T &byte) {
 
-		return ParsedFrame{.size     = get_size(bytes),
-						   .type     = get_type(bytes),
-						   .sub_type = get_sub_type(bytes),
-						   .payload  = get_payload(bytes),
-						   .resource = resource};
-	}
+			const auto v_has_sub_type = has_sub_type(byte);
 
+			if (v_has_sub_type != FrameFieldExistence::YES) {
+				return FrameFieldExistence::NO;
+			}
 
-	enum class FrameFieldExistence : uint8_t {
-		YES,
-		INCOMPLETE,
-		NO
-	};
+			const auto declared_size = get_size(byte);
 
-	template <ByteRange T> FrameFieldExistence has_size(const T &byte) {
-		if (byte.size() == 0) {
-			return FrameFieldExistence::NO;
-		} else if (byte.size() < MESSAGE_SIZE_BYTES) {
-			return FrameFieldExistence::INCOMPLETE;
-		} else {
+			const auto frame_size = Frames::FieldsBytes::DECLARED_SIZE + declared_size;
+
+			FramesInvariants::payload_size_cannot_be_zero(declared_size, byte.size());
+
+			if (byte.size() < frame_size) {
+				return FrameFieldExistence::INCOMPLETE;
+			}
+
 			return FrameFieldExistence::YES;
 		}
-	}
 
-	template <ByteRange T> FrameFieldExistence has_type(const T &byte) {
-		const auto v_has_size = has_size(byte);
+		template <ByteRange T> FrameFieldExistence has_frame(const T &bytes) {
+			const auto v_has_size = has_size(bytes);
 
-		if (v_has_size != FrameFieldExistence::YES) {
-			return FrameFieldExistence::NO;
-		}
+			if (v_has_size == FrameFieldExistence::NO) {
+				return FrameFieldExistence::NO;
+			} else if (v_has_size == FrameFieldExistence::INCOMPLETE) {
+				return FrameFieldExistence::INCOMPLETE;
+			}
 
-		if (byte.size() == MESSAGE_SIZE_BYTES) {
-			return FrameFieldExistence::NO;
-		} else if (byte.size() <= MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES) {
-			return FrameFieldExistence::INCOMPLETE;
-		} else {
+
+			const auto v_has_type = has_type(bytes);
+
+			if (v_has_type != FrameFieldExistence::YES) {
+				return FrameFieldExistence::INCOMPLETE;
+			}
+
+			const auto v_has_sub_type = has_sub_type(bytes);
+
+			if (v_has_sub_type != FrameFieldExistence::YES) {
+				return FrameFieldExistence::INCOMPLETE;
+			}
+
+			const auto v_has_payload = has_payload(bytes);
+
+			if (v_has_payload != FrameFieldExistence::YES) {
+				return FrameFieldExistence::INCOMPLETE;
+			}
+
+
 			return FrameFieldExistence::YES;
 		}
-	}
-
-	template <ByteRange T> FrameFieldExistence has_sub_type(const T &byte) {
-		const auto v_has_type = has_type(byte);
-
-		if (v_has_type != FrameFieldExistence::YES) {
-			return FrameFieldExistence::NO;
-		}
-
-		if (byte.size() == MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES) {
-			return FrameFieldExistence::NO;
-		} else if (byte.size()
-				   <= MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES) {
-			return FrameFieldExistence::INCOMPLETE;
-		} else {
-			return FrameFieldExistence::YES;
-		}
-	}
-
-	template <ByteRange T> FrameFieldExistence has_payload(const T &byte) {
-		/*
-		This function answers if the sequence of bytes has a complete payload
-		Works with Type = Request
-		*/
-
-
-		const auto v_has_sub_type = has_sub_type(byte);
-
-
-		if (v_has_sub_type != FrameFieldExistence::YES) {
-			return FrameFieldExistence::NO;
-		}
-
-		const auto size = get_size(byte);
-
-		if (byte.size() == MESSAGE_HEADER_BYTES) {
-			return FrameFieldExistence::NO;
-		} else if (size < MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES + get_payload_bytes(size)) {
-
-			return FrameFieldExistence::INCOMPLETE;
-		} else {
-			return FrameFieldExistence::YES;
-		}
-	}
-
-	template <ByteRange T> FrameFieldExistence has_request_resource(const T &byte) {
-		/*
-		This function is used when you need to check if the payload has the bytes for get the
-		resource
-		*/
-		const auto v_has_sub_type = has_sub_type(byte);
-
-		if (v_has_sub_type != FrameFieldExistence::YES) {
-			return FrameFieldExistence::NO;
-		}
-
-		if (byte.size() == MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES) {
-			return FrameFieldExistence::NO;
-		} else if (byte.size() <= MESSAGE_SIZE_BYTES + MESSAGE_TYPE_BYTES + MESSAGE_SUB_TYPE_BYTES
-					   + REQUEST_RESOURCE_BYTES) {
-			return FrameFieldExistence::INCOMPLETE;
-		} else {
-			return FrameFieldExistence::YES;
-		}
-	}
-
-	template <ByteRange T> FrameFieldExistence has_frame(const T &bytes) {
-		const auto v_has_size     = has_size(bytes);
-		const auto v_has_type     = has_type(bytes);
-		const auto v_has_sub_type = has_sub_type(bytes);
-		const auto v_has_payload  = has_payload(bytes);
-
-
-		if (v_has_size == FrameFieldExistence::NO && v_has_type == FrameFieldExistence::NO
-			&& v_has_sub_type == FrameFieldExistence::NO
-			&& v_has_payload == FrameFieldExistence::NO) {
-			return FrameFieldExistence::NO;
-		}
-		if (v_has_size != FrameFieldExistence::YES || v_has_type != FrameFieldExistence::YES
-			|| v_has_sub_type != FrameFieldExistence::YES
-			|| v_has_payload != FrameFieldExistence::YES) {
-			return FrameFieldExistence::INCOMPLETE;
-		}
-		return FrameFieldExistence::YES;
-	}
-} // namespace FrameParser
+	} // namespace Parser
+} // namespace Frames

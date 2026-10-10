@@ -3,6 +3,7 @@
 #include "karkinolution/binary/binary_error.hpp"
 #include "karkinolution/binary/binary_supported_types.hpp"
 #include "karkinolution/binary/byte_range.hpp"
+#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/type_string.hpp"
 
 #include <bit>
@@ -181,6 +182,10 @@ namespace Deserializer {
 				constexpr std::uint8_t as_uint8_t() const {
 					return std::to_integer<std::uint8_t>(real_value);
 				}
+
+				constexpr std::uint8_t as_int8_t() const {
+					return std::to_integer<std::int8_t>(real_value);
+				}
 		};
 
 	} // namespace Types
@@ -220,6 +225,10 @@ namespace Deserializer {
 		return Types::Bytes2Deserialized(bytes, offset).as_int16_t();
 	}
 
+	template <ByteRange T> constexpr std::uint8_t read_int8_t(const T &bytes, std::size_t offset) {
+		return Types::Bytes1Deserialized(bytes, offset).as_int8_t();
+	}
+
 	template <ByteRange T> constexpr std::uint8_t read_uint8_t(const T &bytes, std::size_t offset) {
 		return Types::Bytes1Deserialized(bytes, offset).as_uint8_t();
 	}
@@ -250,6 +259,27 @@ namespace Deserializer {
 		return result;
 	}
 
+	template <ByteRange T> constexpr bool read_bool(const T &bytes, std::size_t offset) {
+		if (bytes[offset] == static_cast<std::byte>(0x01)) {
+			return true;
+		} else if (bytes[offset] == static_cast<std::byte>(0x00)) {
+			return false;
+		} else {
+			throw ByteError(
+				std::format("Invalid bool value: {}", BinaryUtils::byte_to_int(bytes[offset])));
+		}
+	}
+
+	constexpr bool read_bool(std::byte byte) {
+		if (byte == static_cast<std::byte>(0x01)) {
+			return true;
+		} else if (byte == static_cast<std::byte>(0x00)) {
+			return false;
+		} else {
+			throw ByteError(std::format("Invalid bool value: {}", BinaryUtils::byte_to_int(byte)));
+		}
+	}
+
 	template <BinarySupportedType T, ByteRange U>
 	constexpr T deserialize(const U &bytes, std::size_t offset) {
 		if constexpr (std::same_as<T, double>) {
@@ -269,6 +299,16 @@ namespace Deserializer {
 		} else if constexpr (std::same_as<T, std::string>) {
 			throw ByteError(BinaryErrorFactory::type_is_not_supported<std::string>(
 				"deserialize<std::string> requires a string length"));
+		} else if constexpr (std::same_as<T, int64_t>) {
+			return read_int64_t(bytes, offset);
+		} else if constexpr (std::same_as<T, int32_t>) {
+			return read_int32_t(bytes, offset);
+		} else if constexpr (std::same_as<T, int16_t>) {
+			return read_int16_t(bytes, offset);
+		} else if constexpr (std::same_as<T, int8_t>) {
+			return read_int8_t(bytes, offset);
+		} else if constexpr (std::same_as<T, bool>) {
+			return read_bool(bytes, offset);
 		}
 		throw ByteError(BinaryErrorFactory::type_is_not_supported<T>("generic deserialize"));
 	}

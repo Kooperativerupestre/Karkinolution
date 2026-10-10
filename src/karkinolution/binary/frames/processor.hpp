@@ -1,8 +1,12 @@
 #pragma once
 #include "karkinolution/world/world.hpp"
 
+#include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/binary/frames/parser.hpp>
 
-namespace FrameProcessor {
-	std::vector<std::byte> process(const ParsedFrame &frame, const World &world);
-} // namespace FrameProcessor
+namespace Frames {
+	namespace Processor {
+		ResponseFrame process(const RequestFrame &frame, const World &world);
+	} // namespace Processor
+
+} // namespace Frames

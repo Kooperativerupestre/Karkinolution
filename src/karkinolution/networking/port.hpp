@@ -1,4 +1,4 @@
 #pragma once
 #include <cstdint>
 
-inline constexpr std::size_t PORT = 9000;
+inline constexpr std::uint16_t PORT = 9000;

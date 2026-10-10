@@ -1,5 +1,6 @@
 #pragma once
 
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 
 #include <cstdint>
@@ -101,7 +102,7 @@ struct Body {
 struct Ontology {
 		Gender      gender;
 		std::string name;
-		uint64_t    id;
+		BaseIdType  id;
 };
 
 struct Creature;

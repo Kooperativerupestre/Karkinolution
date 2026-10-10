@@ -2,6 +2,8 @@
 
 9000
 
+Font: [Port](/src/karkinolution/networking/port.hpp)
+
 # How do I start the server?
 
 ```bash
@@ -22,6 +24,6 @@ No.
 
 No.
 
-# What is the endianness of the binary protocol?
+# Does the server have the infraestructure to support more than one client?
 
-Big-endian.
+Yes.

@@ -1,26 +1,37 @@
-#include "karkinolution/binary/deserialization/interpreters/creature.hpp"
 
 #include "karkinolution/api/creature.hpp"
+
+#include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/message_type_size.hpp"
-#include "karkinolution/binary/serialization/interpreters/creature.hpp"
+#include "karkinolution/binary/serialization/interpreters/error/alias.hpp"
 #include "karkinolution/binary/serialization/serializer.hpp"
 
 #include <format>
 #include <karkinolution/binary/frames/motor.hpp>
+#include <karkinolution/binary/frames/parser.hpp>
+#include <karkinolution/binary/serialization/interpreters/creature/alias.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
-std::vector<std::byte> CreatureAPIBYA::get_creature(const World                  &world,
-													const std::vector<std::byte> &request) {
+ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
+										   const std::vector<std::byte> &payload) {
 
-	const auto id = CreatureRequestDSI::interpret_like_get_creature(request);
+	const auto id = CreatureDSI::Request::interpret_like_get_creature(payload);
+
+	const auto request_id = Frames::Parser::Request::get_id(payload);
 
 	auto creature = CreatureAPI::see_creature(world, id);
 
 	if (creature == nullptr) {
-		return FrameMotor::build(
-			BinarySubTypes::Error::CREATURE_WAS_NOT_FOUND,
-			Serializer::convert_string(std::format("Creature with id = {}", id)));
+		const auto error = ErrorSRI::serialize_creature_was_not_found(id);
+		return Frames::Motor::make_response(BinaryTypes::Error,
+											error.sub_type,
+											request_id,
+											error.payload);
 	}
-	return FrameMotor::build(BinarySubTypes::Response::CREATURE,
-							 CreatureSRI::serialize_creature(*creature));
+	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
+
+	return Frames::Motor::make_response(BinaryTypes::Response,
+										ResponseSubTypes::CREATURE,
+										request_id,
+										creature_payload);
 }

@@ -1,24 +1,50 @@
 #pragma once
+#include "karkinolution/binary/fields.hpp"
 #include "karkinolution/core/error.hpp"
 
+#include <iostream>
+#include <karkinolution/binary/serialization/serializer.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 
-namespace PropertiesSRI {
-	inline constexpr std::size_t PROPERTY_BYTES = 1;
+namespace Karkinolution {
+	namespace Binary {
+		namespace Interpreters {
+			namespace SRI {
+				namespace Properties {
+					namespace Layout {
+						using Kind = Field<0, 1>;
+						using Type = Next<Kind, 1>;
 
-	constexpr std::byte serialize(Properties::Capabilities::Move action) {
-		if (action == Properties::Capabilities::Move::SWIMM) {
-			return static_cast<std::byte>(0x01);
-		} else if (action == Properties::Capabilities::Move::WALK) {
-			return static_cast<std::byte>(0x02);
-		}
-		throw ByteError("Undefined type of move capabilities");
-	}
+						inline constexpr std::size_t TOTAL_SIZE = Type::END;
+					} // namespace Layout
 
-	constexpr std::byte serialize(GenericProperty property) {
-		if (std::holds_alternative<Properties::Capabilities::Move>(property)) {
-			return serialize(std::get<Properties::Capabilities::Move>(property));
-		}
-		throw ByteError("Undefined type of property");
-	}
-} // namespace PropertiesSRI
+					namespace BytesArrays {
+						using Properties = std::array<std::byte, Layout::TOTAL_SIZE>;
+					} // namespace BytesArrays
+
+					/*
+					protocol
+
+					[1 byte - kind (variant index)]
+					[1 byte - value]
+
+					*/
+
+
+					constexpr BytesArrays::Properties serialize(GenericProperty property) {
+						BytesArrays::Properties bytes;
+
+						bytes[Layout::Kind::OFFSET] =
+							Serializer::convert_uint8_t(property.kind().value);
+
+
+						bytes[Layout::Type::OFFSET] =
+							Serializer::convert_uint8_t(property.raw().value);
+
+						return bytes;
+					}
+				} // namespace Properties
+			} // namespace SRI
+		} // namespace Interpreters
+	} // namespace Binary
+} // namespace Karkinolution

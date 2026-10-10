@@ -1,90 +1,148 @@
 #pragma once
 
 
+#include "karkinolution/binary/byte_range.hpp"
+#include "karkinolution/binary/byte_utils.hpp"
+#include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/binary/frames/processor.hpp"
+#include "karkinolution/core/error.hpp"
+
 #include <array>
+#include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
 #include <vector>
 
-namespace FrameMotor {
-	// don't use that out of here
-	template <typename SubType, typename Payload>
-	std::vector<std::byte> _build_impl(SubType sub_type, BinaryTypes type, const Payload &payload) {
+namespace Frames {
+	namespace Motor {
 
-		std::vector<std::byte> frame;
+		void constexpr append_declared_size(std::vector<std::byte>          &frame,
+											Frames::Types::FrameDeclaredSize declared_size) {
+			Deserializer::append_bytes(
+				frame,
+				Serializer::serialize<Frames::Types::FrameDeclaredSize>(declared_size));
+		}
 
-		const std::uint32_t size = MESSAGE_SUB_TYPE_BYTES + MESSAGE_TYPE_BYTES + payload.size();
+		void constexpr append_type(std::vector<std::byte> &frame, Frames::Types::BinaryTypes type) {
+			Deserializer::append_bytes(frame,
+									   Serializer::serialize<Frames::Types::FrameType>(
+										   static_cast<Frames::Types::FrameType>(type)));
+		}
 
-		frame.reserve(size + MESSAGE_SIZE_BYTES);
+		template <ByteRange Payload>
+		ResponseFrame make_response(BinaryTypes              type,
+									GenericResponseSubTypes  sub_type,
+									Frames::Types::RequestId request_id,
+									const Payload           &payload) {
+			return ResponseFrame{Frames::Parser::get_size(payload),
+								 request_id,
+								 sub_type,
+								 payload,
+								 type};
+		}
 
-		Deserializer::append_bytes(frame, Serializer::convert_uint32_t(size));
-
-		Deserializer::append_bytes(frame,
-								   Serializer::convert_uint8_t(static_cast<std::uint8_t>(type)));
-
-		Deserializer::append_bytes(
-			frame,
-			Serializer::convert_uint8_t(static_cast<std::uint8_t>(sub_type)));
-
-		frame.insert(frame.end(), payload.begin(), payload.end());
-
-		return frame;
-	}
-
-	template <typename SubType, typename Payload>
-	std::vector<std::byte> _build_impl(SubType         sub_type,
-									   BinaryTypes     type,
-									   RequestResource resource,
-									   const Payload  &payload) {
-		std::vector<std::byte> frame;
-		const std::uint32_t    size =
-			MESSAGE_SUB_TYPE_BYTES + MESSAGE_TYPE_BYTES + payload.size() + REQUEST_RESOURCE_BYTES;
-
-		frame.reserve(size + MESSAGE_SIZE_BYTES);
-		Deserializer::append_bytes(frame, Serializer::convert_uint32_t(size));
-		Deserializer::append_bytes(frame,
-								   Serializer::convert_uint8_t(static_cast<std::uint8_t>(type)));
-		Deserializer::append_bytes(
-			frame,
-			Serializer::convert_uint8_t(static_cast<std::uint8_t>(sub_type)));
-
-		Deserializer::append_bytes(frame,
-								   static_cast<std::byte>(static_cast<std::uint8_t>(resource)));
-		frame.insert(frame.end(), payload.begin(), payload.end());
-		return frame;
-	}
-
-	std::uint32_t                get_size(const std::vector<std::byte> &bytes);
-	BinaryTypes                  get_code(const std::vector<std::byte> &bytes);
-	BinarySubTypes::CodeSubTypes get_type(const std::vector<std::byte> &bytes);
+		template <ByteRange Payload>
+		std::vector<std::byte>
+		make_response_raw_bytes(Frames::Types::BinaryTypes                    type,
+								std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
+								Frames::Types::RequestId                      request_id,
+								const Payload                                &payload) {
+			if (type == Frames::Types::BinaryTypes::Response
+				&& !std::holds_alternative<Frames::Types::BinarySubTypes::Response>(sub_type)) {
+				throw FrameInvariantError(std::format(
+					"Sub type of a frame with type Response should be Response sub type"));
+			} else if (type == Frames::Types::BinaryTypes::Error
+					   && !std::holds_alternative<Frames::Types::BinarySubTypes::Error>(sub_type)) {
+				throw FrameInvariantError(
+					std::format("Sub type of a frame with type Error should be Error sub type"));
+			}
 
 
-	std::vector<std::byte> get_payload(const std::vector<std::byte> &bytes);
+			std::vector<std::byte> frame;
 
-	template <size_t SIZE>
-	std::vector<std::byte> build(BinarySubTypes::Request            sub_type,
-								 RequestResource                    resource,
-								 const std::array<std::byte, SIZE> &payload) {
+			const Frames::Types::FrameDeclaredSize declared_size = Frames::FieldsBytes::SUB_TYPE
+				+ Frames::FieldsBytes::TYPE + payload.size()
+				+ Frames::FieldsBytes::RequestTypes::Request::ID;
 
-		return _build_impl(sub_type, BinaryTypes::Request, resource, payload);
-	}
+			frame.reserve(declared_size + Frames::FieldsBytes::DECLARED_SIZE);
 
-	template <size_t SIZE>
-	std::vector<std::byte> build(BinarySubTypes::Error              sub_type,
-								 const std::array<std::byte, SIZE> &payload) {
+			// declared size
 
-		return _build_impl(sub_type, BinaryTypes::Error, payload);
-	}
+			append_declared_size(frame, declared_size);
 
-	template <size_t SIZE>
-	std::vector<std::byte> build(BinarySubTypes::Response           sub_type,
-								 const std::array<std::byte, SIZE> &payload) {
+			// type
 
-		return _build_impl(sub_type, BinaryTypes::Response, payload);
-	}
+			append_type(frame, type);
 
-	std::vector<std::byte> build(BinarySubTypes::Request, const std::vector<std::byte> &payload);
-	std::vector<std::byte> build(BinarySubTypes::Error, const std::vector<std::byte> &payload);
-	std::vector<std::byte> build(BinarySubTypes::Response, const std::vector<std::byte> &payload);
-} // namespace FrameMotor
+			// sub type
+
+			Frames::Types::BinarySubTypesEnumType v_sub_type;
+
+			if (std::holds_alternative<Frames::Types::BinarySubTypes::Response>(sub_type)) {
+				v_sub_type = static_cast<Frames::Types::BinaryTypesEnumType>(
+					std::get<Frames::Types::BinarySubTypes::Response>(sub_type));
+			} else if (std::holds_alternative<Frames::Types::BinarySubTypes::Error>(sub_type)) {
+				v_sub_type = static_cast<Frames::Types::BinaryTypesEnumType>(
+					std::get<Frames::Types::BinarySubTypes::Error>(sub_type));
+			}
+
+
+			Deserializer::append_bytes(frame, static_cast<std::byte>(v_sub_type));
+
+			// request id
+
+
+			Deserializer::append_bytes(frame,
+									   Serializer::serialize<Frames::Types::RequestId>(request_id));
+			// payload
+			frame.insert(frame.end(), payload.begin(), payload.end());
+			return frame;
+		}
+
+		template <ByteRange Payload>
+		std::vector<std::byte>
+		make_request_raw_bytes(Frames::Types::BinarySubTypes::Request sub_type,
+							   Frames::Types::RequestId               id,
+							   Frames::Types::RequestResource         resource,
+							   const Payload                         &payload) {
+			std::vector<std::byte>                 frame;
+			const Frames::Types::FrameDeclaredSize declared_size = Frames::FieldsBytes::SUB_TYPE
+				+ Frames::FieldsBytes::TYPE + payload.size()
+				+ Frames::FieldsBytes::RequestTypes::Request::RESOURCE
+				+ Frames::FieldsBytes::RequestTypes::Request::ID;
+
+
+			frame.reserve(declared_size + Frames::FieldsBytes::DECLARED_SIZE);
+
+			// declared size
+			append_declared_size(frame, declared_size);
+
+			// type
+			append_type(frame, Frames::Types::BinaryTypes::Request);
+
+			// sub type
+
+			Deserializer::append_bytes(
+				frame,
+				Serializer::serialize<Frames::Types::BinaryTypesEnumType>(
+					static_cast<Frames::Types::BinaryTypesEnumType>(sub_type)));
+
+
+			// id
+
+			Deserializer::append_bytes(frame, Serializer::serialize<Frames::Types::RequestId>(id));
+
+			// resource
+			Deserializer::append_bytes(
+				frame,
+				Serializer::serialize<Frames::Types::RequestResourceEnumType>(
+					static_cast<Frames::Types::RequestResourceEnumType>(resource)));
+			// payload
+			frame.insert(frame.end(), payload.begin(), payload.end());
+			return frame;
+		}
+
+	} // namespace Motor
+} // namespace Frames

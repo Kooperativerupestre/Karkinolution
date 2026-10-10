@@ -1,4 +1,5 @@
 #pragma once
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 
@@ -10,8 +11,8 @@ using OrganismStats::Energy;
 using OrganismStats::Body::RawMeat;
 
 struct Corpse {
-		uint64_t id;
-		RawMeat  raw_meat;
+		BaseIdType id;
+		RawMeat    raw_meat;
 
 		Vec3 position;
 		Size size;
@@ -20,7 +21,7 @@ struct Corpse {
 			return EntityIDF::create_corpse_id(id);
 		}
 
-		Corpse(const Size &size, const Vec3 &position, const RawMeat &raw_meat, uint64_t id)
+		Corpse(const Size &size, const Vec3 &position, const RawMeat &raw_meat, BaseIdType id)
 			: size(size)
 			, position(position)
 			, raw_meat(raw_meat)

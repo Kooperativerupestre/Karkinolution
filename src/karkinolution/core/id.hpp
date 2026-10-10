@@ -3,10 +3,11 @@
 #include <karkinolution/utils/k_random.hpp>
 #include <random>
 
-using BaseIdType = uint64_t;
+using BaseIdType = int64_t;
 
-inline uint64_t gen_id() {
-	std::uniform_int_distribution<uint64_t> dist(std::numeric_limits<BaseIdType>::min(),
-												 std::numeric_limits<BaseIdType>::max());
+// respects the invariant: 1 < id < max(type)
+
+inline BaseIdType gen_id() {
+	std::uniform_int_distribution<BaseIdType> dist(1, std::numeric_limits<BaseIdType>::max());
 	return dist(gen);
 }

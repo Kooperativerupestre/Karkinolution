@@ -34,7 +34,7 @@ class ViralLoad : public NormalizedValue<float> {
 struct VirusId {
 		VirusSpecies  specie;
 		PathogenTypes type;
-		uint64_t      id;
+		BaseIdType    id;
 };
 
 class MorbusExiguus {
@@ -106,7 +106,7 @@ struct MetamorphosisEnvironment {
 };
 
 namespace VirusIDF {
-	inline VirusId create_virus_id(uint64_t id, VirusSpecies specie) {
+	inline VirusId create_virus_id(BaseIdType id, VirusSpecies specie) {
 		return VirusId{.specie = specie, .type = PathogenTypes::VIRUS, .id = id};
 	}
 
