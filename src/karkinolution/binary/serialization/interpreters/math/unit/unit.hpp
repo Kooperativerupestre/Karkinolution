@@ -1,42 +1,62 @@
 #pragma once
+#include "karkinolution/binary/fields.hpp"
 #include "karkinolution/organism/stats.hpp"
 
+#include <karkinolution/binary/serialization/interpreters/math/stats/alias.hpp>
 #include <karkinolution/binary/serialization/interpreters/math/stats/stats.hpp>
 #include <karkinolution/binary/serialization/serializer.hpp>
 #include <karkinolution/math/units.hpp>
 
-namespace PhysicsUnitsSRI {
-	inline constexpr std::size_t TO_GET_LATERAL_OFFSET = 0;
-	inline constexpr std::size_t TO_GET_HEIGHT_OFFSET  = TO_GET_LATERAL_OFFSET + sizeof(double);
-	inline constexpr std::size_t TO_GET_DEPTH_OFFSET   = TO_GET_HEIGHT_OFFSET + sizeof(double);
-	using SizeBytes                                    = std::array<std::byte, sizeof(double) * 3>;
+namespace Karkinolution {
+	namespace Binary {
+		namespace Interpreters {
+			namespace SRI {
+				namespace Units {
 
 
-	Serializer::Types::DoubleBytes serialize_volume(Volume volume);
-	Serializer::Types::DoubleBytes serialize_mass(PhysicsStats::Mass mass);
-	Serializer::Types::DoubleBytes serialize_density(PhysicsStats::Density density);
-	Serializer::Types::DoubleBytes serialize_meter(Meter meter);
+					using StandardPhysicBytes = Serializer::Core::EightBytes;
+					// respects the invariant of physics types
+					static_assert(sizeof(StandardPhysicBytes) == sizeof(double));
 
-	Serializer::Types::DoubleBytes serialize_lateral(Lateral lateral);
-	Serializer::Types::DoubleBytes serialize_height(Height height);
-	Serializer::Types::DoubleBytes serialize_depth(Depth depth);
+					/*
+					 * Size protocol
+					 *
+					 * [8 bytes - lateral]
+					 * [8 bytes - height]
+					 * [8 bytes - depth]
+					 *
+					 */
+					namespace Layout {
+						using Lateral = Field<0, sizeof(double)>;
+						using Height  = Next<Lateral, sizeof(double)>;
+						using Depth   = Next<Height, sizeof(double)>;
+
+						inline constexpr std::size_t TOTAL_SIZE = Depth::END;
+					} // namespace Layout
+
+					namespace BytesArrays {
+						using Size = std::array<std::byte, Layout::TOTAL_SIZE>;
+					} // namespace BytesArrays
+
+					StandardPhysicBytes serialize_volume(Volume volume);
+					StandardPhysicBytes serialize_mass(PhysicsStats::Mass mass);
+					StandardPhysicBytes serialize_density(PhysicsStats::Density density);
+					StandardPhysicBytes serialize_meter(Meter meter);
+
+					StandardPhysicBytes serialize_lateral(Lateral lateral);
+					StandardPhysicBytes serialize_height(Height height);
+					StandardPhysicBytes serialize_depth(Depth depth);
 
 
-	/*
-	 * Size protocol
-	 *
-	 * [8 bytes - lateral]
-	 * [8 bytes - height]
-	 * [8 bytes - depth]
-	 *
-	 */
+					BytesArrays::Size serialize_size(const Size &size);
 
+					StatsSRI::BytesArray::Stat
+					serialize_shared_volume(const PhysicsStats::SharedVolume &shared_volume);
+					StatsSRI::BytesArray::Stat serialize_efficiency(const Efficiency &efficiency);
+					StatsSRI::BytesArray::Stat serialize_quality(const Quality &quality);
 
-	SizeBytes serialize_size(const Size &size);
-
-	StatsSRI::StatBytes serialize_shared_volume(const PhysicsStats::SharedVolume &shared_volume);
-	StatsSRI::StatBytes serialize_efficiency(const Efficiency &efficiency);
-	StatsSRI::StatBytes serialize_quality(const Quality &quality);
-
-
-} // namespace PhysicsUnitsSRI
+				} // namespace Units
+			} // namespace SRI
+		} // namespace Interpreters
+	} // namespace Binary
+} // namespace Karkinolution

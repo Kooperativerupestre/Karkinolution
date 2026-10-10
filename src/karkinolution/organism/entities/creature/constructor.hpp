@@ -1,5 +1,7 @@
 #pragma once
 
+#include "karkinolution/core/id.hpp"
+
 #include <cstdint>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -13,7 +15,7 @@
 // from the species canonical genome (global_creature_genomes).
 struct CreatureBlueprint {
 		std::optional<CreatureSpecies> specie   = std::nullopt; // random if absent
-		std::optional<uint64_t>        id       = std::nullopt; // random if absent
+		std::optional<BaseIdType>      id       = std::nullopt; // random if absent
 		std::optional<std::string>     name     = std::nullopt; // random if absent
 		std::optional<Gender>          gender   = std::nullopt; // random if absent
 		std::optional<Vec3>            position = std::nullopt; // zero-vector if absent

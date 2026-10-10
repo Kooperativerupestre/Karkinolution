@@ -15,7 +15,7 @@ Creature CreatureConstructor::from_blueprint(const CreatureBlueprint &blueprint)
 	const auto &cg     = genome.creature_genome;
 	const auto &bg     = genome.brain_genome;
 
-	const uint64_t    id       = blueprint.id.value_or(RandomGenerators::generate<uint64_t>());
+	const auto        id       = blueprint.id.value_or(gen_id());
 	const std::string name     = blueprint.name.value_or(gen_name());
 	const Gender      gender   = blueprint.gender.value_or(GenderF::choice());
 	const Vec3        position = blueprint.position.value_or(Vec3{0.0, 0.0, 0.0});

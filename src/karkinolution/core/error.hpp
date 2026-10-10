@@ -26,6 +26,20 @@ class BufferError : public NetworkingError {
 			: NetworkingError(message) {}
 };
 
+class ConnectionError : public NetworkingError {
+	public:
+
+		explicit ConnectionError(const std::string &message)
+			: NetworkingError(message) {}
+};
+
+class FrameInvariantError : public NetworkingError {
+	public:
+
+		explicit FrameInvariantError(const std::string &message)
+			: NetworkingError(message) {}
+};
+
 // MAIN SUBDOMAINS
 class ByteError : public SimulationError {
 	public:

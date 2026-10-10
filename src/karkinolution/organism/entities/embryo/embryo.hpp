@@ -1,4 +1,5 @@
 #pragma once
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 
 #include <karkinolution/math/physic/vec/model.hpp>
@@ -30,14 +31,14 @@ class EmbryoHungry : public LimitedValue<EmbryoHungry, float, 2.0f, 0.0f> {
 };
 
 struct Embryo {
-		uint64_t id;
-		Energy   energy;
-		Life     life;
-		Health   health;
-		Volume   volume;
-		Genome   genome;
-		int      age;
-		Vec3     position;
+		BaseIdType id;
+		Energy     energy;
+		Life       life;
+		Health     health;
+		Volume     volume;
+		Genome     genome;
+		int        age;
+		Vec3       position;
 
 		[[nodiscard]] Size size() const noexcept {
 			return Size{.lateral = volume.value * 0.8,

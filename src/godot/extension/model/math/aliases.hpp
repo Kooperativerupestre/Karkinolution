@@ -1,0 +1,13 @@
+#pragma once
+#include <godot/extension/model/math/stats.hpp>
+#include <godot/extension/model/math/units.hpp>
+using KarkinolutionGodot::Models::Math::Stats::DoubleLimitedValue;
+using KarkinolutionGodot::Models::Math::Stats::IntLimitedValue;
+using KarkinolutionGodot::Models::Math::Units::GodotDensity;
+using KarkinolutionGodot::Models::Math::Units::GodotDepth;
+using KarkinolutionGodot::Models::Math::Units::GodotHeight;
+using KarkinolutionGodot::Models::Math::Units::GodotLateral;
+using KarkinolutionGodot::Models::Math::Units::GodotMass;
+using KarkinolutionGodot::Models::Math::Units::GodotMeter;
+using KarkinolutionGodot::Models::Math::Units::GodotSize;
+using KarkinolutionGodot::Models::Math::Units::GodotVolume;

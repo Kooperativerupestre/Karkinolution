@@ -1,7 +1,7 @@
 #pragma once
 
-#include "godot/extension/model/math/geometry/geometry.hpp"
-#include "godot/extension/model/properties/properties.hpp"
+#include "godot/extension/model/math/geometry.hpp"
+#include "godot/extension/model/properties.hpp"
 
 #include <cstdint>
 #include <godot_cpp/classes/ref.hpp>
@@ -10,76 +10,95 @@
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/vector3.hpp>
+#include <optional>
 
-class GodotSoilPiece : public godot::RefCounted {
-		GDCLASS(GodotSoilPiece, godot::RefCounted);
+namespace KarkinolutionGodot {
+	namespace Models {
+		namespace Soils {
+			namespace Components {
+				class GodotDamage : public godot::RefCounted {
+						GDCLASS(GodotDamage, godot::RefCounted);
 
-	public:
+					public:
 
-		enum SoilType {
-			SAND  = 0,
-			ROCK  = 1,
-			DIRT  = 2,
-			WATER = 3
-		};
+					protected:
 
-		enum SoilProperty {
-			DANGEROUS = 0
-		};
+						static void _bind_methods();
 
-	protected:
+						float damage;
 
-		std::uint64_t  id_{0};
-		std::uint8_t   type_{0};
-		godot::Array   properties_;
-		godot::Array   required_capabilities_;
-		bool           has_damage_{false};
-		float          damage_{0.0f};
-		bool           has_movement_cost_{false};
-		float          movement_cost_{0.0f};
-		double         radius_{0.0};
-		godot::Vector3 position_{0.0, 0.0, 0.0};
+					public:
 
-		static void _bind_methods();
+						GodotDamage() {}
 
-	public:
+						GodotDamage(float value)
+							: damage(value) {}
 
-		GodotSoilPiece();
-		GodotSoilPiece(std::uint64_t         id,
-					   std::uint8_t          type,
-					   const godot::Array   &properties,
-					   const godot::Array   &required_capabilities,
-					   bool                  has_damage,
-					   float                 damage,
-					   bool                  has_movement_cost,
-					   float                 movement_cost,
-					   double                radius,
-					   const godot::Vector3 &position);
+						float get_value() const;
+				};
 
-		[[nodiscard]] std::uint64_t           get_id() const;
-		[[nodiscard]] std::uint8_t            get_type() const;
-		[[nodiscard]] godot::String           get_type_name() const;
-		[[nodiscard]] godot::Array            get_properties() const;
-		[[nodiscard]] godot::Array            get_required_capabilities() const;
-		[[nodiscard]] bool                    has_damage() const;
-		[[nodiscard]] float                   get_damage() const;
-		[[nodiscard]] bool                    has_movement_cost() const;
-		[[nodiscard]] float                   get_movement_cost() const;
-		[[nodiscard]] double                  get_radius() const;
-		[[nodiscard]] godot::Ref<GodotRadius> get_radius_ref() const;
-		[[nodiscard]] godot::Vector3          get_position() const;
+				class GodotMovementCost : public godot::RefCounted {
+						GDCLASS(GodotMovementCost, godot::RefCounted);
 
-		static godot::Ref<GodotSoilPiece> create(std::uint64_t         id                    = 0,
-												 std::uint8_t          type                  = 0,
-												 const godot::Array   &properties            = {},
-												 const godot::Array   &required_capabilities = {},
-												 bool                  has_damage        = false,
-												 float                 damage            = 0.0f,
-												 bool                  has_movement_cost = false,
-												 float                 movement_cost     = 0.0f,
-												 double                radius            = 0.0,
-												 const godot::Vector3 &position = godot::Vector3());
-};
+					public:
 
-VARIANT_ENUM_CAST(GodotSoilPiece::SoilType);
-VARIANT_ENUM_CAST(GodotSoilPiece::SoilProperty);
+					protected:
+
+						float cost;
+
+						static void _bind_methods();
+
+					public:
+
+						GodotMovementCost() {}
+
+						GodotMovementCost(float value)
+							: cost(value) {}
+
+						[[nodiscard]] float get_value() const;
+				};
+			} // namespace Components
+
+			class GodotSoilPiece : public godot::RefCounted {
+					GDCLASS(GodotSoilPiece, godot::RefCounted);
+
+				public:
+
+				protected:
+
+					std::uint64_t                             id_{0};
+					std::uint8_t                              type_{0};
+					godot::Array                              properties_;
+					godot::Array                              required_capabilities_;
+					godot::Ref<Components::GodotDamage>       damage;
+					godot::Ref<Components::GodotMovementCost> movement_cost;
+
+					double         radius_{0.0};
+					godot::Vector3 position_{0.0, 0.0, 0.0};
+
+					static void _bind_methods();
+
+				public:
+
+					GodotSoilPiece();
+					GodotSoilPiece(std::uint64_t                          id,
+								   std::uint8_t                           type,
+								   const godot::Array                    &properties,
+								   const godot::Array                    &required_capabilities,
+								   std::optional<Components::GodotDamage> damage,
+								   std::optional<Components::GodotMovementCost> movement_cost,
+								   double                                       radius,
+								   const godot::Vector3                        &position);
+
+					[[nodiscard]] std::uint64_t get_id() const;
+					[[nodiscard]] std::uint8_t  get_type() const;
+					[[nodiscard]] godot::String get_type_name() const;
+					[[nodiscard]] godot::Array  get_properties() const;
+					[[nodiscard]] godot::Array  get_required_capabilities() const;
+
+					[[nodiscard]] double         get_radius() const;
+					[[nodiscard]] godot::Vector3 get_position() const;
+			};
+		} // namespace Soils
+	} // namespace Models
+} // namespace KarkinolutionGodot

@@ -1,3 +1,5 @@
+#include "karkinolution/core/id.hpp"
+
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <karkinolution/organism/entities/entities.hpp>
@@ -15,11 +17,11 @@ namespace {
 		return Territory{Size{100.0, 100.0, 100.0}};
 	}
 
-	Entity corpse(uint64_t id, const Vec3 &position) {
+	Entity corpse(BaseIdType id, const Vec3 &position) {
 		return Corpse{entity_size(), position, RawMeat{100.0F}, id};
 	}
 
-	EntityId corpse_id(uint64_t id) {
+	EntityId corpse_id(BaseIdType id) {
 		return EntityIDF::create_corpse_id(id);
 	}
 
