@@ -69,12 +69,18 @@ def tidy_check(
         "-c",
         help="Path to .clang-tidy file.",
     ),
+    changed_since: str | None = typer.Option(
+        None,
+        "--changed-since",
+        help="Only check files changed since this Git ref (compared against the merge base).",
+    ),
 ) -> None:
     tidy.check(
         tuple(paths),
         build_dir=build_dir,
         warnings_as_errors=warnings_as_errors,
         config_file=config_file,
+        changed_since=changed_since,
     )
 
 

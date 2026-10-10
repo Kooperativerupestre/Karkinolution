@@ -7,6 +7,7 @@ import tempfile
 
 import typer
 
+from karkinolution.changes import changed_paths, only_changed
 from karkinolution.paths import collect_source_files, complete, find_config_file
 
 MODULE_FLAGS_TO_REMOVE = {
@@ -131,8 +132,17 @@ def check(
     build_dir: Path = Path("build"),
     warnings_as_errors: bool = True,
     config_file: Path | None = None,
+    changed_since: str | None = None,
 ) -> None:
     files = collect_source_files(paths)
+
+    if changed_since is not None:
+        files = only_changed(files, changed_paths(changed_since))
+
+        if not files:
+            typer.echo(f"No changed source files since {changed_since}.")
+            return
+
     run_tidy(
         files,
         build_dir=build_dir,

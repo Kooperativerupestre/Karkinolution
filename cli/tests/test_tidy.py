@@ -6,7 +6,7 @@ from pathlib import Path
 import typer
 from unittest import mock
 
-from karkinolution.tidy.commands import filter_compile_tokens, run_tidy, sanitize_compile_commands
+from karkinolution.tidy.commands import check, filter_compile_tokens, run_tidy, sanitize_compile_commands
 
 
 class TestTidy(unittest.TestCase):
@@ -158,6 +158,56 @@ class TestTidy(unittest.TestCase):
             mock_run.assert_called_once()
             called_cmd = mock_run.call_args[0][0]
             self.assertIn(f"--config-file={config_file.resolve()}", called_cmd)
+
+    @mock.patch("karkinolution.tidy.commands.run_tidy")
+    @mock.patch("karkinolution.tidy.commands.changed_paths")
+    def test_check_with_changed_since_runs_only_changed_files(
+        self, mock_changed: mock.MagicMock, mock_run_tidy: mock.MagicMock
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            base = Path(tmpdir).resolve()
+            changed_file = base / "changed.cpp"
+            untouched_file = base / "untouched.cpp"
+            changed_file.write_text("int changed() { return 0; }")
+            untouched_file.write_text("int untouched() { return 0; }")
+            mock_changed.return_value = {changed_file}
+
+            check((base,), changed_since="origin/main")
+
+            mock_changed.assert_called_once_with("origin/main")
+            mock_run_tidy.assert_called_once()
+            self.assertEqual(mock_run_tidy.call_args[0][0], [changed_file])
+
+    @mock.patch("karkinolution.tidy.commands.run_tidy")
+    @mock.patch("karkinolution.tidy.commands.changed_paths")
+    def test_check_with_changed_since_skips_tidy_when_nothing_changed(
+        self, mock_changed: mock.MagicMock, mock_run_tidy: mock.MagicMock
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            base = Path(tmpdir).resolve()
+            (base / "untouched.cpp").write_text("int untouched() { return 0; }")
+            mock_changed.return_value = set()
+
+            check((base,), changed_since="origin/main")
+
+            mock_run_tidy.assert_not_called()
+
+    @mock.patch("karkinolution.tidy.commands.run_tidy")
+    @mock.patch("karkinolution.tidy.commands.changed_paths")
+    def test_check_without_changed_since_runs_every_file(
+        self, mock_changed: mock.MagicMock, mock_run_tidy: mock.MagicMock
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            base = Path(tmpdir).resolve()
+            first = base / "first.cpp"
+            second = base / "second.cpp"
+            first.write_text("int first() { return 0; }")
+            second.write_text("int second() { return 0; }")
+
+            check((base,))
+
+            mock_changed.assert_not_called()
+            self.assertCountEqual(mock_run_tidy.call_args[0][0], [first, second])
 
 
 if __name__ == "__main__":
