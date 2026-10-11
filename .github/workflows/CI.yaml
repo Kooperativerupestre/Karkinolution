@@ -135,30 +135,21 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              -S /workspace \
-              -B /workspace/build-tidy \
-              -G Ninja \
-              -DCMAKE_C_COMPILER=clang-21 \
-              -DCMAKE_CXX_COMPILER=clang++-21 \
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DBUILD_GODOT_EXTENSION=OFF
+            cmake --preset ci-tidy
+
 
       - name: Build
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              --build /workspace/build-tidy \
-              --target karkinolution_app \
-              --parallel "$(nproc)"
+            cmake --build --preset ci-tidy --parallel "$(nproc)"
 
       - name: Run tidy check
         env:
@@ -213,41 +204,30 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              -S /workspace \
-              -B /workspace/build-ci \
-              -G Ninja \
-              -DCMAKE_C_COMPILER=clang-21 \
-              -DCMAKE_CXX_COMPILER=clang++-21 \
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DBUILD_GODOT_EXTENSION=OFF
+            cmake --preset ci
+
 
       - name: Build tests
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              --build /workspace/build-ci \
-              --target karkinolution_tests \
-              --target karkinolution_app \
-              --parallel "$(nproc)"
+            cmake --build --preset ci --parallel "$(nproc)"
 
       - name: Test
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             ${{ env.DOCKER_IMAGE }} \
-            ctest \
-              --test-dir /workspace/build-ci \
-              --output-on-failure
+            ctest --preset ci
 
   sanitizers:
     name: Sanitizers
@@ -283,45 +263,30 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              -S /workspace \
-              -B /workspace/build-sanitizers \
-              -G Ninja \
-              -DCMAKE_C_COMPILER=clang-21 \
-              -DCMAKE_CXX_COMPILER=clang++-21 \
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DBUILD_GODOT_EXTENSION=OFF \
-              -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-              -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+            cmake --preset ci-sanitizers
+
 
       - name: Build tests
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              --build /workspace/build-sanitizers \
-              --target karkinolution_tests \
-              --target karkinolution_app \
-              --parallel "$(nproc)"
+            cmake --build --preset ci-sanitizers --parallel "$(nproc)"
 
       - name: Test with sanitizers
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
-            -e ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 \
-            -e UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 \
+            -w /workspace \
             ${{ env.DOCKER_IMAGE }} \
-            ctest \
-              --test-dir /workspace/build-sanitizers \
-              --output-on-failure
+            ctest --preset ci-sanitizers
 
   godot-extension:
     name: Godot Extension
@@ -357,27 +322,18 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              -S /workspace \
-              -B /workspace/build-godot \
-              -G Ninja \
-              -DCMAKE_C_COMPILER=clang-21 \
-              -DCMAKE_CXX_COMPILER=clang++-21 \
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DBUILD_GODOT_EXTENSION=ON
+            cmake --preset ci-godot
+
 
       - name: Build Godot extension
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake \
-              --build /workspace/build-godot \
-              --target karkinolution_godot \
-              --parallel "$(nproc)"
+            cmake --build --preset ci-godot --parallel "$(nproc)"
