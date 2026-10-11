@@ -1,13 +1,15 @@
 # How to Run - Karkinolution
 
-Run every command from the repository root.
+Run every command from the repository root. This page covers the first run. The full list of commands and presets is in
+[`docs/commands.md`](docs/commands.md).
 
 ## Requirements
 
 * CMake 3.28 or newer
-* A C++23 compiler (CI uses `clang-21`; the Valgrind job uses `gcc-15`)
 * Ninja
+* A C++23 compiler. The presets use `clang` and `clang++` from your `PATH`.
 * Git
+* [`uv`](https://docs.astral.sh/uv/), only if you use the CLI
 * Network access on the first configure (see [What CMake downloads for you](#what-cmake-downloads-for-you))
 
 ## 1. Get the code
@@ -29,28 +31,37 @@ git submodule update --init dependencies/FastNoise2 dependencies/asio
 
 ## 2. Configure and build
 
-```bash
-cmake -S . -B build -G Ninja \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_C_COMPILER=clang \
-  -DCMAKE_CXX_COMPILER=clang++
+Pick one. Both use the `debug` preset from [`CMakePresets.json`](CMakePresets.json).
 
-cmake --build build
-```
-
-Configure once. After that, `cmake --build build` is enough: `.cpp` files are collected with `CONFIGURE_DEPENDS`, so new
-source files are picked up on the next build.
-
-Build a single target:
+**With the CLI** ([`CLI.md`](CLI.md) explains how to activate it):
 
 ```bash
-cmake --build build --target karkinolution_app
-cmake --build build --target karkinolution_tests
+karkinolution setup
 ```
+
+`setup` checks the tools and submodules, then configures. If something is missing, it only reports the problem and the
+exact command to fix it. It never installs or initializes anything for you.
+
+**With CMake directly:**
+
+```bash
+cmake --preset debug
+cmake --build --preset debug
+```
+
+Configure once. After that, `cmake --build --preset debug` is enough: `.cpp` files are collected with
+`CONFIGURE_DEPENDS`, so new source files are picked up on the next build.
 
 ## 3. Run the server
 
 ```bash
+karkinolution run
+```
+
+`run` builds `karkinolution_app` and starts it. It is the same as:
+
+```bash
+cmake --build build --target karkinolution_app
 ./build/karkinolution_app
 ```
 
@@ -61,8 +72,7 @@ cmake --build build --target karkinolution_tests
 ## 4. Run the tests
 
 ```bash
-ctest --test-dir build --output-on-failure
-ctest --test-dir build -R '<regex>' --output-on-failure
+ctest --preset debug
 ```
 
 ## What CMake downloads for you
@@ -76,26 +86,26 @@ Some dependencies arrive on their own at configure time, others do not.
 | FastSIMD | Fetched by FastNoise2's own CMake (CPM) | No |
 | FastNoise2 | Git submodule | Yes: `git submodule update --init` |
 | asio | Git submodule | Yes: `git submodule update --init` |
-| godot-cpp | Git submodule, only with `-DBUILD_GODOT_EXTENSION=ON` | Yes, for the Godot extension only |
+| godot-cpp | Git submodule, only for the `godot` preset | Yes, for the Godot extension only |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 
-If `dependencies/FastNoise2` is empty, configure stops with:
+If `dependencies/FastNoise2` is empty, `cmake --preset debug` stops with:
 
 ```
 CMake Error at CMakeLists.txt:22 (add_subdirectory):
   ... does not contain a CMakeLists.txt file.
 ```
 
-The fix is the `git submodule update --init` command from step 1.
+`karkinolution setup` catches this earlier and prints the `git submodule update --init` command to run.
 
 ## Godot extension
 
 ```bash
 git submodule update --init dependencies/godot-cpp
 
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_GODOT_EXTENSION=ON
-cmake --build build --target karkinolution_godot
+karkinolution setup --preset godot
+cmake --build --preset godot
 ```
 
 godot-cpp is added with `add_subdirectory`, so it is built inside the same CMake build. No separate `scons` step is
@@ -103,12 +113,7 @@ involved. The library is written to `src/godot/karkinolution/bin`.
 
 ## Style and tidy checks
 
-The CLI wraps `clang-format` and `clang-tidy`. See [`CLI.md`](CLI.md) for activation.
-
 ```bash
-uv sync
-source .venv/bin/activate
-
 karkinolution style check src/karkinolution main.cpp
 karkinolution tidy check src/karkinolution main.cpp --build-dir build
 ```
@@ -120,7 +125,3 @@ karkinolution tidy check src/karkinolution main.cpp --build-dir build --changed-
 ```
 
 `tidy check` needs `build/compile_commands.json`, which is regenerated on every configure.
-
-## More commands
-
-Release builds, sanitizers, Valgrind, Docker Compose and the CI image are listed in [`docs/commands.md`](docs/commands.md).
