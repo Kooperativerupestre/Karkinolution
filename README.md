@@ -1,5 +1,10 @@
 # Karkinolution
 
+A creature simulator written in C++ that looks at the world from the individual's perspective: how is each creature
+doing, what will it do next, how will it behave. See the [vision](docs/VISION.md).
+
+The simulation runs as a server, and a Godot client connects to it to display the world.
+
 ## Creatures
 Currently implemented species:
 * Fish 🐟
@@ -18,8 +23,17 @@ Currently implemented species:
 
 * Corpse 💀
 ![Skull](docs/sprites/skull-large.png)
-# About
+
 Each species has different traits, behaviors, and ecological interactions.
 
+## Getting started
 
-# (CURRENTLY ON UPDATE)
+Build and run instructions are in [`HOW_TO_RUN.md`](HOW_TO_RUN.md).
+
+## Documentation
+
+* [`HOW_TO_RUN.md`](HOW_TO_RUN.md): first build and run
+* [`docs/commands.md`](docs/commands.md): every build preset, Docker and CI command
+* [`CLI.md`](CLI.md): the `karkinolution` command line tool
+* [`docs/currently_architecture.md`](docs/currently_architecture.md): structural rules of the code
+* [`CONTRIBUTING.md`](CONTRIBUTING.md): commit message format
