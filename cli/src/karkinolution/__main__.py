@@ -2,7 +2,7 @@ from pathlib import Path
 
 import typer
 
-from karkinolution import style, tidy
+from karkinolution import run, setup, style, tidy
 
 app = typer.Typer(help="Development tools for the Karkinolution project.")
 
@@ -12,6 +12,36 @@ tidy_app = typer.Typer(help="Analyze and fix source code using clang-tidy.")
 
 app.add_typer(style_app, name="style")
 app.add_typer(tidy_app, name="tidy")
+
+
+@app.command(
+    "setup",
+    help="Check the environment and configure the build with a CMake preset.",
+)
+def setup_command(
+    preset: str = typer.Option(
+        "debug",
+        "--preset",
+        "-p",
+        help="Configure preset from CMakePresets.json.",
+    ),
+) -> None:
+    setup.configure(preset)
+
+
+@app.command(
+    "run",
+    help="Build the server and start it.",
+)
+def run_command(
+    preset: str = typer.Option(
+        "debug",
+        "--preset",
+        "-p",
+        help="Configure preset from CMakePresets.json.",
+    ),
+) -> None:
+    run.launch(preset)
 
 
 @style_app.command(
