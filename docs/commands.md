@@ -1,73 +1,90 @@
 # Development Commands
 
-Run from the repository root. Append `-j$(nproc)` to any build command for parallel compilation.
+Run from the repository root. Builds are configured through [`CMakePresets.json`](../CMakePresets.json).
+Append `--parallel $(nproc)` to any build command for parallel compilation.
+
+## Presets
+
+| Preset | Build directory | Purpose |
+|---|---|---|
+| `debug` | `build` | Everyday development (`clang`) |
+| `release` | `build-release` | Optimized build |
+| `native` | `build-native` | Optimized with `-march=native`. Benchmarking only, not portable. |
+| `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
+| `godot` | `build-godot` | Debug with the Godot extension |
+| `ci-tidy`, `ci`, `ci-sanitizers`, `ci-godot` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-godot` | Used by CI with `clang-21` and ccache |
+
+List them with `cmake --list-presets`. Every preset has a matching build preset. `debug`, `release`, `sanitizers`, `ci` and
+`ci-sanitizers` also have a test preset.
 
 ## Local Development
 
-### Configure (Debug)
+### Configure and build (Debug)
 
 ```bash
-cmake -S . -B build -G Ninja \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_C_COMPILER=clang \
-  -DCMAKE_CXX_COMPILER=clang++
+cmake --preset debug
+cmake --build --preset debug
 ```
 
-GoogleTest is fetched automatically on first configure; network access required.
-
-### Build
-
-```bash
-cmake --build build
-cmake --build build --target karkinolution_app
-cmake --build build --target karkinolution_tests
-```
+GoogleTest and magic_enum are fetched automatically on first configure; network access required. FastNoise2 and asio
+are submodules; see [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
 
 ### Run
 
 ```bash
 ./build/karkinolution_app
-ctest --test-dir build --output-on-failure
-ctest --test-dir build -R '<regex>' --output-on-failure
+ctest --preset debug
+ctest --preset debug -R '<regex>'
+```
+
+`karkinolution run` builds and starts the server in one step ([`CLI.md`](../CLI.md)).
+
+### Build a single target
+
+```bash
+cmake --build build --target karkinolution_app
+cmake --build build --target karkinolution_tests
 ```
 
 ### Rebuild from scratch
 
 ```bash
-rm -rf build && cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug && cmake --build build
+rm -rf build && cmake --preset debug && cmake --build --preset debug
 ```
 
 ### Godot extension
 
 ```bash
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_GODOT_EXTENSION=ON
-cmake --build build --target karkinolution_godot
+git submodule update --init dependencies/godot-cpp
+cmake --preset godot
+cmake --build --preset godot
 ```
 
 ### `compile_commands.json`
 
-Regenerated on every reconfigure. Re-run `cmake -S . -B build ...` when stale.
+Regenerated on every reconfigure. Re-run `cmake --preset debug` when stale.
 
 ## Release Build
 
 ```bash
-cmake -S . -B build-release -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER=clang \
-  -DCMAKE_CXX_COMPILER=clang++
-cmake --build build-release
-ctest --test-dir build-release --output-on-failure
+cmake --preset release
+cmake --build --preset release
+ctest --preset release
 ```
 
-### Native-optimized (benchmarking only — not portable)
+### Native-optimized (benchmarking only - not portable)
 
 ```bash
-cmake -S . -B build-native -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER=clang \
-  -DCMAKE_CXX_COMPILER=clang++ \
-  -DCMAKE_CXX_FLAGS="-march=native"
-cmake --build build-native
+cmake --preset native
+cmake --build --preset native
+```
+
+### Sanitizers (AddressSanitizer and UBSan)
+
+```bash
+cmake --preset sanitizers
+cmake --build --preset sanitizers
+ctest --preset sanitizers
 ```
 
 ## Docker Compose
@@ -119,37 +136,22 @@ docker build -f Dockerfile.ci -t karkinolution-ci .
 
 ### Configure, build, test
 
+The CI presets use `clang-21` and ccache, which are installed in the image.
+
 ```bash
-docker run --rm -v "$PWD:/workspace" karkinolution-ci \
-  cmake -S /workspace -B /workspace/build-ci -G Ninja \
-  -DCMAKE_C_COMPILER=clang-21 -DCMAKE_CXX_COMPILER=clang++-21 \
-  -DCMAKE_BUILD_TYPE=Debug
-
-docker run --rm -v "$PWD:/workspace" karkinolution-ci \
-  cmake --build /workspace/build-ci
-
-docker run --rm -v "$PWD:/workspace" karkinolution-ci \
-  ctest --test-dir /workspace/build-ci --output-on-failure
+docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci cmake --preset ci
+docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci cmake --build --preset ci
+docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci ctest --preset ci
 ```
 
 ### Sanitizers
 
+The sanitizer options are part of the preset, so no extra environment variables are needed.
+
 ```bash
-docker run --rm -v "$PWD:/workspace" karkinolution-ci \
-  cmake -S /workspace -B /workspace/build-sanitizers -G Ninja \
-  -DCMAKE_C_COMPILER=clang-21 -DCMAKE_CXX_COMPILER=clang++-21 \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-  -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
-
-docker run --rm -v "$PWD:/workspace" karkinolution-ci \
-  cmake --build /workspace/build-sanitizers
-
-docker run --rm -v "$PWD:/workspace" \
-  -e ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 \
-  -e UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 \
-  karkinolution-ci \
-  ctest --test-dir /workspace/build-sanitizers --output-on-failure
+docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci cmake --preset ci-sanitizers
+docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci cmake --build --preset ci-sanitizers
+docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci ctest --preset ci-sanitizers
 ```
 
 ### Valgrind
