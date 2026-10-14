@@ -79,12 +79,12 @@ float ScorerIntents::score_nothing(const Creature &creature) {
 IntentTypes Instincts::take(const Creature &creature) {
 	std::array<ScoredIntent, 2> scored_intents;
 
-	// 1 -> Nothing
-	// 2 -> Find Food
+	// 0 -> Nothing
+	// 1 -> Find Food
 
-	scored_intents[1] =
+	scored_intents[0] =
 		ScoredIntent{.type = IntentTypes::NOTHING, .score = ScorerIntents::score_nothing(creature)};
-	scored_intents[2] = ScoredIntent{.type  = IntentTypes::FIND_FOOD,
+	scored_intents[1] = ScoredIntent{.type  = IntentTypes::FIND_FOOD,
 									 .score = ScorerIntents::score_find_food(creature)};
 
 
