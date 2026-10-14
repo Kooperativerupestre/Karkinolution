@@ -2,7 +2,7 @@ from pathlib import Path
 
 import typer
 
-from karkinolution import run, setup, style, tidy
+from karkinolution import run, see, setup, style, tidy
 
 app = typer.Typer(help="Development tools for the Karkinolution project.")
 
@@ -10,6 +10,9 @@ style_app = typer.Typer(help="Format and check source code using clang-format.")
 
 tidy_app = typer.Typer(help="Analyze and fix source code using clang-tidy.")
 
+see_app = typer.Typer(help="Inspect the structure of the code.")
+
+app.add_typer(see_app, name="see")
 app.add_typer(style_app, name="style")
 app.add_typer(tidy_app, name="tidy")
 
@@ -42,6 +45,43 @@ def run_command(
     ),
 ) -> None:
     run.launch(preset)
+
+
+@see_app.command(
+    "namespaces",
+    help="Show a file tree with the namespaces and namespace aliases each file declares.",
+)
+def see_namespaces(
+    paths: list[Path] | None = typer.Argument(
+        None,
+        help="Files or directories to scan. Default: src and tests.",
+    ),
+    max_depth: int | None = typer.Option(
+        None,
+        "--max-depth",
+        "-L",
+        min=1,
+        help="Show at most this many directory levels.",
+    ),
+    ignore: list[str] | None = typer.Option(
+        None,
+        "--ignore",
+        "-i",
+        help="Glob pattern for files or directories to skip. Can be repeated.",
+    ),
+    editor: str | None = typer.Option(
+        None,
+        "--editor",
+        envvar="KARKINOLUTION_EDITOR",
+        help="Editor the links open (vscode, vscode-insiders, vscodium, file, none). Detected when omitted.",
+    ),
+) -> None:
+    see.namespaces.show(
+        tuple(paths or ()),
+        max_depth=max_depth,
+        ignore=tuple(ignore or ()),
+        editor=editor,
+    )
 
 
 @style_app.command(
