@@ -39,5 +39,5 @@ Build and run instructions are in [`HOW_TO_RUN.md`](HOW_TO_RUN.md).
 * [`HOW_TO_RUN.md`](HOW_TO_RUN.md): first build and run
 * [`docs/commands.md`](docs/commands.md): every build preset, Docker and CI command
 * [`CLI.md`](CLI.md): the `karkinolution` command line tool
-* [`docs/currently_architecture.md`](docs/currently_architecture.md): structural rules of the code
+* [`docs/rules.md`](docs/rules.md): structural rules of the code
 * [`CONTRIBUTING.md`](CONTRIBUTING.md): commit message format
