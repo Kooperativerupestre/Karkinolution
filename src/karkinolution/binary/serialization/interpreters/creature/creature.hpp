@@ -5,6 +5,7 @@
 #include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/binary/serialization/interpreters/math/vec/alias.hpp"
 #include "karkinolution/binary/serialization/interpreters/math/vec/vec.hpp"
+#include "karkinolution/core/id.hpp"
 
 #include <array>
 #include <cstdlib>
@@ -52,6 +53,10 @@ namespace Karkinolution {
 					std::vector<std::byte> serialize_name(const std::string &name);
 
 					BytesArrays::Creature serialize_creature(const class Creature &creature);
+
+					namespace Request {
+						std::array<std::byte, 8> make_see_creature(BaseIdType id);
+					} // namespace Request
 				} // namespace Creature
 			} // namespace SRI
 		} // namespace Interpreters

@@ -4,6 +4,7 @@
 #include "karkinolution/binary/serialization/interpreters/creature/alias.hpp"
 #include "karkinolution/binary/serialization/serializer.hpp"
 #include "karkinolution/core/error.hpp"
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/organism/entities/creature/ontology.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
 
@@ -67,4 +68,8 @@ CreatureSRI::BytesArrays::Creature CreatureSRI::serialize_creature(const class C
 	Deserializer::append_bytes(bytes, name, Layout::NameSize::OFFSET);
 
 	return bytes;
+}
+
+std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(BaseIdType id) {
+	return Serializer::serialize<BaseIdType>(id);
 }

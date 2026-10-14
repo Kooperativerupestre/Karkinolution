@@ -1,5 +1,6 @@
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
+#include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
 
 #include <asio/connect.hpp>
@@ -44,13 +45,13 @@ void Client::connect() {
 	connected = true;
 }
 
-RequestId Client::send_without_waiting(RequestSubTypes            sub_type,
-									   RequestResource            resource,
-									   std::span<const std::byte> payload) {
+RequestId Client::send_without_waiting(const ClientRequestData &data) {
 	KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
 	const auto request_id = next_request_id.fetch_add(1);
-	const auto raw_frame =
-		Frames::Motor::make_request_raw_bytes(sub_type, request_id, resource, payload);
+	const auto raw_frame  = Frames::Motor::make_request_raw_bytes(data.sub_type,
+                                                                 request_id,
+                                                                 data.resource,
+                                                                 data.payload);
 
 	protocol_session.add_request(raw_frame);
 	send();
@@ -113,12 +114,10 @@ std::optional<ResponseFrame> Client::pop_response(RequestId id) {
 	return protocol_session.pop_response(id);
 }
 
-std::optional<ResponseFrame> Client::request(RequestSubTypes            sub_type,
-											 RequestResource            resource,
-											 std::span<const std::byte> payload) {
+std::optional<ResponseFrame> Client::request(const ClientRequestData &data) {
 
 
-	const auto                   id       = send_without_waiting(sub_type, resource, payload);
+	const auto                   id       = send_without_waiting(data);
 	std::optional<ResponseFrame> response = protocol_session.await_response(id);
 	return response;
 }

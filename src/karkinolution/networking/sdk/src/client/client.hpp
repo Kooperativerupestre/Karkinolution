@@ -24,7 +24,11 @@ namespace KarkinolutionSDK {
 	};
 
 	namespace Client {
-
+		struct ClientRequestData {
+				RequestSubTypes            sub_type;
+				RequestResource            resource;
+				std::span<const std::byte> payload;
+		};
 
 		using ClientSideResponseBuffer = RawFrameBuffer;
 
@@ -44,14 +48,10 @@ namespace KarkinolutionSDK {
 				// The request function makes a request, and blocks the thread until it gets a
 				// response
 
-				std::optional<ResponseFrame> request(RequestSubTypes            sub_type,
-													 RequestResource            resource,
-													 std::span<const std::byte> payload);
+				std::optional<ResponseFrame> request(const ClientRequestData &data);
 
 				// This function stores the request in a queue, it doesn't block the thread
-				RequestId send_without_waiting(RequestSubTypes            sub_type,
-											   RequestResource            resource,
-											   std::span<const std::byte> payload);
+				RequestId send_without_waiting(const ClientRequestData &data);
 				// if the request wasn't responsed yet, the value is nullopt
 				std::optional<ResponseFrame> pop_response(RequestId id);
 
