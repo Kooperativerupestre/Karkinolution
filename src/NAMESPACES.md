@@ -14,53 +14,10 @@ Contributions to this reorganization are welcome! You can help by organizing exi
 
 I'm gradually organizing the codebase by placing new files in appropriate namespaces and updating existing files to follow the new organization.
 
-## Reliability
+## Want to see the tree of namespaces?
 
-**This tree is a work in progress.** It may be incomplete or outdated, so do not assume it accurately represents the entire project.
+(Karkinolution CLI)
 
-## Tree
-
-```text
-Frames/
-├── Types
-├── FieldsBytes
-├── Offsets
-├── Motor
-├── Parser
-├── Processor
-└── Models
-
-Karkinolution/
-├── Binary/
-│   └── Interpreters/
-│       ├── SRI/
-│       │   ├── Creature/
-│       │   ├── │   ├── BytesArrays
-│       │   └── │   └── Layout
-│       │   ├── Corpse/
-│       │   │   ├── BytesArrays
-│       │   │   └── Layout
-│       │   ├── Soil/
-│       │   │   ├── BytesArrays
-│       │   │   └── Layout
-│       │   └── Territory/
-│       │       ├── BytesArrays
-│       │       └── Layout
-│       └── DSI/
-│           ├── Creature
-│           ├── Corpse
-│           ├── Soil
-│           └── Territory
-└── Utils/
-    └── EnumsToString
-
-KarkinolutionGodot/
-└── Models/
-    ├── Organisms/
-    │   ├── Corpse
-    │   └── Creature
-    ├── Properties
-    └── Math/
-        ├── Stats
-        └── Units
+```
+karkinolution see namespaces --help
 ```
