@@ -19,6 +19,7 @@ namespace KarkinolutionSDK {
 				// if it doesn't have a response, return std::nullopt
 				std::optional<ResponseFrame> pop_response(RequestId id);
 				std::optional<ResponseFrame> await_response(RequestId id);
+				void                         faill_pending_requests();
 
 			private:
 

@@ -25,6 +25,7 @@ void Client::disconnect() {
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 		socket_.close(ec);
 		connected = false;
+		protocol_session.faill_pending_requests();
 	});
 }
 
