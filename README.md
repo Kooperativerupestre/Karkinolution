@@ -5,6 +5,10 @@ doing, what will it do next, how will it behave. See the [vision](docs/VISION.md
 
 The simulation runs as a server, and a Godot client connects to it to display the world.
 
+## Anniversary
+
+See [ANNIVERSARY](docs/anniversary/ANNIVERSARY.md)
+
 ## Creatures
 Currently implemented species:
 * Fish 🐟
