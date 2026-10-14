@@ -29,6 +29,7 @@ namespace KarkinolutionSDK {
 				// cancel the request
 				std::optional<ResponseFrame> await_response(RequestId id);
 				ResponseFrame                get_or_throw(std::future<ResponseFrame> &fut);
+				void                         faill_all();
 		};
 	} // namespace Protocol
 } // namespace KarkinolutionSDK

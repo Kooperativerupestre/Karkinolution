@@ -90,3 +90,11 @@ std::optional<ResponseFrame> PendingRequests::await_response(RequestId id) {
 	}
 	return get_or_throw(fut);
 }
+
+void PendingRequests::faill_all() {
+	std::lock_guard lock{mtx};
+	for (auto &[id, promise] : pendings) {
+		promise.set_exception(std::make_exception_ptr(ConnectionError("Connection closed")));
+	}
+	pendings.clear();
+}

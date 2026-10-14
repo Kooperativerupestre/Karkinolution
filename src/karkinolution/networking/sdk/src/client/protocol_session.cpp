@@ -82,3 +82,7 @@ std::optional<ResponseFrame> ProtocolSession::pop_response(RequestId id) {
 std::optional<ResponseFrame> ProtocolSession::await_response(RequestId id) {
 	return pending_requests.await_response(id);
 }
+
+void ProtocolSession::faill_pending_requests() {
+	pending_requests.faill_all();
+}
