@@ -44,6 +44,14 @@ namespace Frames {
 		}
 
 		template <ByteRange Payload>
+		RequestFrame make_request(RequestSubTypes          sub_type,
+								  Frames::Types::RequestId id,
+								  RequestResource          resource,
+								  const Payload           &payload) {
+			return RequestFrame{Frames::Parser::get_size(payload), id, sub_type, payload, resource};
+		}
+
+		template <ByteRange Payload>
 		std::vector<std::byte>
 		make_response_raw_bytes(Frames::Types::BinaryTypes                    type,
 								std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
