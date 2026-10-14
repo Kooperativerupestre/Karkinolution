@@ -3,6 +3,7 @@
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
 
+#include <asio/bind_executor.hpp>
 #include <asio/connect.hpp>
 #include <asio/write.hpp>
 #include <chrono>
@@ -16,6 +17,15 @@ void Client::on_error(const std::string &error_message) {
 	std::cerr << "Error: " << error_message << "\n";
 
 	disconnect();
+}
+
+void Client::disconnect() {
+	asio::post(strand_, [this] {
+		asio::error_code ec;
+		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+		socket_.close(ec);
+		connected = false;
+	});
 }
 
 void Client::connect() {
@@ -46,21 +56,30 @@ void Client::connect() {
 }
 
 RequestId Client::send_without_waiting(const ClientRequestData &data) {
+	// Throwing here is intended: this runs on the user's thread, so the user
+	// can catch and handle a disconnected client.
 	KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
-	const auto request_id = next_request_id.fetch_add(1);
-	const auto raw_frame  = Frames::Motor::make_request_raw_bytes(data.sub_type,
-                                                                 request_id,
-                                                                 data.resource,
-                                                                 data.payload);
 
-	protocol_session.add_request(raw_frame);
-	send();
+	const auto request_id = next_request_id.fetch_add(1);
+	auto       raw_frame  = Frames::Motor::make_request_raw_bytes(data.sub_type,
+                                                           request_id,
+                                                           data.resource,
+                                                           data.payload);
+
+	asio::post(strand_, [this, frame = std::move(raw_frame)]() mutable {
+		protocol_session.add_request(std::move(frame));
+		send();
+	});
+
 	return request_id;
 }
 
 void Client::send() {
-	KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
-	if (sending_state.is_sending) {
+	// The connection can drop between the check in the public API and this
+	// call (TOCTOU). Disconnection is a normal condition, so don't throw:
+	// an exception escaping a handler would terminate the io_context thread.
+	// Also skip if a write is already in progress.
+	if (!connected || sending_state.is_sending) {
 		return;
 	}
 
@@ -76,7 +95,7 @@ void Client::send() {
 	asio::async_write(socket_,
 					  asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
 
-					  [this](const AsioErrorCode &error, std::size_t) {
+					  asio::bind_executor(strand_, [this](const AsioErrorCode &error, std::size_t) {
 						  if (error) {
 							  on_error(error.message());
 							  return;
@@ -85,29 +104,31 @@ void Client::send() {
 
 						  std::cout << "Request sent 🦀\n";
 						  send();
-					  });
+					  }));
 }
 
 void Client::receive() {
 	socket_.async_read_some(
 		asio::buffer(temporary_responses),
-		[this](const AsioErrorCode &error, std::size_t bytes_received) {
-			if (error) {
-				if (error == asio::error::eof) {
-					on_closed();
-					return;
-				}
+		asio::bind_executor(strand_,
+							[this](const AsioErrorCode &error, std::size_t bytes_received) {
+								if (error) {
+									if (error == asio::error::eof) {
+										on_closed();
+										return;
+									}
 
-				on_error(error.message());
-				return;
-			}
+									on_error(error.message());
+									return;
+								}
 
-			protocol_session.receive(
-				std::span<const std::byte>{temporary_responses.data(), bytes_received});
+								protocol_session.receive(
+									std::span<const std::byte>{temporary_responses.data(),
+															   bytes_received});
 
-			send();
-			receive();
-		});
+								send();
+								receive();
+							}));
 }
 
 std::optional<ResponseFrame> Client::pop_response(RequestId id) {

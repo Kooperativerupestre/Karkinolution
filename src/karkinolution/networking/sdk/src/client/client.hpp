@@ -11,6 +11,7 @@
 
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
+#include <asio/strand.hpp>
 #include <atomic>
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/message_type_size.hpp>
@@ -35,7 +36,9 @@ namespace KarkinolutionSDK {
 		class Client {
 			public:
 
-				Client(std::string host);
+				Client()
+					: socket_(io_context_)
+					, strand_(asio::make_strand(io_context_)) {}
 
 				void connect();
 				void disconnect();
@@ -75,8 +78,13 @@ namespace KarkinolutionSDK {
 				std::string   host_;
 				std::uint16_t port = PORT;
 
-				asio::io_context      io_context_;
-				asio::ip::tcp::socket socket_;
+				asio::io_context io_context_;
+
+				// Serializes every handler and posted task that touches the client state,
+				// so no two threads access it at the same time.
+				// All access to that state MUST go through this strand.
+				asio::strand<asio::io_context::executor_type> strand_;
+				asio::ip::tcp::socket                         socket_;
 
 
 				std::atomic<BaseIdType> next_request_id = 0;
@@ -90,8 +98,8 @@ namespace KarkinolutionSDK {
 
 				std::array<std::byte, MAX_TEMPORARY_RESPONSE_SIZE> temporary_responses;
 
-				SendingState sending_state;
-				bool         connected = false;
+				SendingState      sending_state;
+				std::atomic<bool> connected = false;
 		};
 
 		namespace Validator {
