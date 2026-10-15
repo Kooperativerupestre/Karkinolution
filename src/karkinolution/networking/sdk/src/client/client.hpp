@@ -15,6 +15,7 @@
 #include <atomic>
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/message_type_size.hpp>
+#include <karkinolution/networking/asio_types.hpp>
 #include <string>
 inline constexpr std::size_t MAX_TEMPORARY_RESPONSE_SIZE = 4096;
 
@@ -31,14 +32,21 @@ namespace KarkinolutionSDK {
 				std::span<const std::byte> payload;
 		};
 
+		struct Config {
+				std::string   host = "127.0.0.1";
+				std::uint16_t port = PORT;
+		};
+
 		using ClientSideResponseBuffer = RawFrameBuffer;
 
 		class Client {
 			public:
 
-				Client()
-					: socket_(io_context_)
-					, strand_(asio::make_strand(io_context_)) {}
+				explicit Client(IoContext &io, Config config = {})
+					: io_context_(io)
+					, socket_(io_context_)
+					, strand_(asio::make_strand(io_context_))
+					, config(config) {}
 
 				void connect();
 				void disconnect();
@@ -75,10 +83,8 @@ namespace KarkinolutionSDK {
 					sending_state.bytes.clear();
 				}
 
-				std::string   host_;
-				std::uint16_t port = PORT;
-
-				asio::io_context io_context_;
+				Config     config;
+				IoContext &io_context_;
 
 				// Serializes every handler and posted task that touches the client state,
 				// so no two threads access it at the same time.
