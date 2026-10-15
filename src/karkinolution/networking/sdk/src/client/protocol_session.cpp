@@ -2,6 +2,7 @@
 #include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
+#include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/sdk/src/client/protocol_session.hpp>
@@ -60,14 +61,14 @@ std::optional<std::vector<std::byte>> ProtocolSession::pop_request() {
 	return requests.pop_front();
 }
 
-std::optional<ResponseFrame> ProtocolSession::pop_response(RequestId id) {
+KarkinolutionSDK::Protocol::ResponseResult ProtocolSession::pop_response(RequestId id) {
 	return pending_requests.pop_response(id);
 }
 
-std::optional<ResponseFrame> ProtocolSession::await_response(RequestId id) {
+KarkinolutionSDK::Protocol::ResponseResult ProtocolSession::await_response(RequestId id) {
 	return pending_requests.await_response(id);
 }
 
 void ProtocolSession::fail_pending_requests() {
-	pending_requests.fail_all();
+	pending_requests.fail_all_by_disconnection();
 }

@@ -16,10 +16,10 @@ namespace KarkinolutionSDK {
 
 				void add_response(std::span<const std::byte> response);
 				std::optional<std::vector<std::byte>> pop_request();
-				// if it doesn't have a response, return std::nullopt
-				std::optional<ResponseFrame> pop_response(RequestId id);
-				std::optional<ResponseFrame> await_response(RequestId id);
-				void                         fail_pending_requests();
+
+				KarkinolutionSDK::Protocol::ResponseResult pop_response(RequestId id);
+				KarkinolutionSDK::Protocol::ResponseResult await_response(RequestId id);
+				void                                       fail_pending_requests();
 
 			private:
 
