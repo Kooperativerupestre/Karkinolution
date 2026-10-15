@@ -1,6 +1,7 @@
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
+#include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
 
 #include <asio/bind_executor.hpp>
@@ -140,13 +141,25 @@ void Client::receive() {
 }
 
 std::optional<ResponseFrame> Client::pop_response(RequestId id) {
-	return protocol_session.pop_response(id);
+	const auto output = protocol_session.pop_response(id);
+
+	if (!output) {
+		if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+			throw ClientError("Tried to pop a response with the client disconnected");
+		}
+	}
+	return output.value();
 }
 
 std::optional<ResponseFrame> Client::request(const ClientRequestData &data) {
 
 
-	const auto                   id       = send_without_waiting(data);
-	std::optional<ResponseFrame> response = protocol_session.await_response(id);
-	return response;
+	const auto id     = send_without_waiting(data);
+	const auto output = protocol_session.await_response(id);
+	if (!output) {
+		if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+			throw ClientError("Tried to request with the client disconnected");
+		}
+	}
+	return output.value();
 }
