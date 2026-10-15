@@ -18,6 +18,10 @@ add_executable(karkinolution_tests
     ${TEST_SOURCES}
 )
 
+target_include_directories(karkinolution_tests PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 target_link_libraries(karkinolution_tests PRIVATE
     karkinolution
     GTest::gtest_main
