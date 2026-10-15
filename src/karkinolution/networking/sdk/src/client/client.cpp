@@ -25,7 +25,7 @@ void Client::disconnect() {
 		socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 		socket_.close(ec);
 		connected = false;
-		protocol_session.faill_pending_requests();
+		protocol_session.fail_pending_requests();
 	});
 }
 
@@ -38,11 +38,11 @@ void Client::connect() {
 
 	AsioErrorCode error;
 
-	const auto endpoints = resolver.resolve(host_, std::to_string(port), error);
+	const auto endpoints = resolver.resolve(config.host, std::to_string(config.port), error);
 
 	if (error) {
 		throw ConnectionError(
-			std::format("Failed to resolve {}:{}: {}", host_, port, error.message()));
+			std::format("Failed to resolve {}:{}: {}", config.host, config.port, error.message()));
 	}
 
 	error.clear();
@@ -50,10 +50,15 @@ void Client::connect() {
 	asio::connect(socket_, endpoints, error);
 
 	if (error) {
-		throw ConnectionError(
-			std::format("Failed to connect to {}:{}: {}", host_, port, error.message()));
+		throw ConnectionError(std::format("Failed to connect to {}:{}: {}",
+										  config.host,
+										  config.port,
+										  error.message()));
 	}
 	connected = true;
+	asio::post(strand_, [this] {
+		receive();
+	});
 }
 
 RequestId Client::send_without_waiting(const ClientRequestData &data) {
@@ -67,8 +72,10 @@ RequestId Client::send_without_waiting(const ClientRequestData &data) {
                                                            data.resource,
                                                            data.payload);
 
+
+	protocol_session.register_request(request_id);
 	asio::post(strand_, [this, frame = std::move(raw_frame)]() mutable {
-		protocol_session.add_request(std::move(frame));
+		protocol_session.enqueue_request(frame);
 		send();
 	});
 

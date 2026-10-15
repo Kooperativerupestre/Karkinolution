@@ -46,29 +46,14 @@ void ProtocolSession::sync_requests() {
 	}
 }
 
-void ProtocolSession::add_request(std::span<const std::byte> request) {
-	const auto id = Frames::Parser::Request::get_id(request);
+void ProtocolSession::register_request(RequestId id) {
 	if (!pending_requests.add_request(id)) {
 		throw ClientError(std::format("Request ID {} is already pending", id));
 	}
-
-	auto added_on_queue = requests.add(request);
 }
 
-void ProtocolSession::add_request(const RequestFrame &request) {
-	if (!pending_requests.add_request(request.id)) {
-		throw ClientError(std::format("Request ID {} is already pending", request.id));
-	}
-
-	auto added_on_queue = requests.add(Frames::Motor::make_request_raw_bytes(request.sub_type,
-																			 request.id,
-																			 request.resource,
-																			 request.payload));
-
-	if (!added_on_queue) {
-		pending_requests.cancel(request.id);
-		throw BufferError("The queue of requests is full");
-	}
+void ProtocolSession::enqueue_request(std::span<const std::byte> request) {
+	requests.add(request);
 }
 
 std::optional<std::vector<std::byte>> ProtocolSession::pop_request() {
@@ -83,6 +68,6 @@ std::optional<ResponseFrame> ProtocolSession::await_response(RequestId id) {
 	return pending_requests.await_response(id);
 }
 
-void ProtocolSession::faill_pending_requests() {
-	pending_requests.faill_all();
+void ProtocolSession::fail_pending_requests() {
+	pending_requests.fail_all();
 }
