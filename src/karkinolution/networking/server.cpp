@@ -81,9 +81,6 @@ void Server::accept() {
 
 		connections.push_back(std::move(connection));
 
-		if (connections.size() > 0) {
-			return;
-		}
 		accept();
 	});
 }

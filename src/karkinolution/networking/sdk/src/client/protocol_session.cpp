@@ -21,7 +21,7 @@ void ProtocolSession::sync_requests() {
 	while (FrameBufferAnalyzer::has_frame(incoming_responses) == BufferExistence::YES) {
 
 		const auto raw_frame = FrameBufferAnalyzer::get_frame(incoming_responses).value();
-
+		incoming_responses.pop_front();
 
 		const auto request_id = Frames::Parser::Response::get_id(raw_frame);
 		const auto type       = Frames::Parser::get_type(raw_frame);
