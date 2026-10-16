@@ -16,6 +16,8 @@ namespace KarkinolutionSDK {
 			DISCONNECTION
 		};
 
+		struct CancelledError {};
+
 		using ResponseResult = std::expected<std::optional<ResponseFrame>, RequestFailure>;
 
 		class FutureRequest {

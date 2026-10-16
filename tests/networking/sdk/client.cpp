@@ -21,7 +21,7 @@ TEST_F(ClientTest, PendingRequestFailsWhenServerDrops) {
 	bool       failed   = false;
 	while (std::chrono::steady_clock::now() < deadline) {
 		try {
-			client.pop_response(id);
+			const auto output = client.pop_response(id);
 		} catch (const ClientError &error) {
 			failed = true;
 			break;

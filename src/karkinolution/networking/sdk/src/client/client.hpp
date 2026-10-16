@@ -39,6 +39,50 @@ namespace KarkinolutionSDK {
 
 		using ClientSideResponseBuffer = RawFrameBuffer;
 
+		class AsyncOperationsRunning {
+			private:
+
+				std::mutex              mutex;
+				int                     count = 0;
+				std::condition_variable cv;
+
+			public:
+
+				void increment() {
+					std::lock_guard lock{mutex};
+					count++;
+				}
+
+				void decrement() {
+					bool reached_zero;
+
+					{
+						std::lock_guard lock{mutex};
+						count--;
+						reached_zero = count == 0;
+					}
+
+					if (reached_zero) {
+						cv.notify_all();
+					}
+				}
+
+				int load() {
+					std::lock_guard lock{mutex};
+					return count;
+				}
+
+				void wait_until_zero() {
+					std::unique_lock lock{mutex};
+					cv.wait(lock, [this] {
+						return count == 0;
+					});
+				}
+		};
+
+		using ResponseResult =
+			std::expected<std::optional<ResponseFrame>, KarkinolutionSDK::Protocol::CancelledError>;
+
 		class Client {
 			public:
 
@@ -59,12 +103,23 @@ namespace KarkinolutionSDK {
 				// The request function makes a request, and blocks the thread until it gets a
 				// response
 
-				std::optional<ResponseFrame> request(const ClientRequestData &data);
+				ResponseResult request(const ClientRequestData &data);
 
 				// This function stores the request in a queue, it doesn't block the thread
 				RequestId send_without_waiting(const ClientRequestData &data);
 				// if the request wasn't responsed yet, the value is nullopt
-				std::optional<ResponseFrame> pop_response(RequestId id);
+				ResponseResult pop_response(RequestId id);
+
+				int get_current_async_operations_running() {
+					return current_async_operations_running.load();
+				}
+
+				// stops the thread tha calls, but doesn't stop the thread of Client
+				void stop_new_async_operations();
+
+				void wait_until_zero_async_operations() {
+					return current_async_operations_running.wait_until_zero();
+				}
 
 			private:
 
@@ -106,6 +161,9 @@ namespace KarkinolutionSDK {
 
 				SendingState      sending_state;
 				std::atomic<bool> connected = false;
+
+				AsyncOperationsRunning current_async_operations_running;
+				std::atomic<bool>      stopped_new_async_operations = false;
 		};
 
 		namespace Validator {

@@ -88,7 +88,7 @@ void Client::send() {
 	// call (TOCTOU). Disconnection is a normal condition, so don't throw:
 	// an exception escaping a handler would terminate the io_context thread.
 	// Also skip if a write is already in progress.
-	if (!connected || sending_state.is_sending) {
+	if (!connected || sending_state.is_sending || stopped_new_async_operations) {
 		return;
 	}
 
@@ -98,68 +98,112 @@ void Client::send() {
 		return;
 	}
 
+	current_async_operations_running.increment();
 	sending_state.is_sending = true;
 	sending_state.bytes      = bytes.value();
+	try {
+		asio::async_write(
+			socket_,
+			asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
 
-	asio::async_write(socket_,
-					  asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
+			asio::bind_executor(strand_, [this](const AsioErrorCode &error, std::size_t) {
+				if (error) {
+					if (error == asio::error::operation_aborted) {
+						current_async_operations_running.decrement();
+						return;
+					}
+					on_error(error.message());
+					current_async_operations_running.decrement();
+					return;
+				}
+				clear_sending_state();
 
-					  asio::bind_executor(strand_, [this](const AsioErrorCode &error, std::size_t) {
-						  if (error) {
-							  on_error(error.message());
-							  return;
-						  }
-						  clear_sending_state();
-
-						  std::cout << "Request sent 🦀\n";
-						  send();
-					  }));
+				std::cout << "Request sent 🦀\n";
+				send();
+				current_async_operations_running.decrement();
+			}));
+	} catch (...) {
+		current_async_operations_running.decrement();
+		throw;
+	}
 }
 
 void Client::receive() {
-	socket_.async_read_some(
-		asio::buffer(temporary_responses),
-		asio::bind_executor(strand_,
-							[this](const AsioErrorCode &error, std::size_t bytes_received) {
-								if (error) {
-									if (error == asio::error::eof) {
-										on_closed();
+	if (stopped_new_async_operations) {
+		return;
+	}
+	current_async_operations_running.increment();
+	try {
+		socket_.async_read_some(
+			asio::buffer(temporary_responses),
+			asio::bind_executor(strand_,
+								[this](const AsioErrorCode &error, std::size_t bytes_received) {
+									if (error) {
+										if (error == asio::error::eof) {
+											on_closed();
+											current_async_operations_running.decrement();
+											return;
+										} else if (error == asio::error::operation_aborted) {
+											current_async_operations_running.decrement();
+											return;
+										}
+
+										on_error(error.message());
+										current_async_operations_running.decrement();
 										return;
 									}
 
-									on_error(error.message());
-									return;
-								}
-
-								protocol_session.receive(
-									std::span<const std::byte>{temporary_responses.data(),
-															   bytes_received});
-
-								send();
-								receive();
-							}));
+									protocol_session.receive(
+										std::span<const std::byte>{temporary_responses.data(),
+																   bytes_received});
+									current_async_operations_running.decrement();
+								}));
+	} catch (...) {
+		current_async_operations_running.decrement();
+		throw;
+	}
 }
 
-std::optional<ResponseFrame> Client::pop_response(RequestId id) {
+KarkinolutionSDK::Client::ResponseResult Client::pop_response(RequestId id) {
 	const auto output = protocol_session.pop_response(id);
 
 	if (!output) {
 		if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
 			throw ClientError("Tried to pop a response with the client disconnected");
+		} else if (output.error() == Protocol::RequestFailure::CANCEL) {
+			return std::unexpected(Protocol::CancelledError{});
 		}
 	}
 	return output.value();
 }
 
-std::optional<ResponseFrame> Client::request(const ClientRequestData &data) {
-
-
+KarkinolutionSDK::Client::ResponseResult Client::request(const ClientRequestData &data) {
 	const auto id     = send_without_waiting(data);
 	const auto output = protocol_session.await_response(id);
+
 	if (!output) {
 		if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
 			throw ClientError("Tried to request with the client disconnected");
 		}
+
+		return std::unexpected(Protocol::CancelledError{});
 	}
+
 	return output.value();
+}
+
+void Client::stop_new_async_operations() {
+	auto promise = std::make_shared<std::promise<void>>();
+	auto future  = promise->get_future();
+
+	asio::post(strand_, [this, promise] {
+		stopped_new_async_operations.store(true);
+		// The socket may already be closed (e.g. server dropped the connection
+		// before this is called). Use the error_code overload so we don't throw
+		// on a bad file descriptor.
+		asio::error_code ec;
+		socket_.cancel(ec);
+		promise->set_value();
+	});
+	future.get();
 }
