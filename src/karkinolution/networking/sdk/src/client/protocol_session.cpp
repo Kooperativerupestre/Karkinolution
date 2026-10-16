@@ -22,6 +22,7 @@ void ProtocolSession::sync_requests() {
 
 		const auto raw_frame = FrameBufferAnalyzer::get_frame(incoming_responses).value();
 
+
 		const auto request_id = Frames::Parser::Response::get_id(raw_frame);
 		const auto type       = Frames::Parser::get_type(raw_frame);
 		const auto v_sub_type = Frames::Parser::get_sub_type(raw_frame);
@@ -42,7 +43,7 @@ void ProtocolSession::sync_requests() {
 		const auto added = pending_requests.add_response(frame);
 
 		if (!added) {
-			return;
+			std::cout << "Pending requests reached the max size\n";
 		}
 	}
 }

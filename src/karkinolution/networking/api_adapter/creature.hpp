@@ -8,5 +8,6 @@
 #include <karkinolution/binary/frames/aliases.hpp>
 
 namespace CreatureAPIBYA {
-	ResponseFrame see_creature(const World &world, const std::vector<std::byte> &payload);
+	ResponseFrame
+	see_creature(const World &world, RequestId request_id, const std::vector<std::byte> &payload);
 } // namespace CreatureAPIBYA
