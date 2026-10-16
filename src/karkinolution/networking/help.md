@@ -20,10 +20,6 @@ How do I compile? [Commands](../../../docs/commands.md)
 
 No.
 
-# Does the server support more than one client?
-
-No.
-
 # Does the server have the infraestructure to support more than one client?
 
 Yes.
