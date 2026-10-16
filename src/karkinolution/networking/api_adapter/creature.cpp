@@ -13,11 +13,11 @@
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
 ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
+										   RequestId                     request_id,
 										   const std::vector<std::byte> &payload) {
 
 	const auto id = CreatureDSI::Request::interpret_like_get_creature(payload);
 
-	const auto request_id = Frames::Parser::Request::get_id(payload);
 
 	auto creature = CreatureAPI::see_creature(world, id);
 

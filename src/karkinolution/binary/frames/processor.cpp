@@ -21,7 +21,7 @@ ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World 
 
 	if (sub_type == Frames::Types::BinarySubTypes::Request::SEE) {
 		if (resource == Frames::Types::RequestResource::CREATURE) {
-			return CreatureAPIBYA::see_creature(world, frame.payload);
+			return CreatureAPIBYA::see_creature(world, frame.id, frame.payload);
 		}
 	}
 

@@ -40,6 +40,7 @@ void ProtocolSession::process_frames() {
 	while (FrameBufferAnalyzer::has_frame(request_buffer) == BufferExistence::YES) {
 
 		auto frame = FrameBufferAnalyzer::get_frame(request_buffer);
+		request_buffer.pop_front();
 
 		auto request = Frames::Parser::parse_request_frame(frame.value());
 
