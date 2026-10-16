@@ -1,7 +1,9 @@
 #pragma once
 #include "karkinolution/core/error.hpp"
 
+#include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/utils/k_random.hpp>
+#include <karkinolution/world/world.hpp>
 #include <random>
 #include <string>
 
@@ -44,4 +46,9 @@ namespace TestUtils {
 			bytes.push_back(static_cast<std::byte>(RandomGenerators::generate<uint8_t>()));
 		}
 	}
+
+	World make_small_world();
+
+	std::vector<std::byte> make_see_creature_frame(Frames::Types::RequestId id,
+												   BaseIdType               creature_id);
 } // namespace TestUtils
