@@ -86,11 +86,15 @@ namespace KarkinolutionSDK {
 		class Client {
 			public:
 
-				explicit Client(IoContext &io, Config config = {})
+				explicit Client(IoContext &io,
+								Config     config       = {},
+								const std::string &name = "Client")
 					: io_context_(io)
 					, socket_(io_context_)
 					, strand_(asio::make_strand(io_context_))
-					, config(config) {}
+					, config(config) {
+					creation_number = client_count.fetch_add(1);
+				}
 
 				void connect();
 				void disconnect();
@@ -121,7 +125,25 @@ namespace KarkinolutionSDK {
 					return current_async_operations_running.wait_until_zero();
 				}
 
+				const std::string &get_name() const {
+					return name;
+				}
+
+				std::string get_nickname() const {
+					return std::format("{}-{}", name, creation_number);
+				}
+
+				int get_creation_number() const {
+					return creation_number;
+				}
+
+				static int get_client_count() {
+					return client_count.load();
+				}
+
 			private:
+
+				inline static std::atomic<int> client_count = 0;
 
 				void on_closed() {
 					std::cout << "Client was closed\n";
@@ -137,6 +159,10 @@ namespace KarkinolutionSDK {
 					sending_state.is_sending = false;
 					sending_state.bytes.clear();
 				}
+
+				int         creation_number;
+				std::string name;
+
 
 				Config     config;
 				IoContext &io_context_;
