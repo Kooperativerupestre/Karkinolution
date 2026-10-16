@@ -136,8 +136,9 @@ bool PendingRequests::add_response(const ResponseFrame &response) {
 
 		auto it = pendings.find(response.request_id);
 		if (it == pendings.end()) {
-			throw CPPSdkError(std::format("Invalid access to an inexistent request with id = {}",
-										  response.request_id));
+			throw CPPSdkError(
+				std::format("Invalid try to add a response to an inexistent request with id = {}",
+							response.request_id));
 		}
 		request = it->second;
 	}
@@ -152,7 +153,7 @@ ResponseResult PendingRequests::pop_response(RequestId id) {
 		auto            it = pendings.find(id);
 		if (it == pendings.end()) {
 			throw CPPSdkError(
-				std::format("Invalid access to an inexistent request with id = {}", id));
+				std::format("Invalid pop response of an inexistent request with id = {}", id));
 		}
 		request = it->second;
 	}
@@ -176,7 +177,7 @@ ResponseResult PendingRequests::await_response(RequestId id) {
 
 		if (it == pendings.end()) {
 			throw CPPSdkError(
-				std::format("Invalid access to a nonexistent request with id = {}", id));
+				std::format("Invalid await response of a nonexistent request with id = {}", id));
 		}
 
 		request = it->second;
