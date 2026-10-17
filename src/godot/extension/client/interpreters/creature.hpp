@@ -7,9 +7,6 @@
 
 namespace KarkinolutionGodot {
 	namespace Interpreters {
-		namespace Creature {
-			godot::Ref<GodotCreature> see_creature(godot::Ref<GodotClient> client, std::int64_t id);
-		} // namespace Creature
 
 		class CreatureInterpreter : public godot::RefCounted {
 				GDCLASS(CreatureInterpreter, godot::RefCounted);
@@ -21,9 +18,9 @@ namespace KarkinolutionGodot {
 			public:
 
 				static godot::Ref<GodotCreature> see_creature(godot::Ref<GodotClient> client,
-															  std::int64_t            id) {
-					return Creature::see_creature(client, id);
-				}
+															  std::int64_t            id);
 		};
+
+
 	} // namespace Interpreters
 } // namespace KarkinolutionGodot
