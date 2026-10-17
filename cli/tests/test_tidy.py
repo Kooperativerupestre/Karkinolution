@@ -209,6 +209,40 @@ class TestTidy(unittest.TestCase):
             mock_changed.assert_not_called()
             self.assertCountEqual(mock_run_tidy.call_args[0][0], [first, second])
 
+    @mock.patch("karkinolution.tidy.commands.run_tidy")
+    def test_check_automatically_detects_godot_build_dir(self, mock_run_tidy: mock.MagicMock) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            base = Path(tmpdir).resolve()
+            normal_file = base / "src" / "karkinolution" / "app.cpp"
+            normal_file.parent.mkdir(parents=True)
+            normal_file.write_text("int app() { return 0; }")
+
+            godot_file = base / "src" / "godot" / "extension" / "register.cpp"
+            godot_file.parent.mkdir(parents=True)
+            godot_file.write_text("int reg() { return 0; }")
+
+            check((normal_file, godot_file))
+
+            self.assertEqual(mock_run_tidy.call_count, 2)
+            calls = mock_run_tidy.call_args_list
+            bdir_map = {call.kwargs["build_dir"]: call.args[0] for call in calls}
+            self.assertEqual(bdir_map[Path("build")], [normal_file])
+            self.assertEqual(bdir_map[Path("build-godot")], [godot_file])
+
+    @mock.patch("karkinolution.tidy.commands.run_tidy")
+    def test_check_respects_explicit_build_dir_for_all_files(self, mock_run_tidy: mock.MagicMock) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            base = Path(tmpdir).resolve()
+            godot_file = base / "src" / "godot" / "extension" / "register.cpp"
+            godot_file.parent.mkdir(parents=True)
+            godot_file.write_text("int reg() { return 0; }")
+
+            custom_build = Path("custom_build")
+            check((godot_file,), build_dir=custom_build)
+
+            mock_run_tidy.assert_called_once()
+            self.assertEqual(mock_run_tidy.call_args.kwargs["build_dir"], custom_build)
+
 
 if __name__ == "__main__":
     unittest.main()

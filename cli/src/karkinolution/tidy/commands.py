@@ -127,9 +127,38 @@ def run_tidy(
     complete()
 
 
+def is_godot_path(path: Path) -> bool:
+    resolved = path.resolve()
+    parts = resolved.parts
+    for i in range(len(parts) - 1):
+        if parts[i] == "src" and parts[i + 1] == "godot":
+            return True
+    return "godot" in parts and "src" in parts
+
+
+def default_build_dir(file: Path) -> Path:
+    if is_godot_path(file):
+        return Path("build-godot")
+    return Path("build")
+
+
+def group_files_by_build_dir(
+    files: list[Path],
+    build_dir: Path | None = None,
+) -> dict[Path, list[Path]]:
+    if build_dir is not None:
+        return {build_dir: files}
+
+    groups: dict[Path, list[Path]] = {}
+    for file in files:
+        bdir = default_build_dir(file)
+        groups.setdefault(bdir, []).append(file)
+    return groups
+
+
 def check(
     paths: tuple[Path, ...],
-    build_dir: Path = Path("build"),
+    build_dir: Path | None = None,
     warnings_as_errors: bool = True,
     config_file: Path | None = None,
     changed_since: str | None = None,
@@ -143,25 +172,29 @@ def check(
             typer.echo(f"No changed source files since {changed_since}.")
             return
 
-    run_tidy(
-        files,
-        build_dir=build_dir,
-        fix=False,
-        warnings_as_errors=warnings_as_errors,
-        config_file=config_file,
-    )
+    groups = group_files_by_build_dir(files, build_dir)
+    for bdir, group_files in groups.items():
+        run_tidy(
+            group_files,
+            build_dir=bdir,
+            fix=False,
+            warnings_as_errors=warnings_as_errors,
+            config_file=config_file,
+        )
 
 
 def fix(
     paths: tuple[Path, ...],
-    build_dir: Path = Path("build"),
+    build_dir: Path | None = None,
     config_file: Path | None = None,
 ) -> None:
     files = collect_source_files(paths)
-    run_tidy(
-        files,
-        build_dir=build_dir,
-        fix=True,
-        config_file=config_file,
-    )
+    groups = group_files_by_build_dir(files, build_dir)
+    for bdir, group_files in groups.items():
+        run_tidy(
+            group_files,
+            build_dir=bdir,
+            fix=True,
+            config_file=config_file,
+        )
 

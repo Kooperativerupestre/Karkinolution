@@ -122,11 +122,11 @@ def style_format(
 )
 def tidy_check(
     paths: list[Path],
-    build_dir: Path = typer.Option(
-        Path("build"),
+    build_dir: Path | None = typer.Option(
+        None,
         "--build-dir",
         "-b",
-        help="Path to the build directory containing compile_commands.json.",
+        help="Path to the build directory containing compile_commands.json. Detected when omitted.",
     ),
     warnings_as_errors: bool = typer.Option(
         True,
@@ -160,11 +160,11 @@ def tidy_check(
 )
 def tidy_fix(
     paths: list[Path],
-    build_dir: Path = typer.Option(
-        Path("build"),
+    build_dir: Path | None = typer.Option(
+        None,
         "--build-dir",
         "-b",
-        help="Path to the build directory containing compile_commands.json.",
+        help="Path to the build directory containing compile_commands.json. Detected when omitted.",
     ),
     config_file: Path | None = typer.Option(
         None,
