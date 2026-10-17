@@ -19,6 +19,10 @@ class GodotRadius : public godot::RefCounted {
 		explicit GodotRadius(double value);
 
 		[[nodiscard]] double get_value() const;
+
+		void set_value(double value) {
+			value_ = value;
+		}
 };
 
 class GodotCircumference : public godot::RefCounted {
@@ -36,6 +40,10 @@ class GodotCircumference : public godot::RefCounted {
 		explicit GodotCircumference(double value);
 
 		[[nodiscard]] double get_value() const;
+
+		void set_value(double value) {
+			value_ = value;
+		}
 };
 
 class GodotDiameter : public godot::RefCounted {
@@ -53,6 +61,10 @@ class GodotDiameter : public godot::RefCounted {
 		explicit GodotDiameter(double value);
 
 		[[nodiscard]] double get_value() const;
+
+		void set_value(double value) {
+			value_ = value;
+		}
 };
 
 class GodotArea : public godot::RefCounted {
@@ -70,4 +82,8 @@ class GodotArea : public godot::RefCounted {
 		explicit GodotArea(double value);
 
 		[[nodiscard]] double get_value() const;
+
+		void set_value(double value) {
+			value_ = value;
+		}
 };

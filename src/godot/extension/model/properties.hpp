@@ -27,6 +27,10 @@ namespace KarkinolutionGodot {
 					GodotProperty(std::uint8_t value);
 
 					[[nodiscard]] std::uint8_t get_value() const;
+
+					void set_value(std::uint8_t value) {
+						value_ = value;
+					}
 			};
 		} // namespace Properties
 	} // namespace Models

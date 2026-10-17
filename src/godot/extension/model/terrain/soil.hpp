@@ -35,6 +35,10 @@ namespace KarkinolutionGodot {
 							: damage(value) {}
 
 						float get_value() const;
+
+						void set_value(float value) {
+							damage = value;
+						}
 				};
 
 				class GodotMovementCost : public godot::RefCounted {
@@ -56,6 +60,10 @@ namespace KarkinolutionGodot {
 							: cost(value) {}
 
 						[[nodiscard]] float get_value() const;
+
+						void set_value(float value) {
+							cost = value;
+						}
 				};
 			} // namespace Components
 
