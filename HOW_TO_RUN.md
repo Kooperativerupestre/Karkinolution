@@ -11,6 +11,7 @@ Run every command from the repository root. This page covers the first run. The 
 * Git
 * [`uv`](https://docs.astral.sh/uv/), only if you use the CLI
 * Network access on the first configure (see [What CMake downloads for you](#what-cmake-downloads-for-you))
+* Pass this requirements file [requirements.hpp](src/karkinolution/core/requirements.hpp)
 
 ## 1. Get the code
 
