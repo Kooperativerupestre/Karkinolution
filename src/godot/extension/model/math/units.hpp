@@ -23,6 +23,10 @@ namespace KarkinolutionGodot {
 						explicit GodotMeter(double value);
 
 						[[nodiscard]] double get_value() const;
+
+						void set_value(double value) {
+							value_ = value;
+						}
 				};
 
 				class GodotLateral : public GodotMeter {
@@ -76,6 +80,10 @@ namespace KarkinolutionGodot {
 						explicit GodotVolume(double value);
 
 						[[nodiscard]] double get_value() const;
+
+						void set_value(double value) {
+							value_ = value;
+						}
 				};
 
 				class GodotMass : public godot::RefCounted {
@@ -93,6 +101,10 @@ namespace KarkinolutionGodot {
 						explicit GodotMass(double value);
 
 						[[nodiscard]] double get_value() const;
+
+						void set_value(double value) {
+							value_ = value;
+						}
 				};
 
 				class GodotDensity : public godot::RefCounted {
@@ -110,6 +122,10 @@ namespace KarkinolutionGodot {
 						explicit GodotDensity(double value);
 
 						[[nodiscard]] double get_value() const;
+
+						void set_value(double value) {
+							value_ = value;
+						}
 				};
 
 				class GodotSize : public godot::RefCounted {
@@ -132,6 +148,23 @@ namespace KarkinolutionGodot {
 						[[nodiscard]] double get_height() const;
 						[[nodiscard]] double get_depth() const;
 						[[nodiscard]] double get_volume() const;
+
+						void set_value(double lateral, double height, double depth) {
+							if (!lateral_.is_valid()) {
+								lateral_.instantiate();
+							}
+							lateral_->set_value(lateral);
+
+							if (!height_.is_valid()) {
+								height_.instantiate();
+							}
+							height_->set_value(height);
+
+							if (!depth_.is_valid()) {
+								depth_.instantiate();
+							}
+							depth_->set_value(depth);
+						}
 				};
 			} // namespace Units
 		} // namespace Math
