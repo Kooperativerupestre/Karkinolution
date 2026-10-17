@@ -27,8 +27,9 @@ GodotCorpse KarkinolutionGodot::Translator::translate(const CorpseDSI::Models::C
 					   size};
 }
 
-GodotCreature KarkinolutionGodot::Translator::translate(std::int64_t                         id,
-													   const CreatureDSI::Models::Creature &creature) {
+GodotCreature
+KarkinolutionGodot::Translator::translate(std::int64_t                         id,
+										  const CreatureDSI::Models::Creature &creature) {
 	// TODO: Make creature carry its id
 	return GodotCreature{id,
 						 static_cast<std::uint8_t>(creature.gender),
@@ -37,12 +38,13 @@ GodotCreature KarkinolutionGodot::Translator::translate(std::int64_t            
 						 to_godot_string(creature.name)};
 }
 
-GodotDamage KarkinolutionGodot::Translator::translate(const SoilDSI::Models::DamageComponent &damage) {
+GodotDamage
+KarkinolutionGodot::Translator::translate(const SoilDSI::Models::DamageComponent &damage) {
 	return GodotDamage{damage.value};
 }
 
-GodotMovementCost
-KarkinolutionGodot::Translator::translate(const SoilDSI::Models::MovementCostComponent &movement_cost) {
+GodotMovementCost KarkinolutionGodot::Translator::translate(
+	const SoilDSI::Models::MovementCostComponent &movement_cost) {
 	return GodotMovementCost{movement_cost.cost};
 }
 
