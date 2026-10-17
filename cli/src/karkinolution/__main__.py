@@ -38,7 +38,7 @@ def setup_command(
 )
 def run_command(
     preset: str = typer.Option(
-        "debug",
+        "godot",
         "--preset",
         "-p",
         help="Configure preset from CMakePresets.json.",
