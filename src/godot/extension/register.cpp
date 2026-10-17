@@ -1,4 +1,5 @@
 #include "godot/extension/client/client.hpp"
+#include "godot/extension/client/interpreters/corpse.hpp"
 #include "godot/extension/client/interpreters/creature.hpp"
 #include "godot/extension/model/aliases.hpp"
 #include "godot/extension/model/math/aliases.hpp"
@@ -50,6 +51,7 @@ void initialize_karkinolution(godot::ModuleInitializationLevel p_level) {
 	// Client & Interpreters
 	GDREGISTER_CLASS(KarkinolutionGodot::Client::GodotClient);
 	GDREGISTER_CLASS(KarkinolutionGodot::Interpreters::CreatureInterpreter);
+	GDREGISTER_CLASS(KarkinolutionGodot::Interpreters::CorpseInterpreter);
 }
 
 void uninitialize_karkinolution(godot::ModuleInitializationLevel p_level) {

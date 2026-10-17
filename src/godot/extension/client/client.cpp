@@ -22,8 +22,7 @@ void GodotClient::_bind_methods() {
 }
 
 GodotClient::GodotClient()
-	: io_context_()
-	, work_guard_(asio::make_work_guard(io_context_))
+	: work_guard_(asio::make_work_guard(io_context_))
 	, io_thread_([this] {
 		io_context_.run();
 	})
