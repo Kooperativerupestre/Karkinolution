@@ -8,8 +8,7 @@
 namespace KarkinolutionGodot {
 	namespace Interpreters {
 		namespace Creature {
-			godot::Ref<GodotCreature> see_creature(godot::Ref<GodotClient> client,
-												  std::int64_t            id);
+			godot::Ref<GodotCreature> see_creature(godot::Ref<GodotClient> client, std::int64_t id);
 		} // namespace Creature
 
 		class CreatureInterpreter : public godot::RefCounted {

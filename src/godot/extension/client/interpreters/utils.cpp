@@ -7,9 +7,9 @@
 namespace KarkinolutionGodot {
 	namespace Interpreters {
 		namespace Utils {
-			std::optional<ResponseFrame> execute_request(
-				godot::Ref<GodotClient>                            client,
-				const KarkinolutionSDK::Client::ClientRequestData &request_data) {
+			std::optional<ResponseFrame>
+			execute_request(godot::Ref<GodotClient>                            client,
+							const KarkinolutionSDK::Client::ClientRequestData &request_data) {
 				if (client.is_null()) {
 					return std::nullopt;
 				}
@@ -26,7 +26,7 @@ namespace KarkinolutionGodot {
 				const auto &frame = response_result.value();
 
 				if (frame.type == Frames::Types::BinaryTypes::Error) {
-					const std::string_view msg(reinterpret_cast<const char *>(frame.payload.data()),
+					const std::string_view msg(reinterpret_cast<const char*>(frame.payload.data()),
 											   frame.payload.size());
 					client->emit_signal("error_occurred",
 										static_cast<int64_t>(godot::FAILED),

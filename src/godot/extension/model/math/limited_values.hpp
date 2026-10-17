@@ -72,7 +72,6 @@ namespace KarkinolutionGodot {
 
 						IntLimitedValue() = default;
 
-
 						template <std::integral T>
 						IntLimitedValue(T value, T max, T min)
 							: value_(static_cast<double>(value))
