@@ -2,7 +2,7 @@ from pathlib import Path
 
 import typer
 
-from karkinolution import run, see, setup, style, tidy
+from karkinolution import quality, run, see, setup, style, tidy
 
 app = typer.Typer(help="Development tools for the Karkinolution project.")
 
@@ -10,11 +10,14 @@ style_app = typer.Typer(help="Format and check source code using clang-format.")
 
 tidy_app = typer.Typer(help="Analyze and fix source code using clang-tidy.")
 
+quality_app = typer.Typer(help="Run all code quality checks and fixes (style + tidy).")
+
 see_app = typer.Typer(help="Inspect the structure of the code.")
 
 app.add_typer(see_app, name="see")
 app.add_typer(style_app, name="style")
 app.add_typer(tidy_app, name="tidy")
+app.add_typer(quality_app, name="quality")
 
 
 @app.command(
@@ -174,6 +177,84 @@ def tidy_fix(
     ),
 ) -> None:
     tidy.fix(tuple(paths), build_dir=build_dir, config_file=config_file)
+
+
+@quality_app.command(
+    "check",
+    help="Run style and tidy checks on source files.",
+)
+def quality_check(
+    paths: list[Path],
+    build_dir: Path | None = typer.Option(
+        None,
+        "--build-dir",
+        "-b",
+        help="Path to the build directory containing compile_commands.json. Detected when omitted.",
+    ),
+    warnings_as_errors: bool = typer.Option(
+        True,
+        "--warnings-as-errors/--no-warnings-as-errors",
+        help="Treat tidy warnings as errors.",
+    ),
+    style_file: Path | None = typer.Option(
+        None,
+        "--style-file",
+        "-s",
+        help="Path to .clang-format file.",
+    ),
+    config_file: Path | None = typer.Option(
+        None,
+        "--config-file",
+        "-c",
+        help="Path to .clang-tidy file.",
+    ),
+    changed_since: str | None = typer.Option(
+        None,
+        "--changed-since",
+        help="Only tidy-check files changed since this Git ref (compared against the merge base).",
+    ),
+) -> None:
+    quality.check(
+        tuple(paths),
+        build_dir=build_dir,
+        warnings_as_errors=warnings_as_errors,
+        style_file=style_file,
+        config_file=config_file,
+        changed_since=changed_since,
+    )
+
+
+@quality_app.command(
+    "fix",
+    help="Apply style formatting and tidy fixes to source files.",
+)
+def quality_fix(
+    paths: list[Path],
+    build_dir: Path | None = typer.Option(
+        None,
+        "--build-dir",
+        "-b",
+        help="Path to the build directory containing compile_commands.json. Detected when omitted.",
+    ),
+    style_file: Path | None = typer.Option(
+        None,
+        "--style-file",
+        "-s",
+        help="Path to .clang-format file.",
+    ),
+    config_file: Path | None = typer.Option(
+        None,
+        "--config-file",
+        "-c",
+        help="Path to .clang-tidy file.",
+    ),
+) -> None:
+    quality.fix(
+        tuple(paths),
+        build_dir=build_dir,
+        style_file=style_file,
+        config_file=config_file,
+    )
 
 
 if __name__ == "__main__":
