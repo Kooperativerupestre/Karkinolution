@@ -42,7 +42,8 @@ CreatureDSI::Models::Creature CreatureDSI::get_creature(const std::vector<std::b
 	return Models::Creature{.gender   = get_gender(payload, offset),
 							.specie   = get_specie(payload, offset),
 							.position = get_position(payload, offset),
-							.name     = get_name(payload, offset)};
+							.name     = get_name(payload, offset),
+							.id       = get_id(payload, offset)};
 }
 
 uint8_t CreatureDSI::get_name_size(const std::vector<std::byte> &payload, std::size_t offset) {
@@ -54,6 +55,10 @@ std::string CreatureDSI::get_name(const std::vector<std::byte> &payload, std::si
 	return Deserializer::read_string(payload,
 									 offset + CreatureSRI::Layout::Name::OFFSET,
 									 name_size);
+}
+
+BaseIdType CreatureDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Deserializer::deserialize<BaseIdType>(payload, offset + CreatureSRI::Layout::Id::OFFSET);
 }
 
 BaseIdType

@@ -15,7 +15,9 @@ namespace Karkinolution {
 								CreatureSpecies specie;
 								Vec3            position;
 								std::string     name;
+								BaseIdType      id;
 						};
+
 					} // namespace Models
 
 					Gender get_gender(const std::vector<std::byte> &payload, std::size_t offset);
@@ -28,6 +30,7 @@ namespace Karkinolution {
 										  std::size_t                   offset);
 
 					std::string get_name(const std::vector<std::byte> &payload, std::size_t offset);
+					BaseIdType  get_id(const std::vector<std::byte> &payload, std::size_t offset);
 					Models::Creature get_creature(const std::vector<std::byte> &payload,
 												  std::size_t                   offset);
 

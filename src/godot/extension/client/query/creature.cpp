@@ -21,7 +21,7 @@ godot::Ref<GodotCreature> CreatureQuery::see_creature(godot::Ref<GodotClient> cl
 
 	const auto creature_model = CreatureDSI::get_creature(frame->payload, 0);
 
-	const auto godot_creature = KarkinolutionGodot::Translator::translate(id, creature_model);
+	const auto godot_creature = KarkinolutionGodot::Translator::translate(creature_model);
 
 
 	return godot_creature;

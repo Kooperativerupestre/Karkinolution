@@ -33,13 +33,10 @@ KarkinolutionGodot::Translator::translate(const CorpseDSI::Models::Corpse &corps
 }
 
 godot::Ref<GodotCreature>
-KarkinolutionGodot::Translator::translate(std::int64_t                         id,
-										  const CreatureDSI::Models::Creature &creature) {
-
-	// TODO: Make creature carry its id
+KarkinolutionGodot::Translator::translate(const CreatureDSI::Models::Creature &creature) {
 
 	godot::Ref<GodotCreature> result;
-	result.instantiate(id,
+	result.instantiate(creature.id,
 					   static_cast<std::uint8_t>(creature.gender),
 					   static_cast<std::uint8_t>(creature.specie),
 					   translate(creature.position),
