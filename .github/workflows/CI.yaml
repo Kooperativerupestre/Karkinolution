@@ -61,7 +61,7 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # An empty sha means there is no usable base, so prek checks every file.
+      # An empty sha means there is no usable base, so tidy checks every file.
       - name: Resolve diff base
         id: diff-base
         env:
@@ -100,7 +100,7 @@ jobs:
           cache-from: type=gha,scope=karkinolution-ci
           cache-to: type=gha,mode=max,scope=karkinolution-ci
 
-      - name: Build compilation database for tidy
+      - name: Build compilation database
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
@@ -108,9 +108,9 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build'
+            sh -c 'cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build && cmake --preset ci-godot && cmake --build --preset ci-godot --parallel "$(nproc)" && ln -sfn build-ci-godot build-godot'
 
-      - name: Setup virtualenv
+      - name: Run style check
         run: |
           docker run --rm \
             --user "$(id -u):$(id -g)" \
@@ -118,27 +118,27 @@ jobs:
             -w /workspace \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
-            uv sync
+            uv run karkinolution style check src main.cpp \
+              --style-file /workspace/.clang-format
 
-      - name: Run prek
+      - name: Run tidy check
         env:
           DIFF_BASE_SHA: ${{ steps.diff-base.outputs.sha }}
         run: |
+          changed_since_args=()
+          if [ -n "$DIFF_BASE_SHA" ]; then
+            changed_since_args=(--changed-since "$DIFF_BASE_SHA")
+          fi
+
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
             -w /workspace \
             -e HOME=/tmp \
-            -e DIFF_BASE_SHA="$DIFF_BASE_SHA" \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c '
-              git config --global --add safe.directory /workspace
-              if [ -n "$DIFF_BASE_SHA" ]; then
-                uvx prek run --from-ref "$DIFF_BASE_SHA" --to-ref HEAD
-              else
-                uvx prek run --all-files
-              fi
-            '
+            uv run karkinolution tidy check src main.cpp \
+              --config-file /workspace/.clang-tidy \
+              "${changed_since_args[@]}"
 
   unit-tests:
     name: Unit Tests
