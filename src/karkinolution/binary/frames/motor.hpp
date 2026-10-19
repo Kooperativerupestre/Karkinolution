@@ -20,15 +20,15 @@ namespace Frames {
 
 		void constexpr append_declared_size(std::vector<std::byte>          &frame,
 											Frames::Types::FrameDeclaredSize declared_size) {
-			Deserializer::append_bytes(
+			BinaryUtils::append_bytes(
 				frame,
 				Serializer::serialize<Frames::Types::FrameDeclaredSize>(declared_size));
 		}
 
 		void constexpr append_type(std::vector<std::byte> &frame, Frames::Types::BinaryTypes type) {
-			Deserializer::append_bytes(frame,
-									   Serializer::serialize<Frames::Types::FrameType>(
-										   static_cast<Frames::Types::FrameType>(type)));
+			BinaryUtils::append_bytes(frame,
+									  Serializer::serialize<Frames::Types::FrameType>(
+										  static_cast<Frames::Types::FrameType>(type)));
 		}
 
 		template <ByteRange Payload>
@@ -36,7 +36,7 @@ namespace Frames {
 									GenericResponseSubTypes  sub_type,
 									Frames::Types::RequestId request_id,
 									const Payload           &payload) {
-			return ResponseFrame{Frames::Parser::get_size(payload),
+			return ResponseFrame{Frames::Parser::calculate_declared_size(payload.size(), type),
 								 request_id,
 								 sub_type,
 								 payload,
@@ -48,7 +48,11 @@ namespace Frames {
 								  Frames::Types::RequestId id,
 								  RequestResource          resource,
 								  const Payload           &payload) {
-			return RequestFrame{Frames::Parser::get_size(payload), id, sub_type, payload, resource};
+			return RequestFrame{Frames::Parser::get_declared_size(payload),
+								id,
+								sub_type,
+								payload,
+								resource};
 		}
 
 		template <ByteRange Payload>
@@ -97,13 +101,13 @@ namespace Frames {
 			}
 
 
-			Deserializer::append_bytes(frame, static_cast<std::byte>(v_sub_type));
+			BinaryUtils::append_bytes(frame, static_cast<std::byte>(v_sub_type));
 
 			// request id
 
 
-			Deserializer::append_bytes(frame,
-									   Serializer::serialize<Frames::Types::RequestId>(request_id));
+			BinaryUtils::append_bytes(frame,
+									  Serializer::serialize<Frames::Types::RequestId>(request_id));
 			// payload
 			frame.insert(frame.end(), payload.begin(), payload.end());
 			return frame;
@@ -132,7 +136,7 @@ namespace Frames {
 
 			// sub type
 
-			Deserializer::append_bytes(
+			BinaryUtils::append_bytes(
 				frame,
 				Serializer::serialize<Frames::Types::BinaryTypesEnumType>(
 					static_cast<Frames::Types::BinaryTypesEnumType>(sub_type)));
@@ -140,10 +144,10 @@ namespace Frames {
 
 			// id
 
-			Deserializer::append_bytes(frame, Serializer::serialize<Frames::Types::RequestId>(id));
+			BinaryUtils::append_bytes(frame, Serializer::serialize<Frames::Types::RequestId>(id));
 
 			// resource
-			Deserializer::append_bytes(
+			BinaryUtils::append_bytes(
 				frame,
 				Serializer::serialize<Frames::Types::RequestResourceEnumType>(
 					static_cast<Frames::Types::RequestResourceEnumType>(resource)));

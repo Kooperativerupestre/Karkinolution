@@ -64,7 +64,8 @@ namespace Frames {
 			enum class Request : uint8_t {
 				/*
 				 * # SEE
-				 * similar to get, can return nothing if there isn't
+				 * similar to get, can return NONE if there isn't.
+				 * _see_ doesn't send ERROR
 				 *
 				 * # WANT
 				 * this action is used when you want to see a different state in creature. For
@@ -104,6 +105,7 @@ namespace Frames {
 			enum class Response : uint8_t {
 				CREATURE = 0,
 				CORPSE   = 1,
+				NONE     = 3
 			};
 
 

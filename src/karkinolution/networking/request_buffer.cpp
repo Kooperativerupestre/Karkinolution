@@ -19,7 +19,7 @@ std::optional<std::size_t> FrameBufferAnalyzer::get_size(const RawFrameBuffer &b
 	if (has_size_output != BufferExistence::YES) {
 		return std::nullopt;
 	}
-	return Frames::Parser::get_size(view);
+	return Frames::Parser::get_declared_size(view);
 }
 
 BufferExistence FrameBufferAnalyzer::has_sub_type(const RawFrameBuffer &buffer) {

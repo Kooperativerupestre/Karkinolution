@@ -1,4 +1,5 @@
 #pragma once
+#include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/invariants.hpp"
 #include "karkinolution/core/error.hpp"
 
@@ -16,9 +17,24 @@
 #include <vector>
 
 namespace Frames {
+
 	namespace Parser {
-		constexpr std::uint32_t get_payload_bytes(std::uint32_t              declared_size,
-												  Frames::Types::BinaryTypes type) {
+		constexpr std::uint32_t calculate_declared_size(std::uint32_t              payload_bytes,
+														Frames::Types::BinaryTypes type) {
+			std::uint32_t common_bytes = Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE
+				+ Frames::FieldsBytes::RequestTypes::Request::ID;
+
+
+			std::uint32_t extra_bytes = common_bytes;
+
+			if (type == BinaryTypes::Request) {
+				extra_bytes += Frames::FieldsBytes::RequestTypes::Request::RESOURCE;
+			}
+			return extra_bytes + payload_bytes;
+		}
+
+		constexpr std::uint32_t calculate_payload_bytes(std::uint32_t              declared_size,
+														Frames::Types::BinaryTypes type) {
 			constexpr auto common_bytes = Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE
 				+ Frames::FieldsBytes::RequestTypes::Request::ID;
 
@@ -57,7 +73,7 @@ namespace Frames {
 			throw ByteError("Invalid type of frame");
 		}
 
-		template <ByteRange T> std::uint32_t get_size(const T &bytes) {
+		template <ByteRange T> std::uint32_t get_declared_size(const T &bytes) {
 			return Deserializer::read_uint32_t(bytes, 0);
 		}
 
@@ -146,7 +162,7 @@ namespace Frames {
 		}
 
 		template <ByteRange T> std::uint32_t get_frame_size(const T &bytes) {
-			return Frames::FieldsBytes::DECLARED_SIZE + get_size(bytes);
+			return Frames::FieldsBytes::DECLARED_SIZE + get_declared_size(bytes);
 		}
 
 		template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
@@ -160,7 +176,7 @@ namespace Frames {
 					Frames::FieldsBytes::MESSAGE_HEADER_BYTES));
 			}
 
-			const auto declared_size = get_size(bytes);
+			const auto declared_size = get_declared_size(bytes);
 
 			if (declared_size <= Frames::FieldsBytes::TYPE + Frames::FieldsBytes::SUB_TYPE) {
 				throw ByteError(
@@ -171,7 +187,7 @@ namespace Frames {
 
 			const auto type = get_type(bytes);
 
-			const auto payload_size = get_payload_bytes(declared_size, type);
+			const auto payload_size = calculate_payload_bytes(declared_size, type);
 			const auto frame_size   = get_frame_size(bytes);
 
 			if (bytes.size() < frame_size) {
@@ -206,7 +222,7 @@ namespace Frames {
 				BinaryUtils::cast_numeric(sub_type),
 				BinaryUtils::cast_numeric(resource));
 
-			return Models::Request{.size     = get_size(bytes),
+			return Models::Request{.size     = get_declared_size(bytes),
 								   .id       = Request::get_id(bytes),
 								   .sub_type = sub_type,
 								   .payload  = get_payload(bytes),
@@ -215,7 +231,7 @@ namespace Frames {
 
 		template <ByteRange T> Models::ResponseGeneric parse_response_frame(const T &bytes) {
 
-			return Models::ResponseGeneric{.size       = get_size(bytes),
+			return Models::ResponseGeneric{.size       = get_declared_size(bytes),
 										   .request_id = Response::get_id(bytes),
 										   .sub_type   = get_sub_type(bytes),
 										   .payload    = Response::get_payload(bytes)};
@@ -297,7 +313,7 @@ namespace Frames {
 				return FrameFieldExistence::NO;
 			}
 
-			const auto declared_size = get_size(byte);
+			const auto declared_size = get_declared_size(byte);
 
 			const auto frame_size = Frames::FieldsBytes::DECLARED_SIZE + declared_size;
 
