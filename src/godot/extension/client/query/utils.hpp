@@ -7,7 +7,7 @@
 #include <optional>
 
 namespace KarkinolutionGodot {
-	namespace Interpreters {
+	namespace World {
 		namespace Utils {
 			// Design Decision:
 			// Centralize network execution and error checks in this helper so individual
@@ -18,5 +18,5 @@ namespace KarkinolutionGodot {
 			execute_request(godot::Ref<GodotClient>                            client,
 							const KarkinolutionSDK::Client::ClientRequestData &request_data);
 		} // namespace Utils
-	} // namespace Interpreters
+	} // namespace World
 } // namespace KarkinolutionGodot

@@ -10,14 +10,15 @@
 
 namespace KarkinolutionGodot {
 	namespace Translator {
-		godot::Vector3    translate(const Vec3 &vec);
-		GodotSize         translate(const Size &size);
-		GodotCorpse       translate(const CorpseDSI::Models::Corpse &corpse);
-		GodotCreature     translate(std::int64_t id, const CreatureDSI::Models::Creature &creature);
-		GodotDamage       translate(const SoilDSI::Models::DamageComponent &damage);
+		godot::Vector3            translate(const Vec3 &vec);
+		GodotSize                 translate(const Size &size);
+		godot::Ref<GodotCorpse>   translate(const CorpseDSI::Models::Corpse &corpse);
+		godot::Ref<GodotCreature> translate(std::int64_t                         id,
+											const CreatureDSI::Models::Creature &creature);
+		GodotDamage               translate(const SoilDSI::Models::DamageComponent &damage);
 		GodotMovementCost translate(const SoilDSI::Models::MovementCostComponent &movement_cost);
-		GodotSoil         translate(const SoilDSI::Models::Soil &soil);
-		GodotProperty     translate(const GenericProperty &property);
+		godot::Ref<GodotSoil> translate(const SoilDSI::Models::Soil &soil);
+		GodotProperty         translate(const GenericProperty &property);
 
 	} // namespace Translator
 } // namespace KarkinolutionGodot

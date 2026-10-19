@@ -16,26 +16,36 @@ GodotSize KarkinolutionGodot::Translator::translate(const Size &size) {
 	return GodotSize{size.lateral.value, size.height.value, size.depth.value};
 }
 
-GodotCorpse KarkinolutionGodot::Translator::translate(const CorpseDSI::Models::Corpse &corpse) {
+godot::Ref<GodotCorpse>
+KarkinolutionGodot::Translator::translate(const CorpseDSI::Models::Corpse &corpse) {
 	godot::Ref<GodotSize> size;
 	size.instantiate();
+
 	size->set_value(corpse.size.lateral.value, corpse.size.height.value, corpse.size.depth.value);
 
-	return GodotCorpse{static_cast<std::int64_t>(corpse.id),
+	godot::Ref<GodotCorpse> result;
+	result.instantiate(static_cast<std::int64_t>(corpse.id),
 					   corpse.raw_meat.value,
 					   translate(corpse.position),
-					   size};
+					   size);
+
+	return result;
 }
 
-GodotCreature
+godot::Ref<GodotCreature>
 KarkinolutionGodot::Translator::translate(std::int64_t                         id,
 										  const CreatureDSI::Models::Creature &creature) {
+
 	// TODO: Make creature carry its id
-	return GodotCreature{id,
-						 static_cast<std::uint8_t>(creature.gender),
-						 static_cast<std::uint8_t>(creature.specie),
-						 translate(creature.position),
-						 to_godot_string(creature.name)};
+
+	godot::Ref<GodotCreature> result;
+	result.instantiate(id,
+					   static_cast<std::uint8_t>(creature.gender),
+					   static_cast<std::uint8_t>(creature.specie),
+					   translate(creature.position),
+					   to_godot_string(creature.name));
+
+	return result;
 }
 
 GodotDamage
@@ -48,15 +58,16 @@ GodotMovementCost KarkinolutionGodot::Translator::translate(
 	return GodotMovementCost{movement_cost.cost};
 }
 
-GodotSoil KarkinolutionGodot::Translator::translate(const SoilDSI::Models::Soil &soil) {
+godot::Ref<GodotSoil> KarkinolutionGodot::Translator::translate(const SoilDSI::Models::Soil &soil) {
+
 	godot::Array properties;
 	for (const auto &prop : soil.properties) {
-		properties.append(static_cast<int64_t>(prop));
+		properties.append(static_cast<std::int64_t>(prop));
 	}
 
 	godot::Array required_capabilities;
 	for (const auto &prop : soil.required_properties) {
-		required_capabilities.append(static_cast<int64_t>(prop.raw().value));
+		required_capabilities.append(static_cast<std::int64_t>(prop.raw().value));
 	}
 
 	std::optional<GodotDamage> damage;
@@ -69,14 +80,17 @@ GodotSoil KarkinolutionGodot::Translator::translate(const SoilDSI::Models::Soil 
 		movement_cost.emplace(translate(soil.movement_cost_component.value()).get_value());
 	}
 
-	return GodotSoil{static_cast<std::uint64_t>(soil.id),
-					 static_cast<std::uint8_t>(soil.type),
-					 properties,
-					 required_capabilities,
-					 std::move(damage),
-					 std::move(movement_cost),
-					 soil.radius.value,
-					 translate(soil.position)};
+	godot::Ref<GodotSoil> result;
+	result.instantiate(static_cast<std::uint64_t>(soil.id),
+					   static_cast<std::uint8_t>(soil.type),
+					   properties,
+					   required_capabilities,
+					   std::move(damage),
+					   std::move(movement_cost),
+					   soil.radius.value,
+					   translate(soil.position));
+
+	return result;
 }
 
 GodotProperty KarkinolutionGodot::Translator::translate(const GenericProperty &property) {

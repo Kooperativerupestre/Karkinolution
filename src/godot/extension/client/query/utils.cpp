@@ -1,11 +1,11 @@
-#include "godot/extension/client/interpreters/utils.hpp"
+#include "godot/extension/client/query/utils.hpp"
 
 #include "godot/godot_string.hpp"
 
 #include <string_view>
 
 namespace KarkinolutionGodot {
-	namespace Interpreters {
+	namespace World {
 		namespace Utils {
 			std::optional<ResponseFrame>
 			execute_request(godot::Ref<GodotClient>                            client,
@@ -37,5 +37,5 @@ namespace KarkinolutionGodot {
 				return frame;
 			}
 		} // namespace Utils
-	} // namespace Interpreters
+	} // namespace World
 } // namespace KarkinolutionGodot

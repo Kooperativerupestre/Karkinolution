@@ -1,7 +1,7 @@
-#include "godot/extension/client/interpreters/creature.hpp"
+#include "godot/extension/client/query/creature.hpp"
 
-#include "godot/extension/client/interpreters/aliases.hpp"
-#include "godot/extension/client/interpreters/utils.hpp"
+#include "godot/extension/client/query/aliases.hpp"
+#include "godot/extension/client/query/utils.hpp"
 #include "godot/extension/model/translator.hpp"
 #include "godot_cpp/core/class_db.hpp"
 #include "karkinolution/binary/deserialization/interpreters/creature/alias.hpp"
@@ -9,8 +9,8 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/networking/sdk/src/builders/creature/creature.hpp"
 
-godot::Ref<GodotCreature> CreatureINTP::see_creature(godot::Ref<GodotClient> client,
-													 std::int64_t            id) {
+godot::Ref<GodotCreature> CreatureQuery::see_creature(godot::Ref<GodotClient> client,
+													  std::int64_t            id) {
 	const auto request_data =
 		KarkinolutionSDK::Builders::Creature::see_creature(static_cast<BaseIdType>(id));
 
@@ -23,18 +23,6 @@ godot::Ref<GodotCreature> CreatureINTP::see_creature(godot::Ref<GodotClient> cli
 
 	const auto godot_creature = KarkinolutionGodot::Translator::translate(id, creature_model);
 
-	godot::Ref<GodotCreature> ref;
-	ref.instantiate(godot_creature.get_id(),
-					godot_creature.get_gender(),
-					godot_creature.get_specie(),
-					godot_creature.get_position(),
-					godot_creature.get_name());
 
-	return ref;
-}
-
-void CreatureINTP::_bind_methods() {
-	godot::ClassDB::bind_static_method("CreatureInterpreter",
-									   godot::D_METHOD("see_creature", "client", "id"),
-									   &CreatureInterpreter::see_creature);
+	return godot_creature;
 }
