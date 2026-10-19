@@ -313,42 +313,53 @@ namespace Deserializer {
 		throw ByteError(BinaryErrorFactory::type_is_not_supported<T>("generic deserialize"));
 	}
 
-	template <ByteRange T> void append_bytes(std::vector<std::byte> &bytes, const T &value) {
+	template <ByteRange T>
+	[[deprecated("Function has been moved to BinaryUtils")]] void
+	append_bytes(std::vector<std::byte> &bytes, const T &value) {
 		for (const auto &byte : value) {
 			bytes.push_back(byte);
 		}
 	}
 
-	inline void append_bytes(std::vector<std::byte> &bytes, std::byte value) {
+	[[deprecated("Function has been moved to BinaryUtils")]] inline void
+	append_bytes(std::vector<std::byte> &bytes, std::byte value) {
 		bytes.push_back(value);
 	}
 
-	template <ByteRange T> void append_bytes(std::deque<std::byte> &bytes, const T &value) {
+	template <ByteRange T>
+	[[deprecated("Function has been moved to BinaryUtils")]] void
+	append_bytes(std::deque<std::byte> &bytes, const T &value) {
 		for (const auto &byte : value) {
 			bytes.push_back(byte);
 		}
 	}
 
 	template <ByteRange T, size_t Size>
-	void append_bytes(std::array<std::byte, Size> &bytes, const T &value, size_t offset) {
+	[[deprecated("Function has been moved to BinaryUtils")]] void
+	append_bytes(std::array<std::byte, Size> &bytes, const T &value, size_t offset) {
 		for (size_t i = 0; i < value.size(); i++) {
 			bytes[offset + i] = value[i];
 		}
 	}
 
 	template <ByteRange T>
-	void append_bytes(std::vector<std::byte> &bytes, const T &value, std::size_t offset) {
+	[[deprecated("Function has been moved to BinaryUtils")]] void
+	append_bytes(std::vector<std::byte> &bytes, const T &value, std::size_t offset) {
 		for (std::size_t i = 0; i < value.size(); i++) {
 			bytes[offset + i] = value[i];
 		}
 	}
 
-	inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
+	[[deprecated("Function has been moved to BinaryUtils")]] inline void
+	append_bytes(std::deque<std::byte> &bytes, std::byte value) {
 		bytes.push_back(value);
 	}
 
 	template <std::size_t Size>
-	void append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
+	[[deprecated("Function has been moved to BinaryUtils")]] void
+	append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
 		bytes[offset] = value;
 	}
+
+
 } // namespace Deserializer
