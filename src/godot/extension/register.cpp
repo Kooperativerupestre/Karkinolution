@@ -1,6 +1,6 @@
 #include "godot/extension/client/client.hpp"
-#include "godot/extension/client/interpreters/corpse.hpp"
-#include "godot/extension/client/interpreters/creature.hpp"
+#include "godot/extension/client/query/corpse.hpp"
+#include "godot/extension/client/query/creature.hpp"
 #include "godot/extension/model/aliases.hpp"
 #include "godot/extension/model/math/aliases.hpp"
 #include "godot/extension/model/math/geometry.hpp"
@@ -48,10 +48,8 @@ void initialize_karkinolution(godot::ModuleInitializationLevel p_level) {
 	GDREGISTER_CLASS(GodotCorpse);
 	GDREGISTER_CLASS(GodotCreature);
 
-	// Client & Interpreters
+	// Client
 	GDREGISTER_CLASS(KarkinolutionGodot::Client::GodotClient);
-	GDREGISTER_CLASS(KarkinolutionGodot::Interpreters::CreatureInterpreter);
-	GDREGISTER_CLASS(KarkinolutionGodot::Interpreters::CorpseInterpreter);
 }
 
 void uninitialize_karkinolution(godot::ModuleInitializationLevel p_level) {
