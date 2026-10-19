@@ -9,6 +9,8 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/networking/sdk/src/builders/creature/creature.hpp"
 
+#include <karkinolution/binary/frames/analyzer.hpp>
+
 godot::Ref<GodotCreature> CreatureQuery::see_creature(godot::Ref<GodotClient> client,
 													  std::int64_t            id) {
 	const auto request_data =
@@ -16,6 +18,9 @@ godot::Ref<GodotCreature> CreatureQuery::see_creature(godot::Ref<GodotClient> cl
 
 	const auto frame = Utils::execute_request(client, request_data);
 	if (!frame) {
+		return godot::Ref<GodotCreature>();
+	}
+	if (Frames::Analyzer::is_none(frame.value())) {
 		return godot::Ref<GodotCreature>();
 	}
 

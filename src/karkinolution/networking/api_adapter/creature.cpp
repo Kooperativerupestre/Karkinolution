@@ -12,6 +12,9 @@
 #include <karkinolution/binary/serialization/interpreters/creature/alias.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
+// TODO: add unit test to verify if a creature that exists and a creature that doesn't exist, don't
+// send error
+
 ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
 										   RequestId                     request_id,
 										   const std::vector<std::byte> &payload) {
@@ -22,11 +25,11 @@ ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
 	auto creature = CreatureAPI::see_creature(world, id);
 
 	if (creature == nullptr) {
-		const auto error = ErrorSRI::serialize_creature_was_not_found(id);
-		return Frames::Motor::make_response(BinaryTypes::Error,
-											error.sub_type,
+
+		return Frames::Motor::make_response(BinaryTypes::Response,
+											ResponseSubTypes::NONE,
 											request_id,
-											error.payload);
+											std::vector<std::byte>{});
 	}
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
