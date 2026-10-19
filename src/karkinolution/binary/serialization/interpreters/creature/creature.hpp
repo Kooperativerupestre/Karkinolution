@@ -27,6 +27,7 @@ namespace Karkinolution {
 					 * # end position
 					 * [26 - name size]
 					 * [27 -> 90 - name]
+					 * [91 -> 99 - id]
 					 *
 					 */
 
@@ -40,8 +41,8 @@ namespace Karkinolution {
 						using PositionZ = Next<PositionY, VecSRI::Layout::AXIS_SIZE>;
 						using NameSize  = Next<PositionZ, 1>;
 						using Name      = Next<NameSize, MAX_NAME_SIZE>;
-
-						inline constexpr std::size_t TOTAL_SIZE = Name::END;
+						using Id        = Next<Name, 8>;
+						inline constexpr std::size_t TOTAL_SIZE = Id::END;
 					} // namespace Layout
 
 					namespace BytesArrays {

@@ -49,12 +49,12 @@ TEST(PropertiesSerializeDeserializeRoundtrip, StreamWithOffsets) {
 	std::vector<std::byte> stream = {std::byte{0xAA}, std::byte{0xBB}};
 
 	const size_t offset_swimm = stream.size();
-	Deserializer::append_bytes(
+	BinaryUtils::append_bytes(
 		stream,
 		PropertiesSRI::serialize(GenericProperty(Properties::Capabilities::Move::SWIMM)));
 
 	const size_t offset_walk = stream.size();
-	Deserializer::append_bytes(
+	BinaryUtils::append_bytes(
 		stream,
 		PropertiesSRI::serialize(GenericProperty(Properties::Capabilities::Move::WALK)));
 

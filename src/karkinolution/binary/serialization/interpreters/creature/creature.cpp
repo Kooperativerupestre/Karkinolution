@@ -41,7 +41,7 @@ std::vector<std::byte> CreatureSRI::serialize_name(const std::string &name) {
 									std::numeric_limits<uint8_t>::max()));
 	}
 	bytes.push_back(Serializer::convert_uint8_t(static_cast<uint8_t>(name.size())));
-	Deserializer::append_bytes(bytes, Serializer::convert_string(name));
+	BinaryUtils::append_bytes(bytes, Serializer::convert_string(name));
 	return bytes;
 }
 
@@ -60,12 +60,17 @@ CreatureSRI::BytesArrays::Creature CreatureSRI::serialize_creature(const class C
 
 	const auto vec = VecSRI::serialize_vec(creature.position);
 
-	Deserializer::append_bytes(bytes, vec, Layout::PositionX::OFFSET);
+	BinaryUtils::append_bytes(bytes, vec, Layout::PositionX::OFFSET);
 
 	// Name
 
 	const auto name = serialize_name(creature.ontology.name);
-	Deserializer::append_bytes(bytes, name, Layout::NameSize::OFFSET);
+	BinaryUtils::append_bytes(bytes, name, Layout::NameSize::OFFSET);
+
+	// Id
+
+	const auto id = Serializer::serialize<BaseIdType>(creature.ontology.id);
+	BinaryUtils::append_bytes(bytes, id, Layout::Id::OFFSET);
 
 	return bytes;
 }
