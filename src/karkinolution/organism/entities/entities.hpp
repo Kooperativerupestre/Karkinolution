@@ -6,13 +6,9 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
-#include <karkinolution/organism/pathogens/identity.hpp>
-#include <karkinolution/organism/pathogens/pathogen.hpp>
-#include <karkinolution/organism/pathogens/virus/virus.hpp>
 #include <karkinolution/organism/reproduction/oviparous/egg.hpp>
 
-using Entity                   = std::variant<Creature, Corpse, Embryo, Egg>;
-using GenericPathogenContainer = std::variant<VirusContainer>;
+using Entity = std::variant<Creature, Corpse, Embryo, Egg>;
 
 class EntitiesRegistry : public BaseStorage<EntityId, Entity> {
 	public:

@@ -100,9 +100,6 @@ CreatureGrowingPhysiology::get_new_max_life_increment(const Creature         &cr
 							   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 }
 
-// TODO
-// Integrate MorbusExiguus infection
-
 float CreatureGrowingPhysiology::get_new_lateral_increment(const Creature         &creature,
 														   const OrganismRegistry &organisms) {
 	const auto &vital_genome      = creature.genome.creature_genome.vital;
