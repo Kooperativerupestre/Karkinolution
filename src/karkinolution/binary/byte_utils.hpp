@@ -3,9 +3,11 @@
 
 #include <bit>
 #include <cstddef>
+#include <deque>
 #include <format>
 #include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/core/error.hpp>
+#include <vector>
 
 namespace BinaryUtils {
 	inline std::byte char_to_byte(char byte) {
@@ -47,6 +49,45 @@ namespace BinaryUtils {
 				std::get<Frames::Types::BinarySubTypes::Response>(sub_type));
 		}
 		throw ByteError("Invalid sub type");
+	}
+
+	template <ByteRange T> void append_bytes(std::vector<std::byte> &bytes, const T &value) {
+		for (const auto &byte : value) {
+			bytes.push_back(byte);
+		}
+	}
+
+	inline void append_bytes(std::vector<std::byte> &bytes, std::byte value) {
+		bytes.push_back(value);
+	}
+
+	template <ByteRange T> void append_bytes(std::deque<std::byte> &bytes, const T &value) {
+		for (const auto &byte : value) {
+			bytes.push_back(byte);
+		}
+	}
+
+	template <ByteRange T, size_t Size>
+	void append_bytes(std::array<std::byte, Size> &bytes, const T &value, size_t offset) {
+		for (size_t i = 0; i < value.size(); i++) {
+			bytes[offset + i] = value[i];
+		}
+	}
+
+	template <ByteRange T>
+	void append_bytes(std::vector<std::byte> &bytes, const T &value, std::size_t offset) {
+		for (std::size_t i = 0; i < value.size(); i++) {
+			bytes[offset + i] = value[i];
+		}
+	}
+
+	inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
+		bytes.push_back(value);
+	}
+
+	template <std::size_t Size>
+	void append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
+		bytes[offset] = value;
 	}
 
 
