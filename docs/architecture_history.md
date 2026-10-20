@@ -192,3 +192,13 @@ My main inspiration is worldbox and I actually appreciate this type of cammera.
 #### Who makes the sprites?
 
 The owner of this project. There are no artists.
+
+# 1.4 - A new beginning, 🐦‍🔥
+
+## Why did I change my opinion about Godot?
+
+Because when I was writing about Godot in 1.3 chapter, I hadn't worked with godot-cpp. However, I realized today that I should investigate again whether Godot is really necessary. The main reason behind the choice of Godot was that I needed a visualizer, but an engine as Godot brings more infrastructure than Karkinolution actually needs. 
+
+## Why did I switch to Raylib?
+
+Raylib. I chose it because I needed an extensible UI that I could enhance whenever I wanted. I also considered ImGui, but it is too simple for what I need. From what I understood, Raylib offers OpenGL integration and more customizable components, while ImGui is more focused on and used for HUDs and debug interfaces, which is not my case — I needed an extensible interface so I could make it look better whenever I wanted, even if it means having more things on my hands.

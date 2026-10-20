@@ -97,7 +97,7 @@ Comments must be simple and concise. Organizational comments must be minimal and
 
 # File Grouping & Mirroring
 
-- When exposing simulator models to extensions (e.g. Godot), mirror the core's file grouping.
+- When exposing simulator models to external clients or extensions, mirror the core's file grouping.
 - Do not fragment tightly coupled unit families into individual micro-files when the core simulator maintains them in a single cohesive file (e.g., keep Size and physical units together in `units.hpp`).
 
 

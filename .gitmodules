@@ -4,6 +4,3 @@
 [submodule "dependencies/asio"]
 	path = dependencies/asio
 	url = https://github.com/chriskohlhoff/asio.git
-[submodule "dependencies/godot-cpp"]
-	path = dependencies/godot-cpp
-	url = https://github.com/godotengine/godot-cpp.git

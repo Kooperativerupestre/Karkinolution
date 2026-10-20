@@ -127,18 +127,7 @@ def run_tidy(
     complete()
 
 
-def is_godot_path(path: Path) -> bool:
-    resolved = path.resolve()
-    parts = resolved.parts
-    for i in range(len(parts) - 1):
-        if parts[i] == "src" and parts[i + 1] == "godot":
-            return True
-    return "godot" in parts and "src" in parts
-
-
 def default_build_dir(file: Path) -> Path:
-    if is_godot_path(file):
-        return Path("build-godot")
     return Path("build")
 
 

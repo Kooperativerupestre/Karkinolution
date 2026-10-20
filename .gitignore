@@ -1,5 +1,6 @@
 # --- Build directories ---
 build/
+build-*/
 cmake-build-*/
 out/
 build-valgrind/
@@ -8,11 +9,9 @@ build-gcc/
 build-release/
 build-native/
 build-sanitizers/
-build-godot/
 build-tidy/
 build-ci/
 build-ci-sanitizers/
-build-ci-godot/
 
 # --- CMake generated files ---
 CMakeFiles/

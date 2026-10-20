@@ -3,7 +3,7 @@
 A creature simulator written in C++ that looks at the world from the individual's perspective: how is each creature
 doing, what will it do next, how will it behave. See the [vision](docs/VISION.md).
 
-The simulation runs as a server, and a Godot client connects to it to display the world.
+The simulation runs as a server, and a client connects to it to display the world.
 
 ## Anniversary
 

@@ -10,7 +10,7 @@ Meter.
 
 This size was chosen based on:
 
-- Godot representation
+- Client representation
 - Simulator possibilities
 - Entertainment
 
@@ -20,11 +20,11 @@ This size was chosen based on:
 
 double.
 
-# Why the underlyign type of Vec3 in godot is float instead of double?
+# Why the underlying type of Vec3 in the client is float instead of double?
 
-Because there is no loss based on the biggest size of the territory and things. And Godot in my simulator only exists to display the stuff -- it doesn't have to calculate or modify anything.
+Because there is no loss based on the biggest size of the territory and things. And the client in my simulator only exists to display the stuff -- it doesn't have to calculate or modify anything.
 
-# What is the role of godot?
+# What is the role of the client?
 
 "Visualize without modifying directly. Only requests changes."
 

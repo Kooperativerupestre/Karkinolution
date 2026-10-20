@@ -33,24 +33,3 @@ dependencies/asio/LICENSE_1_0.txt
 Asio repository:
 https://github.com/chriskohlhoff/asio
 
-Godot Engine
-
-Godot Engine is distributed under the MIT License.
-Copyright (c) 2014-present Godot Engine contributors.
-
-The full license text is available in the Godot Engine distribution:
-https://github.com/godotengine/godot/blob/master/LICENSE.md
-
-Godot Engine repository:
-https://github.com/godotengine/godot
-
-godot-cpp
-
-godot-cpp is distributed under the MIT License.
-Copyright (c) 2017-present Godot Engine contributors.
-
-The full license text is available in the godot-cpp distribution:
-src/godot/godot-cpp/LICENSE.md
-
-godot-cpp repository:
-https://github.com/godotengine/godot-cpp

@@ -3,14 +3,12 @@ import subprocess
 
 import typer
 
-from karkinolution.presets import binary_dir, cache_value, find_repo_root, load_configure_presets, resolve_preset
+from karkinolution.presets import binary_dir, find_repo_root, load_configure_presets, resolve_preset
 
 APP_TARGET = "karkinolution_app"
-GODOT_TARGET = "karkinolution_godot"
-GODOT_CACHE_VARIABLE = "BUILD_GODOT_EXTENSION"
 
 
-def launch(preset: str = "godot") -> None:
+def launch(preset: str = "debug") -> None:
     root = find_repo_root()
     resolved = resolve_preset(preset, load_configure_presets(root))
     build_dir = binary_dir(preset, resolved, root)
@@ -23,8 +21,6 @@ def launch(preset: str = "godot") -> None:
         raise typer.Exit(code=1)
 
     targets = [APP_TARGET]
-    if cache_value(resolved, GODOT_CACHE_VARIABLE) == "ON":
-        targets.insert(0, GODOT_TARGET)
 
     cmd = ["cmake", "--build", str(build_dir)]
     for target in targets:

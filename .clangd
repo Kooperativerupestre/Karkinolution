@@ -5,20 +5,3 @@ CompileFlags:
 
 Diagnostics:
   UnusedIncludes: None
-
----
-
-If:
-  PathMatch: .*dependencies/godot-cpp/.*
-Index:
-  Background: Skip
-
----
-
-If:
-  PathMatch: .*src/godot/extension/.*
-CompileFlags:
-  Add:
-    - -I/home/enzo/Documentos/Programming/Karkinos/Karkino/dependencies/godot-cpp/include
-    - -I/home/enzo/Documentos/Programming/Karkinos/Karkino/build-godot/godot-cpp/gen/include
-    - -I/home/enzo/Documentos/Programming/Karkinos/Karkino/src

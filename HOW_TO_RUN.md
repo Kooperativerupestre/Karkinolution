@@ -28,8 +28,6 @@ Already cloned without `--recurse-submodules`:
 git submodule update --init dependencies/FastNoise2 dependencies/asio
 ```
 
-`dependencies/godot-cpp` is only needed for the Godot extension (see [Godot extension](#godot-extension)).
-
 ## 2. Configure and build
 
 Pick one. Both use the `debug` preset from [`CMakePresets.json`](CMakePresets.json).
@@ -67,7 +65,7 @@ cmake --build build --target karkinolution_app
 ```
 
 * The server listens on port `9000` ([`port.hpp`](src/karkinolution/networking/port.hpp)).
-* It accepts one client at a time and does not stay alive if Godot disconnects.
+* It accepts one client at a time and does not stay alive if it disconnects.
 * More networking questions: [`help.md`](src/karkinolution/networking/help.md).
 
 ## 4. Run the tests
@@ -87,7 +85,6 @@ Some dependencies arrive on their own at configure time, others do not.
 | FastSIMD | Fetched by FastNoise2's own CMake (CPM) | No |
 | FastNoise2 | Git submodule | Yes: `git submodule update --init` |
 | asio | Git submodule | Yes: `git submodule update --init` |
-| godot-cpp | Git submodule, only for the `godot` preset | Yes, for the Godot extension only |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 
@@ -99,18 +96,6 @@ CMake Error at CMakeLists.txt:22 (add_subdirectory):
 ```
 
 `karkinolution setup` catches this earlier and prints the `git submodule update --init` command to run.
-
-## Godot extension
-
-```bash
-git submodule update --init dependencies/godot-cpp
-
-karkinolution setup --preset godot
-cmake --build --preset godot
-```
-
-godot-cpp is added with `add_subdirectory`, so it is built inside the same CMake build. No separate `scons` step is
-involved. The library is written to `src/godot/karkinolution/bin`.
 
 ## Style and tidy checks
 

@@ -16,7 +16,7 @@ How do I compile? [Commands](../../../docs/commands.md)
 
 [Protocol](../binary/message_type_size.hpp)
 
-# Does the server stay alive if Godot disconnects?
+# Does the server stay alive if the client disconnects?
 
 No.
 

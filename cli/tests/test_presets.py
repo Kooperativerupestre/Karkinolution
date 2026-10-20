@@ -133,15 +133,6 @@ class TestRepositoryPresets(unittest.TestCase):
         self.assertEqual(cache_value(resolved, "CMAKE_CXX_COMPILER"), "clang++")
         self.assertEqual(cache_value(resolved, "CMAKE_BUILD_TYPE"), "Debug")
 
-    def test_only_godot_presets_enable_the_godot_extension(self) -> None:
-        enabled = {
-            name
-            for name in self.visible
-            if cache_value(resolve_preset(name, self.presets), "BUILD_GODOT_EXTENSION") == "ON"
-        }
-
-        self.assertEqual(enabled, {"godot", "ci-godot"})
-
 
 if __name__ == "__main__":
     unittest.main()

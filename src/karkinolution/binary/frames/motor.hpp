@@ -31,6 +31,8 @@ namespace Frames {
 										  static_cast<Frames::Types::FrameType>(type)));
 		}
 
+		ResponseFrame make_none_response(Frames::Types::RequestId request_id);
+
 		template <ByteRange Payload>
 		ResponseFrame make_response(BinaryTypes              type,
 									GenericResponseSubTypes  sub_type,

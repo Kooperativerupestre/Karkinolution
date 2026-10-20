@@ -13,10 +13,6 @@
 
 *.py text eol=lf
 
-# Godot
-
-*.gd text eol=lf
-
 # CMake
 
 *.cmake        text eol=lf

@@ -15,7 +15,7 @@ SOURCE_EXTENSIONS = {
     ".hxx",
 }
 
-FORBIDDEN_DIR_NAMES = {"dependencies", "godot-cpp"}
+FORBIDDEN_DIR_NAMES = {"dependencies"}
 
 
 def is_forbidden_path(path: Path) -> bool:
@@ -33,7 +33,7 @@ def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
 
         if is_forbidden_path(path):
             typer.echo(
-                f"Error: Access to forbidden path is disallowed: {path} (dependencies and godot-cpp are excluded).",
+                f"Error: Access to forbidden path is disallowed: {path} (dependencies is excluded).",
                 err=True,
             )
             raise typer.Exit(code=1)

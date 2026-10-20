@@ -6,9 +6,6 @@ from pathlib import Path
 
 from karkinolution.presets import Preset, cache_value
 
-GODOT_SUBMODULE = "dependencies/godot-cpp"
-GODOT_CACHE_VARIABLE = "BUILD_GODOT_EXTENSION"
-
 GENERATOR_TOOLS = {"Ninja": "ninja"}
 
 SUBMODULE_PATH_PATTERN = re.compile(r"^\s*path\s*=\s*(\S+)\s*$", re.MULTILINE)
@@ -59,13 +56,7 @@ def declared_submodules(root: Path) -> list[str]:
 
 
 def required_submodules(root: Path, resolved: Preset) -> list[str]:
-    needs_godot = cache_value(resolved, GODOT_CACHE_VARIABLE) == "ON"
-
-    return [
-        submodule
-        for submodule in declared_submodules(root)
-        if needs_godot or submodule != GODOT_SUBMODULE
-    ]
+    return declared_submodules(root)
 
 
 def is_populated(path: Path) -> bool:

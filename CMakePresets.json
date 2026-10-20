@@ -50,13 +50,6 @@
       }
     },
     {
-      "name": "godot-extension",
-      "hidden": true,
-      "cacheVariables": {
-        "BUILD_GODOT_EXTENSION": "ON"
-      }
-    },
-    {
       "name": "ci-base",
       "hidden": true,
       "inherits": [
@@ -132,19 +125,6 @@
       }
     },
     {
-      "name": "godot",
-      "displayName": "Debug with the Godot extension",
-      "inherits": [
-        "base",
-        "clang",
-        "godot-extension"
-      ],
-      "binaryDir": "${sourceDir}/build-godot",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
       "name": "ci-tidy",
       "displayName": "CI: Debug build used by clang-tidy",
       "inherits": "ci-base",
@@ -173,15 +153,6 @@
         "sanitizer-thread"
       ],
       "binaryDir": "${sourceDir}/build-ci-tsan"
-    },
-    {
-      "name": "ci-godot",
-      "displayName": "CI: Debug with the Godot extension",
-      "inherits": [
-        "ci-base",
-        "godot-extension"
-      ],
-      "binaryDir": "${sourceDir}/build-ci-godot"
     }
   ],
   "buildPresets": [
@@ -204,13 +175,6 @@
     {
       "name": "tsan",
       "configurePreset": "tsan"
-    },
-    {
-      "name": "godot",
-      "configurePreset": "godot",
-      "targets": [
-        "karkinolution_godot"
-      ]
     },
     {
       "name": "ci-tidy",
@@ -241,13 +205,6 @@
       "targets": [
         "karkinolution_tests",
         "karkinolution_app"
-      ]
-    },
-    {
-      "name": "ci-godot",
-      "configurePreset": "ci-godot",
-      "targets": [
-        "karkinolution_godot"
       ]
     }
   ],

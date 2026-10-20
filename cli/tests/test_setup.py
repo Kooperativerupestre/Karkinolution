@@ -7,7 +7,6 @@ from unittest import mock
 import typer
 
 from karkinolution.setup.checks import (
-    GODOT_SUBMODULE,
     Problem,
     declared_submodules,
     missing_tool_problems,
@@ -27,9 +26,9 @@ RESOLVED = {
 GITMODULES = """[submodule "dependencies/FastNoise2"]
 \tpath = dependencies/FastNoise2
 \turl = https://example.com/FastNoise2.git
-[submodule "dependencies/godot-cpp"]
-\tpath = dependencies/godot-cpp
-\turl = https://example.com/godot-cpp.git
+[submodule "dependencies/asio"]
+\tpath = dependencies/asio
+\turl = https://example.com/asio.git
 """
 
 
@@ -65,7 +64,7 @@ class TestSubmodules(unittest.TestCase):
     def test_declared_submodules_are_read_from_gitmodules(self) -> None:
         self.assertEqual(
             declared_submodules(self.root),
-            ["dependencies/FastNoise2", GODOT_SUBMODULE],
+            ["dependencies/FastNoise2", "dependencies/asio"],
         )
 
     def test_no_gitmodules_means_no_submodules(self) -> None:
@@ -73,15 +72,11 @@ class TestSubmodules(unittest.TestCase):
 
         self.assertEqual(declared_submodules(self.root), [])
 
-    def test_godot_submodule_is_required_only_when_extension_is_enabled(self) -> None:
-        without_godot = required_submodules(self.root, RESOLVED)
-        with_godot = required_submodules(
-            self.root,
-            {"cacheVariables": {"BUILD_GODOT_EXTENSION": "ON"}},
+    def test_required_submodules_matches_declared(self) -> None:
+        self.assertEqual(
+            required_submodules(self.root, RESOLVED),
+            ["dependencies/FastNoise2", "dependencies/asio"],
         )
-
-        self.assertEqual(without_godot, ["dependencies/FastNoise2"])
-        self.assertEqual(with_godot, ["dependencies/FastNoise2", GODOT_SUBMODULE])
 
     def test_empty_or_absent_submodule_directories_are_reported_with_exact_fix(self) -> None:
         (self.root / "dependencies" / "FastNoise2").mkdir(parents=True)

@@ -11,8 +11,7 @@ Append `--parallel $(nproc)` to any build command for parallel compilation.
 | `release` | `build-release` | Optimized build |
 | `native` | `build-native` | Optimized with `-march=native`. Benchmarking only, not portable. |
 | `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
-| `godot` | `build-godot` | Debug with the Godot extension |
-| `ci-tidy`, `ci`, `ci-sanitizers`, `ci-godot` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-godot` | Used by CI with `clang-21` and ccache |
+| `ci-tidy`, `ci`, `ci-sanitizers`, `ci-tsan` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Used by CI with `clang-21` and ccache |
 
 List them with `cmake --list-presets`. Every preset has a matching build preset. `debug`, `release`, `sanitizers`, `ci` and
 `ci-sanitizers` also have a test preset.
@@ -50,14 +49,6 @@ cmake --build build --target karkinolution_tests
 
 ```bash
 rm -rf build && cmake --preset debug && cmake --build --preset debug
-```
-
-### Godot extension
-
-```bash
-git submodule update --init dependencies/godot-cpp
-cmake --preset godot
-cmake --build --preset godot
 ```
 
 ### `compile_commands.json`

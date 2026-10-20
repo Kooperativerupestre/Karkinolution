@@ -73,39 +73,18 @@ class TestLaunch(unittest.TestCase):
 
     @mock.patch("karkinolution.run.commands.os")
     @mock.patch("karkinolution.run.commands.subprocess.run")
-    def test_builds_godot_extension_and_app_when_godot_preset(
+    def test_builds_the_app_with_default_preset(
         self, mock_run: mock.MagicMock, mock_os: mock.MagicMock
     ) -> None:
-        presets_path = self.root / "CMakePresets.json"
-        presets_data = json.loads(presets_path.read_text(encoding="utf-8"))
-        presets_data["configurePresets"].append({
-            "name": "godot",
-            "inherits": ["base", "clang"],
-            "binaryDir": "${sourceDir}/build-godot",
-            "cacheVariables": {"BUILD_GODOT_EXTENSION": "ON"},
-        })
-        presets_path.write_text(json.dumps(presets_data), encoding="utf-8")
-
-        godot_build_dir = self.root / "build-godot"
-        godot_build_dir.mkdir()
-        (godot_build_dir / "CMakeCache.txt").write_text("")
-
+        self.configure_build_dir()
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        executable = str(godot_build_dir / "karkinolution_app")
+        executable = str(self.build_dir / "karkinolution_app")
 
-        launch("godot")
+        launch()
 
         self.assertEqual(
             mock_run.call_args[0][0],
-            [
-                "cmake",
-                "--build",
-                str(godot_build_dir),
-                "--target",
-                "karkinolution_godot",
-                "--target",
-                "karkinolution_app",
-            ],
+            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_app"],
         )
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])
