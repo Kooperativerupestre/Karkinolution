@@ -33,3 +33,14 @@ dependencies/asio/LICENSE_1_0.txt
 Asio repository:
 https://github.com/chriskohlhoff/asio
 
+Magic Enum v0.9.8
+
+Magic Enum is distributed under the MIT License.
+Copyright (c) 2019 - 2024 Daniil Goncharov.
+
+The full license text is available in the Magic Enum distribution:
+dependencies/magic_enum/LICENSE
+
+Magic Enum repository:
+https://github.com/Neargye/magic_enum
+
