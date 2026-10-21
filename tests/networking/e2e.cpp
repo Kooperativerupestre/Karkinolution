@@ -1,5 +1,4 @@
 #include "karkinolution/networking/port.hpp"
-#include "karkinolution/networking/sdk/src/builders/creature/creature.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/networking/server.hpp"
 #include "karkinolution/test/utils.hpp"
@@ -33,8 +32,7 @@ TEST_F(ClientTest, ServerE2E) {
 
 			try {
 				client.connect();
-				auto output =
-					client.request(KarkinolutionSDK::Builders::Creature::see_creature(45));
+				auto output = client.request(TestUtils::make_see_creature_request_data(45));
 
 				if (!output || !output.value().has_value()) {
 					failures.fetch_add(1);

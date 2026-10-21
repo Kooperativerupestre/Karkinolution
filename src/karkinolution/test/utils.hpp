@@ -1,5 +1,7 @@
 #pragma once
 #include "karkinolution/core/error.hpp"
+#include "karkinolution/core/id.hpp"
+#include "karkinolution/networking/sdk/src/client/client.hpp"
 
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/utils/k_random.hpp>
@@ -51,4 +53,6 @@ namespace TestUtils {
 
 	std::vector<std::byte> make_see_creature_frame(Frames::Types::RequestId id,
 												   BaseIdType               creature_id);
+	KarkinolutionSDK::Client::ClientRequestData
+	make_see_creature_request_data(BaseIdType creature_id);
 } // namespace TestUtils

@@ -1,7 +1,6 @@
 #include "karkinolution/core/error.hpp"
-#include "karkinolution/networking/sdk/src/builders/creature/creature.hpp"
-#include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
+#include "karkinolution/test/utils.hpp"
 
 #include <chrono>
 #include <gtest/gtest.h>
@@ -14,8 +13,7 @@ TEST_F(ClientTest, PendingRequestFailsWhenServerDrops) {
 	client.connect();
 	server.accept_peer();
 
-	const auto id =
-		client.send_without_waiting(KarkinolutionSDK::Builders::Creature::see_creature(45));
+	const auto id = client.send_without_waiting(TestUtils::make_see_creature_request_data(45));
 	server.drop_conection();
 	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
 	bool       failed   = false;

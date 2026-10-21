@@ -50,11 +50,12 @@ namespace Frames {
 								  Frames::Types::RequestId id,
 								  RequestResource          resource,
 								  const Payload           &payload) {
-			return RequestFrame{Frames::Parser::get_declared_size(payload),
-								id,
-								sub_type,
-								payload,
-								resource};
+			return RequestFrame{
+				Frames::Parser::calculate_declared_size(payload.size(), BinaryTypes::Request),
+				id,
+				sub_type,
+				payload,
+				resource};
 		}
 
 		template <ByteRange Payload>
