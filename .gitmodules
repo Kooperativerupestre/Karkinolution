@@ -10,3 +10,6 @@
 [submodule "dependencies/magic_enum"]
 	path = dependencies/magic_enum
 	url = https://github.com/Neargye/magic_enum.git
+[submodule "dependencies/raylib"]
+	path = dependencies/raylib
+	url = https://github.com/raysan5/raylib.git

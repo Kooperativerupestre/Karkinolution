@@ -8,8 +8,9 @@ Append `--parallel $(nproc)` to any build command for parallel compilation.
 | Preset | Build directory | Purpose |
 |---|---|---|
 | `debug` | `build` | Everyday development (`clang`) |
-| `release` | `build-release` | Optimized build |
-| `native` | `build-native` | Optimized with `-march=native`. Benchmarking only, not portable. |
+| `view-debug` | `build-view` | Debug with `karkinolution_view` and raylib |
+| `release` | `build-release` | Optimized build (includes server and `karkinolution_view`) |
+| `native` | `build-native` | Optimized with `-march=native` (includes server and `karkinolution_view`). Benchmarking only, not portable. |
 | `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
 | `ci-tidy`, `ci`, `ci-sanitizers`, `ci-tsan` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Used by CI with `clang-21` and ccache |
 
@@ -25,7 +26,7 @@ cmake --preset debug
 cmake --build --preset debug
 ```
 
-FastNoise2, asio, GoogleTest, and magic_enum are submodules; see [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
+FastNoise2, asio, GoogleTest, magic_enum, and raylib are submodules; see [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
 
 ### Run
 

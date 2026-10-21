@@ -15,7 +15,7 @@ Run every command from the repository root. This page covers the first run. The 
 
 ## 1. Get the code
 
-Four dependencies are Git submodules, so a plain `git clone` is not enough:
+Five dependencies are Git submodules, so a plain `git clone` is not enough:
 
 ```bash
 git clone --recurse-submodules https://github.com/Kooperativerupestre/karkinolution.git
@@ -25,7 +25,7 @@ cd karkinolution
 Already cloned without `--recurse-submodules`:
 
 ```bash
-git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum
+git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum dependencies/raylib
 ```
 
 ## 2. Configure and build
@@ -85,6 +85,7 @@ Some dependencies arrive on their own at configure time, others do not.
 | asio | Git submodule | Yes: `git submodule update --init` |
 | GoogleTest `v1.17.0` | Git submodule | Yes: `git submodule update --init` |
 | magic_enum `v0.9.8` | Git submodule | Yes: `git submodule update --init` |
+| raylib | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 

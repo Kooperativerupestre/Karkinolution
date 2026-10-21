@@ -6,9 +6,10 @@ import typer
 from karkinolution.presets import binary_dir, find_repo_root, load_configure_presets, resolve_preset
 
 APP_TARGET = "karkinolution_app"
+VIEW_TARGET = "karkinolution_view"
 
 
-def launch(preset: str = "debug") -> None:
+def launch(preset: str = "debug", target: str | None = None) -> None:
     root = find_repo_root()
     resolved = resolve_preset(preset, load_configure_presets(root))
     build_dir = binary_dir(preset, resolved, root)
@@ -20,11 +21,12 @@ def launch(preset: str = "debug") -> None:
         )
         raise typer.Exit(code=1)
 
-    targets = [APP_TARGET]
+    selected_target = target or (VIEW_TARGET if "view" in preset else APP_TARGET)
+    targets = [selected_target]
 
     cmd = ["cmake", "--build", str(build_dir)]
-    for target in targets:
-        cmd.extend(["--target", target])
+    for t in targets:
+        cmd.extend(["--target", t])
 
     build = subprocess.run(
         cmd,
@@ -33,7 +35,7 @@ def launch(preset: str = "debug") -> None:
     if build.returncode != 0:
         raise typer.Exit(code=build.returncode)
 
-    executable = str(build_dir / APP_TARGET)
+    executable = str(build_dir / selected_target)
 
     os.chdir(root)
     os.execv(executable, [executable])

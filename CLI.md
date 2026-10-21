@@ -15,7 +15,7 @@ source .venv/bin/activate
 | Command | What it does |
 |---|---|
 | `karkinolution setup [--preset debug]` | Checks the tools and submodules, then configures the build. It only reports problems and prints the fix. It never installs or initializes anything. |
-| `karkinolution run [--preset debug]` | Builds `karkinolution_app` and starts the server. Requires `setup` first. |
+| `karkinolution run [--preset debug] [--target <name>]` | Builds the target (`karkinolution_app` by default, or `karkinolution_view` for view presets) and starts it. Requires `setup` first. |
 | `karkinolution see namespaces [paths]` | Prints a file tree with the namespaces and namespace aliases each file declares. See [below](#namespace-tree). |
 | `karkinolution style check <paths>` | Checks formatting with `clang-format`. |
 | `karkinolution style format <paths>` | Formats files in place. |

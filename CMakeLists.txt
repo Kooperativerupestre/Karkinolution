@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(Karkinolution LANGUAGES CXX)
+project(Karkinolution LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -44,6 +44,15 @@ add_subdirectory(
 "${CMAKE_SOURCE_DIR}/dependencies/magic_enum"
 )
 
+option(KARKINOLUTION_BUILD_VIEW "Build karkinolution_view target" OFF)
+
+if (KARKINOLUTION_BUILD_VIEW)
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    add_subdirectory(
+        "${CMAKE_SOURCE_DIR}/dependencies/raylib"
+    )
+endif ()
+
 # ---------------- Sanitizers ----------------
 # add_compile_options / add_link_options only affect targets created AFTER
 # this point, so everything above stays uninstrumented.
@@ -67,6 +76,7 @@ endif ()
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
 "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
 )
+list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/view/.*")
 
 add_library(karkinolution)
 
@@ -96,6 +106,21 @@ add_executable(karkinolution_app main.cpp)
 target_link_libraries(karkinolution_app PRIVATE
 karkinolution
 )
+
+# ---------------- View executable ----------------
+
+if (KARKINOLUTION_BUILD_VIEW)
+    file(GLOB_RECURSE KARKINOLUTION_VIEW_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_SOURCE_DIR}/src/karkinolution/view/*.cpp"
+    )
+
+    add_executable(karkinolution_view ${KARKINOLUTION_VIEW_SOURCES})
+
+    target_link_libraries(karkinolution_view PRIVATE
+        karkinolution
+        raylib
+    )
+endif ()
 
 # ---------------- Tests ----------------
 

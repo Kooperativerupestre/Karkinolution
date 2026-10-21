@@ -56,7 +56,10 @@ def declared_submodules(root: Path) -> list[str]:
 
 
 def required_submodules(root: Path, resolved: Preset) -> list[str]:
-    return declared_submodules(root)
+    submodules = declared_submodules(root)
+    if cache_value(resolved, "KARKINOLUTION_BUILD_VIEW") != "ON":
+        return [s for s in submodules if not s.endswith("raylib")]
+    return submodules
 
 
 def is_populated(path: Path) -> bool:

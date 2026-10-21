@@ -44,3 +44,14 @@ dependencies/magic_enum/LICENSE
 Magic Enum repository:
 https://github.com/Neargye/magic_enum
 
+Raylib
+
+Raylib is distributed under the zlib/libpng License.
+Copyright (c) 2013-2026 Ramon Santamaria (@raysan5).
+
+The full license text is available in the Raylib distribution:
+dependencies/raylib/LICENSE
+
+Raylib repository:
+https://github.com/raysan5/raylib
+

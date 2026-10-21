@@ -89,6 +89,52 @@ class TestLaunch(unittest.TestCase):
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])
 
+    @mock.patch("karkinolution.run.commands.os")
+    @mock.patch("karkinolution.run.commands.subprocess.run")
+    def test_builds_the_view_target_with_view_preset(
+        self, mock_run: mock.MagicMock, mock_os: mock.MagicMock
+    ) -> None:
+        presets = json.loads((self.root / "CMakePresets.json").read_text(encoding="utf-8"))
+        presets["configurePresets"].append({
+            "name": "view-debug",
+            "inherits": ["base", "clang"],
+            "binaryDir": "${sourceDir}/build-view",
+            "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "KARKINOLUTION_BUILD_VIEW": True},
+        })
+        (self.root / "CMakePresets.json").write_text(json.dumps(presets), encoding="utf-8")
+        view_dir = self.root / "build-view"
+        view_dir.mkdir()
+        (view_dir / "CMakeCache.txt").write_text("")
+        mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
+        executable = str(view_dir / "karkinolution_view")
+
+        launch("view-debug")
+
+        self.assertEqual(
+            mock_run.call_args[0][0],
+            ["cmake", "--build", str(view_dir), "--target", "karkinolution_view"],
+        )
+        mock_os.chdir.assert_called_once_with(self.root)
+        mock_os.execv.assert_called_once_with(executable, [executable])
+
+    @mock.patch("karkinolution.run.commands.os")
+    @mock.patch("karkinolution.run.commands.subprocess.run")
+    def test_builds_explicit_target(
+        self, mock_run: mock.MagicMock, mock_os: mock.MagicMock
+    ) -> None:
+        self.configure_build_dir()
+        mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
+        executable = str(self.build_dir / "custom_target")
+
+        launch("debug", target="custom_target")
+
+        self.assertEqual(
+            mock_run.call_args[0][0],
+            ["cmake", "--build", str(self.build_dir), "--target", "custom_target"],
+        )
+        mock_os.chdir.assert_called_once_with(self.root)
+        mock_os.execv.assert_called_once_with(executable, [executable])
+
 
 if __name__ == "__main__":
     unittest.main()

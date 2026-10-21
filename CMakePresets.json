@@ -82,7 +82,8 @@
       ],
       "binaryDir": "${sourceDir}/build-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "KARKINOLUTION_BUILD_VIEW": true
       }
     },
     {
@@ -95,7 +96,8 @@
       "binaryDir": "${sourceDir}/build-native",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS": "-march=native"
+        "CMAKE_CXX_FLAGS": "-march=native",
+        "KARKINOLUTION_BUILD_VIEW": true
       }
     },
     {
@@ -153,6 +155,19 @@
         "sanitizer-thread"
       ],
       "binaryDir": "${sourceDir}/build-ci-tsan"
+    },
+    {
+      "name": "view-debug",
+      "displayName": "Debug with View (raylib)",
+      "inherits": [
+        "base",
+        "clang"
+      ],
+      "binaryDir": "${sourceDir}/build-view",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "KARKINOLUTION_BUILD_VIEW": true
+      }
     }
   ],
   "buildPresets": [
@@ -162,11 +177,19 @@
     },
     {
       "name": "release",
-      "configurePreset": "release"
+      "configurePreset": "release",
+      "targets": [
+        "karkinolution_app",
+        "karkinolution_view"
+      ]
     },
     {
       "name": "native",
-      "configurePreset": "native"
+      "configurePreset": "native",
+      "targets": [
+        "karkinolution_app",
+        "karkinolution_view"
+      ]
     },
     {
       "name": "sanitizers",
@@ -205,6 +228,13 @@
       "targets": [
         "karkinolution_tests",
         "karkinolution_app"
+      ]
+    },
+    {
+      "name": "view-debug",
+      "configurePreset": "view-debug",
+      "targets": [
+        "karkinolution_view"
       ]
     }
   ],

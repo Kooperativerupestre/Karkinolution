@@ -37,7 +37,7 @@ def setup_command(
 
 @app.command(
     "run",
-    help="Build the server and start it.",
+    help="Build the target and start it.",
 )
 def run_command(
     preset: str = typer.Option(
@@ -46,8 +46,14 @@ def run_command(
         "-p",
         help="Configure preset from CMakePresets.json.",
     ),
+    target: str | None = typer.Option(
+        None,
+        "--target",
+        "-t",
+        help="Target executable to build and run (default: auto-detected from preset).",
+    ),
 ) -> None:
-    run.launch(preset)
+    run.launch(preset, target=target)
 
 
 @see_app.command(
