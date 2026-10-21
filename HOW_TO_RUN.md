@@ -25,7 +25,7 @@ cd karkinolution
 Already cloned without `--recurse-submodules`:
 
 ```bash
-git submodule update --init dependencies/FastNoise2 dependencies/asio
+git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest
 ```
 
 ## 2. Configure and build
@@ -81,10 +81,10 @@ Some dependencies arrive on their own at configure time, others do not.
 | Dependency | How it arrives | Needs a manual step? |
 |---|---|---|
 | magic_enum `v0.9.8` | `FetchContent` in the root `CMakeLists.txt` | No |
-| GoogleTest `v1.17.0` | `FetchContent` in `tests/CMakeLists.txt` | No |
 | FastSIMD | Fetched by FastNoise2's own CMake (CPM) | No |
 | FastNoise2 | Git submodule | Yes: `git submodule update --init` |
 | asio | Git submodule | Yes: `git submodule update --init` |
+| GoogleTest `v1.17.0` | Git submodule | Yes: `git submodule update --init` |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 

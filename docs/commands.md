@@ -25,8 +25,8 @@ cmake --preset debug
 cmake --build --preset debug
 ```
 
-GoogleTest and magic_enum are fetched automatically on first configure; network access required. FastNoise2 and asio
-are submodules; see [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
+magic_enum is fetched automatically on first configure; network access required. FastNoise2, asio,
+and GoogleTest are submodules; see [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
 
 ### Run
 
