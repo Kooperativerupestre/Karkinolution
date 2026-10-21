@@ -68,7 +68,32 @@ cmake --build build --target karkinolution_app
 * It accepts one client at a time and does not stay alive if it disconnects.
 * More networking questions: [`help.md`](src/karkinolution/networking/help.md).
 
-## 4. Run the tests
+## 4. Run the view
+
+**With the CLI:**
+
+```bash
+karkinolution setup --preset view-debug
+karkinolution run --preset view-debug
+```
+
+**With CMake directly:**
+
+```bash
+cmake --preset view-debug
+cmake --build --preset view-debug
+./build-view/karkinolution_view
+```
+
+When building in `release` mode, both `karkinolution_app` and `karkinolution_view` are built:
+
+```bash
+cmake --preset release
+cmake --build --preset release
+./build-release/karkinolution_view
+```
+
+## 5. Run the tests
 
 ```bash
 ctest --preset debug
