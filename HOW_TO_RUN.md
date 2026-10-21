@@ -15,7 +15,7 @@ Run every command from the repository root. This page covers the first run. The 
 
 ## 1. Get the code
 
-Three dependencies are Git submodules, so a plain `git clone` is not enough:
+Four dependencies are Git submodules, so a plain `git clone` is not enough:
 
 ```bash
 git clone --recurse-submodules https://github.com/Kooperativerupestre/karkinolution.git
@@ -25,7 +25,7 @@ cd karkinolution
 Already cloned without `--recurse-submodules`:
 
 ```bash
-git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest
+git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum
 ```
 
 ## 2. Configure and build
@@ -80,11 +80,11 @@ Some dependencies arrive on their own at configure time, others do not.
 
 | Dependency | How it arrives | Needs a manual step? |
 |---|---|---|
-| magic_enum `v0.9.8` | `FetchContent` in the root `CMakeLists.txt` | No |
 | FastSIMD | Fetched by FastNoise2's own CMake (CPM) | No |
 | FastNoise2 | Git submodule | Yes: `git submodule update --init` |
 | asio | Git submodule | Yes: `git submodule update --init` |
 | GoogleTest `v1.17.0` | Git submodule | Yes: `git submodule update --init` |
+| magic_enum `v0.9.8` | Git submodule | Yes: `git submodule update --init` |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 
