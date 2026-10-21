@@ -1,5 +1,6 @@
 #include "karkinolution/binary/interpreters/unit.hpp"
 
+#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/serializer.hpp"
 
@@ -38,13 +39,13 @@ UnitsSRI::BytesArrays::Size UnitsSRI::serialize_size(const Size &size) {
 	UnitsSRI::BytesArrays::Size bytes;
 
 	const auto lateral_serialized = UnitsSRI::serialize_lateral(size.lateral);
-	Deserializer::append_bytes(bytes, lateral_serialized, Layout::Lateral::OFFSET);
+	BinaryUtils::append_bytes(bytes, lateral_serialized, Layout::Lateral::OFFSET);
 
 	const auto height_serialized = UnitsSRI::serialize_height(size.height);
-	Deserializer::append_bytes(bytes, height_serialized, Layout::Height::OFFSET);
+	BinaryUtils::append_bytes(bytes, height_serialized, Layout::Height::OFFSET);
 
 	const auto depth_serialized = UnitsSRI::serialize_depth(size.depth);
-	Deserializer::append_bytes(bytes, depth_serialized, Layout::Depth::OFFSET);
+	BinaryUtils::append_bytes(bytes, depth_serialized, Layout::Depth::OFFSET);
 
 	return bytes;
 }

@@ -1,5 +1,6 @@
 #include "karkinolution/binary/interpreters/corpse.hpp"
 
+#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/interpreters/identity.hpp"
 #include "karkinolution/binary/serializer.hpp"
@@ -34,16 +35,16 @@ CorpseSRI::BytesArrays::Corpse CorpseSRI::serialize_corpse(const class Corpse &c
 	BytesArrays::Corpse bytes{};
 
 	const auto id_bytes = serialize_id(corpse.id);
-	Deserializer::append_bytes(bytes, id_bytes, CorpseSRI::Layout::Id::OFFSET);
+	BinaryUtils::append_bytes(bytes, id_bytes, CorpseSRI::Layout::Id::OFFSET);
 
 	const auto raw_meat_bytes = serialize_raw_meat(corpse.raw_meat);
-	Deserializer::append_bytes(bytes, raw_meat_bytes, CorpseSRI::Layout::RawMeat::OFFSET);
+	BinaryUtils::append_bytes(bytes, raw_meat_bytes, CorpseSRI::Layout::RawMeat::OFFSET);
 
 	const auto position_bytes = serialize_position(corpse.position);
-	Deserializer::append_bytes(bytes, position_bytes, CorpseSRI::Layout::PositionX::OFFSET);
+	BinaryUtils::append_bytes(bytes, position_bytes, CorpseSRI::Layout::PositionX::OFFSET);
 
 	const auto size_bytes = serialize_size(corpse.size);
-	Deserializer::append_bytes(bytes, size_bytes, CorpseSRI::Layout::Lateral::OFFSET);
+	BinaryUtils::append_bytes(bytes, size_bytes, CorpseSRI::Layout::Lateral::OFFSET);
 
 	return bytes;
 }

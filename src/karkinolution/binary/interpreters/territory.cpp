@@ -1,5 +1,6 @@
 #include "karkinolution/binary/interpreters/territory.hpp"
 
+#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/interpreters/unit.hpp"
 
@@ -9,7 +10,7 @@ TerritorySRI::serialize_territory(const class Territory &territory) {
 	TerritorySRI::BytesArrays::Territory bytes{};
 
 	const auto size_bytes = UnitsSRI::serialize_size(territory.size());
-	Deserializer::append_bytes(bytes, size_bytes, TerritorySRI::Layout::Size::OFFSET);
+	BinaryUtils::append_bytes(bytes, size_bytes, TerritorySRI::Layout::Size::OFFSET);
 
 	return bytes;
 }

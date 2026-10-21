@@ -1,5 +1,6 @@
 #include "karkinolution/binary/interpreters/vec.hpp"
 
+#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/serializer.hpp"
 
@@ -8,13 +9,13 @@ VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const Vec3 &vec) {
 	VecSRI::BytesArrays::Vec result;
 
 	const auto x = Serializer::convert_double(vec.x);
-	Deserializer::append_bytes(result, x, VecSRI::Layout::X::OFFSET);
+	BinaryUtils::append_bytes(result, x, VecSRI::Layout::X::OFFSET);
 
 	const auto y = Serializer::convert_double(vec.y);
-	Deserializer::append_bytes(result, y, VecSRI::Layout::Y::OFFSET);
+	BinaryUtils::append_bytes(result, y, VecSRI::Layout::Y::OFFSET);
 
 	const auto z = Serializer::convert_double(vec.z);
-	Deserializer::append_bytes(result, z, VecSRI::Layout::Z::OFFSET);
+	BinaryUtils::append_bytes(result, z, VecSRI::Layout::Z::OFFSET);
 	return result;
 }
 

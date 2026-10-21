@@ -57,7 +57,7 @@ SoilSRI::serialize_required_capabilities(const std::vector<GenericProperty> &cap
 	bytes[0] = Serializer::convert_uint8_t(capabilities.size());
 	for (size_t i = 1; i < capabilities.size() + 1; ++i) {
 		const auto seria_pr = PropertiesSRI::serialize(capabilities[i - 1]);
-		Deserializer::append_bytes(bytes, seria_pr, i * PropertiesSRI::Layout::TOTAL_SIZE - 1);
+		BinaryUtils::append_bytes(bytes, seria_pr, i * PropertiesSRI::Layout::TOTAL_SIZE - 1);
 	}
 	return bytes;
 }
@@ -69,7 +69,7 @@ SoilSRI::BytesArray::DamageComponent SoilSRI::serialize_damage(const SoilPiece &
 		array[0]           = static_cast<std::byte>(0x01);
 		const auto &damage = soil.components.try_get<SoilPieceComponents::Damage>();
 
-		Deserializer::append_bytes(array, Serializer::convert_float(damage->damage), 1);
+		BinaryUtils::append_bytes(array, Serializer::convert_float(damage->damage), 1);
 	}
 
 	return array;
@@ -82,7 +82,7 @@ SoilSRI::BytesArray::MovementCost SoilSRI::serialize_movement_cost(const SoilPie
 		array[0]                  = static_cast<std::byte>(0x01);
 		const auto &movement_cost = soil.components.try_get<SoilPieceComponents::MovementCost>();
 
-		Deserializer::append_bytes(array, Serializer::convert_float(movement_cost->cost), 1);
+		BinaryUtils::append_bytes(array, Serializer::convert_float(movement_cost->cost), 1);
 	}
 	return array;
 }
@@ -98,32 +98,32 @@ SoilSRI::BytesArray::Soil SoilSRI::serialize_soil(const SoilPiece &soil) {
 
 	const auto serialized_properties = serialize_properties(soil.properties);
 
-	Deserializer::append_bytes(array,
-							   serialized_properties,
-							   SoilSRI::Layout::PropertiesCount::OFFSET);
+	BinaryUtils::append_bytes(array,
+							  serialized_properties,
+							  SoilSRI::Layout::PropertiesCount::OFFSET);
 
 	const auto serialized_required_capabilities =
 		serialize_required_capabilities(soil.required_capabilities);
 
-	Deserializer::append_bytes(array,
-							   serialized_required_capabilities,
-							   SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET);
+	BinaryUtils::append_bytes(array,
+							  serialized_required_capabilities,
+							  SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET);
 
 	const auto serialized_damage_c = serialize_damage(soil);
-	Deserializer::append_bytes(array, serialized_damage_c, SoilSRI::Layout::HasDamage::OFFSET);
+	BinaryUtils::append_bytes(array, serialized_damage_c, SoilSRI::Layout::HasDamage::OFFSET);
 	const auto serialized_movement_cost = serialize_movement_cost(soil);
-	Deserializer::append_bytes(array,
-							   serialized_movement_cost,
-							   SoilSRI::Layout::HasMovementCost::OFFSET);
+	BinaryUtils::append_bytes(array,
+							  serialized_movement_cost,
+							  SoilSRI::Layout::HasMovementCost::OFFSET);
 
 	const auto serialized_radius = GeometrySRI::serialize_radius(soil.radius);
-	Deserializer::append_bytes(array, serialized_radius, SoilSRI::Layout::Radius::OFFSET);
+	BinaryUtils::append_bytes(array, serialized_radius, SoilSRI::Layout::Radius::OFFSET);
 
 	const auto serialized_position = VecSRI::serialize_vec((soil.position));
-	Deserializer::append_bytes(array, serialized_position, SoilSRI::Layout::Position::OFFSET);
+	BinaryUtils::append_bytes(array, serialized_position, SoilSRI::Layout::Position::OFFSET);
 
 	const auto serialized_id = serialize_id(soil);
-	Deserializer::append_bytes(array, serialized_id, SoilSRI::Layout::Id::OFFSET);
+	BinaryUtils::append_bytes(array, serialized_id, SoilSRI::Layout::Id::OFFSET);
 	return array;
 }
 

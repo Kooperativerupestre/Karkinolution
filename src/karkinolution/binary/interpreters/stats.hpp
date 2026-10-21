@@ -72,9 +72,9 @@ namespace Karkinolution {
 						const auto serialized_max   = Serializer::serialize(stat.max);
 						const auto serialized_min   = Serializer::serialize(stat.min);
 
-						Deserializer::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
-						Deserializer::append_bytes(bytes, serialized_max, Layout::Max::OFFSET);
-						Deserializer::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_max, Layout::Max::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
 
 						return bytes;
 					}
@@ -91,9 +91,9 @@ namespace Karkinolution {
 						const auto serialize_max    = Serializer::serialize(T(1));
 						const auto serialized_min   = Serializer::serialize(T(0));
 
-						Deserializer::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
-						Deserializer::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
-						Deserializer::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
 
 						return bytes;
 					}
@@ -111,9 +111,9 @@ namespace Karkinolution {
 						const auto serialize_max    = Serializer::serialize(T(1));
 						const auto serialized_min   = Serializer::serialize(T(-1));
 
-						Deserializer::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
-						Deserializer::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
-						Deserializer::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
+						BinaryUtils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
 						return bytes;
 					}
 				} // namespace Stats
