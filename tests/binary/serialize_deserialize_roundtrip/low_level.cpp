@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <karkinolution/binary/deserialization/deserializer.hpp>
-#include <karkinolution/binary/serialization/serializer.hpp>
+#include <karkinolution/binary/deserializer.hpp>
+#include <karkinolution/binary/serializer.hpp>
 #include <karkinolution/test/utils.hpp>
 
 // # Deserializer/Serializer

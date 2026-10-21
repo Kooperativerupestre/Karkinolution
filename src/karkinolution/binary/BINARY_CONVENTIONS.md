@@ -11,8 +11,13 @@
 
 ## Directory Structure
 
-- **SRI**: `src/karkinolution/binary/serialization/interpreters/<domain>/<name>.[hpp|cpp]`
-- **DSI**: `src/karkinolution/binary/deserialization/interpreters/<domain>/<name>.[hpp|cpp]`
+- **Core**:
+  - `src/karkinolution/binary/serializer.[hpp|cpp]`
+  - `src/karkinolution/binary/deserializer.hpp`
+- **Interpreters**:
+  - `src/karkinolution/binary/interpreters/<name>.[hpp|cpp]`
+  - Each `<name>.hpp` contains both SRI and DSI definitions, as well as the global aliases `namespace <Name>SRI` and `namespace <Name>DSI` at the bottom of the file.
+  - Each `<name>.cpp` contains both SRI and DSI function implementations.
 
 ---
 

@@ -1,12 +1,12 @@
 #include "karkinolution/api/creature.hpp"
 #include "karkinolution/binary/binary_validators.hpp"
-#include "karkinolution/binary/deserialization/interpreters/creature/alias.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/networking/api_adapter/corpse.hpp"
 
 #include <karkinolution/binary/frames/processor.hpp>
+#include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
 ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World &world) {

@@ -1,8 +1,4 @@
-#include "karkinolution/binary/deserialization/deserializer.hpp"
-#include "karkinolution/binary/deserialization/interpreters/properties/properties.hpp"
-#include "karkinolution/binary/deserialization/interpreters/territory/soil/soil.hpp"
-#include "karkinolution/binary/serialization/interpreters/math/vec/alias.hpp"
-#include "karkinolution/binary/serialization/interpreters/territory/soil/soil.hpp"
+#include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/geometry/models.hpp"
@@ -11,19 +7,14 @@
 #include "karkinolution/utils/k_random.hpp"
 
 #include <gtest/gtest.h>
-#include <karkinolution/binary/deserialization/interpreters/corpse/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/creature/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/unit/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/properties/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/territory/soil/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/territory/territory/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/corpse/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/creature/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/geometry/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/unit/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/properties/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/territory/soil/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/territory/territory/alias.hpp>
+#include <karkinolution/binary/interpreters/corpse.hpp>
+#include <karkinolution/binary/interpreters/creature.hpp>
+#include <karkinolution/binary/interpreters/geometry.hpp>
+#include <karkinolution/binary/interpreters/properties.hpp>
+#include <karkinolution/binary/interpreters/soil.hpp>
+#include <karkinolution/binary/interpreters/territory.hpp>
+#include <karkinolution/binary/interpreters/unit.hpp>
+#include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil.hpp>

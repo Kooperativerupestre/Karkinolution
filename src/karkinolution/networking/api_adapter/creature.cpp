@@ -2,14 +2,14 @@
 #include "karkinolution/api/creature.hpp"
 
 #include "karkinolution/binary/core_aliases.hpp"
+#include "karkinolution/binary/interpreters/error.hpp"
 #include "karkinolution/binary/message_type_size.hpp"
-#include "karkinolution/binary/serialization/interpreters/error/alias.hpp"
-#include "karkinolution/binary/serialization/serializer.hpp"
+#include "karkinolution/binary/serializer.hpp"
 
 #include <format>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/frames/parser.hpp>
-#include <karkinolution/binary/serialization/interpreters/creature/alias.hpp>
+#include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
 // TODO: add unit test to verify if a creature that exists and a creature that doesn't exist, don't

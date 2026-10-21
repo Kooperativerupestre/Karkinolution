@@ -9,7 +9,7 @@
 #include <karkinolution/binary/binary_validators.hpp>
 #include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/binary/byte_utils.hpp>
-#include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/binary/frames/models.hpp>
 #include <karkinolution/binary/message_type_size.hpp>
 #include <string>

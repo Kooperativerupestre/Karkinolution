@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/deserializer.hpp>
 
 TEST(DeserializerRead, Uint32_t) {
 	std::vector<std::byte> bytes;

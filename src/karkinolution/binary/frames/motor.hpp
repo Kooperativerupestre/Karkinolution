@@ -9,10 +9,10 @@
 
 #include <array>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserialization/deserializer.hpp>
+#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/binary/message_type_size.hpp>
-#include <karkinolution/binary/serialization/serializer.hpp>
+#include <karkinolution/binary/serializer.hpp>
 #include <vector>
 
 namespace Frames {

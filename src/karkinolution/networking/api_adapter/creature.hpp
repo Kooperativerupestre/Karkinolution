@@ -3,9 +3,9 @@
 
 #include <karkinolution/api/creature.hpp>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserialization/deserializer.hpp>
-#include <karkinolution/binary/deserialization/interpreters/creature/alias.hpp>
+#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/binary/frames/aliases.hpp>
+#include <karkinolution/binary/interpreters/creature.hpp>
 
 namespace CreatureAPIBYA {
 	ResponseFrame

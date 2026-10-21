@@ -2,10 +2,10 @@
 #include "karkinolution/networking/protocol_session.hpp"
 
 #include "karkinolution/binary/frames/motor.hpp"
-#include "karkinolution/binary/serialization/interpreters/creature/alias.hpp"
 #include "karkinolution/world/world.hpp"
 
 #include <gtest/gtest.h>
+#include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/test/utils.hpp>
 
 TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {

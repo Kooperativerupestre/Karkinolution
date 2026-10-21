@@ -1,19 +1,9 @@
-#include "karkinolution/binary/serialization/interpreters/math/stats/stats.hpp"
-
 #include <gtest/gtest.h>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/geometry/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/geometry/geometry.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/stats/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/stats/stats.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/unit/alias.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/unit/unit.hpp>
-#include <karkinolution/binary/deserialization/interpreters/math/vec/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/geometry/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/geometry/geometry.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/unit/alias.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/unit/unit.hpp>
-#include <karkinolution/binary/serialization/interpreters/math/vec/alias.hpp>
+#include <karkinolution/binary/interpreters/geometry.hpp>
+#include <karkinolution/binary/interpreters/stats.hpp>
+#include <karkinolution/binary/interpreters/unit.hpp>
+#include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>

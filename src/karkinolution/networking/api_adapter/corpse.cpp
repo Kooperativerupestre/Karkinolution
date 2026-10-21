@@ -1,11 +1,8 @@
-#include "karkinolution/binary/deserialization/interpreters/corpse/corpse.hpp"
-
 #include "karkinolution/binary/core_aliases.hpp"
 
 #include <karkinolution/api/corpse.hpp>
-#include <karkinolution/binary/deserialization/interpreters/corpse/alias.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/binary/serialization/interpreters/corpse/alias.hpp>
+#include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/networking/api_adapter/corpse.hpp>
 
 ResponseFrame CorpseAPIBYA::see_corpse(const World                  &world,

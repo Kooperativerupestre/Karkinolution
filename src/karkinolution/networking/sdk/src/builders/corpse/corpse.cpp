@@ -1,12 +1,11 @@
 #include "karkinolution/networking/sdk/src/builders/corpse/corpse.hpp"
 
 #include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/serialization/interpreters/corpse/corpse.hpp"
 #include "karkinolution/networking/sdk/src/builders/generic_id.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 
 #include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/binary/serialization/interpreters/corpse/alias.hpp>
+#include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/networking/sdk/src/builders/corpse/alias.hpp>
 
 ClientRequestData CorpseSDK::see_corpse(BaseIdType id) {

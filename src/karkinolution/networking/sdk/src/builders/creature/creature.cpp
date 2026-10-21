@@ -1,11 +1,9 @@
-#include "karkinolution/binary/serialization/interpreters/creature/creature.hpp"
-
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/networking/sdk/src/builders/generic_id.hpp"
 
 #include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/binary/serialization/interpreters/creature/alias.hpp>
+#include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/sdk/src/builders/creature/alias.hpp>
 #include <karkinolution/networking/sdk/src/builders/creature/creature.hpp>
 #include <karkinolution/networking/sdk/src/client/alias.hpp>

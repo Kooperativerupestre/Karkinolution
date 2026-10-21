@@ -1,4 +1,4 @@
-#include <karkinolution/binary/serialization/interpreters/creature/alias.hpp>
+#include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/test/utils.hpp>
 
 World TestUtils::make_small_world() {
