@@ -130,7 +130,10 @@
       "name": "ci-tidy",
       "displayName": "CI: Debug build used by clang-tidy",
       "inherits": "ci-base",
-      "binaryDir": "${sourceDir}/build-tidy"
+      "binaryDir": "${sourceDir}/build-tidy",
+      "cacheVariables": {
+        "KARKINOLUTION_BUILD_VIEW": true
+      }
     },
     {
       "name": "ci",
@@ -203,7 +206,8 @@
       "name": "ci-tidy",
       "configurePreset": "ci-tidy",
       "targets": [
-        "karkinolution_app"
+        "karkinolution_app",
+        "karkinolution_view"
       ]
     },
     {

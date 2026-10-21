@@ -17,6 +17,10 @@ RUN apt-get update && apt-get install -y \
     git \
     ca-certificates \
     libc6-dbg \
+    libxrandr-dev \
+    libxinerama-dev \
+    libxcursor-dev \
+    libxi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN ln -s /usr/bin/clang-21 /usr/local/bin/clang && \
