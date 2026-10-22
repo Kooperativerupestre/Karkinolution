@@ -3,6 +3,7 @@
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/core/id.hpp"
+#include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
 
 #include <array>
@@ -56,7 +57,28 @@ namespace Karkinolution {
 					BytesArrays::Creature serialize_creature(const class Creature &creature);
 
 					namespace Request {
+						namespace Layout {
+							namespace CreateCreature {
+								using HasGender   = Field<0, 1>;
+								using Gender      = Next<HasGender, 1>;
+								using HasSpecies  = Next<Gender, 1>;
+								using Species     = Next<HasSpecies, 1>;
+								using HasPosition = Next<Species, 1>;
+								using Position    = Next<HasPosition, 24>;
+								using HasName     = Next<Position, 1>;
+								using NameSize    = Next<HasName, 1>;
+								using Name        = Next<HasName, Creature::Layout::MAX_NAME_SIZE>;
+
+								inline constexpr std::size_t TOTAL_SIZE = Name::SIZE;
+							} // namespace CreateCreature
+						} // namespace Layout
+
 						std::array<std::byte, 8> make_see_creature(BaseIdType id);
+						std::array<std::byte, Layout::CreateCreature::TOTAL_SIZE>
+						make_create_creature(std::optional<Gender>             gender,
+											 std::optional<CreatureSpecies>    specie,
+											 const std::optional<Vec3>        &position,
+											 const std::optional<std::string> &name);
 					} // namespace Request
 				} // namespace Creature
 			} // namespace SRI
@@ -78,7 +100,6 @@ namespace Karkinolution {
 					CreatureSpecies get_specie(const std::vector<std::byte> &payload,
 											   std::size_t                   offset);
 
-					Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
 
 					uint8_t get_name_size(const std::vector<std::byte> &payload,
 										  std::size_t                   offset);
@@ -89,8 +110,13 @@ namespace Karkinolution {
 												  std::size_t                   offset);
 
 					namespace Request {
+
+
 						BaseIdType
 						interpret_like_get_creature(const std::vector<std::byte> &payload);
+						CreatureBlueprint
+						interpret_like_create_creature(const std::vector<std::byte> &payload);
+
 					} // namespace Request
 				} // namespace Creature
 			} // namespace DSI

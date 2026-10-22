@@ -6,7 +6,7 @@
 
 World WorldFactory::create_world(const WorldPreset &preset) {
 	return World{
-		.entity_map        = EntityMap{},
+		.entity_map        = EntityMap{preset.size},
 		.organism_registry = OrganismRegistry{},
 		.natures           = NaturesMap{preset.size},
 

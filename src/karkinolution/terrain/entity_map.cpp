@@ -1,5 +1,6 @@
 #include "karkinolution/terrain/entity_map.hpp"
 
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
@@ -16,66 +17,43 @@
 #include <karkinolution/terrain/octree/octree.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 
-AABB AABBConversion::to_aabb(const Size &size, const Vec3 &position) {
-	const Vec3 half_size{size.lateral.value / 2.0, size.height.value / 2.0, size.depth.value / 2.0};
+bool EntityMapMotor::add(EntityId         id,
+						 const Vec3      &position,
+						 const Size      &size,
+						 EntityMap       &map,
+						 const Territory &territory) {
+	if (map.root().exists(id)) {
+		return false;
+	}
 
-	return AABB{.max = position + half_size, .min = position - half_size};
-}
-
-AABB AABBConversion::to_aabb(const GeometryForms::Radius &radius, const Vec3 &position) {
-	Vec3 extent{radius.value, radius.value, radius.value};
-
-	return AABB{.max = position + extent, .min = position - extent};
-}
-
-bool EntityMapMotor::add(Entity          &&entity,
-						 OrganismRegistry &registry,
-						 EntityMap        &map,
-						 const Territory  &territory) {
-	const auto size        = EntityGetters::get_size(entity);
-	const auto position    = EntityGetters::get_position(entity);
 	const auto entity_aabb = AABBConversion::to_aabb(size, position);
 
 	if (!AABBConversion::to_aabb(territory.size(), Vec3{0.0, 0.0, 0.0}).contains(entity_aabb)) {
 		return false;
 	}
 
-	const auto id = EntityGetters::get_id(entity);
-
 	map.root().insert(OctreeEntry{.entity_id = id, .bound = entity_aabb});
-
-	bool was_inserted = registry.entities.try_add(id, std::move(std::move(entity)));
-
-	if (!was_inserted) {
-		map.root().remove(id, entity_aabb);
-		return false;
-	}
 	return true;
 }
 
-bool EntityMapMotor::remove(EntityId          id,
-							OrganismRegistry &registry,
-							EntityMap        &map,
-							const AABB       &old_aabb) {
-	bool exists = registry.entities.exists(id) && map.root().exists(id);
+bool EntityMapMotor::remove(EntityId id, EntityMap &map, const AABB &old_aabb) {
+	bool exists = map.root().exists(id);
 
 	if (!exists) {
 		return false;
 	}
-	registry.entities.del(id);
 	auto was_removed = map.root().remove(id, old_aabb);
 	assert(was_removed);
 	return true;
 }
 
-bool EntityMapMotor::remove(EntityId id, OrganismRegistry &registry, EntityMap &map) {
-	bool exists = registry.entities.exists(id) && map.root().exists(id);
+bool EntityMapMotor::remove(EntityId id, EntityMap &map) {
+	bool exists = map.root().exists(id);
 
 	if (!exists) {
 		return false;
 	}
 
-	registry.entities.del(id);
 	auto was_removed = map.root().remove(id);
 	assert(was_removed);
 	return true;
@@ -88,19 +66,19 @@ std::vector<EntityId> EntityMapMotor::find(const GeometryForms::Radius &radius,
 	return map.root().find_ids(aabb);
 }
 
-bool EntityMapMotor::update_coord(EntityId          id,
-								  OrganismRegistry &registry,
-								  EntityMap        &map,
-								  const Vec3       &new_coord,
-								  const Territory  &territory) {
+bool EntityMapMotor::update_coord(EntityId         id,
+								  EntityMap       &map,
+								  const Size      &current_size,
+								  const Vec3      &current_coord,
+								  const Vec3      &new_coord,
+								  const Territory &territory) {
 	if (!map.root().exists(id)) {
 		return false;
 	}
-	auto       &entity    = registry.entities.at(id);
-	auto       &position  = EntityGetters::get_position(entity);
-	const auto &size      = EntityGetters::get_size(entity);
-	const AABB  old_bound = AABBConversion::to_aabb(size, position);
-	const AABB  new_bound = AABBConversion::to_aabb(size, new_coord);
+
+
+	const AABB old_bound = AABBConversion::to_aabb(current_size, current_coord);
+	const AABB new_bound = AABBConversion::to_aabb(current_size, new_coord);
 
 	if (!AABBConversion::to_aabb(territory.size(), Vec3{0.0, 0.0, 0.0}).contains(new_bound)) {
 		return false;
@@ -109,7 +87,7 @@ bool EntityMapMotor::update_coord(EntityId          id,
 	if (!was_updated) {
 		return false;
 	}
-	position = new_coord;
+
 	assert(was_updated);
 	return true;
 }

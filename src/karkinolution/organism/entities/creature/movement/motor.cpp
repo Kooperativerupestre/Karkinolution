@@ -13,8 +13,9 @@ MoveOutput MovementMotor::move(Creature &creature, World &world, const Vec3 &new
 	}
 
 	const auto was_updated = EntityMapMotor::update_coord(creature.build_id(),
-														  world.organism_registry,
 														  world.entity_map,
+														  creature.body.morphology.size,
+														  creature.position,
 														  new_position,
 														  world.territory);
 	if (!was_updated) {

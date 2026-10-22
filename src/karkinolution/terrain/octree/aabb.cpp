@@ -2,6 +2,20 @@
 #include <karkinolution/terrain/octree/aabb.hpp>
 #include <optional>
 
+AABB AABBConversion::to_aabb(const Size &size, const Vec3 &position) {
+	// Each dimension grows S/2 in both directions from position.
+	// e.g. size {10, 10, 10} centered at origin → bounds [-5, -5, -5] to [5, 5, 5].
+	const Vec3 half_size{size.lateral.value / 2.0, size.height.value / 2.0, size.depth.value / 2.0};
+
+	return AABB{.max = position + half_size, .min = position - half_size};
+}
+
+AABB AABBConversion::to_aabb(const GeometryForms::Radius &radius, const Vec3 &position) {
+	Vec3 extent{radius.value, radius.value, radius.value};
+
+	return AABB{.max = position + extent, .min = position - extent};
+}
+
 void OctreeNode::subdivide() {
 	const auto center = bounds_.center();
 

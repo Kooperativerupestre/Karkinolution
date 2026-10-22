@@ -1,21 +1,21 @@
 #pragma once
 #include "karkinolution/math/physic/vec/model.hpp"
 
+#include <karkinolution/math/units.hpp>
 #include <karkinolution/terrain/octree/aabb.hpp>
-
-namespace {
-	AABB world = {.max = {1000, 1000, 1000}, .min = {-1000, -1000, -1000}};
-} // namespace
 
 class Octree {
 	private:
 
 		std::unique_ptr<OctreeNode> root_;
+		Size                        size_;
 
 	public:
 
-		Octree()
-			: root_(std::make_unique<OctreeNode>(OctreeNode{world})) {}
+		Octree(const Size &size)
+			: root_(std::make_unique<OctreeNode>(
+				  OctreeNode{AABBConversion::to_aabb(size, Vec3{0.0, 0.0, 0.0})}))
+			, size_(size) {}
 
 		OctreeNode &root() {
 			return *root_;
@@ -25,8 +25,8 @@ class Octree {
 			return *root_;
 		}
 
-		double size() const {
-			return world.volume();
+		Volume volume() const {
+			return size_.volume();
 		}
 
 		const Vec3 &max() const {

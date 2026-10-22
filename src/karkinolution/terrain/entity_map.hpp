@@ -14,24 +14,23 @@
 #include <karkinolution/terrain/octree/octree.hpp>
 using EntityMap = Octree;
 
-namespace AABBConversion {
-	AABB to_aabb(const Size &size, const Vec3 &position);
-	AABB to_aabb(const GeometryForms::Radius &radius, const Vec3 &position);
-} // namespace AABBConversion
-
 namespace EntityMapMotor {
-	bool
-	add(Entity &&entity, OrganismRegistry &registry, EntityMap &map, const Territory &territory);
+	bool add(EntityId         id,
+			 const Vec3      &position,
+			 const Size      &size,
+			 EntityMap       &map,
+			 const Territory &territory);
 
-	bool remove(EntityId id, OrganismRegistry &registry, EntityMap &map, const AABB &old_aabb);
-	bool remove(EntityId id, OrganismRegistry &registry, EntityMap &map);
+	bool remove(EntityId id, EntityMap &map, const AABB &old_aabb);
+	bool remove(EntityId id, EntityMap &map);
 
 	std::vector<EntityId>
 	find(const GeometryForms::Radius &radius, const Vec3 &position, const EntityMap &map);
 
-	bool update_coord(EntityId          id,
-					  OrganismRegistry &registry,
-					  EntityMap        &map,
-					  const Vec3       &new_coord,
-					  const Territory  &territory);
+	bool update_coord(EntityId         id,
+					  EntityMap       &map,
+					  const Size      &current_size,
+					  const Vec3      &current_coord,
+					  const Vec3      &new_coord,
+					  const Territory &territory);
 } // namespace EntityMapMotor

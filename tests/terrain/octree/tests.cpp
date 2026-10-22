@@ -69,10 +69,14 @@ namespace {
 		}
 	}
 
+	Octree make_big_octree() {
+		return Octree{Size{1000.0, 1000.0, 10000.0}};
+	}
+
 } // namespace
 
 TEST(OctreeTest, RemoveIsEqualTrueIfItExists) {
-	Octree octree;
+	Octree octree = make_big_octree();
 
 	std::vector<OctreeEntry> entries;
 	fill_entries(entries, octree);
@@ -93,7 +97,7 @@ TEST(OctreeTest, RemoveIsEqualTrueIfItExists) {
 }
 
 TEST(OctreeTest, RemoveIsEqualFalseItDoesntExist) {
-	Octree octree;
+	Octree octree = make_big_octree();
 
 	std::vector<EntityId> ids;
 	fill_ids(ids);
@@ -113,7 +117,7 @@ TEST(OctreeTest, RemoveIsEqualFalseItDoesntExist) {
 }
 
 TEST(OctreeTest, AddEntryMakeEntryExists) {
-	Octree octree;
+	Octree octree = make_big_octree();
 
 	std::vector<OctreeEntry> entries;
 
@@ -127,7 +131,7 @@ TEST(OctreeTest, AddEntryMakeEntryExists) {
 }
 
 TEST(OctreeTest, DeleteEntryMakeEntryDoesntExist) {
-	Octree                   octree;
+	Octree                   octree = make_big_octree();
 	std::vector<OctreeEntry> entries;
 
 	fill_entries(entries, octree);
@@ -152,7 +156,7 @@ TEST(OctreeTest, DeleteEntryMakeEntryDoesntExist) {
 }
 
 TEST(OctreeTest, AddChildrenNeverIsOverMax) {
-	Octree octree;
+	Octree octree = make_big_octree();
 
 	std::vector<OctreeEntry> entries;
 	fill_entries(entries, octree);
@@ -163,7 +167,7 @@ TEST(OctreeTest, AddChildrenNeverIsOverMax) {
 }
 
 TEST(OctreeTest, UpdateChildrenNeverIsOverMax) {
-	Octree octree;
+	Octree octree = make_big_octree();
 
 	std::vector<OctreeEntry> entries;
 

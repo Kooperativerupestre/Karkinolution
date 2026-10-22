@@ -1,11 +1,12 @@
 #pragma once
 #include <array>
 #include <cstddef>
+#include <karkinolution/math/geometry/models.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
+#include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <memory>
 #include <vector>
-
 inline constexpr size_t MAX_OCTREE_CHILDREN = 8;
 inline constexpr size_t MAX_ENTRIES         = 8;
 
@@ -32,6 +33,11 @@ struct AABB {
 			return size.x * size.y * size.z;
 		}
 };
+
+namespace AABBConversion {
+	AABB to_aabb(const Size &size, const Vec3 &position);
+	AABB to_aabb(const GeometryForms::Radius &radius, const Vec3 &position);
+} // namespace AABBConversion
 
 struct OctreeEntry {
 		EntityId entity_id;
