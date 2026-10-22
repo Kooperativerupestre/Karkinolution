@@ -55,6 +55,81 @@ A DSI reads raw byte payloads and reconstructs domain objects.
    - Compounds: delegate each field using `offset + <Domain>SRI::TO_GET_<FIELD>_OFFSET`.
    - No Duplication: Do not define duplicate deserializers for existing types; delegate directly to their domain DSI.
 
+---
+
+## DSI Offset Responsibility Rule
+
+DSI getters follow a strict rule about **who is responsible for adding the field offset within a payload**. The rule differs by domain level:
+
+### High-Level Domain DSIs (e.g., `SoilDSI`, `CorpseDSI`, `CreatureDSI`)
+
+These represent the top-level serialized entities exchanged over the wire.
+
+- **Auxiliary getters** (`get_id`, `get_position`, `get_type`, etc.) must **NOT** add the field's layout offset internally. They receive an absolute `offset` that already points to the start of the field they are responsible for reading.
+- **The principal getter** (`get_soil`, `get_corpse`, `get_creature`) is the **only one** responsible for computing `offset + Layout::Field::OFFSET` before delegating to each auxiliary getter.
+
+**Correct pattern (high-level):**
+```cpp
+// Auxiliary — reads at the exact offset it receives, no field offset added
+BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Deserializer::deserialize<BaseIdType>(payload, offset);
+}
+
+// Principal — adds field offset before calling auxiliaries
+SoilDSI::Models::Soil SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Models::Soil{
+        .id = get_id(payload, offset + SoilSRI::Layout::Id::OFFSET),
+        // ...
+    };
+}
+```
+
+**Wrong pattern (do NOT do this):**
+```cpp
+// Auxiliary adds its own field offset — broken if called from within get_soil
+BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Deserializer::deserialize<BaseIdType>(payload, SoilSRI::Layout::Id::OFFSET + offset);
+}
+```
+
+### Mid-Level Composite DSIs (e.g., `VecDSI`, `UnitsDSI`, `GeometryDSI`)
+
+These represent shared mathematical/geometric types that do not belong to a single high-level domain and are composed internally (i.e., their fields have a fixed relative layout).
+
+- **Auxiliary getters** (`get_x`, `get_y`, `get_z`, etc.) **DO** add the field's layout offset internally. This is correct because these types are always read as a self-contained block; the caller provides only the base offset of the block.
+- **The principal getter** (`get_vec`, `deserialize_size`, etc.) passes its `offset` directly to each auxiliary — the auxiliary handles its own relative position.
+
+**Correct pattern (mid-level):**
+```cpp
+// Auxiliary — adds its own relative field offset
+double VecDSI::get_x(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Deserializer::read_double(payload, VecSRI::Layout::X::OFFSET + offset);
+}
+
+// Principal — passes offset as-is; each auxiliary knows its relative position
+Vec3 VecDSI::get_vec(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Vec3(get_x(payload, offset), get_y(payload, offset), get_z(payload, offset));
+}
+```
+
+---
+
+## Unit Test Requirements for DSIs
+
+Every DSI and its individual getter functions **must** have unit tests that verify the offset responsibility rule described above.
+
+For **high-level domain DSIs**, tests must prove that auxiliary getters do **not** automatically add their field offset. The canonical test pattern is:
+
+1. Construct a synthetic payload with known **garbage/sentinel bytes** before the actual field data.
+2. Call the auxiliary getter with the exact offset pointing to the field start (i.e., garbage bytes + field position).
+3. Assert the result matches the expected field value — proving the getter read from the correct position and did not double-add an internal offset.
+
+For **mid-level composite DSIs**, tests must prove that auxiliary getters **do** add their field offset internally when given the base offset of the composite block:
+
+1. Construct a payload that serializes the full composite (e.g., a `Vec3`).
+2. Call each auxiliary getter with the base offset of the block (not the field's absolute position).
+3. Assert the result matches the expected field value.
+
 ### SO Pattern (Serialized output)
 
 A SO resolves the following problem: How can we know which sub type the serialized thing has? 

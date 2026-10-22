@@ -130,41 +130,38 @@ SoilSRI::BytesArray::Soil SoilSRI::serialize_soil(const SoilPiece &soil) {
 // DSI implementations
 std::optional<SoilDSI::Models::DamageComponent>
 SoilDSI::get_damage(const std::vector<std::byte> &payload, std::size_t offset) {
-	const auto has_component =
-		Deserializer::read_bool(payload[SoilSRI::Layout::HasDamage::OFFSET + offset]);
+	const auto has_component = Deserializer::read_bool(payload[offset]);
 
 	if (!has_component) {
 		return std::nullopt;
 	}
 	return Models::DamageComponent{
-		.value = Deserializer::read_float(payload, SoilSRI::Layout::Damage::OFFSET + offset)};
+		.value = Deserializer::read_float(payload, offset + SoilSRI::Layout::HasDamage::SIZE)};
 }
 
 std::optional<SoilDSI::Models::MovementCostComponent>
 SoilDSI::get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset) {
-	const auto has_component =
-		Deserializer::read_bool(payload[SoilSRI::Layout::HasMovementCost::OFFSET + offset]);
+	const auto has_component = Deserializer::read_bool(payload[offset]);
 
 	if (!has_component) {
 		return std::nullopt;
 	}
 
 	return Models::MovementCostComponent{
-		.cost = Deserializer::read_float(payload, SoilSRI::Layout::MovementCost::OFFSET + offset)};
+		.cost = Deserializer::read_float(payload, offset + SoilSRI::Layout::HasMovementCost::SIZE)};
 }
 
 BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Deserializer::deserialize<BaseIdType>(payload, SoilSRI::Layout::Id::OFFSET + offset);
+	return Deserializer::deserialize<BaseIdType>(payload, offset);
 }
 
 Vec3 SoilDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
-	return VecDSI::get_vec(payload, SoilSRI::Layout::Position::OFFSET + offset);
+	return VecDSI::get_vec(payload, offset);
 }
 
 SoilTypes SoilDSI::get_type(const std::vector<std::byte> &payload, std::size_t offset) {
-	const auto raw_type =
-		Deserializer::read_uint8_t(payload, SoilSRI::Layout::Type::OFFSET + offset);
-	const auto type = SoilTypes(raw_type);
+	const auto raw_type = Deserializer::read_uint8_t(payload, offset);
+	const auto type     = SoilTypes(raw_type);
 	if (!magic_enum::enum_contains(type)) {
 		throw ByteError(std::format("Invalid soil type {}", raw_type));
 	}
@@ -172,15 +169,14 @@ SoilTypes SoilDSI::get_type(const std::vector<std::byte> &payload, std::size_t o
 }
 
 Radius SoilDSI::get_radius(const std::vector<std::byte> &payload, std::size_t offset) {
-	return GeometryDSI::deserialize_radius(payload, SoilSRI::Layout::Radius::OFFSET + offset);
+	return GeometryDSI::deserialize_radius(payload, offset);
 }
 
 std::vector<SoilProperties> SoilDSI::get_soil_properties(const std::vector<std::byte> &payload,
 														 std::size_t                   offset) {
 	std::vector<SoilProperties> properties;
 
-	const auto count =
-		Deserializer::read_uint8_t(payload, SoilSRI::Layout::PropertiesCount::OFFSET + offset);
+	const auto count = Deserializer::read_uint8_t(payload, offset);
 
 	if (count * PropertiesSRI::Layout::TOTAL_SIZE > SoilSRI::Layout::MAX_PROPERTIES_SIZE) {
 		throw ByteError(std::format("The count of properties ({}) of the soil exceeds the max {}",
@@ -189,7 +185,7 @@ std::vector<SoilProperties> SoilDSI::get_soil_properties(const std::vector<std::
 	}
 	for (std::size_t i = 0; i < count; ++i) {
 		properties.push_back(
-			SoilProperties(payload[SoilSRI::Layout::PropertiesData::OFFSET + offset + i]));
+			SoilProperties(payload[offset + SoilSRI::Layout::PropertiesCount::SIZE + i]));
 	}
 	return properties;
 }
@@ -199,14 +195,12 @@ std::vector<GenericProperty> SoilDSI::get_required_properties(const std::vector<
 
 	std::vector<GenericProperty> required_capabilities;
 
-	const auto count =
-		Deserializer::read_uint8_t(payload,
-								   SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET + offset);
+	const auto count = Deserializer::read_uint8_t(payload, offset);
 	;
 	required_capabilities.reserve(count);
 
 	for (std::size_t i = 0; i < count; ++i) {
-		const auto property_offset = SoilSRI::Layout::RequiredCapabilitiesData::OFFSET + offset
+		const auto property_offset = offset + SoilSRI::Layout::RequiredCapabilitiesCount::SIZE
 			+ i * PropertiesSRI::Layout::TOTAL_SIZE;
 
 		required_capabilities.push_back(PropertiesDSI::deserialize(payload, property_offset));
@@ -216,12 +210,14 @@ std::vector<GenericProperty> SoilDSI::get_required_properties(const std::vector<
 }
 
 SoilDSI::Models::Soil SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Models::Soil{get_damage(payload, offset),
-						get_movement_cost(payload, offset),
-						get_id(payload, offset),
-						get_radius(payload, offset),
-						get_position(payload, offset),
-						get_type(payload, offset),
-						get_soil_properties(payload, offset),
-						get_required_properties(payload, offset)};
+	return Models::Soil{
+		get_damage(payload, offset + SoilSRI::Layout::HasDamage::OFFSET),
+		get_movement_cost(payload, offset + SoilSRI::Layout::HasMovementCost::OFFSET),
+		get_id(payload, offset + SoilSRI::Layout::Id::OFFSET),
+		get_radius(payload, offset + SoilSRI::Layout::Radius::OFFSET),
+		get_position(payload, offset + SoilSRI::Layout::Position::OFFSET),
+		get_type(payload, offset + SoilSRI::Layout::Type::OFFSET),
+		get_soil_properties(payload, offset + SoilSRI::Layout::PropertiesCount::OFFSET),
+		get_required_properties(payload,
+								offset + SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET)};
 }

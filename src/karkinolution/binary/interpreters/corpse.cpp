@@ -55,28 +55,28 @@ std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(BaseIdType id) {
 
 // DSI implementations
 BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Deserializer::deserialize<BaseIdType>(payload, CorpseSRI::Layout::Id::OFFSET + offset);
+	return Deserializer::deserialize<BaseIdType>(payload, offset);
 }
 
 RawMeat CorpseDSI::get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset) {
-	return RawMeat(Deserializer::read_float(payload, CorpseSRI::Layout::RawMeat::OFFSET + offset));
+	return RawMeat(Deserializer::read_float(payload, offset));
 }
 
 Vec3 CorpseDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
-	return VecDSI::get_vec(payload, CorpseSRI::Layout::PositionX::OFFSET + offset);
+	return VecDSI::get_vec(payload, offset);
 }
 
 Size CorpseDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
-	return UnitsDSI::deserialize_size(payload, CorpseSRI::Layout::Lateral::OFFSET + offset);
+	return UnitsDSI::deserialize_size(payload, offset);
 }
 
 CorpseDSI::Models::Corpse CorpseDSI::get_corpse(const std::vector<std::byte> &payload,
 												std::size_t                   offset) {
 	return Models::Corpse{
-		.id       = get_id(payload, offset),
-		.raw_meat = get_raw_meat(payload, offset),
-		.position = get_position(payload, offset),
-		.size     = get_size(payload, offset),
+		.id       = get_id(payload, offset + CorpseSRI::Layout::Id::OFFSET),
+		.raw_meat = get_raw_meat(payload, offset + CorpseSRI::Layout::RawMeat::OFFSET),
+		.position = get_position(payload, offset + CorpseSRI::Layout::PositionX::OFFSET),
+		.size     = get_size(payload, offset + CorpseSRI::Layout::Lateral::OFFSET),
 	};
 }
 
