@@ -1,7 +1,17 @@
+If:
+  PathMatch: src/karkinolution/.*
+  PathExclude: src/karkinolution/view/.*
+
 CompileFlags:
   CompilationDatabase: build
-  Add:
-    - -std=c++23
 
 Diagnostics:
   UnusedIncludes: None
+
+---
+
+If:
+  PathMatch: src/karkinolution/view/.*
+
+CompileFlags:
+  CompilationDatabase: build-view
