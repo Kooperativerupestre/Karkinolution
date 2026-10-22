@@ -13,3 +13,6 @@
 [submodule "dependencies/raylib"]
 	path = dependencies/raylib
 	url = https://github.com/raysan5/raylib.git
+[submodule "dependencies/raygui"]
+	path = dependencies/raygui
+	url = https://github.com/raysan5/raygui.git

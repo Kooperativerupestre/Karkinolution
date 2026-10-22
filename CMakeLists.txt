@@ -51,6 +51,11 @@ if (KARKINOLUTION_BUILD_VIEW)
     add_subdirectory(
         "${CMAKE_SOURCE_DIR}/dependencies/raylib"
     )
+
+    add_library(raygui INTERFACE)
+    target_include_directories(raygui INTERFACE
+        "${CMAKE_SOURCE_DIR}/dependencies/raygui/src"
+    )
 endif ()
 
 # ---------------- Sanitizers ----------------
@@ -119,6 +124,7 @@ if (KARKINOLUTION_BUILD_VIEW)
     target_link_libraries(karkinolution_view PRIVATE
         karkinolution
         raylib
+        raygui
     )
 endif ()
 

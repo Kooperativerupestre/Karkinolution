@@ -55,3 +55,14 @@ dependencies/raylib/LICENSE
 Raylib repository:
 https://github.com/raysan5/raylib
 
+Raygui
+
+Raygui is distributed under the zlib License.
+Copyright (c) 2014-2026 Ramon Santamaria (@raysan5).
+
+The full license text is available in the Raygui distribution:
+dependencies/raygui/LICENSE
+
+Raygui repository:
+https://github.com/raysan5/raygui
+
