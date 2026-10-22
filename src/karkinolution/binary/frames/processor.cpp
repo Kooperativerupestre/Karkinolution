@@ -1,7 +1,7 @@
 #include "karkinolution/api/creature.hpp"
 #include "karkinolution/binary/binary_validators.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
+#include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/networking/api_adapter/corpse.hpp"
 
@@ -20,10 +20,10 @@ ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World 
 		static_cast<uint8_t>(resource));
 
 
-	if (sub_type == Frames::Types::BinarySubTypes::Request::SEE) {
-		if (resource == Frames::Types::RequestResource::CREATURE) {
+	if (sub_type == RequestSubTypes::SEE) {
+		if (resource == RequestResource::CREATURE) {
 			return CreatureAPIBYA::see_creature(world, frame.id, frame.payload);
-		} else if (resource == Frames::Types::RequestResource::CORPSE) {
+		} else if (resource == RequestResource::CORPSE) {
 			return CorpseAPIBYA::see_corpse(world, frame.id, frame.payload);
 		}
 	}
@@ -32,6 +32,6 @@ ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World 
 	throw SimulationError(
 		std::format("Unreachable: The validation before the process in the frame processor "
 					"must treat this case: request sub type {} and request resource {}",
-					static_cast<Frames::Types::FrameSubType>(sub_type),
-					static_cast<Frames::Types::RequestResourceEnumType>(resource)));
+					static_cast<FrameSubTypeEnumType>(sub_type),
+					static_cast<RequestResourceEnumType>(resource)));
 }

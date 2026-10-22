@@ -1,5 +1,5 @@
 #include "karkinolution/binary/frames/parser.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
+#include "karkinolution/binary/protocol/layouts.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"

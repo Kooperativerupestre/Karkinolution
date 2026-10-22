@@ -2,7 +2,7 @@
 
 #include "karkinolution/binary/core_aliases.hpp"
 
-inline constexpr Frames::Types::RequestId GENERIC_INTERPRETER_ID = 45;
+inline constexpr RequestId GENERIC_INTERPRETER_ID = 45;
 
 /*
  * This ID is reserved for generic interpreters.

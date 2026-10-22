@@ -2,15 +2,15 @@
 #include "karkinolution/binary/frames/parser.hpp"
 
 #include <deque>
-#include <karkinolution/binary/message_type_size.hpp>
+#include <karkinolution/binary/protocol/layouts.hpp>
 #include <optional>
 #include <vector>
 inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 4096;
 
 
 using BufferExistence = Frames::Parser::FrameFieldExistence;
-using BinaryTypes     = Frames::Types::BinaryTypes;
-using CodeSubTypes    = Frames::Types::BinarySubTypes::CodeSubTypes;
+using BinaryTypes     = Karkinolution::Binary::Protocol::Types::BinaryTypes;
+using CodeSubTypes    = Karkinolution::Binary::Protocol::Types::BinarySubTypes::CodeSubTypes;
 
 /*
 Why is this used by Client and ProtocolSession (Server side)
@@ -108,9 +108,10 @@ class RawFrameBuffer {
 		}
 };
 
-inline constexpr std::size_t MAX_PAYLOAD_BYTES =
-	std::min(static_cast<std::size_t>(UINT32_MAX) - Frames::FieldsBytes::MESSAGE_HEADER_BYTES,
-			 MAX_RAW_FRAME_BUFFER_SIZE - Frames::FieldsBytes::MESSAGE_HEADER_BYTES);
+inline constexpr std::size_t MAX_PAYLOAD_BYTES = std::min(
+	static_cast<std::size_t>(UINT32_MAX)
+		- Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE,
+	MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE);
 
 namespace FrameBufferAnalyzer {
 

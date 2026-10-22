@@ -3,7 +3,6 @@
 
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/interpreters/error.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/binary/serializer.hpp"
 
 #include <format>

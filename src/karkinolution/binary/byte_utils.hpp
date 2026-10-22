@@ -5,7 +5,8 @@
 #include <cstddef>
 #include <deque>
 #include <format>
-#include <karkinolution/binary/message_type_size.hpp>
+#include <karkinolution/binary/protocol/aliases.hpp>
+#include <karkinolution/binary/protocol/contract.hpp>
 #include <karkinolution/core/error.hpp>
 #include <vector>
 
@@ -31,22 +32,24 @@ namespace BinaryUtils {
 		}
 	}
 
-	uint8_t constexpr cast_numeric(Frames::Types::RequestResource resource) {
+	uint8_t constexpr cast_numeric(
+		Karkinolution::Binary::Protocol::Types::RequestResource resource) {
 		return static_cast<uint8_t>(resource);
 	}
 
-	uint8_t constexpr cast_numeric(Frames::Types::BinaryTypes type) {
+	uint8_t constexpr cast_numeric(Karkinolution::Binary::Protocol::Types::BinaryTypes type) {
 		return static_cast<uint8_t>(type);
 	}
 
-	uint8_t constexpr cast_numeric(Frames::Types::BinarySubTypes::CodeSubTypes sub_type) {
-		if (std::holds_alternative<Frames::Types::BinarySubTypes::Request>(sub_type)) {
-			return static_cast<uint8_t>(std::get<Frames::Types::BinarySubTypes::Request>(sub_type));
-		} else if (std::holds_alternative<Frames::Types::BinarySubTypes::Error>(sub_type)) {
-			return static_cast<uint8_t>(std::get<Frames::Types::BinarySubTypes::Error>(sub_type));
-		} else if (std::holds_alternative<Frames::Types::BinarySubTypes::Response>(sub_type)) {
-			return static_cast<uint8_t>(
-				std::get<Frames::Types::BinarySubTypes::Response>(sub_type));
+	uint8_t constexpr cast_numeric(
+		Karkinolution::Binary::Protocol::Types::BinarySubTypes::CodeSubTypes sub_type) {
+		using namespace Karkinolution::Binary::Protocol::Types::BinarySubTypes;
+		if (std::holds_alternative<Request>(sub_type)) {
+			return static_cast<uint8_t>(std::get<Request>(sub_type));
+		} else if (std::holds_alternative<Error>(sub_type)) {
+			return static_cast<uint8_t>(std::get<Error>(sub_type));
+		} else if (std::holds_alternative<Response>(sub_type)) {
+			return static_cast<uint8_t>(std::get<Response>(sub_type));
 		}
 		throw ByteError("Invalid sub type");
 	}
@@ -90,23 +93,23 @@ namespace BinaryUtils {
 		bytes[offset] = value;
 	}
 
-
 } // namespace BinaryUtils
 
 namespace BinaryNLTUtils {
-	template <typename T> constexpr Frames::Types::BinaryNLT get() {
-		if constexpr (std::is_same<T, float>()) {
-			return Frames::Types::BinaryNLT::FLOAT;
-		} else if constexpr (std::is_same<T, double>()) {
-			return Frames::Types::BinaryNLT::DOUBLE;
-		} else if constexpr (std::is_same<T, uint8_t>()) {
-			return Frames::Types::BinaryNLT::UINT8_T;
-		} else if constexpr (std::is_same<T, uint32_t>()) {
-			return Frames::Types::BinaryNLT::UINT32_T;
-		} else if constexpr (std::is_same<T, uint64_t>()) {
-			return Frames::Types::BinaryNLT::UINT64_T;
-		} else if constexpr (std::is_same<T, int>()) {
-			return Frames::Types::BinaryNLT::INT;
+	template <typename T> constexpr Karkinolution::Binary::Protocol::Types::BinaryNLT get() {
+		using Karkinolution::Binary::Protocol::Types::BinaryNLT;
+		if constexpr (std::is_same_v<T, float>) {
+			return BinaryNLT::FLOAT;
+		} else if constexpr (std::is_same_v<T, double>) {
+			return BinaryNLT::DOUBLE;
+		} else if constexpr (std::is_same_v<T, uint8_t>) {
+			return BinaryNLT::UINT8_T;
+		} else if constexpr (std::is_same_v<T, uint32_t>) {
+			return BinaryNLT::UINT32_T;
+		} else if constexpr (std::is_same_v<T, uint64_t>) {
+			return BinaryNLT::UINT64_T;
+		} else if constexpr (std::is_same_v<T, int>) {
+			return BinaryNLT::INT;
 		}
 
 		throw ByteError(

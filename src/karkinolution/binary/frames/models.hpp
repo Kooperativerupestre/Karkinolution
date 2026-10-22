@@ -7,16 +7,16 @@
 namespace Frames {
 	namespace Models {
 		struct Request {
-				Frames::Types::FrameDeclaredSize       size;
-				Frames::Types::RequestId               id;
-				Frames::Types::BinarySubTypes::Request sub_type;
-				std::vector<std::byte>                 payload;
-				Frames::Types::RequestResource         resource;
+				FrameDeclaredSizeType  size;
+				RequestId              id;
+				RequestSubTypes        sub_type;
+				std::vector<std::byte> payload;
+				RequestResource        resource;
 		};
 
 		struct ResponseGeneric {
 				std::uint32_t                                 size;
-				Frames::Types::RequestId                      request_id;
+				RequestId                                     request_id;
 				std::variant<ErrorSubTypes, ResponseSubTypes> sub_type;
 				std::vector<std::byte>                        payload;
 				BinaryTypes                                   type;
@@ -50,16 +50,15 @@ namespace Frames {
 			private:
 
 				std::variant<Request, ResponseGeneric> data_;
-				Frames::Types::BinaryTypes             type_;
+				BinaryTypes                            type_;
 
 			public:
 
-				GenericFrame(std::variant<Request, ResponseGeneric> data,
-							 Frames::Types::BinaryTypes             type)
+				GenericFrame(std::variant<Request, ResponseGeneric> data, BinaryTypes type)
 					: data_(data)
 					, type_(type) {}
 
-				Frames::Types::BinaryTypes type() const noexcept {
+				BinaryTypes type() const noexcept {
 					return type_;
 				}
 
@@ -67,5 +66,6 @@ namespace Frames {
 					return data_;
 				}
 		};
+
 	} // namespace Models
 } // namespace Frames

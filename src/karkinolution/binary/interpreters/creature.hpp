@@ -1,7 +1,6 @@
 #pragma once
 
 #include "karkinolution/binary/fields.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"

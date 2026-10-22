@@ -2,7 +2,6 @@
 
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/identity.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/math/units.hpp"

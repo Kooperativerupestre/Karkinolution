@@ -14,7 +14,6 @@
 #include <asio/strand.hpp>
 #include <atomic>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/message_type_size.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <string>
 inline constexpr std::size_t MAX_TEMPORARY_RESPONSE_SIZE = 4096;

@@ -1,4 +1,3 @@
-#include "karkinolution/binary/message_type_size.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 
 #include <iomanip>

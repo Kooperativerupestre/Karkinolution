@@ -1,19 +1,21 @@
 #pragma once
-#include <karkinolution/binary/message_type_size.hpp>
+#include <karkinolution/binary/protocol/aliases.hpp>
+#include <karkinolution/binary/protocol/contract.hpp>
+#include <karkinolution/binary/protocol/layouts.hpp>
 
-using Frames::Types::BinaryTypes;
-using Frames::Types::RequestId;
-using RequestSubTypes         = Frames::Types::BinarySubTypes::Request;
-using RequestSubTypes         = Frames::Types::BinarySubTypes::Request;
-using ResponseSubTypes        = Frames::Types::BinarySubTypes::Response;
-using ErrorSubTypes           = Frames::Types::BinarySubTypes::Error;
-using BinaryTypes             = Frames::Types::BinaryTypes;
-using RequestId               = Frames::Types::RequestId;
-using GenericResponseSubTypes = Frames::Types::BinarySubTypes::GenericResponseSubType;
-using Frames::Types::RequestResource;
+namespace ProtocolLayout = Karkinolution::Binary::Protocol::Layout;
 
-using FrameDeclaredSizeType    = Frames::Types::FrameDeclaredSize;
-using FrameBinaryTypesEnumType = Frames::Types::BinaryTypesEnumType;
-using FrameSubTypeEnumType     = Frames::Types::BinarySubTypesEnumType;
-using RequestResourceEnumType  = Frames::Types::RequestResourceEnumType;
-using Frames::Types::BinaryNLT;
+using Karkinolution::Binary::Protocol::Aliases::RequestId;
+using Karkinolution::Binary::Protocol::Types::BinaryTypes;
+using RequestSubTypes  = Karkinolution::Binary::Protocol::Types::BinarySubTypes::Request;
+using ResponseSubTypes = Karkinolution::Binary::Protocol::Types::BinarySubTypes::Response;
+using ErrorSubTypes    = Karkinolution::Binary::Protocol::Types::BinarySubTypes::Error;
+using GenericResponseSubTypes =
+	Karkinolution::Binary::Protocol::Types::BinarySubTypes::GenericResponseSubType;
+using Karkinolution::Binary::Protocol::Types::RequestResource;
+
+using FrameDeclaredSizeType    = Karkinolution::Binary::Protocol::Aliases::FrameDeclaredSize;
+using FrameBinaryTypesEnumType = Karkinolution::Binary::Protocol::Aliases::BinaryTypesEnumType;
+using FrameSubTypeEnumType     = Karkinolution::Binary::Protocol::Aliases::BinarySubTypesEnumType;
+using RequestResourceEnumType  = Karkinolution::Binary::Protocol::Aliases::RequestResourceEnumType;
+using Karkinolution::Binary::Protocol::Types::BinaryNLT;

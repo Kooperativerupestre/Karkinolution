@@ -1,5 +1,5 @@
 #include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
+#include "karkinolution/binary/protocol/layouts.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/generic_id.hpp"
 
@@ -14,8 +14,7 @@ World TestUtils::make_small_world() {
 	return WorldFactory::create_world(preset);
 }
 
-std::vector<std::byte> TestUtils::make_see_creature_frame(Frames::Types::RequestId id,
-														  BaseIdType               creature_id)
+std::vector<std::byte> TestUtils::make_see_creature_frame(RequestId id, BaseIdType creature_id)
 
 {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);

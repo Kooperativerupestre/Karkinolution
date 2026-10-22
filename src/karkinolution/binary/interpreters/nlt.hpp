@@ -1,14 +1,14 @@
 #pragma once
 #include <bit>
 #include <cstdint>
-#include <karkinolution/binary/message_type_size.hpp>
+#include <karkinolution/binary/protocol/contract.hpp>
 
 namespace Karkinolution {
 	namespace Binary {
 		namespace Interpreters {
 			namespace SRI {
 				namespace NLT {
-					constexpr std::byte serialize_nlt_type(Frames::Types::BinaryNLT type) {
+					constexpr std::byte serialize_nlt_type(Protocol::Types::BinaryNLT type) {
 						return static_cast<std::byte>(static_cast<std::uint8_t>(type));
 					}
 				} // namespace NLT

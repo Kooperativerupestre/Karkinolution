@@ -14,7 +14,7 @@ How do I compile? [Commands](../../../docs/commands.md)
 
 # What is the protocol?
 
-[Protocol](../binary/message_type_size.hpp)
+[Protocol](../binary/protocol/contract.hpp)
 
 # Does the server stay alive if the client disconnects?
 

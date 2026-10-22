@@ -3,7 +3,7 @@
 #include "karkinolution/binary/binary_validators.hpp"
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/fields.hpp"
-#include "karkinolution/binary/message_type_size.hpp"
+#include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/math/stats/compile_values.hpp"
 
@@ -122,9 +122,9 @@ namespace Karkinolution {
 			namespace DSI {
 				namespace Stats {
 
-					inline Frames::Types::BinaryNLT get_type(const std::vector<std::byte> &payload,
-															 std::size_t                   offset) {
-						return static_cast<Frames::Types::BinaryNLT>(
+					inline Protocol::Types::BinaryNLT
+					get_type(const std::vector<std::byte> &payload, std::size_t offset) {
+						return static_cast<Protocol::Types::BinaryNLT>(
 							Deserializer::read_uint8_t(payload,
 													   offset + SRI::Stats::Layout::Type::OFFSET));
 					}
