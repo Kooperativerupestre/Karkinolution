@@ -6,10 +6,18 @@ workflow:
   required_reading:
     - file: "CONTRIBUTING.md"
       purpose: "Commit message conventions: type(scope): imperative description."
-    - file: "docs/currently_architecture.md"
+    - file: "docs/rules.md"
       purpose: "Core architectural boundaries, naming, model/physiology/motor, comments, doc standards."
+    - file: "docs/commands.md"
+      purpose: "Presets and build/test/run commands."
     - file: "docs/skills/"
       purpose: "Operational skills that govern development and agent behavior."
+  principles:
+    - rule: "Document every architectural or protocol decision in the relevant documentation file before or alongside code implementation."
+    - rule: "Read and modify one file at a time rather than mass-reading entire directory trees."
+    - rule: "Always separate tests into distinct files when testing different domain levels or concerns."
+    - rule: "Run code quality formatting and tidy fixes on modified files prior to finalizing changes."
+    - rule: "Comments must be concise; never use decorative ASCII banners or decorative separators."
 
 # Hard agent boundaries that cannot be violated
 boundaries:
