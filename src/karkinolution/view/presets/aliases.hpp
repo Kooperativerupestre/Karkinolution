@@ -2,5 +2,8 @@
 #include <karkinolution/view/presets/grid.hpp>
 #include <karkinolution/view/presets/screen.hpp>
 
-using GridPreset   = KarkinolutionView::Presets::Grid;
-using ScreenPreset = KarkinolutionView::Presets::Screen;
+namespace KPresets {
+	using Grid   = KarkinolutionView::Presets::Grid;
+	using Screen = KarkinolutionView::Presets::Screen;
+
+} // namespace KPresets
