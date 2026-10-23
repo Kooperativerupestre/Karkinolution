@@ -15,3 +15,11 @@ If:
 
 CompileFlags:
   CompilationDatabase: build-view
+
+Diagnostics:
+  UnusedIncludes: None
+
+---
+
+Index:
+  Background: Build
