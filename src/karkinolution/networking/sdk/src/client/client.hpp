@@ -85,20 +85,14 @@ namespace KarkinolutionSDK {
 		class Client {
 			public:
 
-				explicit Client(IoContext &io,
-								Config     config       = {},
-								const std::string &name = "Client")
+				explicit Client(IoContext         &io,
+								Config             config = {},
+								const std::string &name   = "Client")
 					: io_context_(io)
 					, socket_(io_context_)
 					, strand_(asio::make_strand(io_context_))
 					, config(config) {
 					creation_number = client_count.fetch_add(1);
-				}
-
-				~Client() {
-					stop_new_async_operations();
-					disconnect();
-					wait_until_zero_async_operations();
 				}
 
 				void connect();
