@@ -126,11 +126,11 @@ class TestRepositoryPresets(unittest.TestCase):
 
         self.assertEqual(len(directories), len(set(directories)))
 
-    def test_debug_preset_builds_into_build_with_clang(self) -> None:
+    def test_debug_preset_builds_into_build_with_clang_21(self) -> None:
         resolved = resolve_preset("debug", self.presets)
 
         self.assertEqual(binary_dir("debug", resolved, REPOSITORY_ROOT), REPOSITORY_ROOT / "build")
-        self.assertEqual(cache_value(resolved, "CMAKE_CXX_COMPILER"), "clang++")
+        self.assertEqual(cache_value(resolved, "CMAKE_CXX_COMPILER"), "clang++-21")
         self.assertEqual(cache_value(resolved, "CMAKE_BUILD_TYPE"), "Debug")
 
 
