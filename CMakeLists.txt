@@ -56,6 +56,28 @@ if (KARKINOLUTION_BUILD_VIEW)
     target_include_directories(raygui INTERFACE
         "${CMAKE_SOURCE_DIR}/dependencies/raygui/src"
     )
+
+    add_library(imgui STATIC
+        "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui.cpp"
+        "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui_demo.cpp"
+        "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui_draw.cpp"
+        "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui_tables.cpp"
+        "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui_widgets.cpp"
+    )
+    target_include_directories(imgui PUBLIC
+        "${CMAKE_SOURCE_DIR}/dependencies/imgui"
+    )
+
+    add_library(rlImGui STATIC
+        "${CMAKE_SOURCE_DIR}/dependencies/rlImGui/rlImGui.cpp"
+    )
+    target_include_directories(rlImGui PUBLIC
+        "${CMAKE_SOURCE_DIR}/dependencies/rlImGui"
+    )
+    target_link_libraries(rlImGui PUBLIC
+        imgui
+        raylib
+    )
 endif ()
 
 # ---------------- Sanitizers ----------------
@@ -125,6 +147,8 @@ if (KARKINOLUTION_BUILD_VIEW)
         karkinolution
         raylib
         raygui
+        imgui
+        rlImGui
     )
 endif ()
 
