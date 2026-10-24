@@ -1,5 +1,10 @@
 
 
+#include "karkinolution/networking/sdk/src/client/client.hpp"
+
+#include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/core/error.hpp"
+
 #include <karkinolution/view/client/client.hpp>
 
 bool KarkinolutionView::Client::Client::is_connected() {
@@ -22,11 +27,10 @@ bool KarkinolutionView::Client::Client::disconnect() {
 	return !client->is_connected();
 }
 
-KarkinolutionView::Client::InternalClientGuard
-KarkinolutionView::Client::Client::get_client_guard() {
-	return {client.value()};
+KarkinolutionSDK::Client::Client &KarkinolutionView::Client::Client::get_client() {
+	return *client;
 }
 
-void KarkinolutionView::Client::InternalClientGuard::finish() {
-	// World::sync(client)
+const KarkinolutionSDK::Client::Client &KarkinolutionView::Client::Client::get_client() const {
+	return *client;
 }

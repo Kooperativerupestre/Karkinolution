@@ -1,22 +1,12 @@
 #pragma once
 
 
+#include "karkinolution/binary/frames/aliases.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 
 namespace KarkinolutionView {
 	namespace Client {
-		class InternalClientGuard {
-			public:
 
-				KarkinolutionSDK::Client::Client &client;
-
-				InternalClientGuard(KarkinolutionSDK::Client::Client &client)
-					: client(client) {}
-
-				~InternalClientGuard() = default;
-
-				void finish();
-		};
 
 		class Client {
 			private:
@@ -42,10 +32,11 @@ namespace KarkinolutionView {
 					runner.join();
 				}
 
-				bool                is_connected();
-				bool                connect();
-				bool                disconnect();
-				InternalClientGuard get_client_guard();
+				bool                                    is_connected();
+				bool                                    connect();
+				bool                                    disconnect();
+				KarkinolutionSDK::Client::Client       &get_client();
+				const KarkinolutionSDK::Client::Client &get_client() const;
 		};
 	} // namespace Client
 } // namespace KarkinolutionView
