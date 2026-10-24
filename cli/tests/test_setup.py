@@ -23,12 +23,28 @@ RESOLVED = {
     "cacheVariables": {"CMAKE_C_COMPILER": "clang", "CMAKE_CXX_COMPILER": "clang++"},
 }
 
+RESOLVED_WITH_VIEW = {
+    **RESOLVED,
+    "cacheVariables": {**RESOLVED["cacheVariables"], "KARKINOLUTION_BUILD_VIEW": True},
+}
+
 GITMODULES = """[submodule "dependencies/FastNoise2"]
 \tpath = dependencies/FastNoise2
 \turl = https://example.com/FastNoise2.git
 [submodule "dependencies/asio"]
 \tpath = dependencies/asio
 \turl = https://example.com/asio.git
+"""
+
+VIEW_ONLY_GITMODULES = """[submodule "dependencies/raylib"]
+\tpath = dependencies/raylib
+\turl = https://example.com/raylib.git
+[submodule "dependencies/imgui"]
+\tpath = dependencies/imgui
+\turl = https://example.com/imgui.git
+[submodule "dependencies/rlImGui"]
+\tpath = dependencies/rlImGui
+\turl = https://example.com/rlImGui.git
 """
 
 
@@ -76,6 +92,28 @@ class TestSubmodules(unittest.TestCase):
         self.assertEqual(
             required_submodules(self.root, RESOLVED),
             ["dependencies/FastNoise2", "dependencies/asio"],
+        )
+
+    def test_view_only_submodules_are_skipped_when_the_view_is_off(self) -> None:
+        (self.root / ".gitmodules").write_text(GITMODULES + VIEW_ONLY_GITMODULES)
+
+        self.assertEqual(
+            required_submodules(self.root, RESOLVED),
+            ["dependencies/FastNoise2", "dependencies/asio"],
+        )
+
+    def test_view_only_submodules_are_required_when_the_view_is_on(self) -> None:
+        (self.root / ".gitmodules").write_text(GITMODULES + VIEW_ONLY_GITMODULES)
+
+        self.assertEqual(
+            required_submodules(self.root, RESOLVED_WITH_VIEW),
+            [
+                "dependencies/FastNoise2",
+                "dependencies/asio",
+                "dependencies/raylib",
+                "dependencies/imgui",
+                "dependencies/rlImGui",
+            ],
         )
 
     def test_empty_or_absent_submodule_directories_are_reported_with_exact_fix(self) -> None:
