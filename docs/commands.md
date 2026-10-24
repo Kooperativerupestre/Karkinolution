@@ -8,7 +8,7 @@ Append `--parallel $(nproc)` to any build command for parallel compilation.
 | Preset | Build directory | Purpose |
 |---|---|---|
 | `debug` | `build` | Everyday development (`clang`) |
-| `view-debug` | `build-view` | Debug with `karkinolution_view`, raylib, raygui, imgui, and rlImGui |
+| `view-debug` | `build-view` | Debug with `karkinolution_view`, raylib, imgui, and rlImGui |
 | `release` | `build-release` | Optimized build (includes server and `karkinolution_view`) |
 | `native` | `build-native` | Optimized with `-march=native` (includes server and `karkinolution_view`). Benchmarking only, not portable. |
 | `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
@@ -26,7 +26,7 @@ cmake --preset debug
 cmake --build --preset debug
 ```
 
-FastNoise2, asio, GoogleTest, magic_enum, raylib, raygui, imgui, and rlImGui are submodules; raygui, imgui, and rlImGui are enabled together with raylib for view presets. See [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
+FastNoise2, asio, GoogleTest, magic_enum, raylib, imgui, and rlImGui are submodules; imgui and rlImGui are enabled together with raylib for view presets. See [`HOW_TO_RUN.md`](../HOW_TO_RUN.md).
 
 ### Run
 

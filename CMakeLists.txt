@@ -52,11 +52,6 @@ if (KARKINOLUTION_BUILD_VIEW)
         "${CMAKE_SOURCE_DIR}/dependencies/raylib"
     )
 
-    add_library(raygui INTERFACE)
-    target_include_directories(raygui INTERFACE
-        "${CMAKE_SOURCE_DIR}/dependencies/raygui/src"
-    )
-
     add_library(imgui STATIC
         "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui.cpp"
         "${CMAKE_SOURCE_DIR}/dependencies/imgui/imgui_demo.cpp"
@@ -146,7 +141,6 @@ if (KARKINOLUTION_BUILD_VIEW)
     target_link_libraries(karkinolution_view PRIVATE
         karkinolution
         raylib
-        raygui
         imgui
         rlImGui
     )
