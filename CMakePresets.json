@@ -15,16 +15,9 @@
       "name": "clang",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
-    },
-    {
-      "name": "clang-21",
-      "hidden": true,
-      "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-21",
-        "CMAKE_CXX_COMPILER": "clang++-21"
+        "CMAKE_CXX_COMPILER": "clang++-21",
+        "CMAKE_CXX_FLAGS": "-stdlib=libstdc++ --gcc-toolchain=/usr"
       }
     },
     {
@@ -54,7 +47,7 @@
       "hidden": true,
       "inherits": [
         "base",
-        "clang-21",
+        "clang",
         "ccache"
       ],
       "cacheVariables": {

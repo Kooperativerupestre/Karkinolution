@@ -6,7 +6,6 @@
 #include "karkinolution/view/world/queriers/creature.hpp"
 
 #include <algorithm>
-#include <inplace_vector>
 #include <karkinolution/view/world/queriers/corpse.hpp>
 #include <karkinolution/view/world/world.hpp>
 

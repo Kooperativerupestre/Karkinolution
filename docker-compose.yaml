@@ -12,8 +12,8 @@ services:
       - karkinolution-build:/workspace/build
       - karkinolution-ccache:/ccache
     environment:
-      CC: clang
-      CXX: clang++
+      CC: clang-21
+      CXX: clang++-21
       CCACHE_DIR: /ccache
     command: bash
 

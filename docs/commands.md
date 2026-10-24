@@ -127,7 +127,10 @@ docker build -f Dockerfile.ci -t karkinolution-ci .
 
 ### Configure, build, test
 
-The CI presets use `clang-21` and ccache, which are installed in the image.
+The project toolchain is C++26 with Clang 21 and GCC 16's libstdc++. The CI
+presets use `clang-21` and ccache, which are installed in the image; the
+presets explicitly select libstdc++ through `-stdlib=libstdc++
+--gcc-toolchain=/usr`.
 
 ```bash
 docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci cmake --preset ci
@@ -150,7 +153,8 @@ docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci ctest --pres
 ```bash
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \
   cmake -S /workspace -B /workspace/build-valgrind -G Ninja \
-  -DCMAKE_C_COMPILER=gcc-15 -DCMAKE_CXX_COMPILER=g++-15 \
+  -DCMAKE_C_COMPILER=clang-21 -DCMAKE_CXX_COMPILER=clang++-21 \
+  -DCMAKE_CXX_FLAGS="-stdlib=libstdc++ --gcc-toolchain=/usr" \
   -DCMAKE_BUILD_TYPE=Debug
 
 docker run --rm -v "$PWD:/workspace" karkinolution-ci \

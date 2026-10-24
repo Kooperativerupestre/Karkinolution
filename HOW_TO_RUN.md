@@ -7,13 +7,24 @@ Run every command from the repository root. This page covers the first run. The 
 
 * CMake 3.28 or newer
 * Ninja
-* A C++23 compiler. The presets use `clang` and `clang++` from your `PATH`.
+* Clang 21 with GCC 16's libstdc++ headers and libraries. The presets select
+  `clang-21` and configure `-stdlib=libstdc++ --gcc-toolchain=/usr`.
 * Git
 * [`uv`](https://docs.astral.sh/uv/), only if you use the CLI
 * Network access on the first configure (see [What CMake downloads for you](#what-cmake-downloads-for-you))
 * Pass this requirements file [requirements.hpp](src/karkinolution/core/requirements.hpp)
 
 ## 1. Get the code
+
+The official project toolchain is C++26, Clang 21, and libstdc++ 16. Verify
+that Clang selects GCC 16 before configuring:
+
+```bash
+clang++-21 -std=c++26 -E -x c++ /dev/null -v
+find /usr/include/c++ -name inplace_vector
+printf '#include <inplace_vector>\nint main() { std::inplace_vector<int, 1> values; }\n' | \
+  clang++-21 --gcc-toolchain=/usr -stdlib=libstdc++ -std=c++26 -x c++ -fsyntax-only -
+```
 
 Seven dependencies are Git submodules, so a plain `git clone` is not enough:
 

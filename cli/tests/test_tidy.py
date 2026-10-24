@@ -14,7 +14,7 @@ class TestTidy(unittest.TestCase):
         tokens = [
             "/usr/bin/c++",
             "-g",
-            "-std=c++23",
+            "-std=c++26",
             "-fPIC",
             "-fmodules-ts",
             "-fmodule-mapper=CMakeFiles/target.dir/file.cpp.o.modmap",
@@ -28,7 +28,7 @@ class TestTidy(unittest.TestCase):
         self.assertNotIn("-fmodules-ts", filtered)
         self.assertNotIn("-fdeps-format=p1689r5", filtered)
         self.assertFalse(any(t.startswith("-fmodule-mapper=") for t in filtered))
-        self.assertIn("-std=c++23", filtered)
+        self.assertIn("-std=c++26", filtered)
         self.assertIn("-fPIC", filtered)
         self.assertIn("-c", filtered)
 
@@ -71,14 +71,14 @@ class TestTidy(unittest.TestCase):
             entries = [
                 {
                     "directory": "/workspace",
-                    "command": "/usr/bin/c++ -std=c++23 -fmodules-ts -fdeps-format=p1689r5 -I/workspace/dependencies/asio -c a.cpp",
+                    "command": "/usr/bin/c++ -std=c++26 -fmodules-ts -fdeps-format=p1689r5 -I/workspace/dependencies/asio -c a.cpp",
                     "file": "/workspace/a.cpp",
                 },
                 {
                     "directory": "/workspace",
                     "arguments": [
                         "/usr/bin/c++",
-                        "-std=c++23",
+                        "-std=c++26",
                         "-fmodule-mapper=test.modmap",
                         "-c",
                         "b.cpp",

@@ -204,3 +204,17 @@ Because when I was writing about Godot in 1.3 chapter, I hadn't worked with godo
 Raylib. I chose it because I needed an extensible UI that I could enhance whenever I wanted. I also considered ImGui, but it is too simple for what I need. From what I understood, Raylib offers OpenGL integration and more customizable components, while ImGui is more focused on and used for HUDs and debug interfaces, which is not my case — I needed an extensible interface so I could make it look better whenever I wanted, even if it means having more things on my hands.
 
 I added raygui because I did not want to reinvent GUI elements from scratch. That is not the project's main goal and doing so would significantly slow development.
+
+# 1.5 - C++26 toolchain
+
+## Why did I standardize on Clang 21 with GCC 16's libstdc++?
+
+The project now targets C++26, so the compiler and standard library must be
+selected as one tested toolchain. Clang 21 provides the project compiler while
+GCC 16 provides the libstdc++ implementation required by C++26 facilities such
+as `std::inplace_vector`. Docker and CI use the same combination and verify the
+selected GCC installation before building.
+
+`std::inplace_vector` is not being applied mechanically to existing vectors.
+The view's entity and patch collections still need explicit domain capacity
+decisions before they can safely use fixed-capacity storage.

@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y \
     clang-21 \
     clang-format-21 \
     clang-tidy-21 \
-    gcc-15 \
-    g++-15 \
+    gcc-16 \
+    g++-16 \
     cmake \
     ninja-build \
     ccache \
