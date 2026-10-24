@@ -66,3 +66,29 @@ dependencies/raygui/LICENSE
 Raygui repository:
 https://github.com/raysan5/raygui
 
+Dear ImGui v1.92.9b
+
+Dear ImGui is distributed under the MIT License.
+Copyright (c) 2014-2026 Omar Cornut.
+
+The full license text is available in the Dear ImGui distribution:
+dependencies/imgui/LICENSE.txt
+
+Dear ImGui repository:
+https://github.com/ocornut/imgui
+
+rlImGui
+
+rlImGui is distributed under the zlib License.
+Copyright (c) 2020-2021 Jeffery Myers.
+
+The full license text is available in the rlImGui distribution:
+dependencies/rlImGui/LICENSE
+
+rlImGui embeds Font Awesome Free font data, distributed under the SIL OFL 1.1 License (fonts) and the CC BY 4.0 License (icons).
+The license text is available in the rlImGui distribution:
+dependencies/rlImGui/extras/FontAwsome_LICENSE.txt
+
+rlImGui repository:
+https://github.com/raylib-extras/rlImGui
+

@@ -25,7 +25,7 @@ cd karkinolution
 Already cloned without `--recurse-submodules`:
 
 ```bash
-git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum dependencies/raylib dependencies/raygui
+git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum dependencies/raylib dependencies/raygui dependencies/imgui dependencies/rlImGui
 ```
 
 ## 2. Configure and build
@@ -112,6 +112,8 @@ Some dependencies arrive on their own at configure time, others do not.
 | magic_enum `v0.9.8` | Git submodule | Yes: `git submodule update --init` |
 | raylib | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
 | raygui | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
+| imgui `v1.92.9b` | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
+| rlImGui | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 
