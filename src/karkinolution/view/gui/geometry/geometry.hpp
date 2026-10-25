@@ -1,5 +1,10 @@
 #pragma once
+#include "karkinolution/math/stats/compile_values.hpp"
+
 #include <cmath>
+#include <functional>
+
+using namespace Karkinolution::Math::LV::CompileTime;
 
 namespace KarkinolutionView {
 	namespace Gui {
@@ -79,15 +84,25 @@ namespace KarkinolutionView {
 				return position * scalar;
 			}
 
+			struct Width : public GreaterThanZeroValue<double> {};
+
+			struct Height : public GreaterThanZeroValue<double> {};
+
+			struct Thickness : public GreaterThanZeroValue<double> {};
+
+			struct Row : public NonNegativeValue<int> {};
+
+			struct Column : public NonNegativeValue<int> {};
+
 			class Rectangle {
 				public:
 
 					Position position;
-					float    width{}, height{};
+					Width    width;
 
-					constexpr Rectangle() noexcept = default;
+					Height height;
 
-					constexpr Rectangle(Position position, float width, float height) noexcept
+					constexpr Rectangle(Position position, Width width, Height height) noexcept
 						: position(position)
 						, width(width)
 						, height(height) {}
@@ -97,8 +112,8 @@ namespace KarkinolutionView {
 					// Rectangle + Rectangle
 					constexpr Rectangle operator+(const Rectangle &other) const noexcept {
 						return {position + other.position,
-								width + other.width,
-								height + other.height};
+								Width{width + other.width},
+								Height{height + other.height}};
 					}
 
 					constexpr Rectangle &operator+=(const Rectangle &other) noexcept {
@@ -111,8 +126,8 @@ namespace KarkinolutionView {
 					// Rectangle - Rectangle
 					constexpr Rectangle operator-(const Rectangle &other) const noexcept {
 						return {position - other.position,
-								width - other.width,
-								height - other.height};
+								Width{width - other.width},
+								Height{height - other.height}};
 					}
 
 					constexpr Rectangle &operator-=(const Rectangle &other) noexcept {
@@ -124,7 +139,7 @@ namespace KarkinolutionView {
 
 					// Rectangle * scalar
 					constexpr Rectangle operator*(float scalar) const noexcept {
-						return {position * scalar, width * scalar, height * scalar};
+						return {position * scalar, Width{width * scalar}, Height{height * scalar}};
 					}
 
 					constexpr Rectangle &operator*=(float scalar) noexcept {
@@ -136,7 +151,7 @@ namespace KarkinolutionView {
 
 					// Rectangle / scalar
 					constexpr Rectangle operator/(float scalar) const {
-						return {position / scalar, width / scalar, height / scalar};
+						return {position / scalar, Width{width / scalar}, Height{height / scalar}};
 					}
 
 					constexpr Rectangle &operator/=(float scalar) {
@@ -153,7 +168,7 @@ namespace KarkinolutionView {
 
 					// Unary -
 					constexpr Rectangle operator-() const noexcept {
-						return {-position, -width, -height};
+						return {-position, Width{-width}, Height{-height}};
 					}
 			};
 

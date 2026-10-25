@@ -39,8 +39,10 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 			clamp();
 		}
 
-		constexpr explicit operator T() const {
-			return value();
+		template <typename U>
+			requires requires(T value) { static_cast<U>(value); }
+		constexpr explicit operator U() const {
+			return static_cast<U>(value());
 		}
 
 		constexpr T value() const {
@@ -124,6 +126,12 @@ template <typename Derived, typename T, T max, T min> class LimitedValue {
 		template <typename U> constexpr Derived operator/(U other) const {
 			Derived result = derived();
 			result /= other;
+			return result;
+		}
+
+		constexpr Derived operator-() const {
+			Derived result = derived();
+			result.set(-result.value());
 			return result;
 		}
 
@@ -254,3 +262,42 @@ class GenericLimitedValue : public LimitedValue<GenericLimitedValue<T, max, min>
 
 		using Base::Base;
 };
+
+namespace Karkinolution {
+	namespace Math {
+		namespace LV {
+			namespace CompileTime {
+				template <typename T>
+				class NonNegativeValue : public LimitedValue<NonNegativeValue<T>,
+															 T,
+															 std::numeric_limits<T>::max(),
+															 T{0}> {
+
+					public:
+
+						constexpr NonNegativeValue(T value)
+							: LimitedValue<NonNegativeValue<T>,
+										   T,
+										   std::numeric_limits<T>::max(),
+										   T{0}>{value} {}
+				};
+
+				template <typename T>
+				class GreaterThanZeroValue
+					: public LimitedValue<GreaterThanZeroValue<T>,
+										  T,
+										  std::numeric_limits<T>::max(),
+										  T{0 + std::numeric_limits<T>::epsilon() * 10}> {
+
+					public:
+
+						constexpr GreaterThanZeroValue(T value)
+							: LimitedValue<GreaterThanZeroValue<T>,
+										   T,
+										   std::numeric_limits<T>::max(),
+										   T{0 + std::numeric_limits<T>::epsilon() * 10}>{value} {}
+				};
+			} // namespace CompileTime
+		} // namespace LV
+	} // namespace Math
+} // namespace Karkinolution

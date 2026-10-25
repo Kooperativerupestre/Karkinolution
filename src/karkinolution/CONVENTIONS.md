@@ -48,3 +48,7 @@ Because there is no loss based on the biggest size of the territory and things. 
 | Non-type template parameters | `PascalCase` | `MaxSize` | |
 | Preprocessor macros | `UPPER_SNAKE_CASE` | `MAX_BUFFER_SIZE` | |
 | File names | `snake_case` | `creature_manager.cpp`, `creature_manager.hpp` | Applies to headers and source files. |
+
+# What is the ´LV´ on Karkinolution::Math::LV?
+
+LimitedValues
