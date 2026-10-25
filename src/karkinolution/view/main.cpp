@@ -2,6 +2,7 @@
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/gui/colors.hpp"
+#include "karkinolution/view/gui/components/button.hpp"
 #include "karkinolution/view/gui/components/grid.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 #include "karkinolution/view/screen.hpp"
@@ -14,16 +15,14 @@
 #include <karkinolution/view/presets/grid.hpp>
 #include <raylib.h>
 
-namespace GuiGeometry = KarkinolutionView::Gui::Geometry;
+namespace GuiGeometry   = KarkinolutionView::Gui::Geometry;
+namespace GuiComponents = KarkinolutionView::Gui::Components;
+namespace Colors        = Karkinolution::Colors;
 
 int main() {
 	KPresets::Screen screen_preset{.width = 800, .height = 450};
 
-	InitWindow(screen_preset.width, screen_preset.height, "Karkinolution");
-
-	SetTargetFPS(60);
-
-	rlImGuiSetup(true);
+	KarkinolutionView::Window::init_before_loop(screen_preset);
 
 	KarkinolutionView::Client::Client client;
 
@@ -31,21 +30,31 @@ int main() {
 
 	KarkinolutionView::Screen::StateView view{state};
 
+	const GuiComponents::Button connect_button{
+		.label = "Connect",
+		.style =
+			GuiComponents::ButtonStyle::from_base(Colors::Presets::Black, Colors::Presets::Yellow)};
+
+	const GuiComponents::Button disconnect_button{
+		.label = "Disconnect",
+		.style =
+			GuiComponents::ButtonStyle::from_base(Colors::Presets::Black, Colors::Presets::Yellow)};
+
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 
-		KarkinolutionView::Window::init();
+		KarkinolutionView::Window::init_inside_loop();
 
 		state.connected = client.is_connected();
 
 		view.draw();
 
 		if (!state.connected) {
-			if (ImGui::Button("Connect")) {
+			if (connect_button.draw()) {
 				client.connect();
 			}
 		} else {
-			if (ImGui::Button("Disconnect")) {
+			if (disconnect_button.draw()) {
 				client.disconnect();
 			}
 		}
@@ -61,20 +70,18 @@ int main() {
 
 		grid.draw();
 
+
 		grid.draw_cell(GuiGeometry::Column{0},
 					   GuiGeometry::Row{0},
 					   Karkinolution::Colors::Presets::Blue);
 
-		ImGui::End();
+		grid.draw_cell(GuiGeometry::Column{0},
+					   GuiGeometry::Row{1},
+					   Karkinolution::Colors::Presets::Crimson);
 
-		rlImGuiEnd();
-
-		EndDrawing();
+		KarkinolutionView::Window::end_inside_loop();
 	}
-
-	rlImGuiShutdown();
-
-	CloseWindow();
+	KarkinolutionView::Window::end_after_loop();
 
 	return 0;
 }
