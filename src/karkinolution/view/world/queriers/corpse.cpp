@@ -9,5 +9,5 @@
 std::optional<CorpseDSI::Models::Corpse>
 KarkinolutionView::World::Queriers::Corpse::see_corpse(BaseIdType                         id,
 													   KarkinolutionView::Client::Client &client) {
-	return KarkinolutionSDK::Interpreters::Corpse::see_corpse(client.get_client(), id);
+	return KarkinolutionSDK::Interpreters::Corpse::see_corpse(client, id);
 }

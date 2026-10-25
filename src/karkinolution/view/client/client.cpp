@@ -27,10 +27,7 @@ bool KarkinolutionView::Client::Client::disconnect() {
 	return !client->is_connected();
 }
 
-KarkinolutionSDK::Client::Client &KarkinolutionView::Client::Client::get_client() {
-	return *client;
-}
-
-const KarkinolutionSDK::Client::Client &KarkinolutionView::Client::Client::get_client() const {
-	return *client;
+KarkinolutionSDK::Client::ResponseResult KarkinolutionView::Client::Client::request(
+	const KarkinolutionSDK::Client::ClientRequestData &data) {
+	return client->request(data);
 }

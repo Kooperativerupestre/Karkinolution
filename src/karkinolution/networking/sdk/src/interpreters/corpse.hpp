@@ -1,8 +1,13 @@
 #pragma once
 
+#include "karkinolution/networking/sdk/src/interpreters/concepts.hpp"
+#include "karkinolution/networking/sdk/src/interpreters/generic_id.hpp"
+
+#include <karkinolution/binary/core_aliases.hpp>
+#include <karkinolution/binary/frames/analyzer.hpp>
+#include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/core/id.hpp>
-#include <karkinolution/networking/sdk/src/client/client.hpp>
 #include <optional>
 
 namespace KarkinolutionSDK {
@@ -17,8 +22,33 @@ namespace KarkinolutionSDK {
 			 * a valid response signalling the corpse does not exist or was
 			 * not found at the time of the request.
 			 */
-			std::optional<CorpseDSI::Models::Corpse>
-			see_corpse(KarkinolutionSDK::Client::Client &client, BaseIdType id);
+			template <HasRequest T>
+			std::optional<CorpseDSI::Models::Corpse> see_corpse(T &client, BaseIdType id) {
+				const auto payload = CorpseSRI::Request::make_see_corpse(id);
+
+				const auto built = Frames::Motor::make_request(
+					RequestSubTypes::SEE,
+					GENERIC_INTERPRETER_ID,
+					RequestResource::CORPSE,
+					std::vector<std::byte>(payload.begin(), payload.end()));
+
+				const KarkinolutionSDK::Client::ClientRequestData data{.sub_type = built.sub_type,
+																	   .resource = built.resource,
+																	   .payload  = built.payload};
+
+				const auto result = client.request(data);
+
+				if (!result || !result.value().has_value()) {
+					return std::nullopt;
+				}
+
+				const auto &frame = result.value().value();
+				if (Frames::Analyzer::is_none(frame)) {
+					return std::nullopt;
+				}
+
+				return CorpseDSI::get_corpse(frame.payload, 0);
+			}
 		} // namespace Corpse
 	} // namespace Interpreters
 } // namespace KarkinolutionSDK
