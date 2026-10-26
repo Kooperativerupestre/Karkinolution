@@ -2,13 +2,13 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/view/client/client.hpp"
 
-#include <karkinolution/binary/interpreters/creature.hpp>
+#include <karkinolution/binary/interpreters/models/creature.hpp>
 
 namespace KarkinolutionView {
 	namespace World {
 		namespace Queriers {
 			namespace Creature {
-				std::optional<CreatureDSI::Models::Creature>
+				std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 				see_creature(BaseIdType id, KarkinolutionView::Client::Client &client);
 			} // namespace Creature
 		} // namespace Queriers

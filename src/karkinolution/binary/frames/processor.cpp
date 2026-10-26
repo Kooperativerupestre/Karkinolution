@@ -1,5 +1,6 @@
 #include "karkinolution/api/creature.hpp"
 #include "karkinolution/binary/binary_validators.hpp"
+#include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/core/error.hpp"
@@ -8,6 +9,7 @@
 #include <karkinolution/binary/frames/processor.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
+#include <karkinolution/networking/api_adapter/soil.hpp>
 
 ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World &world) {
 
@@ -25,6 +27,14 @@ ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World 
 			return CreatureAPIBYA::see_creature(world, frame.id, frame.payload);
 		} else if (resource == RequestResource::CORPSE) {
 			return CorpseAPIBYA::see_corpse(world, frame.id, frame.payload);
+		} else if (resource == RequestResource::SOIL) {
+			return Karkinolution::Networking::APIBYA::Soil::see_soil(world,
+																	 frame.id,
+																	 frame.payload);
+		}
+	} else if (sub_type == RequestSubTypes::CREATE) {
+		if (resource == RequestResource::CREATURE) {
+			throw SimulationError("TODO: Implement the create of creature");
 		}
 	}
 

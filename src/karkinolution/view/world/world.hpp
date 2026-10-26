@@ -1,76 +1,83 @@
 #pragma once
+#include "karkinolution/binary/interpreters/models/soil.hpp"
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/view/client/client.hpp"
 
-#include <karkinolution/binary/interpreters/corpse.hpp>
-#include <karkinolution/binary/interpreters/creature.hpp>
+#include <karkinolution/binary/interpreters/models/corpse.hpp>
+#include <karkinolution/binary/interpreters/models/creature.hpp>
 
 namespace KarkinolutionView {
 	namespace World {
+		inline constexpr bool SYNC_TERRAIN_SIZE = false;
+
+
 		enum class EntitySyncOutput : uint8_t {
 			UPDATED       = 1,
 			WAS_NOT_FOUND = 2,
 			DOES_NOT_EXIST
 		};
 
-		struct WorldPatch {
+		class Terrain {
+			private:
 
-				std::vector<CreatureDSI::Models::Creature> creatures_to_add;
-				std::vector<CorpseDSI::Models::Corpse>     corpses_to_add;
+				Size                                                                 size;
+				std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil> soils;
 
-				std::vector<BaseIdType> creatures_to_remove;
-				std::vector<BaseIdType> corpses_to_remove;
+				bool has_soil(BaseIdType id) const;
+				bool remove_soil(BaseIdType id);
+				bool add(const Karkinolution::Binary::Interpreters::Models::Soil::Soil &soil);
+				bool
+				update(const Karkinolution::Binary::Interpreters::Models::Soil::Soil &new_soil);
 
-				WorldPatch &operator+=(const WorldPatch &other) {
-					creatures_to_add.insert(creatures_to_add.end(),
-											other.creatures_to_add.begin(),
-											other.creatures_to_add.end());
+				void             sync_size(KarkinolutionView::Client::Client &client);
+				EntitySyncOutput sync_soil(BaseIdType                         id,
+										   KarkinolutionView::Client::Client &client);
 
-					corpses_to_add.insert(corpses_to_add.end(),
-										  other.corpses_to_add.begin(),
-										  other.corpses_to_add.end());
 
-					creatures_to_remove.insert(creatures_to_remove.end(),
-											   other.creatures_to_remove.begin(),
-											   other.creatures_to_remove.end());
+			public:
 
-					corpses_to_remove.insert(corpses_to_remove.end(),
-											 other.corpses_to_remove.begin(),
-											 other.corpses_to_remove.end());
+				Terrain()
+					: size(1000, 1000, 100) {}
 
-					return *this;
+				const std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil> &
+				get_soils() const {
+					return soils;
 				}
 
-				WorldPatch operator+(const WorldPatch &other) const {
-					WorldPatch result = *this;
-					result += other;
-					return result;
-				}
+				void sync(KarkinolutionView::Client::Client &client);
 		};
 
 		class World {
 			private:
 
-				std::vector<CreatureDSI::Models::Creature> creatures;
-				std::vector<CorpseDSI::Models::Corpse>     corpses;
+				Terrain terrain;
+
+				std::vector<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
+																						 creatures;
+				std::vector<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse> corpses;
+
 
 				EntitySyncOutput sync_creature(BaseIdType                         id,
 											   KarkinolutionView::Client::Client &client);
 				EntitySyncOutput sync_corpse(BaseIdType                         id,
 											 KarkinolutionView::Client::Client &client);
 
-				bool add(const CreatureDSI::Models::Creature &creature);
-				bool add(const CorpseDSI::Models::Corpse &corpse);
+
+				bool add(const Karkinolution::Binary::Interpreters::Models::Creature::Creature
+							 &creature);
+				bool add(const Karkinolution::Binary::Interpreters::Models::Corpse::Corpse &corpse);
 
 				bool remove_creature(BaseIdType id);
 				bool remove_corpse(BaseIdType id);
 
 				bool remove(BaseIdType id);
 
-				bool update(const CreatureDSI::Models::Creature &new_creature);
-				bool update(const CorpseDSI::Models::Corpse &new_corpse);
+				bool update(const Karkinolution::Binary::Interpreters::Models::Creature::Creature
+								&new_creature);
+				bool update(
+					const Karkinolution::Binary::Interpreters::Models::Corpse::Corpse &new_corpse);
 
 				bool has_creature(BaseIdType id) const;
 				bool has_corpse(BaseIdType id) const;
@@ -78,16 +85,22 @@ namespace KarkinolutionView {
 
 			public:
 
-				const std::vector<CreatureDSI::Models::Creature> &get_creatures() {
+				const std::vector<Karkinolution::Binary::Interpreters::Models::Creature::Creature> &
+				get_creatures() const {
 					return creatures;
 				}
 
-				const std::vector<CorpseDSI::Models::Corpse> &get_corpses() {
+				const std::vector<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse> &
+				get_corpses() const {
 					return corpses;
 				}
 
+				const std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil> &
+				get_soils() const {
+					return terrain.get_soils();
+				}
+
 				void sync(KarkinolutionView::Client::Client &client);
-				void apply(const WorldPatch &patch);
 		};
 	} // namespace World
 } // namespace KarkinolutionView

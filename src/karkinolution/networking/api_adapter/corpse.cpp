@@ -10,7 +10,7 @@ ResponseFrame CorpseAPIBYA::see_corpse(const World                  &world,
 									   const std::vector<std::byte> &payload) {
 	const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
 
-	auto corpse = Karkinolution::API::Organisms::Corpse::see_corpse(world, id);
+	auto corpse = Karkinolution::API::Corpse::see_corpse(world, id);
 
 	if (corpse == nullptr) {
 		return Frames::Motor::make_response(BinaryTypes::Response,

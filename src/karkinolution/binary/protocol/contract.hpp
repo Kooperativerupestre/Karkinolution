@@ -99,7 +99,8 @@ namespace Karkinolution::Binary::Protocol {
 			enum class Response : uint8_t {
 				CREATURE = 0,
 				CORPSE   = 1,
-				NONE     = 3
+				NONE     = 3,
+				SOIL     = 4
 			};
 
 			/*

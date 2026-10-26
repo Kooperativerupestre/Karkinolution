@@ -7,6 +7,7 @@
 #include <karkinolution/binary/frames/analyzer.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/corpse.hpp>
+#include <karkinolution/binary/interpreters/models/corpse.hpp>
 #include <karkinolution/core/id.hpp>
 #include <optional>
 
@@ -23,7 +24,8 @@ namespace KarkinolutionSDK {
 			 * not found at the time of the request.
 			 */
 			template <HasRequest T>
-			std::optional<CorpseDSI::Models::Corpse> see_corpse(T &client, BaseIdType id) {
+			std::optional<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse>
+			see_corpse(T &client, BaseIdType id) {
 				const auto payload = CorpseSRI::Request::make_see_corpse(id);
 
 				const auto built = Frames::Motor::make_request(

@@ -8,6 +8,7 @@
 #include <karkinolution/binary/frames/analyzer.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
+#include <karkinolution/binary/interpreters/models/creature.hpp>
 #include <karkinolution/core/id.hpp>
 #include <optional>
 
@@ -16,7 +17,8 @@ namespace KarkinolutionSDK {
 		namespace Creature {
 			// Returns std::nullopt when the server responds with "none" (entity not found).
 			template <HasRequest T>
-			std::optional<CreatureDSI::Models::Creature> see_creature(T &client, BaseIdType id) {
+			std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
+			see_creature(T &client, BaseIdType id) {
 				const auto payload = CreatureSRI::Request::make_see_creature(id);
 				const auto built   = Frames::Motor::make_request(
                     RequestSubTypes::SEE,
@@ -42,7 +44,7 @@ namespace KarkinolutionSDK {
 			}
 
 			template <HasRequest T>
-			std::optional<CreatureDSI::Models::Creature>
+			std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 			make_creature(T                                &client,
 						  std::optional<Gender>             gender,
 						  std::optional<CreatureSpecies>    specie,

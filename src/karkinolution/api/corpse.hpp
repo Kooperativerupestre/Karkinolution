@@ -7,10 +7,8 @@
 
 namespace Karkinolution {
 	namespace API {
-		namespace Organisms {
-			namespace Corpse {
-				const ::Corpse* see_corpse(const World &world, BaseIdType id);
-			} // namespace Corpse
-		} // namespace Organisms
+		namespace Corpse {
+			const ::Corpse* see_corpse(const World &world, BaseIdType id);
+		} // namespace Corpse
 	} // namespace API
 } // namespace Karkinolution

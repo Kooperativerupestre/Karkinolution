@@ -179,9 +179,9 @@ CreatureSpecies CreatureDSI::get_specie(const std::vector<std::byte> &payload, s
 	return specie;
 }
 
-CreatureDSI::Models::Creature CreatureDSI::get_creature(const std::vector<std::byte> &payload,
-														std::size_t                   offset) {
-	return Models::Creature{
+Karkinolution::Binary::Interpreters::Models::Creature::Creature
+CreatureDSI::get_creature(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Interpreters::Models::Creature::Creature{
 		.gender   = get_gender(payload, offset + CreatureSRI::Layout::Gender::OFFSET),
 		.specie   = get_specie(payload, offset + CreatureSRI::Layout::Specie::OFFSET),
 		.position = VecDSI::get_vec(payload, offset + CreatureSRI::Layout::PositionX::OFFSET),

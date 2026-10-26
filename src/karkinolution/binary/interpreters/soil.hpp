@@ -3,6 +3,7 @@
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/geometry.hpp"
 #include "karkinolution/binary/interpreters/identity.hpp"
+#include "karkinolution/binary/interpreters/models/soil.hpp"
 #include "karkinolution/binary/interpreters/properties.hpp"
 #include "karkinolution/binary/interpreters/vec.hpp"
 #include "karkinolution/core/id.hpp"
@@ -103,37 +104,18 @@ namespace Karkinolution {
 
 					BytesArray::Soil serialize_soil(const SoilPiece &soil);
 
+					namespace Request {
+						std::array<std::byte, 8> make_see_soil(BaseIdType id);
+					} // namespace Request
+
 				} // namespace Soil
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Soil {
-					namespace Models {
-
-						struct DamageComponent {
-								float value;
-						};
-
-						struct MovementCostComponent {
-								float cost;
-						};
-
-						struct Soil {
-								std::optional<DamageComponent>       damage_component;
-								std::optional<MovementCostComponent> movement_cost_component;
-
-								BaseIdType                   id;
-								GeometryForms::Radius        radius;
-								Vec3                         position;
-								SoilTypes                    type;
-								std::vector<SoilProperties>  properties;
-								std::vector<GenericProperty> required_properties;
-						};
-					} // namespace Models
-
-					std::optional<Models::DamageComponent>
+					std::optional<Interpreters::Models::Soil::DamageComponent>
 					get_damage(const std::vector<std::byte> &payload, std::size_t offset);
-					std::optional<Models::MovementCostComponent>
+					std::optional<Interpreters::Models::Soil::MovementCostComponent>
 					get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset);
 					BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
 					Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
@@ -146,8 +128,12 @@ namespace Karkinolution {
 					get_required_properties(const std::vector<std::byte> &payload,
 											std::size_t                   offset);
 
-					Models::Soil get_soil(const std::vector<std::byte> &payload,
-										  std::size_t                   offset);
+					Interpreters::Models::Soil::Soil get_soil(const std::vector<std::byte> &payload,
+															  std::size_t                   offset);
+
+					namespace Request {
+						BaseIdType interpret_like_get_soil(const std::vector<std::byte> &payload);
+					} // namespace Request
 				} // namespace Soil
 			} // namespace DSI
 		} // namespace Interpreters

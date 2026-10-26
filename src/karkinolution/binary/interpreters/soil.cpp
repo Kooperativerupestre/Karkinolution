@@ -127,19 +127,25 @@ SoilSRI::BytesArray::Soil SoilSRI::serialize_soil(const SoilPiece &soil) {
 	return array;
 }
 
+// Request implementations
+
+std::array<std::byte, 8> SoilSRI::Request::make_see_soil(BaseIdType id) {
+	return Serializer::serialize(id);
+}
+
 // DSI implementations
-std::optional<SoilDSI::Models::DamageComponent>
+std::optional<Karkinolution::Binary::Interpreters::Models::Soil::DamageComponent>
 SoilDSI::get_damage(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto has_component = Deserializer::read_bool(payload[offset]);
 
 	if (!has_component) {
 		return std::nullopt;
 	}
-	return Models::DamageComponent{
+	return Karkinolution::Binary::Interpreters::Models::Soil::DamageComponent{
 		.value = Deserializer::read_float(payload, offset + SoilSRI::Layout::HasDamage::SIZE)};
 }
 
-std::optional<SoilDSI::Models::MovementCostComponent>
+std::optional<Karkinolution::Binary::Interpreters::Models::Soil::MovementCostComponent>
 SoilDSI::get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto has_component = Deserializer::read_bool(payload[offset]);
 
@@ -147,7 +153,7 @@ SoilDSI::get_movement_cost(const std::vector<std::byte> &payload, std::size_t of
 		return std::nullopt;
 	}
 
-	return Models::MovementCostComponent{
+	return Karkinolution::Binary::Interpreters::Models::Soil::MovementCostComponent{
 		.cost = Deserializer::read_float(payload, offset + SoilSRI::Layout::HasMovementCost::SIZE)};
 }
 
@@ -209,8 +215,9 @@ std::vector<GenericProperty> SoilDSI::get_required_properties(const std::vector<
 	return required_capabilities;
 }
 
-SoilDSI::Models::Soil SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Models::Soil{
+Karkinolution::Binary::Interpreters::Models::Soil::Soil
+SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Interpreters::Models::Soil::Soil{
 		get_damage(payload, offset + SoilSRI::Layout::HasDamage::OFFSET),
 		get_movement_cost(payload, offset + SoilSRI::Layout::HasMovementCost::OFFSET),
 		get_id(payload, offset + SoilSRI::Layout::Id::OFFSET),
@@ -220,4 +227,10 @@ SoilDSI::Models::Soil SoilDSI::get_soil(const std::vector<std::byte> &payload, s
 		get_soil_properties(payload, offset + SoilSRI::Layout::PropertiesCount::OFFSET),
 		get_required_properties(payload,
 								offset + SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET)};
+}
+
+// Request implementations
+
+BaseIdType SoilDSI::Request::interpret_like_get_soil(const std::vector<std::byte> &payload) {
+	return Deserializer::deserialize<BaseIdType>(payload, 0);
 }

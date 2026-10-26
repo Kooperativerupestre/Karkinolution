@@ -1,6 +1,7 @@
 #pragma once
 
 #include "karkinolution/binary/fields.hpp"
+#include "karkinolution/binary/interpreters/models/territory.hpp"
 #include "karkinolution/binary/interpreters/unit.hpp"
 #include "karkinolution/math/units.hpp"
 #include "karkinolution/terrain/terrain.hpp"
@@ -40,15 +41,8 @@ namespace Karkinolution {
 
 			namespace DSI {
 				namespace Territory {
-					namespace Models {
-						class Territory {
-							public:
-
-								Size size;
-						};
-					} // namespace Models
-
-					Models::Territory deserialize_territory(const std::vector<std::byte> &payload);
+					Interpreters::Models::Territory::Territory
+					deserialize_territory(const std::vector<std::byte> &payload);
 				} // namespace Territory
 			} // namespace DSI
 		} // namespace Interpreters

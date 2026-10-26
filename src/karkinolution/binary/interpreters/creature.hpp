@@ -1,6 +1,7 @@
 #pragma once
 
 #include "karkinolution/binary/fields.hpp"
+#include "karkinolution/binary/interpreters/models/creature.hpp"
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
@@ -84,17 +85,6 @@ namespace Karkinolution {
 
 			namespace DSI {
 				namespace Creature {
-					namespace Models {
-						struct Creature {
-								Gender          gender;
-								CreatureSpecies specie;
-								Vec3            position;
-								std::string     name;
-								BaseIdType      id;
-						};
-
-					} // namespace Models
-
 					Gender get_gender(const std::vector<std::byte> &payload, std::size_t offset);
 					CreatureSpecies get_specie(const std::vector<std::byte> &payload,
 											   std::size_t                   offset);
@@ -105,8 +95,8 @@ namespace Karkinolution {
 
 					std::string get_name(const std::vector<std::byte> &payload, std::size_t offset);
 					BaseIdType  get_id(const std::vector<std::byte> &payload, std::size_t offset);
-					Models::Creature get_creature(const std::vector<std::byte> &payload,
-												  std::size_t                   offset);
+					Interpreters::Models::Creature::Creature
+					get_creature(const std::vector<std::byte> &payload, std::size_t offset);
 
 					namespace Request {
 

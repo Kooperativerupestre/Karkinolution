@@ -1,11 +1,9 @@
 #pragma once
-#include "karkinolution/binary/frames/parser.hpp"
 
-#include <karkinolution/api/creature.hpp>
-#include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserializer.hpp>
-#include <karkinolution/binary/frames/aliases.hpp>
-#include <karkinolution/binary/interpreters/creature.hpp>
+#include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/binary/protocol/aliases.hpp"
+
+#include <karkinolution/world/world.hpp>
 
 namespace CreatureAPIBYA {
 	ResponseFrame

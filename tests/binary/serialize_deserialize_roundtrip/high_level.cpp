@@ -10,6 +10,7 @@
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/binary/interpreters/geometry.hpp>
+#include <karkinolution/binary/interpreters/models/soil.hpp>
 #include <karkinolution/binary/interpreters/properties.hpp>
 #include <karkinolution/binary/interpreters/soil.hpp>
 #include <karkinolution/binary/interpreters/territory.hpp>
@@ -129,7 +130,8 @@ TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
 	const auto                   serialized = SoilSRI::serialize_soil(soil);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());
 
-	const SoilDSI::Models::Soil copy = SoilDSI::get_soil(bytes, 0);
+	const Karkinolution::Binary::Interpreters::Models::Soil::Soil copy =
+		SoilDSI::get_soil(bytes, 0);
 
 	EXPECT_EQ(copy.id, id);
 	EXPECT_EQ(copy.type, soil.type);

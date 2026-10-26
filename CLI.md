@@ -1,57 +1,75 @@
-The Karkinolution CLI sets up the build, runs the server, and verifies style and formatting.
+The Karkinolution CLI configures and runs CMake presets and provides source-formatting and static-analysis commands.
+Run commands from the repository root unless noted otherwise.
 
-To activate the CLI, run:
+## Install
 
 ```bash
 uv sync
-
 source .venv/bin/activate
 ```
 
-`uv` is preferred in this project for dependency management.
+The activation step is optional if you run commands through `uv run karkinolution ...`.
 
-## Commands
+## Build and run
 
-| Command | What it does |
-|---|---|
-| `karkinolution setup [--preset debug]` | Checks the tools and submodules, then configures the build. It only reports problems and prints the fix. It never installs or initializes anything. |
-| `karkinolution run [--preset debug] [--target <name>]` | Builds the target (`karkinolution_app` by default, or `karkinolution_view` for view presets) and starts it. Requires `setup` first. |
-| `karkinolution see namespaces [paths]` | Prints a file tree with the namespaces and namespace aliases each file declares. See [below](#namespace-tree). |
-| `karkinolution style check <paths>` | Checks formatting with `clang-format`. |
-| `karkinolution style format <paths>` | Formats files in place. |
-| `karkinolution tidy check <paths>` | Runs `clang-tidy`. Add `--changed-since <ref>` to check only files changed since a Git ref. |
-| `karkinolution tidy fix <paths>` | Runs `clang-tidy` and applies the available fixes. |
+Configure the default `debug` preset, then build and start the application:
 
-## Namespace tree
-
-`karkinolution see namespaces` prints a file tree like `tree`, with the namespaces each file declares next to it:
-
-```
-$ karkinolution see namespaces src/karkinolution/binary/deserialization/interpreters/corpse
-src/karkinolution/binary/deserialization/interpreters/corpse
-├── alias.hpp   CorpseDSI = Karkinolution::Binary::Interpreters::DSI::Corpse
-├── corpse.cpp
-└── corpse.hpp  Karkinolution::Binary::Interpreters::DSI::Corpse
-                Karkinolution::Binary::Interpreters::DSI::Corpse::Models
-                Karkinolution::Binary::Interpreters::DSI::Corpse::Request
+```bash
+karkinolution setup
+karkinolution run
 ```
 
-Namespace aliases are shown as `Name = Target`. Anonymous namespaces are shown as `(anonymous)`.
+`setup` checks the environment and submodules before configuring. It does not install tools or initialize submodules;
+when something is missing, it reports the issue and a suggested fix. `run` requires a configured preset, builds
+`karkinolution_app` by default, and starts it.
 
-| Option | What it does |
-|---|---|
-| `[paths]` | Files or directories to scan. Default: `src` and `tests`. |
-| `-L`, `--max-depth N` | Show at most `N` directory levels, like `tree -L`. |
-| `-i`, `--ignore PATTERN` | Skip files or directories matching a glob (`alias.hpp`, `*.cpp`, `src/binary`). Repeatable. |
-| `--editor NAME` | Editor the links open: `vscode`, `vscode-insiders`, `vscodium`, `file` or `none`. Also read from `KARKINOLUTION_EDITOR`. |
+To use another preset or executable:
 
-In a terminal that supports links, a file name opens the file and a namespace opens its declaration line. The editor is
-detected from the terminal: inside the VS Code integrated terminal the links open in VS Code. Anywhere else they are plain
-`file://` links that open in the default application, without a line number. Use `--editor` to choose another one.
+```bash
+karkinolution setup --preset view-debug
+karkinolution run --preset view-debug
+karkinolution run --preset debug --target karkinolution_app
+```
 
-The command reads the syntax only, using tree-sitter. It does not preprocess the code or resolve aliases. A namespace is
-listed when it has no nested namespace, or when it also holds its own declarations. A file tree-sitter cannot parse
-cleanly prints a warning on stderr and stays in the tree.
+Presets and their build directories are defined in [`CMakePresets.json`](CMakePresets.json). See
+[`HOW_TO_RUN.md`](HOW_TO_RUN.md) for prerequisites and setup details, and [`docs/commands.md`](docs/commands.md) for
+the CMake equivalents.
 
-Presets come from [`CMakePresets.json`](CMakePresets.json); the full list is in [`docs/commands.md`](docs/commands.md).
-Run `karkinolution <command> --help` for every option.
+## Code quality
+
+Check or format selected source files:
+
+```bash
+karkinolution style check src/karkinolution main.cpp
+karkinolution style format src/karkinolution/binary/interpreters
+```
+
+Run `clang-tidy` checks or apply its available fixes. Tidy needs a configured build with
+`compile_commands.json`; the CLI detects `build` by default and uses `build-view` for paths under `view` when that
+database exists. Pass `--build-dir` to select another build directory.
+
+```bash
+karkinolution tidy check src/karkinolution main.cpp
+karkinolution tidy check src/karkinolution main.cpp --changed-since origin/main
+karkinolution tidy fix src/karkinolution/binary/interpreters
+```
+
+`--changed-since` limits tidy checks to files changed since the given Git ref, compared with its merge base. For a
+combined formatting and tidy check or fix, use `quality check` or `quality fix` with the same paths.
+
+## Inspect namespaces
+
+`karkinolution see namespaces` inspects the current source syntax and prints a file tree with declared namespaces and
+namespace aliases. Pass paths to narrow the scan; by default it scans `src` and `tests`. Use `--help` for options such
+as depth limits, ignore patterns, and link editor selection. The command parses source syntax; it does not preprocess
+files or resolve aliases.
+
+## Help
+
+Show the options for any command or subcommand with:
+
+```bash
+karkinolution --help
+karkinolution run --help
+karkinolution style check --help
+```

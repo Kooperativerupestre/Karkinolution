@@ -70,9 +70,9 @@ Size CorpseDSI::get_size(const std::vector<std::byte> &payload, std::size_t offs
 	return UnitsDSI::deserialize_size(payload, offset);
 }
 
-CorpseDSI::Models::Corpse CorpseDSI::get_corpse(const std::vector<std::byte> &payload,
-												std::size_t                   offset) {
-	return Models::Corpse{
+Karkinolution::Binary::Interpreters::Models::Corpse::Corpse
+CorpseDSI::get_corpse(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Interpreters::Models::Corpse::Corpse{
 		.id       = get_id(payload, offset + CorpseSRI::Layout::Id::OFFSET),
 		.raw_meat = get_raw_meat(payload, offset + CorpseSRI::Layout::RawMeat::OFFSET),
 		.position = get_position(payload, offset + CorpseSRI::Layout::PositionX::OFFSET),

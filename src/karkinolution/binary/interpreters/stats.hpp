@@ -3,6 +3,7 @@
 #include "karkinolution/binary/binary_validators.hpp"
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/fields.hpp"
+#include "karkinolution/binary/interpreters/models/stats.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/math/stats/compile_values.hpp"
@@ -16,14 +17,6 @@
 
 namespace Karkinolution {
 	namespace Binary {
-		namespace Models {
-			namespace Stats {
-				template <typename T> struct StatValue {
-						T value, min, max;
-				};
-			} // namespace Stats
-		} // namespace Models
-
 		namespace Interpreters {
 			namespace SRI {
 				namespace Stats {
@@ -151,8 +144,8 @@ namespace Karkinolution {
 					}
 
 					template <typename T>
-					Models::Stats::StatValue<T> get_stats(const std::vector<std::byte> &payload,
-														  std::size_t                   offset) {
+					Interpreters::Models::Stats::StatValue<T>
+					get_stats(const std::vector<std::byte> &payload, std::size_t offset) {
 						return {.value = get_value<T>(payload, offset),
 								.min   = get_min<T>(payload, offset),
 								.max   = get_max<T>(payload, offset)};

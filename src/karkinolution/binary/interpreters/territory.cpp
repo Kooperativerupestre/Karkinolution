@@ -16,8 +16,8 @@ TerritorySRI::serialize_territory(const class Territory &territory) {
 }
 
 // DSI implementations
-TerritoryDSI::Models::Territory
+Karkinolution::Binary::Interpreters::Models::Territory::Territory
 TerritoryDSI::deserialize_territory(const std::vector<std::byte> &payload) {
 	const auto size = UnitsDSI::deserialize_size(payload, TerritorySRI::Layout::Size::OFFSET);
-	return TerritoryDSI::Models::Territory{size};
+	return Karkinolution::Binary::Interpreters::Models::Territory::Territory{size};
 }

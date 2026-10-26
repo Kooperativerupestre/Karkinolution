@@ -16,8 +16,12 @@
   - `src/karkinolution/binary/deserializer.hpp`
 - **Interpreters**:
   - `src/karkinolution/binary/interpreters/<name>.[hpp|cpp]`
-  - Each `<name>.hpp` contains both SRI and DSI definitions, as well as the global aliases `namespace <Name>SRI` and `namespace <Name>DSI` at the bottom of the file.
+  - Each `<name>.hpp` contains SRI and DSI definitions, as well as the global aliases `namespace <Name>SRI` and `namespace <Name>DSI` at the bottom of the file.
   - Each `<name>.cpp` contains both SRI and DSI function implementations.
+- **Interpreter models**:
+  - Domain model types are declared in `src/karkinolution/binary/interpreters/models/<name>.hpp`.
+  - Their namespace is `Karkinolution::Binary::Interpreters::Models::<Domain>`.
+  - DSI declarations and implementations refer to these models; model types are not nested inside DSI namespaces.
 
 ---
 
@@ -76,8 +80,9 @@ BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t of
 }
 
 // Principal — adds field offset before calling auxiliaries
-SoilDSI::Models::Soil SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
-    return Models::Soil{
+Karkinolution::Binary::Interpreters::Models::Soil::Soil
+SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Karkinolution::Binary::Interpreters::Models::Soil::Soil{
         .id = get_id(payload, offset + SoilSRI::Layout::Id::OFFSET),
         // ...
     };

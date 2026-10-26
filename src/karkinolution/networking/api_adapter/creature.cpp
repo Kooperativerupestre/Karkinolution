@@ -25,10 +25,7 @@ ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
 
 	if (creature == nullptr) {
 
-		return Frames::Motor::make_response(BinaryTypes::Response,
-											ResponseSubTypes::NONE,
-											request_id,
-											std::vector<std::byte>{});
+		return Frames::Motor::make_none_response(request_id);
 	}
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
