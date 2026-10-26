@@ -32,11 +32,11 @@ namespace KarkinolutionView {
 					runner.join();
 				}
 
-				bool is_connected();
+				bool is_connected() const;
 				bool connect();
 				bool disconnect();
 				KarkinolutionSDK::Client::ResponseResult
-				request(const KarkinolutionSDK::Client::ClientRequestData &data);
+				request(const KarkinolutionSDK::Client::RequestData &data);
 		};
 	} // namespace Client
 } // namespace KarkinolutionView

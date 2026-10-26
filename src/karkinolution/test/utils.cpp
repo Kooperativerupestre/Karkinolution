@@ -25,7 +25,7 @@ std::vector<std::byte> TestUtils::make_see_creature_frame(RequestId id, BaseIdTy
 		std::vector<std::byte>(payload.begin(), payload.end()));
 }
 
-KarkinolutionSDK::Client::ClientRequestData
+KarkinolutionSDK::Client::RequestData
 TestUtils::make_see_creature_request_data(BaseIdType creature_id) {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);
 	const auto built =

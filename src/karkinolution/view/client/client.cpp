@@ -7,7 +7,7 @@
 
 #include <karkinolution/view/client/client.hpp>
 
-bool KarkinolutionView::Client::Client::is_connected() {
+bool KarkinolutionView::Client::Client::is_connected() const {
 	return client->is_connected();
 }
 
@@ -27,7 +27,7 @@ bool KarkinolutionView::Client::Client::disconnect() {
 	return !client->is_connected();
 }
 
-KarkinolutionSDK::Client::ResponseResult KarkinolutionView::Client::Client::request(
-	const KarkinolutionSDK::Client::ClientRequestData &data) {
+KarkinolutionSDK::Client::ResponseResult
+KarkinolutionView::Client::Client::request(const KarkinolutionSDK::Client::RequestData &data) {
 	return client->request(data);
 }

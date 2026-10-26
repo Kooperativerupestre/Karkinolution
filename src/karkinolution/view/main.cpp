@@ -6,6 +6,7 @@
 #include "karkinolution/view/gui/components/grid.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 #include "karkinolution/view/screen.hpp"
+#include "karkinolution/view/synchronizer.hpp"
 #include "karkinolution/view/window.hpp"
 #include "rlImGui.h"
 
@@ -18,17 +19,14 @@
 namespace GuiGeometry   = KarkinolutionView::Gui::Geometry;
 namespace GuiComponents = KarkinolutionView::Gui::Components;
 namespace Colors        = Karkinolution::Colors;
+using KarkinolutionView::Synchronizer;
 
 int main() {
 	KPresets::Screen screen_preset{.width = 800, .height = 450};
 
 	KarkinolutionView::Window::init_before_loop(screen_preset);
 
-	KarkinolutionView::Client::Client client;
-
-	KarkinolutionView::Screen::State state{.connected = client.is_connected()};
-
-	KarkinolutionView::Screen::StateView view{state};
+	Synchronizer synchronizer;
 
 	const GuiComponents::Button connect_button{
 		.label = "Connect",
@@ -45,17 +43,16 @@ int main() {
 
 		KarkinolutionView::Window::init_inside_loop();
 
-		state.connected = client.is_connected();
 
-		view.draw();
+		synchronizer.draw();
 
-		if (!state.connected) {
+		if (!synchronizer.is_connected()) {
 			if (connect_button.draw()) {
-				client.connect();
+				synchronizer.connect();
 			}
 		} else {
 			if (disconnect_button.draw()) {
-				client.disconnect();
+				synchronizer.disconnect();
 			}
 		}
 

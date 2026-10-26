@@ -25,7 +25,7 @@ namespace KarkinolutionSDK {
 	};
 
 	namespace Client {
-		struct ClientRequestData {
+		struct RequestData {
 				RequestSubTypes        sub_type;
 				RequestResource        resource;
 				std::vector<std::byte> payload;
@@ -85,9 +85,9 @@ namespace KarkinolutionSDK {
 		class Client {
 			public:
 
-				explicit Client(IoContext         &io,
-								Config             config = {},
-								const std::string &name   = "Client")
+				explicit Client(IoContext &io,
+								Config     config       = {},
+								const std::string &name = "Client")
 					: io_context_(io)
 					, socket_(io_context_)
 					, strand_(asio::make_strand(io_context_))
@@ -106,10 +106,10 @@ namespace KarkinolutionSDK {
 				// The request function makes a request, and blocks the thread until it gets a
 				// response
 
-				ResponseResult request(const ClientRequestData &data);
+				ResponseResult request(const RequestData &data);
 
 				// This function stores the request in a queue, it doesn't block the thread
-				RequestId send_without_waiting(const ClientRequestData &data);
+				RequestId send_without_waiting(const RequestData &data);
 				// if the request wasn't responsed yet, the value is nullopt
 				ResponseResult pop_response(RequestId id);
 

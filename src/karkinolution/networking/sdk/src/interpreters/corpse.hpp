@@ -32,9 +32,9 @@ namespace KarkinolutionSDK {
 					RequestResource::CORPSE,
 					std::vector<std::byte>(payload.begin(), payload.end()));
 
-				const KarkinolutionSDK::Client::ClientRequestData data{.sub_type = built.sub_type,
-																	   .resource = built.resource,
-																	   .payload  = built.payload};
+				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
+																 .resource = built.resource,
+																 .payload  = built.payload};
 
 				const auto result = client.request(data);
 

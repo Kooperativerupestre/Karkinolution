@@ -62,7 +62,7 @@ void Client::connect() {
 	});
 }
 
-RequestId Client::send_without_waiting(const ClientRequestData &data) {
+RequestId Client::send_without_waiting(const RequestData &data) {
 	// Throwing here is intended: this runs on the user's thread, so the user
 	// can catch and handle a disconnected client.
 	KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
@@ -177,7 +177,7 @@ KarkinolutionSDK::Client::ResponseResult Client::pop_response(RequestId id) {
 	return output.value();
 }
 
-KarkinolutionSDK::Client::ResponseResult Client::request(const ClientRequestData &data) {
+KarkinolutionSDK::Client::ResponseResult Client::request(const RequestData &data) {
 	const auto id     = send_without_waiting(data);
 	const auto output = protocol_session.await_response(id);
 
