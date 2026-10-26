@@ -56,8 +56,8 @@ jobs:
               -S /workspace \
               -B /workspace/build-valgrind \
               -G Ninja \
-              -DCMAKE_C_COMPILER=gcc-15 \
-              -DCMAKE_CXX_COMPILER=g++-15 \
+              -DCMAKE_C_COMPILER=gcc-16 \
+              -DCMAKE_CXX_COMPILER=g++-16 \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug
