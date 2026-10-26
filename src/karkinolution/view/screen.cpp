@@ -2,10 +2,11 @@
 #include <imgui.h>
 #include <karkinolution/view/screen.hpp>
 
-void KarkinolutionView::Screen::StateView::draw() const {
+void KarkinolutionView::Screen::StateView::draw() {
 	if (state.connected) {
-		ImGui::Text("Connected");
+		connection_status.text = "Connected";
 	} else {
-		ImGui::Text("Disconnected");
+		connection_status.text = "Disconnected";
 	}
+	connection_status.draw();
 }
