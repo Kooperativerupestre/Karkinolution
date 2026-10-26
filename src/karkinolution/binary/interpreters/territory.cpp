@@ -10,7 +10,9 @@ TerritorySRI::serialize_territory(const class Territory &territory) {
 	TerritorySRI::BytesArrays::Territory bytes{};
 
 	const auto size_bytes = UnitsSRI::serialize_size(territory.size());
-	BinaryUtils::append_bytes(bytes, size_bytes, TerritorySRI::Layout::Size::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes,
+											   size_bytes,
+											   TerritorySRI::Layout::Size::OFFSET);
 
 	return bytes;
 }

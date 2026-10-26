@@ -66,10 +66,11 @@ void Connection::send_next() {
 	sending_state.is_sending = true;
 
 
-	sending_state.bytes = Frames::Motor::make_response_raw_bytes(response.type,
-																 response.sub_type,
-																 response.request_id,
-																 response.payload);
+	sending_state.bytes =
+		Karkinolution::Binary::Frames::Motor::make_response_raw_bytes(response.type,
+																	  response.sub_type,
+																	  response.request_id,
+																	  response.payload);
 
 	asio::async_write(socket_,
 					  asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),

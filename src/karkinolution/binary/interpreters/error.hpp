@@ -1,5 +1,6 @@
 #pragma once
 
+#include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/core/id.hpp"
 
@@ -17,8 +18,8 @@ namespace Karkinolution {
 					} // namespace Layout
 
 					struct SerializedErrorOutput {
-							std::vector<std::byte>                 payload;
-							Protocol::Types::BinarySubTypes::Error sub_type;
+							std::vector<std::byte> payload;
+							ErrorSubTypes          sub_type;
 					};
 
 					std::vector<std::byte> serialize_error(const std::string &error);

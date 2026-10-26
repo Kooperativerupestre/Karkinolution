@@ -264,8 +264,8 @@ namespace Deserializer {
 		} else if (bytes[offset] == static_cast<std::byte>(0x00)) {
 			return false;
 		} else {
-			throw ByteError(
-				std::format("Invalid bool value: {}", BinaryUtils::byte_to_int(bytes[offset])));
+			throw ByteError(std::format("Invalid bool value: {}",
+										Karkinolution::Binary::Utils::byte_to_int(bytes[offset])));
 		}
 	}
 
@@ -275,7 +275,8 @@ namespace Deserializer {
 		} else if (byte == static_cast<std::byte>(0x00)) {
 			return false;
 		} else {
-			throw ByteError(std::format("Invalid bool value: {}", BinaryUtils::byte_to_int(byte)));
+			throw ByteError(std::format("Invalid bool value: {}",
+										Karkinolution::Binary::Utils::byte_to_int(byte)));
 		}
 	}
 

@@ -13,15 +13,15 @@ ResponseFrame CorpseAPIBYA::see_corpse(const World                  &world,
 	auto corpse = Karkinolution::API::Corpse::see_corpse(world, id);
 
 	if (corpse == nullptr) {
-		return Frames::Motor::make_response(BinaryTypes::Response,
-											ResponseSubTypes ::NONE,
-											request_id,
-											std::vector<std::byte>{});
+		return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
+																   ResponseSubTypes ::NONE,
+																   request_id,
+																   std::vector<std::byte>{});
 	}
 	const auto corpse_payload = CorpseSRI::serialize_corpse(*corpse);
 
-	return Frames::Motor::make_response(BinaryTypes::Response,
-										ResponseSubTypes::CORPSE,
-										request_id,
-										corpse_payload);
+	return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
+															   ResponseSubTypes::CORPSE,
+															   request_id,
+															   corpse_payload);
 }

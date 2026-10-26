@@ -8,7 +8,7 @@ namespace Karkinolution {
 		namespace Interpreters {
 			namespace SRI {
 				namespace NLT {
-					constexpr std::byte serialize_nlt_type(Protocol::Types::BinaryNLT type) {
+					constexpr std::byte serialize_nlt_type(Protocol::NumericType type) {
 						return static_cast<std::byte>(static_cast<std::uint8_t>(type));
 					}
 				} // namespace NLT

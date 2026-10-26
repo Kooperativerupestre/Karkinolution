@@ -39,13 +39,13 @@ UnitsSRI::BytesArrays::Size UnitsSRI::serialize_size(const Size &size) {
 	UnitsSRI::BytesArrays::Size bytes;
 
 	const auto lateral_serialized = UnitsSRI::serialize_lateral(size.lateral);
-	BinaryUtils::append_bytes(bytes, lateral_serialized, Layout::Lateral::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, lateral_serialized, Layout::Lateral::OFFSET);
 
 	const auto height_serialized = UnitsSRI::serialize_height(size.height);
-	BinaryUtils::append_bytes(bytes, height_serialized, Layout::Height::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, height_serialized, Layout::Height::OFFSET);
 
 	const auto depth_serialized = UnitsSRI::serialize_depth(size.depth);
-	BinaryUtils::append_bytes(bytes, depth_serialized, Layout::Depth::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, depth_serialized, Layout::Depth::OFFSET);
 
 	return bytes;
 }

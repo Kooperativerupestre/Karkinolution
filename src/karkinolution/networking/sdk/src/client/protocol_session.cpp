@@ -1,4 +1,5 @@
 #include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/protocol/layouts.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
@@ -23,12 +24,12 @@ void ProtocolSession::sync_requests() {
 		const auto raw_frame = FrameBufferAnalyzer::get_frame(incoming_responses).value();
 		incoming_responses.pop_front();
 
-		const auto request_id = Frames::Parser::Response::get_id(raw_frame);
-		const auto type       = Frames::Parser::get_type(raw_frame);
-		const auto v_sub_type = Frames::Parser::get_sub_type(raw_frame);
-		const auto payload    = Frames::Parser::get_payload(raw_frame);
+		const auto request_id = Karkinolution::Binary::Frames::Parser::Response::get_id(raw_frame);
+		const auto type       = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
+		const auto v_sub_type = Karkinolution::Binary::Frames::Parser::get_sub_type(raw_frame);
+		const auto payload    = Karkinolution::Binary::Frames::Parser::get_payload(raw_frame);
 
-		GenericResponseSubTypes sub_type;
+		Karkinolution::Binary::Protocol::Detail::ResponseVariant sub_type;
 
 		if (std::holds_alternative<RequestSubTypes>(v_sub_type)) {
 			throw ClientError("Response frame cannot have request subtype");
@@ -38,7 +39,10 @@ void ProtocolSession::sync_requests() {
 			sub_type = std::get<ResponseSubTypes>(v_sub_type);
 		}
 
-		const auto frame = Frames::Motor::make_response(type, sub_type, request_id, payload);
+		const auto frame = Karkinolution::Binary::Frames::Motor::make_response(type,
+																			   sub_type,
+																			   request_id,
+																			   payload);
 
 		const auto added = pending_requests.add_response(frame);
 

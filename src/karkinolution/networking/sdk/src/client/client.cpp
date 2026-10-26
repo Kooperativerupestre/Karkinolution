@@ -68,10 +68,10 @@ RequestId Client::send_without_waiting(const RequestData &data) {
 	KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
 
 	const auto request_id = next_request_id.fetch_add(1);
-	auto       raw_frame  = Frames::Motor::make_request_raw_bytes(data.sub_type,
-                                                           request_id,
-                                                           data.resource,
-                                                           data.payload);
+	auto raw_frame = Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
+																				  request_id,
+																				  data.resource,
+																				  data.payload);
 
 
 	protocol_session.register_request(request_id);

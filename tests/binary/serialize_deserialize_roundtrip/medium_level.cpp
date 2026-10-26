@@ -1,3 +1,5 @@
+#include "karkinolution/binary/protocol/contract.hpp"
+
 #include <gtest/gtest.h>
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/interpreters/geometry.hpp>
@@ -38,7 +40,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_AllAccessorsAndType) {
 		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::DOUBLE);
+		EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+				  Karkinolution::Binary::Protocol::NumericType::DOUBLE);
 		EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer, 0), stat.value());
 		EXPECT_DOUBLE_EQ(StatsDSI::get_max<double>(buffer, 0), stat.max());
 		EXPECT_DOUBLE_EQ(StatsDSI::get_min<double>(buffer, 0), stat.min());
@@ -57,7 +60,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_AllAccessorsAndType) {
 		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::FLOAT);
+		EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+				  Karkinolution::Binary::Protocol::NumericType::FLOAT);
 		EXPECT_FLOAT_EQ(StatsDSI::get_value<float>(buffer, 0), stat.value());
 		EXPECT_FLOAT_EQ(StatsDSI::get_max<float>(buffer, 0), stat.max());
 		EXPECT_FLOAT_EQ(StatsDSI::get_min<float>(buffer, 0), stat.min());
@@ -76,7 +80,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_AllAccessorsAndType) {
 		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::UINT32_T);
+		EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+				  Karkinolution::Binary::Protocol::NumericType::UINT32);
 		EXPECT_EQ(StatsDSI::get_value<std::uint32_t>(buffer, 0), stat.value());
 		EXPECT_EQ(StatsDSI::get_max<std::uint32_t>(buffer, 0), stat.max());
 		EXPECT_EQ(StatsDSI::get_min<std::uint32_t>(buffer, 0), stat.min());
@@ -95,7 +100,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_AllAccessorsAndType) {
 		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::UINT64_T);
+		EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+				  Karkinolution::Binary::Protocol::NumericType::UINT64);
 		EXPECT_EQ(StatsDSI::get_value<std::uint64_t>(buffer, 0), stat.value());
 		EXPECT_EQ(StatsDSI::get_max<std::uint64_t>(buffer, 0), stat.max());
 		EXPECT_EQ(StatsDSI::get_min<std::uint64_t>(buffer, 0), stat.min());
@@ -114,7 +120,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_AllAccessorsAndType) {
 		const auto                   bytes = StatsSRI::serialize_limited_value(stat);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::UINT8_T);
+		EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+				  Karkinolution::Binary::Protocol::NumericType::UINT8);
 		EXPECT_EQ(StatsDSI::get_value<std::uint8_t>(buffer, 0), stat.value());
 		EXPECT_EQ(StatsDSI::get_max<std::uint8_t>(buffer, 0), stat.max());
 		EXPECT_EQ(StatsDSI::get_min<std::uint8_t>(buffer, 0), stat.min());
@@ -257,7 +264,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_NormalizedValueRoundtrip) {
 			const auto                   bytes = StatsSRI::serialize_normalized_value(original);
 			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-			EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::DOUBLE);
+			EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+					  Karkinolution::Binary::Protocol::NumericType::DOUBLE);
 			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer, 0), original.value());
 			EXPECT_DOUBLE_EQ(StatsDSI::get_max<double>(buffer, 0), 1.0);
 			EXPECT_DOUBLE_EQ(StatsDSI::get_min<double>(buffer, 0), 0.0);
@@ -289,7 +297,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_NormalizedValueRoundtrip) {
 			const auto                   bytes = StatsSRI::serialize_normalized_value(original);
 			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-			EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::FLOAT);
+			EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+					  Karkinolution::Binary::Protocol::NumericType::FLOAT);
 			EXPECT_FLOAT_EQ(StatsDSI::get_value<float>(buffer, 0), original.value());
 			EXPECT_FLOAT_EQ(StatsDSI::get_max<float>(buffer, 0), 1.0f);
 			EXPECT_FLOAT_EQ(StatsDSI::get_min<float>(buffer, 0), 0.0f);
@@ -308,7 +317,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_SignedNormalizedValueRoundtrip) {
 			const auto bytes = StatsSRI::serialize_signed_normalized_value(original);
 			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-			EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::DOUBLE);
+			EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+					  Karkinolution::Binary::Protocol::NumericType::DOUBLE);
 			EXPECT_DOUBLE_EQ(StatsDSI::get_value<double>(buffer, 0), original.value());
 			EXPECT_DOUBLE_EQ(StatsDSI::get_max<double>(buffer, 0), 1.0);
 			EXPECT_DOUBLE_EQ(StatsDSI::get_min<double>(buffer, 0), -1.0);
@@ -340,7 +350,8 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_SignedNormalizedValueRoundtrip) {
 			const auto bytes = StatsSRI::serialize_signed_normalized_value(original);
 			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-			EXPECT_EQ(StatsDSI::get_type(buffer, 0), BinaryNLT::FLOAT);
+			EXPECT_EQ(StatsDSI::get_type(buffer, 0),
+					  Karkinolution::Binary::Protocol::NumericType::FLOAT);
 			EXPECT_FLOAT_EQ(StatsDSI::get_value<float>(buffer, 0), original.value());
 			EXPECT_FLOAT_EQ(StatsDSI::get_max<float>(buffer, 0), 1.0f);
 			EXPECT_FLOAT_EQ(StatsDSI::get_min<float>(buffer, 0), -1.0f);

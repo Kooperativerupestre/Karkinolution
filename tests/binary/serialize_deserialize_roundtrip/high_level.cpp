@@ -1,4 +1,4 @@
-#include "karkinolution/binary/deserializer.hpp"
+
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/geometry/models.hpp"
@@ -41,12 +41,12 @@ TEST(PropertiesSerializeDeserializeRoundtrip, StreamWithOffsets) {
 	std::vector<std::byte> stream = {std::byte{0xAA}, std::byte{0xBB}};
 
 	const size_t offset_swimm = stream.size();
-	BinaryUtils::append_bytes(
+	Karkinolution::Binary::Utils::append_bytes(
 		stream,
 		PropertiesSRI::serialize(GenericProperty(Properties::Capabilities::Move::SWIMM)));
 
 	const size_t offset_walk = stream.size();
-	BinaryUtils::append_bytes(
+	Karkinolution::Binary::Utils::append_bytes(
 		stream,
 		PropertiesSRI::serialize(GenericProperty(Properties::Capabilities::Move::WALK)));
 

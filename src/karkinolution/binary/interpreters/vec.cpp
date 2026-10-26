@@ -9,13 +9,13 @@ VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const Vec3 &vec) {
 	VecSRI::BytesArrays::Vec result;
 
 	const auto x = Serializer::convert_double(vec.x);
-	BinaryUtils::append_bytes(result, x, VecSRI::Layout::X::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(result, x, VecSRI::Layout::X::OFFSET);
 
 	const auto y = Serializer::convert_double(vec.y);
-	BinaryUtils::append_bytes(result, y, VecSRI::Layout::Y::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(result, y, VecSRI::Layout::Y::OFFSET);
 
 	const auto z = Serializer::convert_double(vec.z);
-	BinaryUtils::append_bytes(result, z, VecSRI::Layout::Z::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(result, z, VecSRI::Layout::Z::OFFSET);
 	return result;
 }
 

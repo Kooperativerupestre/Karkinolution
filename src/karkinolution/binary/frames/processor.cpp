@@ -11,37 +11,33 @@
 #include <karkinolution/networking/api_adapter/creature.hpp>
 #include <karkinolution/networking/api_adapter/soil.hpp>
 
-ResponseFrame Frames::Processor::process(const RequestFrame &frame, const World &world) {
+ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFrame &frame,
+																const World        &world) {
 
 	const auto sub_type = frame.sub_type;
 
 	const auto resource = frame.resource;
 
-	BinaryValidator::Request::validate_request_sub_type_and_resource(
-		static_cast<uint8_t>(sub_type),
-		static_cast<uint8_t>(resource));
-
 
 	if (sub_type == RequestSubTypes::SEE) {
-		if (resource == RequestResource::CREATURE) {
+		if (resource == Resource::CREATURE) {
 			return CreatureAPIBYA::see_creature(world, frame.id, frame.payload);
-		} else if (resource == RequestResource::CORPSE) {
+		} else if (resource == Resource::CORPSE) {
 			return CorpseAPIBYA::see_corpse(world, frame.id, frame.payload);
-		} else if (resource == RequestResource::SOIL) {
+		} else if (resource == Resource::SOIL) {
 			return Karkinolution::Networking::APIBYA::Soil::see_soil(world,
 																	 frame.id,
 																	 frame.payload);
 		}
 	} else if (sub_type == RequestSubTypes::CREATE) {
-		if (resource == RequestResource::CREATURE) {
+		if (resource == Resource::CREATURE) {
 			throw SimulationError("TODO: Implement the create of creature");
 		}
 	}
 
 
 	throw SimulationError(
-		std::format("Unreachable: The validation before the process in the frame processor "
-					"must treat this case: request sub type {} and request resource {}",
-					static_cast<FrameSubTypeEnumType>(sub_type),
-					static_cast<RequestResourceEnumType>(resource)));
+		std::format("Non implemented yey: request sub type {} and request resource {}",
+					Binary::Utils::cast_numeric(sub_type),
+					Binary::Utils::cast_numeric(resource)));
 }

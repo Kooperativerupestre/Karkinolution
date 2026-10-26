@@ -5,17 +5,16 @@
 
 namespace ProtocolLayout = Karkinolution::Binary::Protocol::Layout;
 
+using Karkinolution::Binary::Protocol::Aliases::FrameDeclaredSize;
 using Karkinolution::Binary::Protocol::Aliases::RequestId;
-using Karkinolution::Binary::Protocol::Types::BinaryTypes;
-using RequestSubTypes  = Karkinolution::Binary::Protocol::Types::BinarySubTypes::Request;
-using ResponseSubTypes = Karkinolution::Binary::Protocol::Types::BinarySubTypes::Response;
-using ErrorSubTypes    = Karkinolution::Binary::Protocol::Types::BinarySubTypes::Error;
-using GenericResponseSubTypes =
-	Karkinolution::Binary::Protocol::Types::BinarySubTypes::GenericResponseSubType;
-using Karkinolution::Binary::Protocol::Types::RequestResource;
 
-using FrameDeclaredSizeType    = Karkinolution::Binary::Protocol::Aliases::FrameDeclaredSize;
-using FrameBinaryTypesEnumType = Karkinolution::Binary::Protocol::Aliases::BinaryTypesEnumType;
-using FrameSubTypeEnumType     = Karkinolution::Binary::Protocol::Aliases::BinarySubTypesEnumType;
-using RequestResourceEnumType  = Karkinolution::Binary::Protocol::Aliases::RequestResourceEnumType;
-using Karkinolution::Binary::Protocol::Types::BinaryNLT;
+using Karkinolution::Binary::Protocol::ErrorCode;
+using Karkinolution::Binary::Protocol::NumericType;
+using Karkinolution::Binary::Protocol::Operation;
+using Karkinolution::Binary::Protocol::Resource;
+using Karkinolution::Binary::Protocol::ResponseCode;
+using BinaryTypes = Karkinolution::Binary::Protocol::Type;
+
+using RequestSubTypes  = Operation;
+using ResponseSubTypes = ResponseCode;
+using ErrorSubTypes    = ErrorCode;

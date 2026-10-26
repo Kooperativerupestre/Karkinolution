@@ -52,10 +52,12 @@ namespace Karkinolution {
 
 						using ValueType = typename T::value_type;
 
-						BinaryValidator::BinaryNLTValidator::validate_dynamic_type_exists<
-							ValueType>();
+						Karkinolution::Binary::Protocol::Validator::NumericType::
+							validate_dynamic_type_exists<ValueType()>;
 
-						constexpr auto NTL_Type = BinaryNLTUtils::get<ValueType>();
+
+						constexpr auto NTL_Type =
+							Karkinolution::Binary::Utils::NumericTypes::get<ValueType>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NTL_Type);
 
@@ -65,9 +67,15 @@ namespace Karkinolution {
 						const auto serialized_max   = Serializer::serialize(stat.max);
 						const auto serialized_min   = Serializer::serialize(stat.min);
 
-						BinaryUtils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
-						BinaryUtils::append_bytes(bytes, serialized_max, Layout::Max::OFFSET);
-						BinaryUtils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_value,
+																   Layout::Value::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_max,
+																   Layout::Max::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_min,
+																   Layout::Min::OFFSET);
 
 						return bytes;
 					}
@@ -76,17 +84,25 @@ namespace Karkinolution {
 					BytesArray::Stat serialize_normalized_value(const NormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
-						BinaryValidator::BinaryNLTValidator::validate_dynamic_type_exists<T>();
-						constexpr auto NLT_Type = BinaryNLTUtils::get<T>();
+						Karkinolution::Binary::Protocol::Validator::NumericType::
+							validate_dynamic_type_exists<T>();
+						constexpr auto NLT_Type =
+							Karkinolution::Binary::Utils::NumericTypes::get<T>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NLT_Type);
 						const auto serialized_value = Serializer::serialize(value.value());
 						const auto serialize_max    = Serializer::serialize(T(1));
 						const auto serialized_min   = Serializer::serialize(T(0));
 
-						BinaryUtils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
-						BinaryUtils::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
-						BinaryUtils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_value,
+																   Layout::Value::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialize_max,
+																   Layout::Max::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_min,
+																   Layout::Min::OFFSET);
 
 						return bytes;
 					}
@@ -96,17 +112,25 @@ namespace Karkinolution {
 					serialize_signed_normalized_value(const SignedNormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
-						BinaryValidator::BinaryNLTValidator::validate_dynamic_type_exists<T>();
-						constexpr auto NLT_Type = BinaryNLTUtils::get<T>();
+						Karkinolution::Binary::Protocol::Validator::NumericType::
+							validate_dynamic_type_exists<T>();
+						constexpr auto NLT_Type =
+							Karkinolution::Binary::Utils::NumericTypes::get<T>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NLT_Type);
 						const auto serialized_value = Serializer::serialize(value.value());
 						const auto serialize_max    = Serializer::serialize(T(1));
 						const auto serialized_min   = Serializer::serialize(T(-1));
 
-						BinaryUtils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
-						BinaryUtils::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
-						BinaryUtils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_value,
+																   Layout::Value::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialize_max,
+																   Layout::Max::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes,
+																   serialized_min,
+																   Layout::Min::OFFSET);
 						return bytes;
 					}
 				} // namespace Stats
@@ -115,9 +139,9 @@ namespace Karkinolution {
 			namespace DSI {
 				namespace Stats {
 
-					inline Protocol::Types::BinaryNLT
-					get_type(const std::vector<std::byte> &payload, std::size_t offset) {
-						return static_cast<Protocol::Types::BinaryNLT>(
+					inline Protocol::NumericType get_type(const std::vector<std::byte> &payload,
+														  std::size_t                   offset) {
+						return static_cast<Protocol::NumericType>(
 							Deserializer::read_uint8_t(payload,
 													   offset + SRI::Stats::Layout::Type::OFFSET));
 					}

@@ -11,7 +11,7 @@ TEST(DSIOffsetInvariantsMidLevel, VecMidLevelAuxiliaryGettersAutoAddOffset) {
 
 	std::vector<std::byte> payload     = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
 	const std::size_t      base_offset = payload.size();
-	BinaryUtils::append_bytes(payload, vec_bytes);
+	Karkinolution::Binary::Utils::append_bytes(payload, vec_bytes);
 
 	EXPECT_DOUBLE_EQ(VecDSI::get_x(payload, base_offset), original.x);
 	EXPECT_DOUBLE_EQ(VecDSI::get_y(payload, base_offset), original.y);
@@ -24,7 +24,7 @@ TEST(DSIOffsetInvariantsMidLevel, UnitsSizeMidLevelAuxiliaryGettersAutoAddOffset
 
 	std::vector<std::byte> payload     = {std::byte{0xDE}, std::byte{0xAD}};
 	const std::size_t      base_offset = payload.size();
-	BinaryUtils::append_bytes(payload, size_bytes);
+	Karkinolution::Binary::Utils::append_bytes(payload, size_bytes);
 
 	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_lateral(payload, base_offset).value,
 					 original.lateral.value);

@@ -1,5 +1,6 @@
 #pragma once
 #include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/binary/protocol/contract.hpp"
 
 #include <deque>
 #include <karkinolution/binary/protocol/layouts.hpp>
@@ -8,9 +9,9 @@
 inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 4096;
 
 
-using BufferExistence = Frames::Parser::FrameFieldExistence;
-using BinaryTypes     = Karkinolution::Binary::Protocol::Types::BinaryTypes;
-using CodeSubTypes    = Karkinolution::Binary::Protocol::Types::BinarySubTypes::CodeSubTypes;
+using BufferExistence = Karkinolution::Binary::Frames::Parser::FrameFieldExistence;
+
+using CodeVariant = Karkinolution::Binary::Protocol::Detail::CodeVariant;
 
 /*
 Why is this used by Client and ProtocolSession (Server side)
@@ -121,7 +122,7 @@ namespace FrameBufferAnalyzer {
 
 	BufferExistence has_sub_type(const RawFrameBuffer &buffer);
 
-	std::optional<CodeSubTypes> get_sub_type(const RawFrameBuffer &buffer);
+	std::optional<CodeVariant> get_sub_type(const RawFrameBuffer &buffer);
 
 	BufferExistence has_type(const RawFrameBuffer &buffer);
 

@@ -9,14 +9,11 @@ namespace Karkinolution::Binary::Protocol::Aliases {
 
 	template <typename T> using UnderlyingType = std::underlying_type_t<T>;
 
-	using RequestId         = uint64_t;
-	using FrameDeclaredSize = uint32_t;
-	using FrameType         = UnderlyingType<Types::BinaryTypes>;
-	using FrameSubType      = UnderlyingType<Types::BinarySubTypes::Request>;
-	using BinaryNLTEnumType = UnderlyingType<Types::BinaryNLT>;
+	using RequestId = uint64_t;
 
-	using RequestResourceEnumType = UnderlyingType<Types::RequestResource>;
-	using BinaryTypesEnumType     = UnderlyingType<Types::BinaryTypes>;
-	using BinarySubTypesEnumType  = UnderlyingType<Types::BinarySubTypes::Error>;
+	using FrameDeclaredSize = uint32_t;
+	using FrameType         = UnderlyingType<Protocol::Type>;
+	using FrameSubType      = UnderlyingType<Protocol::Operation>;
+	using FrameResource     = UnderlyingType<Protocol::Resource>;
 
 } // namespace Karkinolution::Binary::Protocol::Aliases

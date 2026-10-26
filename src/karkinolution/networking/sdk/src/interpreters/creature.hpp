@@ -20,10 +20,10 @@ namespace KarkinolutionSDK {
 			std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 			see_creature(T &client, BaseIdType id) {
 				const auto payload = CreatureSRI::Request::make_see_creature(id);
-				const auto built   = Frames::Motor::make_request(
+				const auto built   = Karkinolution::Binary::Frames::Motor::make_request(
                     RequestSubTypes::SEE,
                     GENERIC_INTERPRETER_ID,
-                    RequestResource::CREATURE,
+                    Resource::CREATURE,
                     std::vector<std::byte>(payload.begin(), payload.end()));
 
 				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
@@ -36,7 +36,7 @@ namespace KarkinolutionSDK {
 				}
 
 				const auto &frame = result.value().value();
-				if (Frames::Analyzer::is_none(frame)) {
+				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}
 
@@ -52,10 +52,10 @@ namespace KarkinolutionSDK {
 						  const std::optional<std::string> &name) {
 				const auto payload =
 					CreatureSRI::Request::make_create_creature(gender, specie, position, name);
-				const auto built = Frames::Motor::make_request(
+				const auto built = Karkinolution::Binary::Frames::Motor::make_request(
 					RequestSubTypes::CREATE,
 					GENERIC_INTERPRETER_ID,
-					RequestResource::CREATURE,
+					Resource::CREATURE,
 					std::vector<std::byte>(payload.begin(), payload.end()));
 
 				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
@@ -68,7 +68,7 @@ namespace KarkinolutionSDK {
 				}
 
 				const auto &frame = result.value().value();
-				if (Frames::Analyzer::is_none(frame)) {
+				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}
 

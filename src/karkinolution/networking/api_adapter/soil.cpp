@@ -16,11 +16,11 @@ Karkinolution::Networking::APIBYA::Soil::see_soil(const World                  &
 	auto soil = Karkinolution::API::Soil::see_soil(world, id);
 
 	if (soil == nullptr) {
-		return Frames::Motor::make_none_response(request_id);
+		return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 	}
 	const auto soil_payload = SoilSRI::serialize_soil(*soil);
-	return Frames::Motor::make_response(BinaryTypes::Response,
-										ResponseSubTypes::SOIL,
-										request_id,
-										soil_payload);
+	return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
+															   ResponseSubTypes::SOIL,
+															   request_id,
+															   soil_payload);
 }

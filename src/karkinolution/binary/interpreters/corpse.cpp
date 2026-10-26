@@ -35,16 +35,22 @@ CorpseSRI::BytesArrays::Corpse CorpseSRI::serialize_corpse(const class Corpse &c
 	BytesArrays::Corpse bytes{};
 
 	const auto id_bytes = serialize_id(corpse.id);
-	BinaryUtils::append_bytes(bytes, id_bytes, CorpseSRI::Layout::Id::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, id_bytes, CorpseSRI::Layout::Id::OFFSET);
 
 	const auto raw_meat_bytes = serialize_raw_meat(corpse.raw_meat);
-	BinaryUtils::append_bytes(bytes, raw_meat_bytes, CorpseSRI::Layout::RawMeat::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes,
+											   raw_meat_bytes,
+											   CorpseSRI::Layout::RawMeat::OFFSET);
 
 	const auto position_bytes = serialize_position(corpse.position);
-	BinaryUtils::append_bytes(bytes, position_bytes, CorpseSRI::Layout::PositionX::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes,
+											   position_bytes,
+											   CorpseSRI::Layout::PositionX::OFFSET);
 
 	const auto size_bytes = serialize_size(corpse.size);
-	BinaryUtils::append_bytes(bytes, size_bytes, CorpseSRI::Layout::Lateral::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes,
+											   size_bytes,
+											   CorpseSRI::Layout::Lateral::OFFSET);
 
 	return bytes;
 }

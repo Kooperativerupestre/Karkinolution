@@ -27,7 +27,7 @@ namespace KarkinolutionSDK {
 	namespace Client {
 		struct RequestData {
 				RequestSubTypes        sub_type;
-				RequestResource        resource;
+				Resource               resource;
 				std::vector<std::byte> payload;
 		};
 

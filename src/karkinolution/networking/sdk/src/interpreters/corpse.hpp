@@ -28,10 +28,10 @@ namespace KarkinolutionSDK {
 			see_corpse(T &client, BaseIdType id) {
 				const auto payload = CorpseSRI::Request::make_see_corpse(id);
 
-				const auto built = Frames::Motor::make_request(
+				const auto built = Karkinolution::Binary::Frames::Motor::make_request(
 					RequestSubTypes::SEE,
 					GENERIC_INTERPRETER_ID,
-					RequestResource::CORPSE,
+					Resource::CORPSE,
 					std::vector<std::byte>(payload.begin(), payload.end()));
 
 				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
@@ -45,7 +45,7 @@ namespace KarkinolutionSDK {
 				}
 
 				const auto &frame = result.value().value();
-				if (Frames::Analyzer::is_none(frame)) {
+				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}
 

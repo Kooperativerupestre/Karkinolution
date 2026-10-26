@@ -4,9 +4,13 @@
 #include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/binary/frames/parser.hpp>
 
-namespace Frames {
-	namespace Processor {
-		ResponseFrame process(const RequestFrame &frame, const World &world);
-	} // namespace Processor
+namespace Karkinolution {
+	namespace Binary {
+		namespace Frames {
+			namespace Processor {
+				ResponseFrame process(const RequestFrame &frame, const World &world);
+			} // namespace Processor
 
-} // namespace Frames
+		} // namespace Frames
+	} // namespace Binary
+} // namespace Karkinolution

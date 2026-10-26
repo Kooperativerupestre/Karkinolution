@@ -42,9 +42,9 @@ void ProtocolSession::process_frames() {
 		auto frame = FrameBufferAnalyzer::get_frame(request_buffer);
 		request_buffer.pop_front();
 
-		auto request = Frames::Parser::parse_request_frame(frame.value());
+		auto request = Karkinolution::Binary::Frames::Parser::parse_request_frame(frame.value());
 
-		auto response = Frames::Processor::process(request, world);
+		auto response = Karkinolution::Binary::Frames::Processor::process(request, world);
 
 		responses.add(std::move(response));
 	}

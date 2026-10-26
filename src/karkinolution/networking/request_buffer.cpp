@@ -7,7 +7,7 @@
 
 BufferExistence FrameBufferAnalyzer::has_size(const RawFrameBuffer &buffer) {
 	const auto &view = buffer.view();
-	return Frames::Parser::has_size(view);
+	return Karkinolution::Binary::Frames::Parser::has_size(view);
 }
 
 std::optional<std::size_t> FrameBufferAnalyzer::get_size(const RawFrameBuffer &buffer) {
@@ -18,15 +18,15 @@ std::optional<std::size_t> FrameBufferAnalyzer::get_size(const RawFrameBuffer &b
 	if (has_size_output != BufferExistence::YES) {
 		return std::nullopt;
 	}
-	return Frames::Parser::get_declared_size(view);
+	return Karkinolution::Binary::Frames::Parser::get_declared_size(view);
 }
 
 BufferExistence FrameBufferAnalyzer::has_sub_type(const RawFrameBuffer &buffer) {
 	const auto &view = buffer.view();
-	return Frames::Parser::has_sub_type(view);
+	return Karkinolution::Binary::Frames::Parser::has_sub_type(view);
 }
 
-std::optional<CodeSubTypes> FrameBufferAnalyzer::get_sub_type(const RawFrameBuffer &buffer) {
+std::optional<CodeVariant> FrameBufferAnalyzer::get_sub_type(const RawFrameBuffer &buffer) {
 	const auto &view = buffer.view();
 
 	const auto has_code_output = has_sub_type(buffer);
@@ -34,12 +34,12 @@ std::optional<CodeSubTypes> FrameBufferAnalyzer::get_sub_type(const RawFrameBuff
 	if (has_code_output != BufferExistence::YES) {
 		return std::nullopt;
 	}
-	return Frames::Parser::get_sub_type(view);
+	return Karkinolution::Binary::Frames::Parser::get_sub_type(view);
 }
 
 BufferExistence FrameBufferAnalyzer::has_type(const RawFrameBuffer &buffer) {
 	const auto &view = buffer.view();
-	return Frames::Parser::has_type(view);
+	return Karkinolution::Binary::Frames::Parser::has_type(view);
 }
 
 std::optional<BinaryTypes> FrameBufferAnalyzer::get_type(const RawFrameBuffer &buffer) {
@@ -50,12 +50,12 @@ std::optional<BinaryTypes> FrameBufferAnalyzer::get_type(const RawFrameBuffer &b
 	if (has_type_output != BufferExistence::YES) {
 		return std::nullopt;
 	}
-	return Frames::Parser::get_type(view);
+	return Karkinolution::Binary::Frames::Parser::get_type(view);
 }
 
 BufferExistence FrameBufferAnalyzer::has_payload(const RawFrameBuffer &buffer) {
 	const auto &view = buffer.view();
-	return Frames::Parser::has_payload(view);
+	return Karkinolution::Binary::Frames::Parser::has_payload(view);
 }
 
 std::optional<std::vector<std::byte>>
@@ -67,12 +67,12 @@ FrameBufferAnalyzer::get_payload(const RawFrameBuffer &buffer) {
 	if (has_payload_output != BufferExistence::YES) {
 		return std::nullopt;
 	}
-	return Frames::Parser::get_payload(view);
+	return Karkinolution::Binary::Frames::Parser::get_payload(view);
 }
 
 BufferExistence FrameBufferAnalyzer::has_frame(const RawFrameBuffer &buffer) {
 	const auto &view = buffer.view();
-	return Frames::Parser::has_frame(view);
+	return Karkinolution::Binary::Frames::Parser::has_frame(view);
 }
 
 std::optional<std::vector<std::byte>> FrameBufferAnalyzer::get_frame(RawFrameBuffer &buffer) {
@@ -82,5 +82,5 @@ std::optional<std::vector<std::byte>> FrameBufferAnalyzer::get_frame(RawFrameBuf
 		return std::nullopt;
 	}
 
-	return Frames::Parser::get_frame(buffer.view());
+	return Karkinolution::Binary::Frames::Parser::get_frame(buffer.view());
 }

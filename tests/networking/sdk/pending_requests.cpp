@@ -1,5 +1,6 @@
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 
 #include <barrier>
@@ -17,11 +18,12 @@ namespace {
 	ResponseFrame make_test_response(RequestId id) {
 		const std::vector<std::byte> payload{std::byte{0x2A}, std::byte{0x7F}};
 
-		return ResponseFrame{static_cast<std::uint32_t>(payload.size()),
-							 id,
-							 GenericResponseSubTypes{ResponseSubTypes::CREATURE},
-							 payload,
-							 BinaryTypes::Response};
+		return ResponseFrame{
+			static_cast<std::uint32_t>(payload.size()),
+			id,
+			Karkinolution::Binary::Protocol::Detail::ResponseVariant{ResponseSubTypes::CREATURE},
+			payload,
+			BinaryTypes::Response};
 	}
 
 } // namespace

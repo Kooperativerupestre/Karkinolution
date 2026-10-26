@@ -46,7 +46,7 @@ std::vector<std::byte> CreatureSRI::serialize_name(const std::string &name) {
 									std::numeric_limits<uint8_t>::max()));
 	}
 	bytes.push_back(Serializer::convert_uint8_t(static_cast<uint8_t>(name.size())));
-	BinaryUtils::append_bytes(bytes, Serializer::convert_string(name));
+	Karkinolution::Binary::Utils::append_bytes(bytes, Serializer::convert_string(name));
 	return bytes;
 }
 
@@ -65,17 +65,17 @@ CreatureSRI::BytesArrays::Creature CreatureSRI::serialize_creature(const class C
 
 	const auto vec = VecSRI::serialize_vec(creature.position);
 
-	BinaryUtils::append_bytes(bytes, vec, Layout::PositionX::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, vec, Layout::PositionX::OFFSET);
 
 	// Name
 
 	const auto name = serialize_name(creature.ontology.name);
-	BinaryUtils::append_bytes(bytes, name, Layout::NameSize::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, name, Layout::NameSize::OFFSET);
 
 	// Id
 
 	const auto id = Serializer::serialize<BaseIdType>(creature.ontology.id);
-	BinaryUtils::append_bytes(bytes, id, Layout::Id::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, id, Layout::Id::OFFSET);
 
 	return bytes;
 }
@@ -102,60 +102,61 @@ CreatureSRI::Request::make_create_creature(std::optional<Gender>             gen
 
 
 	if (!gender) {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(false),
-								  Layout::CreateCreature::HasGender::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(false),
+												   Layout::CreateCreature::HasGender::OFFSET);
 	} else {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(true),
-								  Layout::CreateCreature::HasGender::OFFSET);
-		BinaryUtils::append_bytes(bytes,
-								  CreatureSRI::serialize_gender(*gender),
-								  Layout::CreateCreature::Gender::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(true),
+												   Layout::CreateCreature::HasGender::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   CreatureSRI::serialize_gender(*gender),
+												   Layout::CreateCreature::Gender::OFFSET);
 	}
 
 	if (!specie) {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(false),
-								  Layout::CreateCreature::HasSpecies::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(false),
+												   Layout::CreateCreature::HasSpecies::OFFSET);
 
 	} else {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(true),
-								  Layout::CreateCreature::HasSpecies::OFFSET);
-		BinaryUtils::append_bytes(bytes,
-								  CreatureSRI::serialize_specie(*specie),
-								  Layout::CreateCreature::Species::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(true),
+												   Layout::CreateCreature::HasSpecies::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   CreatureSRI::serialize_specie(*specie),
+												   Layout::CreateCreature::Species::OFFSET);
 	}
 
 	if (!position) {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(false),
-								  Layout::CreateCreature::HasPosition::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(false),
+												   Layout::CreateCreature::HasPosition::OFFSET);
 
 	} else {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(true),
-								  Layout::CreateCreature::HasPosition::OFFSET);
-		BinaryUtils::append_bytes(bytes,
-								  VecSRI::serialize_vec(*position),
-								  Layout::CreateCreature::Position::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(true),
+												   Layout::CreateCreature::HasPosition::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   VecSRI::serialize_vec(*position),
+												   Layout::CreateCreature::Position::OFFSET);
 	}
 
 	if (!name) {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(false),
-								  Layout::CreateCreature::HasName::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(false),
+												   Layout::CreateCreature::HasName::OFFSET);
 	} else {
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_bool(false),
-								  Layout::CreateCreature::HasName::OFFSET);
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_uint8_t(static_cast<uint8_t>(name->size())),
-								  Layout::CreateCreature::NameSize::OFFSET);
-		BinaryUtils::append_bytes(bytes,
-								  Serializer::convert_string(*name),
-								  Layout::CreateCreature::Name::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_bool(false),
+												   Layout::CreateCreature::HasName::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(
+			bytes,
+			Serializer::convert_uint8_t(static_cast<uint8_t>(name->size())),
+			Layout::CreateCreature::NameSize::OFFSET);
+		Karkinolution::Binary::Utils::append_bytes(bytes,
+												   Serializer::convert_string(*name),
+												   Layout::CreateCreature::Name::OFFSET);
 	}
 	return bytes;
 }
@@ -165,7 +166,8 @@ Gender CreatureDSI::get_gender(const std::vector<std::byte> &payload, std::size_
 	const auto raw_gender = payload[offset];
 	const auto gender     = Gender(raw_gender);
 	if (!magic_enum::enum_contains(gender)) {
-		throw ByteError(std::format("Invalid gender: {}", BinaryUtils::byte_to_int(raw_gender)));
+		throw ByteError(std::format("Invalid gender: {}",
+									Karkinolution::Binary::Utils::byte_to_int(raw_gender)));
 	}
 	return gender;
 }
@@ -174,7 +176,8 @@ CreatureSpecies CreatureDSI::get_specie(const std::vector<std::byte> &payload, s
 	const auto raw_specie = payload[offset];
 	const auto specie     = CreatureSpecies(raw_specie);
 	if (!magic_enum::enum_contains(specie)) {
-		throw ByteError(std::format("Invalid speciie: {}", BinaryUtils::byte_to_int(raw_specie)));
+		throw ByteError(std::format("Invalid speciie: {}",
+									Karkinolution::Binary::Utils::byte_to_int(raw_specie)));
 	}
 	return specie;
 }
