@@ -12,7 +12,7 @@
 #include <karkinolution/networking/api_adapter/soil.hpp>
 
 ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFrame &frame,
-																const World        &world) {
+																World              &world) {
 
 	const auto sub_type = frame.sub_type;
 
@@ -31,7 +31,7 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 		}
 	} else if (sub_type == RequestSubTypes::CREATE) {
 		if (resource == Resource::CREATURE) {
-			throw SimulationError("TODO: Implement the create of creature");
+			return CreatureAPIBYA::create_creature(world, frame.id, frame.payload);
 		}
 	}
 

@@ -2,6 +2,7 @@
 #include "karkinolution/api/creature.hpp"
 
 #include "karkinolution/binary/core_aliases.hpp"
+#include "karkinolution/binary/frames/aliases.hpp"
 #include "karkinolution/binary/interpreters/error.hpp"
 #include "karkinolution/binary/serializer.hpp"
 
@@ -27,6 +28,28 @@ ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
 
 		return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 	}
+	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
+
+	return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
+															   ResponseSubTypes::CREATURE,
+															   request_id,
+															   creature_payload);
+}
+
+ResponseFrame CreatureAPIBYA::create_creature(World                        &world,
+											  RequestId                     request_id,
+											  const std::vector<std::byte> &payload) {
+	const auto blueprint = CreatureDSI::Request::interpret_like_create_creature(payload);
+
+	auto creature = CreatureAPI::make_creature(world,
+											   blueprint.gender,
+											   blueprint.specie,
+											   blueprint.position,
+											   blueprint.name);
+	if (creature == nullptr) {
+		return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+	}
+
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
 	return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
