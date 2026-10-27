@@ -145,6 +145,10 @@ std::array<std::byte, 8> SoilSRI::Request::make_see_soil(BaseIdType id) {
 	return Serializer::serialize(id);
 }
 
+std::array<std::byte, 1> SoilSRI::Request::make_see_all_soils() {
+	return {};
+}
+
 // DSI implementations
 std::optional<Karkinolution::Binary::Interpreters::Models::Soil::DamageComponent>
 SoilDSI::get_damage(const std::vector<std::byte> &payload, std::size_t offset) {

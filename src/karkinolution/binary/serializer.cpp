@@ -9,6 +9,10 @@ FourBytes Serializer::convert_uint32_t(std::uint32_t value) {
 	return Core::convert_4_bytes(value);
 }
 
+TwoBytes Serializer::convert_uint16_t(std::uint16_t value) {
+	return Core::convert_2_bytes(value);
+}
+
 std::byte Serializer::convert_uint8_t(std::uint8_t value) {
 	return Core::convert_1_byte(value);
 }

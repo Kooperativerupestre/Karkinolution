@@ -143,3 +143,21 @@ A SO resolves the following problem: How can we know which sub type the serializ
 
 .payload -> Bytes
 .sub_type (or sub_type())
+
+## Frame Size Calculations
+
+- The declared size counts bytes after the declared-size field, including the remaining fixed header and payload.
+- Each request operation, response, and error has its own fixed-header size and payload-size calculation.
+- `Request::<Operation>::FIXED_HEADER_SIZE` is the absolute offset of the payload start from the beginning of the
+  frame. It includes the declared-size field; do not add `TOTAL_HEADER_SIZE` to it again.
+- The parser-level size dispatchers receive the frame type and `Protocol::Detail::CodeVariant` subtype and route to the
+  corresponding request-operation, response, or error calculation.
+
+## Frame Detection
+
+- `Parser::has_frame` returns `NO` for an empty buffer, `INCOMPLETE` when bytes are present but do not yet contain a
+  complete frame, and `YES` when the buffer starts with a complete frame.
+- Request operations expose their own `has_frame` and `get_frame` functions; request, response, and error namespaces
+  dispatch frame detection by frame type and subtype.
+- Frame extraction returns only the first complete frame from the buffer; buffer consumers are responsible for
+  removing consumed bytes.

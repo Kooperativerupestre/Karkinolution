@@ -9,7 +9,7 @@
 inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 4096;
 
 
-using BufferExistence = Karkinolution::Binary::Frames::Parser::FrameFieldExistence;
+using BufferExistence = Karkinolution::Binary::Frames::Parser::FrameExistence;
 
 using CodeVariant = Karkinolution::Binary::Protocol::Detail::CodeVariant;
 
@@ -116,25 +116,8 @@ inline constexpr std::size_t MAX_PAYLOAD_BYTES = std::min(
 
 namespace FrameBufferAnalyzer {
 
-	BufferExistence has_size(const RawFrameBuffer &buffer);
-
-	std::optional<std::size_t> get_size(const RawFrameBuffer &buffer);
-
-	BufferExistence has_sub_type(const RawFrameBuffer &buffer);
-
-	std::optional<CodeVariant> get_sub_type(const RawFrameBuffer &buffer);
-
-	BufferExistence has_type(const RawFrameBuffer &buffer);
-
-	std::optional<BinaryTypes> get_type(const RawFrameBuffer &buffer);
-
-	BufferExistence has_payload(const RawFrameBuffer &buffer);
-
-	std::optional<std::vector<std::byte>> get_payload(const RawFrameBuffer &buffer);
-
-
 	BufferExistence has_frame(const RawFrameBuffer &buffer);
 
-	std::optional<std::vector<std::byte>> get_frame(RawFrameBuffer &buffer);
+	std::optional<std::vector<std::byte>> get_frame(const RawFrameBuffer &buffer);
 
 } // namespace FrameBufferAnalyzer

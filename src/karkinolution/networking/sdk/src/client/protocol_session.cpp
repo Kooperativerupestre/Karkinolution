@@ -22,27 +22,19 @@ void ProtocolSession::sync_requests() {
 	while (FrameBufferAnalyzer::has_frame(incoming_responses) == BufferExistence::YES) {
 
 		const auto raw_frame = FrameBufferAnalyzer::get_frame(incoming_responses).value();
-		incoming_responses.pop_front();
-
-		const auto request_id = Karkinolution::Binary::Frames::Parser::Response::get_id(raw_frame);
-		const auto type       = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
-		const auto v_sub_type = Karkinolution::Binary::Frames::Parser::get_sub_type(raw_frame);
-		const auto payload    = Karkinolution::Binary::Frames::Parser::get_payload(raw_frame);
-
-		Karkinolution::Binary::Protocol::Detail::ResponseVariant sub_type;
-
-		if (std::holds_alternative<RequestSubTypes>(v_sub_type)) {
-			throw ClientError("Response frame cannot have request subtype");
-		} else if (std::holds_alternative<ErrorSubTypes>(v_sub_type)) {
-			sub_type = std::get<ErrorSubTypes>(v_sub_type);
-		} else if (std::holds_alternative<ResponseSubTypes>(v_sub_type)) {
-			sub_type = std::get<ResponseSubTypes>(v_sub_type);
+		for (std::size_t i = 0; i < raw_frame.size(); ++i) {
+			incoming_responses.pop_front();
 		}
 
-		const auto frame = Karkinolution::Binary::Frames::Motor::make_response(type,
-																			   sub_type,
-																			   request_id,
-																			   payload);
+		const auto type = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
+		ResponseFrameVariant frame;
+		if (type == BinaryTypes::Response) {
+			frame = Karkinolution::Binary::Frames::Parser::parse_response_frame(raw_frame);
+		} else if (type == BinaryTypes::Error) {
+			frame = Karkinolution::Binary::Frames::Parser::parse_error_frame(raw_frame);
+		} else {
+			throw ClientError("Client received a request frame from the server");
+		}
 
 		const auto added = pending_requests.add_response(frame);
 

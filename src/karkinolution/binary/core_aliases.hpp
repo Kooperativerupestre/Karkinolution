@@ -5,16 +5,14 @@
 
 namespace ProtocolLayout = Karkinolution::Binary::Protocol::Layout;
 
-using Karkinolution::Binary::Protocol::Aliases::FrameDeclaredSize;
-using Karkinolution::Binary::Protocol::Aliases::RequestId;
-
-using Karkinolution::Binary::Protocol::ErrorCode;
 using Karkinolution::Binary::Protocol::NumericType;
-using Karkinolution::Binary::Protocol::Operation;
-using Karkinolution::Binary::Protocol::Resource;
-using Karkinolution::Binary::Protocol::ResponseCode;
-using BinaryTypes = Karkinolution::Binary::Protocol::Type;
+using Karkinolution::Binary::Protocol::Aliases::FrameDeclaredSize;
 
-using RequestSubTypes  = Operation;
-using ResponseSubTypes = ResponseCode;
-using ErrorSubTypes    = ErrorCode;
+using Karkinolution::Binary::Protocol::Aliases::RequestId;
+using Karkinolution::Binary::Protocol::Request::Resource;
+using BinaryTypes         = Karkinolution::Binary::Protocol::Type;
+using ResponseCardinality = Karkinolution::Binary::Protocol::Response::Cardinality;
+
+using RequestSubTypes  = Karkinolution::Binary::Protocol::Request::Operation;
+using ResponseSubTypes = Karkinolution::Binary::Protocol::Response::Code;
+using ErrorSubTypes    = Karkinolution::Binary::Protocol::Error::Code;

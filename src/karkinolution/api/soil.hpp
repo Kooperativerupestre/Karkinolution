@@ -9,6 +9,10 @@ namespace Karkinolution {
 	namespace API {
 		namespace Soil {
 			const SoilPiece* see_soil(const World &world, BaseIdType id);
+
+			inline auto see_all_soils(const World &world) {
+				return world.territory.registry_values();
+			}
 		} // namespace Soil
 	} // namespace API
 } // namespace Karkinolution

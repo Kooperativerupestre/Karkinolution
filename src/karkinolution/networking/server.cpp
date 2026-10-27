@@ -33,6 +33,7 @@ Server::Server(IoContext &io_context, Port port, World &world)
 	log_receive_overflow_mode();
 
 	acceptor_.open(asio::ip::tcp::v4());
+	acceptor_.set_option(asio::socket_base::reuse_address(true));
 	acceptor_.bind(asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port));
 
 	acceptor_.listen();

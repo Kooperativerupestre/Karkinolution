@@ -2,6 +2,7 @@
 
 #include "karkinolution/networking/sdk/src/interpreters/concepts.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/generic_id.hpp"
+#include "karkinolution/networking/sdk/src/interpreters/internal_aliases.hpp"
 
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/frames/analyzer.hpp>
@@ -32,11 +33,13 @@ namespace KarkinolutionSDK {
 					RequestSubTypes::SEE,
 					GENERIC_INTERPRETER_ID,
 					Resource::CORPSE,
-					std::vector<std::byte>(payload.begin(), payload.end()));
+					std::vector<std::byte>(payload.begin(), payload.end()),
+					SeeExtra{.target = SeeTarget::ONE});
 
 				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
 																 .resource = built.resource,
-																 .payload  = built.payload};
+																 .payload  = built.payload,
+																 .extra    = built.extra};
 
 				const auto result = client.request(data);
 
@@ -44,7 +47,7 @@ namespace KarkinolutionSDK {
 					return std::nullopt;
 				}
 
-				const auto &frame = result.value().value();
+				const auto &frame = require_response_frame(result.value().value());
 				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}

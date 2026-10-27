@@ -29,6 +29,7 @@ namespace KarkinolutionSDK {
 				RequestSubTypes        sub_type;
 				Resource               resource;
 				std::vector<std::byte> payload;
+				Karkinolution::Binary::Frames::Models::Request::RequestExtra extra;
 		};
 
 		struct Config {
@@ -80,7 +81,8 @@ namespace KarkinolutionSDK {
 		};
 
 		using ResponseResult =
-			std::expected<std::optional<ResponseFrame>, KarkinolutionSDK::Protocol::CancelledError>;
+			std::expected<std::optional<ResponseFrameVariant>,
+						  KarkinolutionSDK::Protocol::CancelledError>;
 
 		class Client {
 			public:

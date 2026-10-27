@@ -71,7 +71,8 @@ RequestId Client::send_without_waiting(const RequestData &data) {
 	auto raw_frame = Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
 																				  request_id,
 																				  data.resource,
-																				  data.payload);
+																				  data.payload,
+																				  data.extra);
 
 
 	protocol_session.register_request(request_id);

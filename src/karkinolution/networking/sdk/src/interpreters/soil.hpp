@@ -11,6 +11,7 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/models/soil.hpp>
 #include <karkinolution/binary/interpreters/soil.hpp>
+#include <karkinolution/networking/sdk/src/interpreters/internal_aliases.hpp>
 
 namespace KarkinolutionSDK {
 	namespace Interpreters {
@@ -25,23 +26,42 @@ namespace KarkinolutionSDK {
 					RequestSubTypes::SEE,
 					GENERIC_INTERPRETER_ID,
 					Resource::SOIL,
-					std::vector<std::byte>(payload.begin(), payload.end()));
+					std::vector<std::byte>(payload.begin(), payload.end()),
+					SeeExtra{.target = SeeTarget::ONE});
 
 				const KarkinolutionSDK::Client::RequestData    data{.sub_type = built.sub_type,
 																	.resource = built.resource,
-																	.payload  = built.payload};
+																	.payload  = built.payload,
+																	.extra    = built.extra};
 				const KarkinolutionSDK::Client::ResponseResult result = client.request(data);
 
 				if (!result || !result.value().has_value()) {
 					return std::nullopt;
 				}
 
-				const auto &frame = result.value().value();
+				const auto &frame = require_response_frame(result.value().value());
 
 				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}
 				return SoilDSI::get_soil(frame.payload, 0);
+			}
+
+			template <HasRequest T>
+			std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
+			see_all_soils(T &client, BaseIdType id) {
+				const auto payload = SoilSRI::Request::make_see_all_soils();
+
+				const auto built = Karkinolution::Binary::Frames::Motor::make_request(
+					RequestSubTypes::SEE,
+					GENERIC_INTERPRETER_ID,
+					Resource::SOIL,
+					std::vector<std::byte>{},
+					SeeExtra{.target = SeeTarget::ALL});
+
+				const KarkinolutionSDK::Client::RequestData data {
+					.sub_type = built.sub_type, .resource = built.resource, .payload
+				}
 			}
 		} // namespace Soil
 	} // namespace Interpreters

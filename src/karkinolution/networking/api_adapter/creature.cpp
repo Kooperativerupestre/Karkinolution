@@ -30,10 +30,10 @@ ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
 	}
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
-	return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
-															   ResponseSubTypes::CREATURE,
+	return Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::CREATURE,
 															   request_id,
-															   creature_payload);
+															   creature_payload,
+															   ResponseCardinality::ONE);
 }
 
 ResponseFrame CreatureAPIBYA::create_creature(World                        &world,
@@ -52,8 +52,8 @@ ResponseFrame CreatureAPIBYA::create_creature(World                        &worl
 
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
-	return Karkinolution::Binary::Frames::Motor::make_response(BinaryTypes::Response,
-															   ResponseSubTypes::CREATURE,
+	return Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::CREATURE,
 															   request_id,
-															   creature_payload);
+															   creature_payload,
+															   ResponseCardinality::ONE);
 }

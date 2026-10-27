@@ -26,5 +26,7 @@ namespace CorpseSDKInterpreter = KarkinolutionSDK::Interpreters::Corpse;
 ### Error handling
 
 - Network/protocol errors surface as exceptions (propagated from `client.request()`).
+- `Client::request()` and `Client::pop_response()` return either a `ResponseFrame` or an `ErrorFrame` inside the
+  optional result; callers that only support response payloads surface an error frame as `ClientError`.
 - A none response returns `std::nullopt` (treated the same as "none"). (only if the output can be none)
 - Callers should catch `ClientError` / `ConnectionError` when resilience is needed.

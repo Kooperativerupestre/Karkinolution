@@ -21,7 +21,7 @@ bool FutureRequest::is_ready_unlocked() const {
 		&& fut_response.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
 }
 
-bool FutureRequest::set_response(const ResponseFrame &response) {
+bool FutureRequest::set_response(const ResponseFrameVariant &response) {
 	std::lock_guard lock{mtx};
 
 	if (failure.has_value() || !promise.has_value()) {
@@ -57,10 +57,10 @@ ResponseResult FutureRequest::try_get() {
 	}
 
 	if (wait_in_progress || failure.has_value() || !is_ready_unlocked()) {
-		return std::optional<ResponseFrame>{};
+		return std::optional<ResponseFrameVariant>{};
 	}
 
-	return fut_response.get();
+	return std::optional<ResponseFrameVariant>{fut_response.get()};
 }
 
 ResponseResult FutureRequest::await_response(std::chrono::seconds timeout) {
@@ -76,7 +76,7 @@ ResponseResult FutureRequest::await_response(std::chrono::seconds timeout) {
 		}
 
 		if (!fut_response.valid()) {
-			return std::optional<ResponseFrame>{};
+			return std::optional<ResponseFrameVariant>{};
 		}
 
 		wait_in_progress = true;
@@ -105,10 +105,10 @@ ResponseResult FutureRequest::await_response(std::chrono::seconds timeout) {
 	}
 
 	if (!fut_response.valid()) {
-		return std::optional<ResponseFrame>{};
+		return std::optional<ResponseFrameVariant>{};
 	}
 
-	return std::optional<ResponseFrame>{fut_response.get()};
+	return std::optional<ResponseFrameVariant>{fut_response.get()};
 }
 
 bool PendingRequests::erase_request(RequestId id, const std::shared_ptr<FutureRequest> expected) {
@@ -129,16 +129,21 @@ bool PendingRequests::add_request(RequestId id) {
 	return pendings.emplace(id, std::move(request)).second;
 }
 
-bool PendingRequests::add_response(const ResponseFrame &response) {
+bool PendingRequests::add_response(const ResponseFrameVariant &response) {
 	std::shared_ptr<FutureRequest> request;
 	{
 		std::lock_guard lock{mtx};
 
-		auto it = pendings.find(response.request_id);
+		const auto request_id = std::visit(
+			[](const auto &frame) {
+				return frame.request_id;
+			},
+			response);
+		auto it = pendings.find(request_id);
 		if (it == pendings.end()) {
 			throw CPPSdkError(
 				std::format("Invalid try to add a response to an inexistent request with id = {}",
-							response.request_id));
+							request_id));
 		}
 		request = it->second;
 	}

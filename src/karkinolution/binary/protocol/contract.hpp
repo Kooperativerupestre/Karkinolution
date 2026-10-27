@@ -11,105 +11,93 @@
 #include <variant>
 
 namespace Karkinolution::Binary::Protocol {
-
-	/*
-	# Base Protocol
-
-	size -> type -> sub type
-
-	## Request types
-
-	base -> request id -> resource -> payload
-
-	## Response types
-
-	base -> request id -> payload
-
-	## Error types
-
-	base -> request id -> payload
-
-	## Event types
-
-	base -> payload
-
-	# Note
-
-	The value of the field size means the number of bytes
-	after the size field.
-	*/
-
 	enum class Type : uint8_t {
 		Request  = 1,
 		Error    = 2,
 		Response = 3
 	};
 
-	enum class Resource : uint8_t {
-		CREATURE = 1,
-		EMBRYO   = 2,
-		SOIL     = 3,
-		CORPSE   = 4,
-		EGG      = 5
-	};
+	namespace Request {
+		enum class Resource : uint8_t {
+			CREATURE = 1,
+			EMBRYO   = 2,
+			SOIL     = 3,
+			CORPSE   = 4,
+			EGG      = 5
+		};
+		enum class Operation : uint8_t {
+			SEE    = 1,
+			WANT   = 2,
+			ERASE  = 3,
+			CREATE = 4,
+			CYCLE  = 5
+		};
 
-	enum class Operation : uint8_t {
-		SEE    = 1,
-		WANT   = 2,
-		ERASE  = 3,
-		CREATE = 4,
-		CYCLE  = 5
-	};
+		enum class SeeTarget : uint8_t {
+			ONE = 1,
+			ALL = 2
+		};
 
-	/*
-	# SEE
+		/*
+		# SEE
 
-	Similar to GET.
+		Similar to GET.
 
-	Can return NONE if the requested resource does not exist.
-	SEE does not send ERROR.
+		Can return NONE if the requested resource does not exist.
+		SEE does not send ERROR.
 
-	Examples:
+		Examples:
 
-	SEE CREATURE <id>
-	SEE ALL SOIL
+		SEE CREATURE <id>
+		SEE ALL SOIL
 
-	# WANT
+		# WANT
 
-	This action is used when you want to see a different state
-	in a creature.
+		This action is used when you want to see a different state
+		in a creature.
 
-	Examples:
+		Examples:
 
-	WANT CREATURE PREGNANT
-	WANT CREATURE DEAD
+		WANT CREATURE PREGNANT
+		WANT CREATURE DEAD
 
-	The change is only executed if the system allows it.
+		The change is only executed if the system allows it.
 
-	# ERASE
+		# ERASE
 
-	Delete the resource without respecting the laws.
+		Delete the resource without respecting the laws.
 
-	# CREATE
+		# CREATE
 
-	Create the resource.
+		Create the resource.
 
-	# CYCLE
+		# CYCLE
 
-	Run a tick on the resource.
-	*/
+		Run a tick on the resource.
+		*/
+	} // namespace Request
 
-	enum class ErrorCode : uint8_t {
-		CREATURE_WAS_NOT_FOUND = 1,
-		CORPSE_WAS_NOT_FOUND   = 2
-	};
+	namespace Error {
+		enum class Code : uint8_t {
+			CREATURE_WAS_NOT_FOUND = 1,
+			CORPSE_WAS_NOT_FOUND   = 2
+		};
+	} // namespace Error
 
-	enum class ResponseCode : uint8_t {
-		CREATURE = 0,
-		CORPSE   = 1,
-		NONE     = 3,
-		SOIL     = 4
-	};
+	namespace Response {
+		enum class Code : uint8_t {
+			CREATURE = 0,
+			CORPSE   = 1,
+			NONE     = 3,
+			SOIL     = 4
+		};
+
+		enum class Cardinality : uint8_t {
+			ONE = 1,
+			ALL = 2
+		};
+	} // namespace Response
+
 
 	enum class NumericType : uint8_t {
 		FLOAT  = 1,
@@ -125,9 +113,9 @@ namespace Karkinolution::Binary::Protocol {
 
 		template <typename T> using UnderlyingType = std::underlying_type_t<T>;
 
-		using CodeVariant = std::variant<Operation, ErrorCode, ResponseCode>;
+		using CodeVariant = std::variant<Request::Operation, Error::Code, Response::Code>;
 
-		using ResponseVariant = std::variant<ErrorCode, ResponseCode>;
+		using ResponseVariant = std::variant<Error::Code, Response::Code>;
 
 	} // namespace Detail
 

@@ -106,6 +106,7 @@ namespace Karkinolution {
 
 					namespace Request {
 						std::array<std::byte, 8> make_see_soil(BaseIdType id);
+						std::array<std::byte, 1> make_see_all_soils();
 					} // namespace Request
 
 				} // namespace Soil

@@ -218,3 +218,43 @@ selected GCC installation before building.
 `std::inplace_vector` is not being applied mechanically to existing vectors.
 The view's entity and patch collections still need explicit domain capacity
 decisions before they can safely use fixed-capacity storage.
+
+## Why I created the Karkinolution::Functional?
+
+Because I wanted to express some built-in utilities that the C++ Standard Library doesn't include. Also, K_random will be moved into Karkinolution::Functional.
+
+## Why I removed FrameFieldExistence from every has_* in Frames::Parser?
+
+It wasn't consumed by any system, therefore only introduced more maintenance overhead.
+
+## Binary Frame Analysis and SDK Results
+
+### Frame size and operation-specific layouts
+
+Each request operation has its own fixed-header size because `SEE` includes a target field while the other request
+operations do not. `FIXED_HEADER_SIZE` is the absolute offset from the beginning of the frame to the payload; it
+already includes the declared-size field.
+
+The declared size counts bytes after the declared-size field. Payload-size calculations therefore use the fixed header
+for the specific request operation, response, or error, rather than assuming one shared header size.
+
+### Frame detection
+
+The parser's `has_frame` result distinguishes three buffer states: `NO` means no bytes are available, `INCOMPLETE`
+means bytes are present but do not yet contain a complete frame, and `YES` means a complete frame is available.
+Request-operation namespaces, Response, and Error each provide frame detection; operation-specific namespaces also
+extract their frame. This lets the buffer analyzer use frame availability directly instead of separately checking
+size, type, subtype, and payload.
+
+Frame extraction returns the first frame from the buffer. The buffer consumer removes exactly the bytes belonging to
+that frame, leaving any subsequent frame data available for the next analysis.
+
+### SDK response and error results
+
+The SDK's pending-request result can contain either a `ResponseFrame` or an `ErrorFrame`. `Protocol::Detail::ResponseVariant`
+remains the variant of response/error subtype codes; a separate frame variant carries the complete parsed frames.
+Keeping both alternatives in the result allows callers to receive server errors without misrepresenting an error frame
+as a response frame.
+
+SDK domain interpreters that return a specific domain object accept response frames and surface error frames as
+`ClientError`, since an error frame does not contain the requested domain object.

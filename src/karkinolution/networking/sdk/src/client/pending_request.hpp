@@ -18,13 +18,14 @@ namespace KarkinolutionSDK {
 
 		struct CancelledError {};
 
-		using ResponseResult = std::expected<std::optional<ResponseFrame>, RequestFailure>;
+		using ResponseResult =
+			std::expected<std::optional<ResponseFrameVariant>, RequestFailure>;
 
 		class FutureRequest {
 			private:
 
-				std::optional<std::promise<ResponseFrame>> promise;
-				std::future<ResponseFrame>                 fut_response;
+				std::optional<std::promise<ResponseFrameVariant>> promise;
+				std::future<ResponseFrameVariant>                 fut_response;
 				std::optional<RequestFailure>              failure;
 				std::mutex                                 mtx;
 				bool                                       wait_in_progress = false;
@@ -38,7 +39,7 @@ namespace KarkinolutionSDK {
 				FutureRequest();
 				bool has_response();
 				bool fail(RequestFailure type);
-				bool set_response(const ResponseFrame &response);
+				bool set_response(const ResponseFrameVariant &response);
 				// it doesn't wait for the response: If there is, returns, if there isn't, return a
 				// nullopt
 				ResponseResult try_get();
@@ -61,7 +62,7 @@ namespace KarkinolutionSDK {
 			public:
 
 				bool           add_request(RequestId id);
-				bool           add_response(const ResponseFrame &response);
+				bool           add_response(const ResponseFrameVariant &response);
 				ResponseResult pop_response(RequestId id);
 				ResponseResult await_response(RequestId id);
 				void           fail_all_by_disconnection();

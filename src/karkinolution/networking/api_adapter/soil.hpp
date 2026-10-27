@@ -12,6 +12,9 @@ namespace Karkinolution {
 				ResponseFrame see_soil(const World                  &world,
 									   RequestId                     request_id,
 									   const std::vector<std::byte> &payload);
+				ResponseFrame see_all_soils(const World                  &world,
+											RequestId                     request_id,
+											const std::vector<std::byte> &payload);
 			} // namespace Soil
 		} // namespace APIBYA
 	} // namespace Networking
