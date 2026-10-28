@@ -18,8 +18,9 @@ How do I compile? [Commands](../../../docs/commands.md)
 
 # Does the server stay alive if the client disconnects?
 
-No.
+Yes. A client disconnect closes only that connection; the server keeps listening and accepts new connections. Multiple
+clients can connect concurrently.
 
-# Does the server have the infraestructure to support more than one client?
+# Does the server support more than one client?
 
 Yes.
