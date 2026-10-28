@@ -1,7 +1,7 @@
 #pragma once
 
-#include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
 
@@ -18,14 +18,13 @@ namespace KarkinolutionSDK {
 		using Karkinolution::Binary::Protocol::Request::SeeTarget;
 
 		inline const ResponseFrame &require_response_frame(const ResponseFrameVariant &frame) {
-			if (const auto *response = std::get_if<ResponseFrame>(&frame)) {
+			if (const auto* response = std::get_if<ResponseFrame>(&frame)) {
 				return *response;
 			}
 
 			const auto &error = std::get<ErrorFrame>(frame);
-			throw ClientError(std::format(
-				"Server returned error code {}",
-				static_cast<std::uint8_t>(error.sub_type)));
+			throw ClientError(std::format("Server returned error code {}",
+										  static_cast<std::uint8_t>(error.sub_type)));
 		}
 	} // namespace Interpreters
 } // namespace KarkinolutionSDK

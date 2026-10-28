@@ -56,29 +56,27 @@ namespace Karkinolution {
 							  RequestId                                       request_id,
 							  const Payload                                  &payload,
 							  ResponseCardinality                             cardinality) {
-					return ResponseFrame{
-						Frames::Parser::calculate_declared_size(
-							payload.size(),
-							BinaryTypes::Response,
-							Protocol::Detail::CodeVariant{sub_type}),
-						request_id,
-						sub_type,
-						copy_payload(payload),
-						cardinality};
+					return ResponseFrame{Frames::Parser::calculate_declared_size(
+											 payload.size(),
+											 BinaryTypes::Response,
+											 Protocol::Detail::CodeVariant{sub_type}),
+										 request_id,
+										 sub_type,
+										 copy_payload(payload),
+										 cardinality};
 				}
 
 				template <ByteRange T>
 				ErrorFrame make_error(Karkinolution::Binary::Protocol::Error::Code sub_type,
 									  RequestId                                    request_id,
 									  const T                                     &payload) {
-					return ErrorFrame{
-						Frames::Parser::calculate_declared_size(
-							payload.size(),
-							BinaryTypes::Error,
-							Protocol::Detail::CodeVariant{sub_type}),
-						request_id,
-						sub_type,
-						copy_payload(payload)};
+					return ErrorFrame{Frames::Parser::calculate_declared_size(
+										  payload.size(),
+										  BinaryTypes::Error,
+										  Protocol::Detail::CodeVariant{sub_type}),
+									  request_id,
+									  sub_type,
+									  copy_payload(payload)};
 				}
 
 				template <ByteRange Payload>
@@ -89,26 +87,24 @@ namespace Karkinolution {
 										  const Models::Request::RequestExtra &extra) {
 
 					Models::Request::validate_sub_type_and_extra(sub_type, extra);
-					return RequestFrame{
-						Frames::Parser::calculate_declared_size(
-							payload.size(),
-							BinaryTypes::Request,
-							Protocol::Detail::CodeVariant{sub_type}),
-						id,
-						sub_type,
-						copy_payload(payload),
-						resource,
-						extra};
+					return RequestFrame{Frames::Parser::calculate_declared_size(
+											payload.size(),
+											BinaryTypes::Request,
+											Protocol::Detail::CodeVariant{sub_type}),
+										id,
+										sub_type,
+										copy_payload(payload),
+										resource,
+										extra};
 				}
 
 				template <ByteRange Payload>
-				std::vector<std::byte>
-				make_response_raw_bytes(BinaryTypes                                   type,
-										std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
-										RequestId                                     request_id,
-										const Payload                                &payload,
-										ResponseCardinality cardinality =
-											ResponseCardinality::ONE) {
+				std::vector<std::byte> make_response_raw_bytes(
+					BinaryTypes                                   type,
+					std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
+					RequestId                                     request_id,
+					const Payload                                &payload,
+					ResponseCardinality cardinality = ResponseCardinality::ONE) {
 					if (type == BinaryTypes::Response
 						&& !std::holds_alternative<ResponseSubTypes>(sub_type)) {
 						throw FrameInvariantError(std::format(
@@ -176,19 +172,19 @@ namespace Karkinolution {
 				}
 
 				template <ByteRange Payload>
-				std::vector<std::byte> make_request_raw_bytes(RequestSubTypes sub_type,
-															  RequestId       id,
-															  Resource        resource,
-															  const Payload  &payload,
-															  const Models::Request::RequestExtra &extra) {
+				std::vector<std::byte>
+				make_request_raw_bytes(RequestSubTypes                      sub_type,
+									   RequestId                            id,
+									   Resource                             resource,
+									   const Payload                       &payload,
+									   const Models::Request::RequestExtra &extra) {
 					Models::Request::validate_sub_type_and_extra(sub_type, extra);
 
 					std::vector<std::byte>  frame;
 					const FrameDeclaredSize declared_size =
-						Parser::calculate_declared_size(
-							payload.size(),
-							BinaryTypes::Request,
-							Protocol::Detail::CodeVariant{sub_type});
+						Parser::calculate_declared_size(payload.size(),
+														BinaryTypes::Request,
+														Protocol::Detail::CodeVariant{sub_type});
 
 					frame.reserve(declared_size + ProtocolLayout::DeclaredSize::SIZE);
 

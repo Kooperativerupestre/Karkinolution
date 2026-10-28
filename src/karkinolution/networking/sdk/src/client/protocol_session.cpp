@@ -26,7 +26,7 @@ void ProtocolSession::sync_requests() {
 			incoming_responses.pop_front();
 		}
 
-		const auto type = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
+		const auto           type = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
 		ResponseFrameVariant frame;
 		if (type == BinaryTypes::Response) {
 			frame = Karkinolution::Binary::Frames::Parser::parse_response_frame(raw_frame);

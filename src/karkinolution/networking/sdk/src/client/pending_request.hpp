@@ -18,17 +18,16 @@ namespace KarkinolutionSDK {
 
 		struct CancelledError {};
 
-		using ResponseResult =
-			std::expected<std::optional<ResponseFrameVariant>, RequestFailure>;
+		using ResponseResult = std::expected<std::optional<ResponseFrameVariant>, RequestFailure>;
 
 		class FutureRequest {
 			private:
 
 				std::optional<std::promise<ResponseFrameVariant>> promise;
 				std::future<ResponseFrameVariant>                 fut_response;
-				std::optional<RequestFailure>              failure;
-				std::mutex                                 mtx;
-				bool                                       wait_in_progress = false;
+				std::optional<RequestFailure>                     failure;
+				std::mutex                                        mtx;
+				bool                                              wait_in_progress = false;
 
 				bool is_ready_unlocked() const;
 

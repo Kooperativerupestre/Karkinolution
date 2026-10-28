@@ -258,3 +258,17 @@ as a response frame.
 
 SDK domain interpreters that return a specific domain object accept response frames and surface error frames as
 `ClientError`, since an error frame does not contain the requested domain object.
+
+### SDK soil-list interpretation
+
+The SDK decodes collection responses through the shared list deserializer instead of duplicating list-size and
+element-offset parsing in each domain interpreter. The soil interpreter uses the soil protocol's fixed serialized
+element size to convert each list entry into the SDK soil model.
+
+### TCP response buffering
+
+TCP reads provide arbitrary chunks of a byte stream, not complete protocol frames. The client therefore keeps reading
+and accumulating bytes until the frame parser can extract a complete frame. The socket read chunk size is separate
+from the maximum accumulated frame size: the former controls each asynchronous read, while the latter bounds a full
+frame. The current 64 KiB frame-buffer limit accommodates larger collection responses without relying on one read
+containing the entire response.

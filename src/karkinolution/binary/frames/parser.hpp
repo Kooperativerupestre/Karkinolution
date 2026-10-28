@@ -34,16 +34,14 @@ namespace Karkinolution {
 				};
 
 				namespace Internal {
-					constexpr std::uint32_t calculate_declared_size(
-						std::uint32_t payload_size,
-						std::size_t   fixed_header_size) {
+					constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size,
+																	std::size_t fixed_header_size) {
 						return fixed_header_size - ProtocolLayout::DeclaredSize::SIZE
 							+ payload_size;
 					}
 
-					constexpr std::uint32_t calculate_payload_size(
-						std::uint32_t declared_size,
-						std::size_t   fixed_header_size) {
+					constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size,
+																   std::size_t fixed_header_size) {
 						const auto minimum_declared_size =
 							fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
 
@@ -57,11 +55,11 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T>
-					constexpr std::uint32_t calculate_payload_size(
-						const T   &bytes,
-						std::size_t fixed_header_size) {
+					constexpr std::uint32_t calculate_payload_size(const T    &bytes,
+																   std::size_t fixed_header_size) {
 						const auto declared_size =
-							Deserializer::read_uint32_t(bytes, ProtocolLayout::DeclaredSize::OFFSET);
+							Deserializer::read_uint32_t(bytes,
+														ProtocolLayout::DeclaredSize::OFFSET);
 						return calculate_payload_size(declared_size, fixed_header_size);
 					}
 
@@ -75,7 +73,8 @@ namespace Karkinolution {
 						}
 
 						const auto declared_size =
-							Deserializer::read_uint32_t(bytes, ProtocolLayout::DeclaredSize::OFFSET);
+							Deserializer::read_uint32_t(bytes,
+														ProtocolLayout::DeclaredSize::OFFSET);
 						const auto minimum_declared_size =
 							fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
 						if (declared_size < minimum_declared_size) {
@@ -85,22 +84,21 @@ namespace Karkinolution {
 								minimum_declared_size));
 						}
 
-						const auto frame_size =
-							ProtocolLayout::DeclaredSize::SIZE + declared_size;
+						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE + declared_size;
 						return bytes.size() >= frame_size ? FrameExistence::YES
 														  : FrameExistence::INCOMPLETE;
 					}
 
 					template <ByteRange T>
-					std::vector<std::byte> get_frame(const T &bytes, std::size_t fixed_header_size) {
+					std::vector<std::byte> get_frame(const T    &bytes,
+													 std::size_t fixed_header_size) {
 						if (has_frame(bytes, fixed_header_size) != FrameExistence::YES) {
 							throw ByteError("Cannot extract a frame from an incomplete buffer");
 						}
 
 						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE
-							+ Deserializer::read_uint32_t(
-								bytes,
-								ProtocolLayout::DeclaredSize::OFFSET);
+							+ Deserializer::read_uint32_t(bytes,
+														  ProtocolLayout::DeclaredSize::OFFSET);
 						std::vector<std::byte> frame;
 						frame.reserve(frame_size);
 						for (std::size_t i = 0; i < frame_size; ++i) {
@@ -194,14 +192,13 @@ namespace Karkinolution {
 
 						template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 							std::vector<std::byte> payload;
-							payload.insert(payload.end(),
-										   bytes.begin()
-											   + ProtocolLayout::Request::See::Payload::OFFSET,
-										   bytes.begin()
-											   + ProtocolLayout::Request::See::Payload::OFFSET
-											   + Internal::calculate_payload_size(
-												   bytes,
-												   ProtocolLayout::Request::See::FIXED_HEADER_SIZE));
+							payload.insert(
+								payload.end(),
+								bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET,
+								bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET
+									+ Internal::calculate_payload_size(
+										bytes,
+										ProtocolLayout::Request::See::FIXED_HEADER_SIZE));
 							return payload;
 						}
 
@@ -212,7 +209,8 @@ namespace Karkinolution {
 								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+						constexpr std::uint32_t
+						calculate_payload_size(std::uint32_t declared_size) {
 							return Internal::calculate_payload_size(
 								declared_size,
 								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
@@ -264,7 +262,8 @@ namespace Karkinolution {
 								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+						constexpr std::uint32_t
+						calculate_payload_size(std::uint32_t declared_size) {
 							return Internal::calculate_payload_size(
 								declared_size,
 								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
@@ -316,7 +315,8 @@ namespace Karkinolution {
 								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+						constexpr std::uint32_t
+						calculate_payload_size(std::uint32_t declared_size) {
 							return Internal::calculate_payload_size(
 								declared_size,
 								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
@@ -368,7 +368,8 @@ namespace Karkinolution {
 								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+						constexpr std::uint32_t
+						calculate_payload_size(std::uint32_t declared_size) {
 							return Internal::calculate_payload_size(
 								declared_size,
 								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
@@ -420,7 +421,8 @@ namespace Karkinolution {
 								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+						constexpr std::uint32_t
+						calculate_payload_size(std::uint32_t declared_size) {
 							return Internal::calculate_payload_size(
 								declared_size,
 								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
@@ -452,38 +454,36 @@ namespace Karkinolution {
 						}
 					} // namespace Want
 
-					inline std::uint32_t calculate_declared_size(
-						std::uint32_t payload_size,
-						RequestSubTypes sub_type) {
+					inline std::uint32_t calculate_declared_size(std::uint32_t   payload_size,
+																 RequestSubTypes sub_type) {
 						switch (sub_type) {
-						case RequestSubTypes::SEE:
-							return See::calculate_declared_size(payload_size);
-						case RequestSubTypes::CREATE:
-							return Create::calculate_declared_size(payload_size);
-						case RequestSubTypes::CYCLE:
-							return Cycle::calculate_declared_size(payload_size);
-						case RequestSubTypes::ERASE:
-							return Erase::calculate_declared_size(payload_size);
-						case RequestSubTypes::WANT:
-							return Want::calculate_declared_size(payload_size);
+							case RequestSubTypes::SEE:
+								return See::calculate_declared_size(payload_size);
+							case RequestSubTypes::CREATE:
+								return Create::calculate_declared_size(payload_size);
+							case RequestSubTypes::CYCLE:
+								return Cycle::calculate_declared_size(payload_size);
+							case RequestSubTypes::ERASE:
+								return Erase::calculate_declared_size(payload_size);
+							case RequestSubTypes::WANT:
+								return Want::calculate_declared_size(payload_size);
 						}
 						Karkinolution::Functional::unreachable_or_throw();
 					}
 
-					inline std::uint32_t calculate_payload_size(
-						std::uint32_t declared_size,
-						RequestSubTypes  sub_type) {
+					inline std::uint32_t calculate_payload_size(std::uint32_t   declared_size,
+																RequestSubTypes sub_type) {
 						switch (sub_type) {
-						case RequestSubTypes::SEE:
-							return See::calculate_payload_size(declared_size);
-						case RequestSubTypes::CREATE:
-							return Create::calculate_payload_size(declared_size);
-						case RequestSubTypes::CYCLE:
-							return Cycle::calculate_payload_size(declared_size);
-						case RequestSubTypes::ERASE:
-							return Erase::calculate_payload_size(declared_size);
-						case RequestSubTypes::WANT:
-							return Want::calculate_payload_size(declared_size);
+							case RequestSubTypes::SEE:
+								return See::calculate_payload_size(declared_size);
+							case RequestSubTypes::CREATE:
+								return Create::calculate_payload_size(declared_size);
+							case RequestSubTypes::CYCLE:
+								return Cycle::calculate_payload_size(declared_size);
+							case RequestSubTypes::ERASE:
+								return Erase::calculate_payload_size(declared_size);
+							case RequestSubTypes::WANT:
+								return Want::calculate_payload_size(declared_size);
 						}
 						Karkinolution::Functional::unreachable_or_throw();
 					}
@@ -539,32 +539,32 @@ namespace Karkinolution {
 						}
 
 						switch (std::get<RequestSubTypes>(get_sub_type(bytes))) {
-						case RequestSubTypes::SEE:
-							return See::has_frame(bytes);
-						case RequestSubTypes::CREATE:
-							return Create::has_frame(bytes);
-						case RequestSubTypes::CYCLE:
-							return Cycle::has_frame(bytes);
-						case RequestSubTypes::ERASE:
-							return Erase::has_frame(bytes);
-						case RequestSubTypes::WANT:
-							return Want::has_frame(bytes);
+							case RequestSubTypes::SEE:
+								return See::has_frame(bytes);
+							case RequestSubTypes::CREATE:
+								return Create::has_frame(bytes);
+							case RequestSubTypes::CYCLE:
+								return Cycle::has_frame(bytes);
+							case RequestSubTypes::ERASE:
+								return Erase::has_frame(bytes);
+							case RequestSubTypes::WANT:
+								return Want::has_frame(bytes);
 						}
 						Karkinolution::Functional::unreachable_or_throw();
 					}
 
 					template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
 						switch (std::get<RequestSubTypes>(get_sub_type(bytes))) {
-						case RequestSubTypes::SEE:
-							return See::get_frame(bytes);
-						case RequestSubTypes::CREATE:
-							return Create::get_frame(bytes);
-						case RequestSubTypes::CYCLE:
-							return Cycle::get_frame(bytes);
-						case RequestSubTypes::ERASE:
-							return Erase::get_frame(bytes);
-						case RequestSubTypes::WANT:
-							return Want::get_frame(bytes);
+							case RequestSubTypes::SEE:
+								return See::get_frame(bytes);
+							case RequestSubTypes::CREATE:
+								return Create::get_frame(bytes);
+							case RequestSubTypes::CYCLE:
+								return Cycle::get_frame(bytes);
+							case RequestSubTypes::ERASE:
+								return Erase::get_frame(bytes);
+							case RequestSubTypes::WANT:
+								return Want::get_frame(bytes);
 						}
 						Karkinolution::Functional::unreachable_or_throw();
 					}
@@ -615,8 +615,7 @@ namespace Karkinolution {
 						std::vector<std::byte> payload;
 						payload.insert(payload.end(),
 									   bytes.begin() + ProtocolLayout::Response::Payload::OFFSET,
-									   bytes.begin()
-										   + ProtocolLayout::Response::Payload::OFFSET
+									   bytes.begin() + ProtocolLayout::Response::Payload::OFFSET
 										   + Internal::calculate_payload_size(
 											   bytes,
 											   ProtocolLayout::Response::Payload::OFFSET));
@@ -624,21 +623,18 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> bool has_payload(const T &bytes) {
-						return bytes.size()
-							>= ProtocolLayout::Response::Payload::OFFSET
-								+ calculate_payload_size(bytes);
+						return bytes.size() >= ProtocolLayout::Response::Payload::OFFSET
+							+ calculate_payload_size(bytes);
 					}
 
 					template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-						return Internal::has_frame(
-							bytes,
-							ProtocolLayout::Response::Payload::OFFSET);
+						return Internal::has_frame(bytes,
+												   ProtocolLayout::Response::Payload::OFFSET);
 					}
 
 					template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-						return Internal::get_frame(
-							bytes,
-							ProtocolLayout::Response::Payload::OFFSET);
+						return Internal::get_frame(bytes,
+												   ProtocolLayout::Response::Payload::OFFSET);
 					}
 				} // namespace Response
 
@@ -685,8 +681,8 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> bool has_payload(const T &bytes) {
-						return bytes.size()
-							>= ProtocolLayout::Error::Payload::OFFSET + calculate_payload_size(bytes);
+						return bytes.size() >= ProtocolLayout::Error::Payload::OFFSET
+							+ calculate_payload_size(bytes);
 					}
 
 					template <ByteRange T> FrameExistence has_frame(const T &bytes) {
@@ -706,7 +702,7 @@ namespace Karkinolution {
 						return FrameExistence::INCOMPLETE;
 					}
 
-					const auto type = get_type(bytes);
+					const auto type     = get_type(bytes);
 					const auto sub_type = get_sub_type(bytes);
 					if (type == BinaryTypes::Request) {
 						return Request::has_frame(bytes);
@@ -727,14 +723,15 @@ namespace Karkinolution {
 				}
 
 				// The public dispatchers route by frame type and CodeVariant subtype.
-				constexpr std::uint32_t calculate_declared_size(
-					std::uint32_t payload_size,
-					BinaryTypes   type,
-					const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t
+				calculate_declared_size(std::uint32_t                        payload_size,
+										BinaryTypes                          type,
+										const Protocol::Detail::CodeVariant &sub_type) {
 					if (type == BinaryTypes::Request) {
-						if (const auto *request_sub_type =
+						if (const auto* request_sub_type =
 								std::get_if<RequestSubTypes>(&sub_type)) {
-							return Request::calculate_declared_size(payload_size, *request_sub_type);
+							return Request::calculate_declared_size(payload_size,
+																	*request_sub_type);
 						}
 					} else if (type == BinaryTypes::Response) {
 						if (std::holds_alternative<ResponseSubTypes>(sub_type)) {
@@ -748,14 +745,15 @@ namespace Karkinolution {
 					throw ByteError("Frame type and sub type do not match");
 				}
 
-				constexpr std::uint32_t calculate_payload_size(
-					std::uint32_t declared_size,
-					BinaryTypes   type,
-					const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t
+				calculate_payload_size(std::uint32_t                        declared_size,
+									   BinaryTypes                          type,
+									   const Protocol::Detail::CodeVariant &sub_type) {
 					if (type == BinaryTypes::Request) {
-						if (const auto *request_sub_type =
+						if (const auto* request_sub_type =
 								std::get_if<RequestSubTypes>(&sub_type)) {
-							return Request::calculate_payload_size(declared_size, *request_sub_type);
+							return Request::calculate_payload_size(declared_size,
+																   *request_sub_type);
 						}
 					} else if (type == BinaryTypes::Response) {
 						if (std::holds_alternative<ResponseSubTypes>(sub_type)) {
@@ -770,15 +768,15 @@ namespace Karkinolution {
 				}
 
 				template <ByteRange T>
-				constexpr std::uint32_t calculate_payload_size(
-					const T &bytes,
-					BinaryTypes type,
-					const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t
+				calculate_payload_size(const T                             &bytes,
+									   BinaryTypes                          type,
+									   const Protocol::Detail::CodeVariant &sub_type) {
 					return calculate_payload_size(get_declared_size(bytes), type, sub_type);
 				}
 
 				template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
-					const auto             type = get_type(bytes);
+					const auto type = get_type(bytes);
 					if (type == BinaryTypes::Request) {
 						return Request::get_payload(bytes);
 					} else if (type == BinaryTypes::Response) {
@@ -823,11 +821,11 @@ namespace Karkinolution {
 							Models::Request::SeeExtra{.target = Request::See::get_target(bytes)};
 					}
 					return Models::Request::Request{.declared_size = get_declared_size(bytes),
-													.id       = Request::get_id(bytes),
-													.sub_type = sub_type,
-													.payload  = get_payload(bytes),
-													.resource = resource,
-													.extra    = extra};
+													.id            = Request::get_id(bytes),
+													.sub_type      = sub_type,
+													.payload       = get_payload(bytes),
+													.resource      = resource,
+													.extra         = extra};
 				}
 
 				template <ByteRange T>
@@ -835,16 +833,17 @@ namespace Karkinolution {
 					return Models::Response::Response{
 						.declared_size = get_declared_size(bytes),
 						.request_id    = Response::get_request_id(bytes),
-						.sub_type = std::get<ResponseSubTypes>(get_sub_type(bytes)),
-						.payload = Response::get_payload(bytes),
-						.cardinality = Response::get_cardinality(bytes)};
+						.sub_type      = std::get<ResponseSubTypes>(get_sub_type(bytes)),
+						.payload       = Response::get_payload(bytes),
+						.cardinality   = Response::get_cardinality(bytes)};
 				}
 
 				template <ByteRange T> Models::Error::Error parse_error_frame(const T &bytes) {
 					return Models::Error::Error{.declared_size = get_declared_size(bytes),
 												.request_id    = Error::get_request_id(bytes),
-												.sub_type = std::get<ErrorSubTypes>(get_sub_type(bytes)),
-												.payload       = Error::get_payload(bytes)};
+												.sub_type =
+													std::get<ErrorSubTypes>(get_sub_type(bytes)),
+												.payload = Error::get_payload(bytes)};
 				}
 
 				template <ByteRange T> Models::GenericFrame parse_frame(const T &bytes) {
