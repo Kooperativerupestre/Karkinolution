@@ -35,6 +35,54 @@ TEST(FrameModelConstructors, RequestStoresValidatedFields) {
 				 Frames::FrameError);
 }
 
+TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
+	using SeeTarget = Karkinolution::Binary::Protocol::Request::SeeTarget;
+	using Request   = Models::Request::Request;
+	using SeeExtra  = Models::Request::SeeExtra;
+
+	EXPECT_NO_THROW((Request{12,
+							 34,
+							 RequestSubTypes::SEE,
+							 {},
+							 Resource::TERRITORY,
+							 SeeExtra{.target = SeeTarget::ONE}}));
+	EXPECT_THROW((Request{12,
+						  34,
+						  RequestSubTypes::SEE,
+						  {},
+						  Resource::TERRITORY,
+						  SeeExtra{.target = SeeTarget::ALL}}),
+				 Frames::FrameError);
+
+	constexpr Resource other_resources[] = {Resource::CREATURE,
+											Resource::EMBRYO,
+											Resource::SOIL,
+											Resource::CORPSE,
+											Resource::EGG};
+	for (const auto resource : other_resources) {
+		EXPECT_NO_THROW((Request{12,
+								 34,
+								 RequestSubTypes::SEE,
+								 {},
+								 resource,
+								 SeeExtra{.target = SeeTarget::ONE}}));
+		EXPECT_NO_THROW((Request{12,
+								 34,
+								 RequestSubTypes::SEE,
+								 {},
+								 resource,
+								 SeeExtra{.target = SeeTarget::ALL}}));
+	}
+
+	EXPECT_THROW((Request{12,
+						  34,
+						  RequestSubTypes::SEE,
+						  {},
+						  Resource::TERRITORY,
+						  SeeExtra{.target = static_cast<SeeTarget>(0)}}),
+				 Frames::FrameError);
+}
+
 TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
 	const std::vector<std::byte>     payload{std::byte{0x2A}};
 	const Models::Response::Response response{12,
@@ -59,6 +107,14 @@ TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
 											 ResponseSubTypes::NONE,
 											 payload,
 											 ResponseCardinality::ALL}),
+				 Frames::FrameError);
+}
+
+TEST(FrameModelConstructors, TerritoryResponseOnlyAcceptsOneCardinality) {
+	using Response = Models::Response::Response;
+
+	EXPECT_NO_THROW((Response{12, 34, ResponseSubTypes::TERRITORY, {}, ResponseCardinality::ONE}));
+	EXPECT_THROW((Response{12, 34, ResponseSubTypes::TERRITORY, {}, ResponseCardinality::ALL}),
 				 Frames::FrameError);
 }
 

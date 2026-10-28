@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
+#include <karkinolution/binary/byte_utils.hpp>
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/binary/interpreters/geometry.hpp>
 #include <karkinolution/binary/interpreters/properties.hpp>
 #include <karkinolution/binary/interpreters/soil.hpp>
+#include <karkinolution/binary/interpreters/territory.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/binary/serializer.hpp>
 #include <karkinolution/core/id.hpp>
@@ -192,4 +194,20 @@ TEST(DSIOffsetInvariantsHighLevel, CorpseAuxiliaryGettersDoNotAutoAddOffset) {
 		EXPECT_DOUBLE_EQ(read_size.height.value, original_size.height.value);
 		EXPECT_DOUBLE_EQ(read_size.depth.value, original_size.depth.value);
 	}
+}
+
+TEST(DSIOffsetInvariantsHighLevel, TerritoryDeserializerReadsFromProvidedOffset) {
+	const Size original_size{12.5, 24.0, 36.5};
+	const Karkinolution::Binary::Interpreters::Models::Territory::Territory original{original_size};
+	const auto serialized = TerritorySRI::serialize_territory(original);
+
+	std::vector<std::byte> payload = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
+	const std::size_t      offset  = payload.size();
+	Karkinolution::Binary::Utils::append_bytes(payload, serialized);
+
+	const auto territory = TerritoryDSI::deserialize_territory(payload, offset);
+
+	EXPECT_DOUBLE_EQ(territory.size.lateral.value, original_size.lateral.value);
+	EXPECT_DOUBLE_EQ(territory.size.height.value, original_size.height.value);
+	EXPECT_DOUBLE_EQ(territory.size.depth.value, original_size.depth.value);
 }

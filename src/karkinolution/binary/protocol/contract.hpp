@@ -23,7 +23,9 @@ namespace Karkinolution::Binary::Protocol {
 			EMBRYO   = 2,
 			SOIL     = 3,
 			CORPSE   = 4,
-			EGG      = 5
+			EGG      = 5,
+			// A world has one territory, so SEE TERRITORY only supports target ONE.
+			TERRITORY = 6
 		};
 		enum class Operation : uint8_t {
 			SEE    = 1,
@@ -89,14 +91,16 @@ namespace Karkinolution::Binary::Protocol {
 			CREATURE = 0,
 			CORPSE   = 1,
 			NONE     = 3,
-			SOIL     = 4
+			SOIL     = 4,
+			// A world has one territory, so TERRITORY responses only support cardinality ONE.
+			TERRITORY = 5
 		};
 
 		enum class Cardinality : uint8_t {
 			ONE = 1,
 			ALL = 2
 		};
-		// Creature, Corpse, and Soil allow both cardinalities; None allows only One.
+		// Territory and None allow only One; other response types allow both cardinalities.
 	} // namespace Response
 
 

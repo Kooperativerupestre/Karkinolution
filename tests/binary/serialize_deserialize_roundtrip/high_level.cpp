@@ -213,12 +213,12 @@ TEST(TerritorySerializeDeserializeRoundtrip, FullFields) {
 TEST(TerritorySerializeDeserializeRoundtrip, FullTerritorySerialization) {
 	const Size size{12.5, 24.0, 36.5};
 
-	Territory territory{size};
+	Karkinolution::Binary::Interpreters::Models::Territory::Territory territory{size};
 
 	const auto                   serialized = TerritorySRI::serialize_territory(territory);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());
 
-	const auto copy = TerritoryDSI::deserialize_territory(bytes);
+	const auto copy = TerritoryDSI::deserialize_territory(bytes, 0);
 
 	EXPECT_DOUBLE_EQ(copy.size.lateral.value, size.lateral.value);
 	EXPECT_DOUBLE_EQ(copy.size.height.value, size.height.value);

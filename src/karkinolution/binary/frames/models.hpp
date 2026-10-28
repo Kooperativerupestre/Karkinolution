@@ -39,11 +39,21 @@ namespace Karkinolution {
 													  CycleExtra,
 													  std::monostate>;
 
-					void constexpr validate_sub_type_and_extra(RequestSubTypes     sub_type,
-															   const RequestExtra &extra) {
+					void constexpr validate_sub_type_and_target(RequestSubTypes     sub_type,
+																Resource            resource,
+																const RequestExtra &extra) {
 						if (sub_type == RequestSubTypes::SEE) {
 							if (!std::holds_alternative<SeeExtra>(extra)) {
 								throw FrameError("Request with sub type See must have SeeExtra");
+							}
+							const auto target = std::get<SeeExtra>(extra).target;
+							if (target != Protocol::Request::SeeTarget::ONE
+								&& target != Protocol::Request::SeeTarget::ALL) {
+								throw FrameError("Invalid request target");
+							}
+							if (resource == Resource::TERRITORY
+								&& target != Protocol::Request::SeeTarget::ONE) {
+								throw FrameError("Territory requests must have target One");
 							}
 						} else if (sub_type == RequestSubTypes::WANT) {
 							if (!std::holds_alternative<WantExtra>(extra)) {
@@ -93,7 +103,7 @@ namespace Karkinolution {
 								, payload_(std::move(payload))
 								, resource_(resource)
 								, extra_(std::move(extra)) {
-								validate_sub_type_and_extra(sub_type_, extra_);
+								validate_sub_type_and_target(sub_type_, resource_, extra_);
 							}
 
 							Request(const Request &)            = default;
@@ -136,6 +146,10 @@ namespace Karkinolution {
 							if (cardinality != ResponseCardinality::ONE) {
 								throw FrameError(
 									"Response with sub type None must have cardinality One");
+							}
+						} else if (sub_type == ResponseSubTypes::TERRITORY) {
+							if (cardinality != ResponseCardinality::ONE) {
+								throw FrameError("Territory responses must have cardinality One");
 							}
 						} else if (sub_type != ResponseSubTypes::CREATURE
 								   && sub_type != ResponseSubTypes::CORPSE

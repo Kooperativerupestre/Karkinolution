@@ -11,6 +11,7 @@
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
 #include <karkinolution/networking/api_adapter/soil.hpp>
+#include <karkinolution/networking/api_adapter/territory.hpp>
 
 ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFrame &frame,
 																World              &world) {
@@ -36,6 +37,9 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 																			  frame.get_id(),
 																			  frame.get_payload());
 			}
+		} else if (resource == Resource::TERRITORY) {
+			return Karkinolution::Networking::APIBYA::Territory::see_territory(world,
+																			   frame.get_id());
 		}
 	} else if (sub_type == RequestSubTypes::CREATE) {
 		if (resource == Resource::CREATURE) {

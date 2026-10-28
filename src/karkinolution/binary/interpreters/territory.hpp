@@ -4,7 +4,6 @@
 #include "karkinolution/binary/interpreters/models/territory.hpp"
 #include "karkinolution/binary/interpreters/unit.hpp"
 #include "karkinolution/math/units.hpp"
-#include "karkinolution/terrain/terrain.hpp"
 
 #include <array>
 #include <cstddef>
@@ -35,14 +34,20 @@ namespace Karkinolution {
 						using Territory = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArrays
 
-					BytesArrays::Territory serialize_territory(const class Territory &territory);
+					BytesArrays::Territory serialize_territory(
+						const Interpreters::Models::Territory::Territory &territory);
+
+					namespace Request {
+						std::array<std::byte, 0> make_see_territory();
+					} // namespace Request
 				} // namespace Territory
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Territory {
 					Interpreters::Models::Territory::Territory
-					deserialize_territory(const std::vector<std::byte> &payload);
+					deserialize_territory(const std::vector<std::byte> &payload,
+										  std::size_t                   offset);
 				} // namespace Territory
 			} // namespace DSI
 		} // namespace Interpreters
