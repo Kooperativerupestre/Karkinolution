@@ -14,6 +14,11 @@
 #include <thread>
 using KarkinolutionSDK::Client::Client;
 
+Client::~Client() {
+	stop_new_async_operations();
+	wait_until_zero_async_operations();
+}
+
 void Client::on_error(const std::string &error_message) {
 	std::cerr << "Error: " << error_message << "\n";
 

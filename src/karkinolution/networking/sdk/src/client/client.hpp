@@ -54,15 +54,9 @@ namespace KarkinolutionSDK {
 				}
 
 				void decrement() {
-					bool reached_zero;
-
-					{
-						std::lock_guard lock{mutex};
-						count--;
-						reached_zero = count == 0;
-					}
-
-					if (reached_zero) {
+					std::lock_guard lock{mutex};
+					count--;
+					if (count == 0) {
 						cv.notify_all();
 					}
 				}
@@ -95,6 +89,8 @@ namespace KarkinolutionSDK {
 					, config(config) {
 					creation_number = client_count.fetch_add(1);
 				}
+
+				~Client();
 
 				void connect();
 				void disconnect();
