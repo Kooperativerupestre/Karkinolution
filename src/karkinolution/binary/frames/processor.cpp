@@ -15,31 +15,31 @@
 ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFrame &frame,
 																World              &world) {
 
-	const auto sub_type = frame.sub_type;
+	const auto sub_type = frame.get_sub_type();
 
-	const auto resource = frame.resource;
+	const auto resource = frame.get_resource();
 
 
 	if (sub_type == RequestSubTypes::SEE) {
-		const auto extra = std::get<Models::Request::SeeExtra>(frame.extra);
+		const auto extra = std::get<Models::Request::SeeExtra>(frame.get_extra());
 		if (resource == Resource::CREATURE) {
-			return CreatureAPIBYA::see_creature(world, frame.id, frame.payload);
+			return CreatureAPIBYA::see_creature(world, frame.get_id(), frame.get_payload());
 		} else if (resource == Resource::CORPSE) {
-			return CorpseAPIBYA::see_corpse(world, frame.id, frame.payload);
+			return CorpseAPIBYA::see_corpse(world, frame.get_id(), frame.get_payload());
 		} else if (resource == Resource::SOIL) {
 			if (extra.target == Protocol::Request::SeeTarget::ONE) {
 				return Karkinolution::Networking::APIBYA::Soil::see_soil(world,
-																		 frame.id,
-																		 frame.payload);
+																		 frame.get_id(),
+																		 frame.get_payload());
 			} else {
 				return Karkinolution::Networking::APIBYA::Soil::see_all_soils(world,
-																			  frame.id,
-																			  frame.payload);
+																			  frame.get_id(),
+																			  frame.get_payload());
 			}
 		}
 	} else if (sub_type == RequestSubTypes::CREATE) {
 		if (resource == Resource::CREATURE) {
-			return CreatureAPIBYA::create_creature(world, frame.id, frame.payload);
+			return CreatureAPIBYA::create_creature(world, frame.get_id(), frame.get_payload());
 		}
 	}
 

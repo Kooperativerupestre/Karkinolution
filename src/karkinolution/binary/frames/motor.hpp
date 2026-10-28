@@ -86,7 +86,6 @@ namespace Karkinolution {
 										  const Payload                       &payload,
 										  const Models::Request::RequestExtra &extra) {
 
-					Models::Request::validate_sub_type_and_extra(sub_type, extra);
 					return RequestFrame{Frames::Parser::calculate_declared_size(
 											payload.size(),
 											BinaryTypes::Request,
@@ -115,7 +114,6 @@ namespace Karkinolution {
 							"Sub type of a frame with type Error should be Error sub type"));
 					}
 
-
 					std::vector<std::byte> frame;
 
 					const auto declared_size = Frames::Parser::calculate_declared_size(
@@ -126,6 +124,14 @@ namespace Karkinolution {
 								return code;
 							},
 							sub_type));
+
+					if (type == BinaryTypes::Response) {
+						Models::Response::Response{declared_size,
+												   request_id,
+												   std::get<ResponseSubTypes>(sub_type),
+												   copy_payload(payload),
+												   cardinality};
+					}
 
 					frame.reserve(declared_size + ProtocolLayout::DeclaredSize::SIZE);
 
@@ -178,18 +184,23 @@ namespace Karkinolution {
 									   Resource                             resource,
 									   const Payload                       &payload,
 									   const Models::Request::RequestExtra &extra) {
-					Models::Request::validate_sub_type_and_extra(sub_type, extra);
-
-					std::vector<std::byte>  frame;
 					const FrameDeclaredSize declared_size =
 						Parser::calculate_declared_size(payload.size(),
 														BinaryTypes::Request,
 														Protocol::Detail::CodeVariant{sub_type});
+					const Models::Request::Request request{declared_size,
+														   id,
+														   sub_type,
+														   copy_payload(payload),
+														   resource,
+														   extra};
 
-					frame.reserve(declared_size + ProtocolLayout::DeclaredSize::SIZE);
+					std::vector<std::byte> frame;
+
+					frame.reserve(request.get_declared_size() + ProtocolLayout::DeclaredSize::SIZE);
 
 					// declared size
-					append_declared_size(frame, declared_size);
+					append_declared_size(frame, request.get_declared_size());
 
 					// type
 					append_type(frame, BinaryTypes::Request);
@@ -199,23 +210,25 @@ namespace Karkinolution {
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
 						Serializer::serialize<Protocol::Aliases::FrameSubType>(
-							static_cast<Protocol::Aliases::FrameSubType>(sub_type)));
+							static_cast<Protocol::Aliases::FrameSubType>(request.get_sub_type())));
 
 
 					// id
 
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Serializer::serialize<RequestId>(id));
+						Serializer::serialize<RequestId>(request.get_id()));
 
 					// resource
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
 						Serializer::serialize<Protocol::Aliases::Request::FrameResource>(
-							static_cast<Protocol::Aliases::Request::FrameResource>(resource)));
+							static_cast<Protocol::Aliases::Request::FrameResource>(
+								request.get_resource())));
 
-					if (sub_type == RequestSubTypes::SEE) {
-						const auto target = std::get<Models::Request::SeeExtra>(extra).target;
+					if (request.get_sub_type() == RequestSubTypes::SEE) {
+						const auto target =
+							std::get<Models::Request::SeeExtra>(request.get_extra()).target;
 						Karkinolution::Binary::Utils::append_bytes(
 							frame,
 							Serializer::serialize<Protocol::Aliases::Request::FrameSeeTarget>(
@@ -223,7 +236,8 @@ namespace Karkinolution {
 					}
 
 					// payload
-					frame.insert(frame.end(), payload.begin(), payload.end());
+					const auto &validated_payload = request.get_payload();
+					frame.insert(frame.end(), validated_payload.begin(), validated_payload.end());
 					return frame;
 				}
 

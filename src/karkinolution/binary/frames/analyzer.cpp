@@ -16,7 +16,7 @@ bool Karkinolution::Binary::Frames::Analyzer::is_none(const std::vector<std::byt
 }
 
 bool Karkinolution::Binary::Frames::Analyzer::is_none(const ResponseFrame &frame) {
-	return frame.sub_type == ResponseSubTypes::NONE;
+	return frame.get_sub_type() == ResponseSubTypes::NONE;
 }
 
 bool Karkinolution::Binary::Frames::Analyzer::is_response(const std::vector<std::byte> &frame) {

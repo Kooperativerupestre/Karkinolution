@@ -26,15 +26,15 @@ void ProtocolSession::sync_requests() {
 			incoming_responses.pop_front();
 		}
 
-		const auto           type = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
-		ResponseFrameVariant frame;
-		if (type == BinaryTypes::Response) {
-			frame = Karkinolution::Binary::Frames::Parser::parse_response_frame(raw_frame);
-		} else if (type == BinaryTypes::Error) {
-			frame = Karkinolution::Binary::Frames::Parser::parse_error_frame(raw_frame);
-		} else {
+		const auto           type  = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
+		ResponseFrameVariant frame = [&]() -> ResponseFrameVariant {
+			if (type == BinaryTypes::Response) {
+				return Karkinolution::Binary::Frames::Parser::parse_response_frame(raw_frame);
+			} else if (type == BinaryTypes::Error) {
+				return Karkinolution::Binary::Frames::Parser::parse_error_frame(raw_frame);
+			}
 			throw ClientError("Client received a request frame from the server");
-		}
+		}();
 
 		const auto added = pending_requests.add_response(frame);
 

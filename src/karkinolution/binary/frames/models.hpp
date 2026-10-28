@@ -16,6 +16,9 @@ namespace Karkinolution {
 		namespace Frames {
 			namespace Models {
 
+				// Frame models enforce protocol invariants once at construction instead of
+				// repeating checks in the parser and motor. Private fields and read-only
+				// accessors prevent later mutation and keep those layers consistent.
 				namespace Request {
 					struct SeeExtra {
 							Protocol::Request::SeeTarget target;
@@ -67,33 +70,176 @@ namespace Karkinolution {
 					}
 
 					struct Request {
-							FrameDeclaredSize      declared_size;
-							RequestId              id;
-							RequestSubTypes        sub_type;
-							std::vector<std::byte> payload;
-							Resource               resource;
+						private:
 
-							RequestExtra extra;
+							FrameDeclaredSize      declared_size_;
+							RequestId              id_;
+							RequestSubTypes        sub_type_;
+							std::vector<std::byte> payload_;
+							Resource               resource_;
+							RequestExtra           extra_;
+
+						public:
+
+							Request(FrameDeclaredSize      declared_size,
+									RequestId              id,
+									RequestSubTypes        sub_type,
+									std::vector<std::byte> payload,
+									Resource               resource,
+									RequestExtra           extra)
+								: declared_size_(declared_size)
+								, id_(id)
+								, sub_type_(sub_type)
+								, payload_(std::move(payload))
+								, resource_(resource)
+								, extra_(std::move(extra)) {
+								validate_sub_type_and_extra(sub_type_, extra_);
+							}
+
+							Request(const Request &)            = default;
+							Request(Request &&)                 = default;
+							Request &operator=(const Request &) = delete;
+							Request &operator=(Request &&)      = delete;
+
+							FrameDeclaredSize get_declared_size() const {
+								return declared_size_;
+							}
+
+							RequestId get_id() const {
+								return id_;
+							}
+
+							RequestSubTypes get_sub_type() const {
+								return sub_type_;
+							}
+
+							const std::vector<std::byte> &get_payload() const {
+								return payload_;
+							}
+
+							Resource get_resource() const {
+								return resource_;
+							}
+
+							const RequestExtra &get_extra() const {
+								return extra_;
+							}
 					};
 
 				} // namespace Request
 
 				namespace Response {
+					void constexpr validate_sub_type_and_cardinality(
+						ResponseSubTypes    sub_type,
+						ResponseCardinality cardinality) {
+						if (sub_type == ResponseSubTypes::NONE) {
+							if (cardinality != ResponseCardinality::ONE) {
+								throw FrameError(
+									"Response with sub type None must have cardinality One");
+							}
+						} else if (sub_type != ResponseSubTypes::CREATURE
+								   && sub_type != ResponseSubTypes::CORPSE
+								   && sub_type != ResponseSubTypes::SOIL) {
+							throw FrameError("Invalid response subtype");
+						}
+
+						if (cardinality != ResponseCardinality::ONE
+							&& cardinality != ResponseCardinality::ALL) {
+							throw FrameError("Invalid response cardinality");
+						}
+					}
+
 					struct Response {
-							FrameDeclaredSize      declared_size;
-							RequestId              request_id;
-							ResponseSubTypes       sub_type;
-							std::vector<std::byte> payload;
-							ResponseCardinality    cardinality;
+						private:
+
+							FrameDeclaredSize      declared_size_;
+							RequestId              request_id_;
+							ResponseSubTypes       sub_type_;
+							std::vector<std::byte> payload_;
+							ResponseCardinality    cardinality_;
+
+						public:
+
+							Response(FrameDeclaredSize      declared_size,
+									 RequestId              request_id,
+									 ResponseSubTypes       sub_type,
+									 std::vector<std::byte> payload,
+									 ResponseCardinality    cardinality)
+								: declared_size_(declared_size)
+								, request_id_(request_id)
+								, sub_type_(sub_type)
+								, payload_(std::move(payload))
+								, cardinality_(cardinality) {
+								validate_sub_type_and_cardinality(sub_type_, cardinality_);
+							}
+
+							Response(const Response &)            = default;
+							Response(Response &&)                 = default;
+							Response &operator=(const Response &) = delete;
+							Response &operator=(Response &&)      = delete;
+
+							FrameDeclaredSize get_declared_size() const {
+								return declared_size_;
+							}
+
+							RequestId get_request_id() const {
+								return request_id_;
+							}
+
+							ResponseSubTypes get_sub_type() const {
+								return sub_type_;
+							}
+
+							const std::vector<std::byte> &get_payload() const {
+								return payload_;
+							}
+
+							ResponseCardinality get_cardinality() const {
+								return cardinality_;
+							}
 					};
 				} // namespace Response
 
 				namespace Error {
 					struct Error {
-							FrameDeclaredSize      declared_size;
-							RequestId              request_id;
-							ErrorSubTypes          sub_type;
-							std::vector<std::byte> payload;
+						private:
+
+							FrameDeclaredSize      declared_size_;
+							RequestId              request_id_;
+							ErrorSubTypes          sub_type_;
+							std::vector<std::byte> payload_;
+
+						public:
+
+							Error(FrameDeclaredSize      declared_size,
+								  RequestId              request_id,
+								  ErrorSubTypes          sub_type,
+								  std::vector<std::byte> payload)
+								: declared_size_(declared_size)
+								, request_id_(request_id)
+								, sub_type_(sub_type)
+								, payload_(std::move(payload)) {}
+
+							Error(const Error &)            = default;
+							Error(Error &&)                 = default;
+							Error &operator=(const Error &) = delete;
+							Error &operator=(Error &&)      = delete;
+
+							FrameDeclaredSize get_declared_size() const {
+								return declared_size_;
+							}
+
+							RequestId get_request_id() const {
+								return request_id_;
+							}
+
+							ErrorSubTypes get_sub_type() const {
+								return sub_type_;
+							}
+
+							const std::vector<std::byte> &get_payload() const {
+								return payload_;
+							}
 					};
 				} // namespace Error
 
@@ -123,11 +269,11 @@ namespace Karkinolution {
 						FrameDeclaredSize constexpr get_declared_size() const {
 							const auto type = get_type();
 							if (type == BinaryTypes::Request) {
-								return std::get<Request::Request>(data_).declared_size;
+								return std::get<Request::Request>(data_).get_declared_size();
 							} else if (type == BinaryTypes::Response) {
-								return std::get<Response::Response>(data_).declared_size;
+								return std::get<Response::Response>(data_).get_declared_size();
 							} else if (type == BinaryTypes::Error) {
-								return std::get<Error::Error>(data_).declared_size;
+								return std::get<Error::Error>(data_).get_declared_size();
 							}
 							Karkinolution::Functional::unreachable_or_throw();
 						}
@@ -135,11 +281,11 @@ namespace Karkinolution {
 						Protocol::Detail::CodeVariant constexpr get_sub_type() const {
 							const auto type = get_type();
 							if (type == BinaryTypes::Request) {
-								return std::get<Request::Request>(data_).sub_type;
+								return std::get<Request::Request>(data_).get_sub_type();
 							} else if (type == BinaryTypes::Response) {
-								return std::get<Response::Response>(data_).sub_type;
+								return std::get<Response::Response>(data_).get_sub_type();
 							} else if (type == BinaryTypes::Error) {
-								return std::get<Error::Error>(data_).sub_type;
+								return std::get<Error::Error>(data_).get_sub_type();
 							}
 							Karkinolution::Functional::unreachable_or_throw();
 						}

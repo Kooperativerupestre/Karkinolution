@@ -816,34 +816,49 @@ namespace Karkinolution {
 
 					Models::Request::RequestExtra extra = std::monostate();
 
-					if (sub_type == Protocol::Request::Operation::SEE) {
-						extra =
-							Models::Request::SeeExtra{.target = Request::See::get_target(bytes)};
+					switch (sub_type) {
+						case Protocol::Request::Operation::SEE:
+							extra = Models::Request::SeeExtra{.target =
+																  Request::See::get_target(bytes)};
+							break;
+						case Protocol::Request::Operation::WANT:
+							extra = Models::Request::WantExtra{};
+							break;
+						case Protocol::Request::Operation::ERASE:
+							extra = Models::Request::EraseExtra{};
+							break;
+						case Protocol::Request::Operation::CREATE:
+							extra = Models::Request::CreateExtra{};
+							break;
+						case Protocol::Request::Operation::CYCLE:
+							extra = Models::Request::CycleExtra{};
+							break;
+						default:
+							Karkinolution::Functional::unreachable_or_throw();
 					}
-					return Models::Request::Request{.declared_size = get_declared_size(bytes),
-													.id            = Request::get_id(bytes),
-													.sub_type      = sub_type,
-													.payload       = get_payload(bytes),
-													.resource      = resource,
-													.extra         = extra};
+					return Models::Request::Request{get_declared_size(bytes),
+													Request::get_id(bytes),
+													sub_type,
+													get_payload(bytes),
+													resource,
+													std::move(extra)};
 				}
 
 				template <ByteRange T>
 				Models::Response::Response parse_response_frame(const T &bytes) {
 					return Models::Response::Response{
-						.declared_size = get_declared_size(bytes),
-						.request_id    = Response::get_request_id(bytes),
-						.sub_type      = std::get<ResponseSubTypes>(get_sub_type(bytes)),
-						.payload       = Response::get_payload(bytes),
-						.cardinality   = Response::get_cardinality(bytes)};
+						get_declared_size(bytes),
+						Response::get_request_id(bytes),
+						std::get<ResponseSubTypes>(get_sub_type(bytes)),
+						Response::get_payload(bytes),
+						Response::get_cardinality(bytes)};
 				}
 
 				template <ByteRange T> Models::Error::Error parse_error_frame(const T &bytes) {
-					return Models::Error::Error{.declared_size = get_declared_size(bytes),
-												.request_id    = Error::get_request_id(bytes),
-												.sub_type =
-													std::get<ErrorSubTypes>(get_sub_type(bytes)),
-												.payload = Error::get_payload(bytes)};
+					return Models::Error::Error{get_declared_size(bytes),
+												Error::get_request_id(bytes),
+												std::get<ErrorSubTypes>(get_sub_type(bytes)),
+												Error::get_payload(bytes)};
 				}
 
 				template <ByteRange T> Models::GenericFrame parse_frame(const T &bytes) {

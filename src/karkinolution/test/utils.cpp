@@ -37,8 +37,8 @@ TestUtils::make_see_creature_request_data(BaseIdType creature_id) {
         std::vector<std::byte>(payload.begin(), payload.end()),
         Karkinolution::Binary::Frames::Models::Request::SeeExtra{
 			  .target = Karkinolution::Binary::Protocol::Request::SeeTarget::ONE});
-	return {.sub_type = built.sub_type,
-			.resource = built.resource,
-			.payload  = built.payload,
-			.extra    = built.extra};
+	return {.sub_type = built.get_sub_type(),
+			.resource = built.get_resource(),
+			.payload  = built.get_payload(),
+			.extra    = built.get_extra()};
 }

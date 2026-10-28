@@ -136,7 +136,7 @@ bool PendingRequests::add_response(const ResponseFrameVariant &response) {
 
 		const auto request_id = std::visit(
 			[](const auto &frame) {
-				return frame.request_id;
+				return frame.get_request_id();
 			},
 			response);
 		auto it = pendings.find(request_id);

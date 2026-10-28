@@ -96,6 +96,7 @@ namespace Karkinolution::Binary::Protocol {
 			ONE = 1,
 			ALL = 2
 		};
+		// Creature, Corpse, and Soil allow both cardinalities; None allows only One.
 	} // namespace Response
 
 

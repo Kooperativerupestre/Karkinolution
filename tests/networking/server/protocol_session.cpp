@@ -17,7 +17,7 @@ TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {
 
 	ASSERT_TRUE(session.has_response());
 	const auto response = session.pop_response();
-	EXPECT_EQ(response.request_id, 7);
+	EXPECT_EQ(response.get_request_id(), 7);
 	EXPECT_FALSE(session.has_response());
 }
 
@@ -34,5 +34,5 @@ TEST(ProtocolSessionTest, FrameSplitAcrossTwoReceivesProducesOneResponse) {
 
 	session.receive(all.subspan(half));
 	ASSERT_TRUE(session.has_response());
-	EXPECT_EQ(session.pop_response().request_id, 8);
+	EXPECT_EQ(session.pop_response().get_request_id(), 8);
 }

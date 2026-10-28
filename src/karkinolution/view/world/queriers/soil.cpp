@@ -8,3 +8,8 @@ KarkinolutionView::World::Queriers::Soil::see_soil(BaseIdType                   
 												   KarkinolutionView::Client::Client &client) {
 	return KarkinolutionSDK::Interpreters::Soil::see_soil(client, id);
 }
+
+std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
+KarkinolutionView::World::Queriers::Soil::see_all_soils(KarkinolutionView::Client::Client &client) {
+	return KarkinolutionSDK::Interpreters::Soil::see_all_soils(client);
+}

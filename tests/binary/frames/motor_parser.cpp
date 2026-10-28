@@ -63,13 +63,13 @@ TEST(FrameMotorRawBytes, SeeRequestHasReadableMetadataAndPayload) {
 			  (std::vector<std::byte>{payload.begin(), payload.end()}));
 
 	const auto parsed = Frames::Parser::parse_request_frame(raw);
-	EXPECT_EQ(parsed.declared_size, Frames::Parser::get_declared_size(raw));
-	EXPECT_EQ(parsed.id, request_id);
-	EXPECT_EQ(parsed.sub_type, RequestSubTypes::SEE);
-	EXPECT_EQ(parsed.resource, Resource::CREATURE);
-	EXPECT_EQ(parsed.payload, (std::vector<std::byte>{payload.begin(), payload.end()}));
-	ASSERT_TRUE(std::holds_alternative<Frames::Models::Request::SeeExtra>(parsed.extra));
-	EXPECT_EQ(std::get<Frames::Models::Request::SeeExtra>(parsed.extra).target,
+	EXPECT_EQ(parsed.get_declared_size(), Frames::Parser::get_declared_size(raw));
+	EXPECT_EQ(parsed.get_id(), request_id);
+	EXPECT_EQ(parsed.get_sub_type(), RequestSubTypes::SEE);
+	EXPECT_EQ(parsed.get_resource(), Resource::CREATURE);
+	EXPECT_EQ(parsed.get_payload(), (std::vector<std::byte>{payload.begin(), payload.end()}));
+	ASSERT_TRUE(std::holds_alternative<Frames::Models::Request::SeeExtra>(parsed.get_extra()));
+	EXPECT_EQ(std::get<Frames::Models::Request::SeeExtra>(parsed.get_extra()).target,
 			  Karkinolution::Binary::Protocol::Request::SeeTarget::ALL);
 
 	EXPECT_EQ(Frames::Parser::Request::get_id(raw), request_id);
@@ -104,11 +104,23 @@ TEST(FrameMotorRawBytes, NonSeeOperationsPreserveMetadataAndPayload) {
 		EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::YES);
 
 		const auto parsed = Frames::Parser::parse_request_frame(raw);
-		EXPECT_EQ(parsed.sub_type, operation);
-		EXPECT_EQ(parsed.id, request_id);
-		EXPECT_EQ(parsed.resource, Resource::CORPSE);
-		EXPECT_EQ(parsed.payload, (std::vector<std::byte>{payload.begin(), payload.end()}));
-		EXPECT_TRUE(std::holds_alternative<std::monostate>(parsed.extra));
+		EXPECT_EQ(parsed.get_sub_type(), operation);
+		EXPECT_EQ(parsed.get_id(), request_id);
+		EXPECT_EQ(parsed.get_resource(), Resource::CORPSE);
+		EXPECT_EQ(parsed.get_payload(), (std::vector<std::byte>{payload.begin(), payload.end()}));
+		if (operation == RequestSubTypes::WANT) {
+			EXPECT_TRUE(
+				std::holds_alternative<Frames::Models::Request::WantExtra>(parsed.get_extra()));
+		} else if (operation == RequestSubTypes::CREATE) {
+			EXPECT_TRUE(
+				std::holds_alternative<Frames::Models::Request::CreateExtra>(parsed.get_extra()));
+		} else if (operation == RequestSubTypes::CYCLE) {
+			EXPECT_TRUE(
+				std::holds_alternative<Frames::Models::Request::CycleExtra>(parsed.get_extra()));
+		} else {
+			EXPECT_TRUE(
+				std::holds_alternative<Frames::Models::Request::EraseExtra>(parsed.get_extra()));
+		}
 	}
 }
 
@@ -127,10 +139,10 @@ TEST(FrameMotorRawBytes, ResponseIsParsedWithCardinalityAndPayload) {
 			  (std::vector<std::byte>{payload.begin(), payload.end()}));
 
 	const auto parsed = Frames::Parser::parse_response_frame(raw);
-	EXPECT_EQ(parsed.request_id, request_id);
-	EXPECT_EQ(parsed.sub_type, ResponseSubTypes::SOIL);
-	EXPECT_EQ(parsed.cardinality, ResponseCardinality::ALL);
-	EXPECT_EQ(parsed.payload, (std::vector<std::byte>{payload.begin(), payload.end()}));
+	EXPECT_EQ(parsed.get_request_id(), request_id);
+	EXPECT_EQ(parsed.get_sub_type(), ResponseSubTypes::SOIL);
+	EXPECT_EQ(parsed.get_cardinality(), ResponseCardinality::ALL);
+	EXPECT_EQ(parsed.get_payload(), (std::vector<std::byte>{payload.begin(), payload.end()}));
 }
 
 TEST(FrameMotorRawBytes, ErrorIsParsedWithoutResponseCardinality) {
@@ -147,9 +159,9 @@ TEST(FrameMotorRawBytes, ErrorIsParsedWithoutResponseCardinality) {
 			  (std::vector<std::byte>{payload.begin(), payload.end()}));
 
 	const auto parsed = Frames::Parser::parse_error_frame(raw);
-	EXPECT_EQ(parsed.request_id, request_id);
-	EXPECT_EQ(parsed.sub_type, ErrorSubTypes::CORPSE_WAS_NOT_FOUND);
-	EXPECT_EQ(parsed.payload, (std::vector<std::byte>{payload.begin(), payload.end()}));
+	EXPECT_EQ(parsed.get_request_id(), request_id);
+	EXPECT_EQ(parsed.get_sub_type(), ErrorSubTypes::CORPSE_WAS_NOT_FOUND);
+	EXPECT_EQ(parsed.get_payload(), (std::vector<std::byte>{payload.begin(), payload.end()}));
 }
 
 TEST(FrameParserHas, RequestPredicatesRespectEachFieldBoundary) {

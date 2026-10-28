@@ -36,10 +36,10 @@ namespace KarkinolutionSDK {
 					std::vector<std::byte>(payload.begin(), payload.end()),
 					SeeExtra{.target = SeeTarget::ONE});
 
-				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
-																 .resource = built.resource,
-																 .payload  = built.payload,
-																 .extra    = built.extra};
+				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.get_sub_type(),
+																 .resource = built.get_resource(),
+																 .payload  = built.get_payload(),
+																 .extra    = built.get_extra()};
 
 				const auto result = client.request(data);
 
@@ -52,7 +52,7 @@ namespace KarkinolutionSDK {
 					return std::nullopt;
 				}
 
-				return CorpseDSI::get_corpse(frame.payload, 0);
+				return CorpseDSI::get_corpse(frame.get_payload(), 0);
 			}
 		} // namespace Corpse
 	} // namespace Interpreters

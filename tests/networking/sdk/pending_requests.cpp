@@ -18,12 +18,11 @@ namespace {
 	ResponseFrame make_test_response(RequestId id) {
 		const std::vector<std::byte> payload{std::byte{0x2A}, std::byte{0x7F}};
 
-		return ResponseFrame{
-			static_cast<std::uint32_t>(payload.size()),
-			id,
-			ResponseSubTypes::CREATURE,
-			payload,
-			ResponseCardinality::ONE};
+		return ResponseFrame{static_cast<std::uint32_t>(payload.size()),
+							 id,
+							 ResponseSubTypes::CREATURE,
+							 payload,
+							 ResponseCardinality::ONE};
 	}
 
 } // namespace
@@ -65,8 +64,11 @@ TEST(PendingRequests, AddResponseConcurrentlyAcceptsOnlyOne) {
 	std::vector<std::byte> payload;
 	payload.push_back(static_cast<std::byte>(0x032));
 
-	ResponseFrame response{
-		123, req_id, ResponseSubTypes::CORPSE, payload, ResponseCardinality::ONE};
+	ResponseFrame response{123,
+						   req_id,
+						   ResponseSubTypes::CORPSE,
+						   payload,
+						   ResponseCardinality::ONE};
 
 	for (int i = 0; i < 10000; i++) {
 		KarkinolutionSDK::Protocol::PendingRequests pending_requests;
@@ -138,8 +140,10 @@ TEST(PendingRequests, PopResponseReturnsAvailableErrorFrame) {
 	PendingRequests requests;
 
 	constexpr RequestId id = 42;
-	const ErrorFrame error{
-		123, id, ErrorSubTypes::CREATURE_WAS_NOT_FOUND, std::vector<std::byte>{}};
+	const ErrorFrame    error{123,
+                           id,
+                           ErrorSubTypes::CREATURE_WAS_NOT_FOUND,
+                           std::vector<std::byte>{}};
 
 	ASSERT_TRUE(requests.add_request(id));
 	ASSERT_TRUE(requests.add_response(ResponseFrameVariant{error}));
@@ -149,7 +153,7 @@ TEST(PendingRequests, PopResponseReturnsAvailableErrorFrame) {
 	ASSERT_TRUE(result);
 	ASSERT_TRUE(result->has_value());
 	ASSERT_TRUE(std::holds_alternative<ErrorFrame>(result->value()));
-	EXPECT_EQ(std::get<ErrorFrame>(result->value()).sub_type,
+	EXPECT_EQ(std::get<ErrorFrame>(result->value()).get_sub_type(),
 			  ErrorSubTypes::CREATURE_WAS_NOT_FOUND);
 }
 

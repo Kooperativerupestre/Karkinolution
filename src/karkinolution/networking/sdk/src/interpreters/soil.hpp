@@ -30,10 +30,10 @@ namespace KarkinolutionSDK {
 					std::vector<std::byte>(payload.begin(), payload.end()),
 					SeeExtra{.target = SeeTarget::ONE});
 
-				const KarkinolutionSDK::Client::RequestData    data{.sub_type = built.sub_type,
-																	.resource = built.resource,
-																	.payload  = built.payload,
-																	.extra    = built.extra};
+				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.get_sub_type(),
+																 .resource = built.get_resource(),
+																 .payload  = built.get_payload(),
+																 .extra    = built.get_extra()};
 				const KarkinolutionSDK::Client::ResponseResult result = client.request(data);
 
 				if (!result || !result.value().has_value()) {
@@ -45,7 +45,7 @@ namespace KarkinolutionSDK {
 				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}
-				return SoilDSI::get_soil(frame.payload, 0);
+				return SoilDSI::get_soil(frame.get_payload(), 0);
 			}
 
 			template <HasRequest T>
@@ -60,10 +60,10 @@ namespace KarkinolutionSDK {
 					std::vector<std::byte>(payload.begin(), payload.end()),
 					SeeExtra{.target = SeeTarget::ALL});
 
-				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.sub_type,
-																 .resource = built.resource,
-																 .payload  = built.payload,
-																 .extra    = built.extra};
+				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.get_sub_type(),
+																 .resource = built.get_resource(),
+																 .payload  = built.get_payload(),
+																 .extra    = built.get_extra()};
 				const auto                                  result = client.request(data);
 
 				if (!result || !result.value().has_value()) {
@@ -75,7 +75,7 @@ namespace KarkinolutionSDK {
 					return {};
 				}
 
-				return ListTDSI::deserialize<SoilSRI::Layout::TOTAL_SIZE>(frame.payload,
+				return ListTDSI::deserialize<SoilSRI::Layout::TOTAL_SIZE>(frame.get_payload(),
 																		  SoilDSI::get_soil,
 																		  0);
 			}
