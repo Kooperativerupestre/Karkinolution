@@ -37,6 +37,7 @@ Build and run instructions are in [`HOW_TO_RUN.md`](HOW_TO_RUN.md).
 ## Documentation
 
 * [`HOW_TO_RUN.md`](HOW_TO_RUN.md): first build and run
+* [`docs/SDK.md`](docs/SDK.md): use the C++ SDK
 * [`docs/commands.md`](docs/commands.md): every build preset, Docker and CI command
 * [`CLI.md`](CLI.md): the `karkinolution` command line tool
 * [`docs/rules.md`](docs/rules.md): structural rules of the code
