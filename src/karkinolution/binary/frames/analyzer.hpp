@@ -1,5 +1,6 @@
 #pragma once
 #include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/binary/frames/parser.hpp"
 
 #include <bit>
 #include <vector>
@@ -17,7 +18,7 @@ namespace Karkinolution {
 				bool is_none(const ResponseFrame &frame);
 
 				template <ByteRange T> bool is_complete_frame(const T &bytes) {
-					return bytes.size() == get_frame_size(bytes);
+					return bytes.size() == Parser::get_frame_size(bytes);
 				}
 			} // namespace Analyzer
 		} // namespace Frames
