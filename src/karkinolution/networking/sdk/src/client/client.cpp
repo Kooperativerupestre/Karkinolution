@@ -15,6 +15,8 @@
 using KarkinolutionSDK::Client::Client;
 
 Client::~Client() {
+	// Prevent pending receive callbacks from using the operation counter after
+	// its condition variable is destroyed.
 	stop_new_async_operations();
 	wait_until_zero_async_operations();
 }
