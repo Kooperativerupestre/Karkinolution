@@ -18,7 +18,7 @@ void LifeCycle::run(Entity &entity, World &world) {
 
 void LifeCycle::run(World &world) {
 	world.pass_time();
-	for (auto &piece : world.territory.soils()) {
+	for (auto &piece : world.territory.registry_values()) {
 		SoilPieceMotor::run(piece);
 	}
 

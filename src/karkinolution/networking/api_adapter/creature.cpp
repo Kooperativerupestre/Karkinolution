@@ -12,9 +12,6 @@
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
-// TODO: add unit test to verify if a creature that exists and a creature that doesn't exist, don't
-// send error
-
 ResponseFrame CreatureAPIBYA::see_creature(const World                  &world,
 										   RequestId                     request_id,
 										   const std::vector<std::byte> &payload) {

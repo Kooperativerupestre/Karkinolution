@@ -31,11 +31,11 @@ class RSTService {
 			return registry_;
 		}
 
-		auto soils() {
+		auto registry_values() {
 			return registry_.values();
 		}
 
-		auto soils() const {
+		auto registry_values() const {
 			return registry_.values();
 		}
 

@@ -103,7 +103,7 @@ namespace Karkinolution {
 							}
 						}
 
-						auto make_header(std::size_t size) {
+						inline auto make_header(std::size_t size) {
 
 							return Serializer::serialize<ListSize>(static_cast<ListSize>(size));
 						}
@@ -162,7 +162,7 @@ namespace Karkinolution {
 										 std::ranges::end(serialized));
 						}
 
-						void write_header(std::vector<std::byte> &bytes, std::size_t size) {
+						inline void write_header(std::vector<std::byte> &bytes, std::size_t size) {
 
 							const auto header = make_header(size);
 
