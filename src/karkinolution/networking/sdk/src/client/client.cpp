@@ -157,6 +157,7 @@ void Client::receive() {
 									protocol_session.receive(
 										std::span<const std::byte>{temporary_responses.data(),
 																   bytes_received});
+									receive();
 									current_async_operations_running.decrement();
 								}));
 	} catch (...) {

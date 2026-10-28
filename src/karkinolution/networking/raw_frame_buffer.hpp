@@ -6,7 +6,7 @@
 #include <karkinolution/binary/protocol/layouts.hpp>
 #include <optional>
 #include <vector>
-inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 4096;
+inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 64 * 1024;
 
 
 using BufferExistence = Karkinolution::Binary::Frames::Parser::FrameExistence;

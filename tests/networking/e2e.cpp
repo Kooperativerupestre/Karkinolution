@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>
 #include <karkinolution/networking/sdk/src/client/client.hpp>
+#include <karkinolution/networking/sdk/src/interpreters/soil.hpp>
 #include <latch>
 #include <networking/server_fixture.hpp>
 
@@ -115,4 +116,44 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 
 	EXPECT_TRUE(first_request_succeeded);
 	EXPECT_TRUE(second_request_succeeded);
+}
+
+TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
+	IoContext server_io;
+
+	World      world               = TestUtils::make_small_world();
+	const auto expected_soil_count = world.territory.registry_values().size();
+	Server     server{server_io, PORT, world};
+
+	std::thread server_thread{[&] {
+		server_io.run();
+	}};
+
+	std::size_t soil_count = 0;
+	bool        succeeded  = false;
+	{
+		KarkinolutionSDK::Client::Client client{
+			io,
+			KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
+
+		try {
+			client.connect();
+			soil_count = KarkinolutionSDK::Interpreters::Soil::see_all_soils(client).size();
+			succeeded  = true;
+		} catch (const std::exception &error) {
+			ADD_FAILURE() << "Fetching all soils failed: " << error.what();
+		}
+
+		client.stop_new_async_operations();
+		client.wait_until_zero_async_operations();
+	}
+
+	asio::post(server_io, [&] {
+		server.stop();
+	});
+
+	server_thread.join();
+
+	ASSERT_TRUE(succeeded);
+	EXPECT_EQ(soil_count, expected_soil_count);
 }
