@@ -5,6 +5,7 @@
 #include <format>
 #include <functional>
 #include <karkinolution/binary/byte_utils.hpp>
+#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/binary/serializer.hpp>
 #include <karkinolution/binary/types/function_concepts.hpp>
 #include <ranges>
@@ -364,7 +365,14 @@ namespace Karkinolution {
 
 				namespace DSI {
 
-					ListSize get_size(const std::vector<std::byte> &bytes, std::size_t offset);
+					inline ListSize get_size(const std::vector<std::byte> &bytes,
+											 std::size_t                   offset) {
+						if (offset > bytes.size() || bytes.size() - offset < sizeof(ListSize)) {
+							throw ByteError("The list offset is outside the serialized bytes.");
+						}
+
+						return Deserializer::read_uint16_t(bytes, offset);
+					}
 
 					namespace Details {
 
