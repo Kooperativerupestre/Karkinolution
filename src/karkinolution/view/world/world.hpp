@@ -38,8 +38,7 @@ namespace KarkinolutionView {
 
 			public:
 
-				Terrain()
-					: size(1000, 1000, 100) {}
+				Terrain(KarkinolutionView::Client::Client &client);
 
 				const std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil> &
 				get_soils() const {

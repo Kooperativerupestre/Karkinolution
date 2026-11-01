@@ -6,7 +6,7 @@
 #include <karkinolution/math/units.hpp>
 
 TEST(DSIOffsetInvariantsMidLevel, VecMidLevelAuxiliaryGettersAutoAddOffset) {
-	const Vec3 original{12.5, -45.0, 100.25};
+	const Karkinolution::Math::Vec::Vec3 original{12.5, -45.0, 100.25};
 	const auto vec_bytes = VecSRI::serialize_vec(original);
 
 	std::vector<std::byte> payload     = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
@@ -19,7 +19,7 @@ TEST(DSIOffsetInvariantsMidLevel, VecMidLevelAuxiliaryGettersAutoAddOffset) {
 }
 
 TEST(DSIOffsetInvariantsMidLevel, UnitsSizeMidLevelAuxiliaryGettersAutoAddOffset) {
-	const Size original{10.0, 20.0, 30.0};
+	const Karkinolution::Math::Units::Size original{10.0, 20.0, 30.0};
 	const auto size_bytes = UnitsSRI::serialize_size(original);
 
 	std::vector<std::byte> payload     = {std::byte{0xDE}, std::byte{0xAD}};

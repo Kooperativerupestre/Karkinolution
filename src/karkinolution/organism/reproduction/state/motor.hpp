@@ -6,13 +6,17 @@
 #include <karkinolution/organism/reproduction/uterus/physiology.hpp>
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 
-enum class ConceiveOutput : uint8_t {
-	ALREADY_PREGNANT,
-	OK
-};
+namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor {
 
-namespace ReproductionStateMotor {
-	void                                 run(Creature &creature);
-	void                                 prepair_to_conceive(Creature &creature);
-	std::variant<Embryo, ConceiveOutput> conceive(Creature &, Creature &);
-} // namespace ReproductionStateMotor
+	enum class ConceiveOutput : uint8_t {
+		ALREADY_PREGNANT,
+		OK
+	};
+
+	void run(Karkinolution::Organisms::Entities::Creature::Creature &creature);
+	void prepair_to_conceive(Karkinolution::Organisms::Entities::Creature::Creature &creature);
+	std::variant<Karkinolution::Organisms::Entities::Embryo::Embryo, ConceiveOutput>
+	conceive(Karkinolution::Organisms::Entities::Creature::Creature &,
+			 Karkinolution::Organisms::Entities::Creature::Creature &);
+
+} // namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor

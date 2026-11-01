@@ -1,5 +1,7 @@
 #include <karkinolution/organism/entities/properties/properties.hpp>
 
+namespace Karkinolution::Organisms::Entities::Properties {
+
 bool PropertiesContainer::has(GenericProperty property) const {
 	return value.contains(property);
 }
@@ -22,3 +24,5 @@ bool PropertiesContainer::remove(GenericProperty property) {
 void PropertiesContainer::clear() {
 	value.clear();
 }
+
+} // namespace Karkinolution::Organisms::Entities::Properties

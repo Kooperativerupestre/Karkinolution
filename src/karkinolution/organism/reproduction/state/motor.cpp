@@ -10,58 +10,71 @@
 #include <karkinolution/organism/reproduction/uterus/motor.hpp>
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 
-void ReproductionStateMotor::run(Creature &creature) {
-	ReproductionValidator::has_uterus(creature.body.reproductive.state);
+namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor {
 
-	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
+	void run(Karkinolution::Organisms::Entities::Creature::Creature &creature) {
+		Validator::has_uterus(creature.body.reproduction.state);
 
-	if (uterus.is_pregnant()) {
-		UterusMotor::transfer_energy_to_uterus(creature);
-		uterus.get_pregnant_uterus().gestation.pass();
-	}
-}
-
-void ReproductionStateMotor::prepair_to_conceive(Creature &creature) {
-	ReproductionValidator::has_uterus(creature.body.reproductive.state);
-	ReproductionValidator::is_not_pregnant(creature.body.reproductive.state);
-
-	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
-
-	auto number_of_children = ReproductionStatePhysiology::get_children_count(creature);
-	UterusMotor::transfer_energy_to_uterus(creature,
-										   NormalizedValue<float>(0.3f),
-										   NormalizedValue<float>(0.5f));
-	creature.body.reproductive.fertility.zero();
-	uterus.state = PregnantUterus{
-		.embryos = {},
-		.gestation =
-			Gestation{0,
-					  static_cast<uint16_t>(
-						  creature.genome.creature_genome.reproductive.average_gestation_limit)},
-		.born_count = BornCount{number_of_children},
-	};
-}
-
-std::variant<Embryo, ConceiveOutput> ReproductionStateMotor::conceive(Creature &female,
-																	  Creature &male) {
-	ReproductionValidator::has_uterus(female.body.reproductive.state);
-	auto &uterus = std::get<Uterus>(female.body.reproductive.state.state);
-
-	if (uterus.is_pregnant()) {
-		return ConceiveOutput::ALREADY_PREGNANT;
+		auto &uterus = std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+			creature.body.reproduction.state.state);
+		if (uterus.is_pregnant()) {
+			Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor::
+				transfer_energy_to_uterus(creature);
+			uterus.get_pregnant_uterus().gestation.pass();
+		}
 	}
 
-	ReproductionStateMotor::prepair_to_conceive(female);
+	void prepair_to_conceive(Karkinolution::Organisms::Entities::Creature::Creature &creature) {
+		Validator::has_uterus(creature.body.reproduction.state);
+		Validator::is_not_pregnant(creature.body.reproduction.state);
 
-	auto &pregnant_uterus = uterus.get_pregnant_uterus();
+		auto &uterus = std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+			creature.body.reproduction.state.state);
 
-	int children_count = ReproductionStatePhysiology::get_children_count(female);
-
-	for (int i = 0; i < children_count; i++) {
-		Embryo embryo = ReproductionStatePhysiology::generate_embryo(female, male);
-		pregnant_uterus.embryos.push_back(embryo.id);
-		return embryo;
+		auto number_of_children = State::Physiology::get_children_count(creature);
+		Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor::transfer_energy_to_uterus(
+			creature,
+			Karkinolution::Math::LV::CT::NormalizedValue<float>(0.3f),
+			Karkinolution::Math::LV::CT::NormalizedValue<float>(0.5f));
+		creature.body.reproduction.fertility.zero();
+		uterus.state = Karkinolution::Organisms::Entities::Reproduction::Uterus::PregnantUterus{
+			.embryos = {},
+			.gestation =
+				Karkinolution::Organisms::Entities::Reproduction::Uterus::Gestation{
+					0,
+					static_cast<uint16_t>(
+						creature.genome.creature_genome.reproductive.average_gestation_limit)},
+			.born_count =
+				Karkinolution::Organisms::Entities::Reproduction::Uterus::BornCount{
+					number_of_children},
+		};
 	}
-	return ConceiveOutput::OK;
-	// add: genome -> embryo
-}
+
+	std::variant<Karkinolution::Organisms::Entities::Embryo::Embryo, ConceiveOutput>
+	conceive(Karkinolution::Organisms::Entities::Creature::Creature &female,
+			 Karkinolution::Organisms::Entities::Creature::Creature &male) {
+		Validator::has_uterus(female.body.reproduction.state);
+		auto &uterus = std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+			female.body.reproduction.state.state);
+
+		if (uterus.is_pregnant()) {
+			return ConceiveOutput::ALREADY_PREGNANT;
+		}
+
+		prepair_to_conceive(female);
+
+		auto &pregnant_uterus = uterus.get_pregnant_uterus();
+
+		int children_count = State::Physiology::get_children_count(female);
+
+		for (int i = 0; i < children_count; i++) {
+			Karkinolution::Organisms::Entities::Embryo::Embryo embryo =
+				State::Physiology::generate_embryo(female, male);
+			pregnant_uterus.embryos.push_back(embryo.id);
+			return embryo;
+		}
+		return ConceiveOutput::OK;
+		// add: genome -> embryo
+	}
+
+} // namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor

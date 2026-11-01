@@ -2,8 +2,10 @@
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/world/world.hpp>
 
-namespace EmbryoMotor {
-	void grow(Embryo &embryo);
+namespace Karkinolution::Organisms::Entities::Embryo::Motor {
+	namespace EmbryoMotor {
+		void grow(Embryo &embryo);
 
-	void run(Embryo &embryo, World &world);
-} // namespace EmbryoMotor
+		void run(Embryo &embryo, Karkinolution::World::World &world);
+	} // namespace EmbryoMotor
+} // namespace Karkinolution::Organisms::Entities::Embryo::Motor

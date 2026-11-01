@@ -6,55 +6,59 @@
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/organism/values.hpp>
 
-using OrganismStats::Energy;
-using OrganismStats::Life;
-using OrganismStats::Health::Health;
-using PhysicsStats::Volume;
+namespace Karkinolution {
+	namespace Organisms {
+		namespace Entities {
+			namespace Embryo {
+				class EmbryonicEnergy : public FloatValue {
+					public:
 
-class EmbryonicEnergy : public FloatValue {
-	public:
+						using FloatValue::FloatValue;
+				};
 
-		using FloatValue::FloatValue;
-};
+				class EmbryoHungry : public LimitedValue<EmbryoHungry, float, 2.0f, 0.0f> {
+					public:
 
-class EmbryoHungry : public LimitedValue<EmbryoHungry, float, 2.0f, 0.0f> {
-	public:
+						template <typename T>
+						EmbryoHungry(T value)
+							: LimitedValue(value) {}
 
-		template <typename T>
-		EmbryoHungry(T value)
-			: LimitedValue(value) {}
+						EmbryoHungry()
+							: LimitedValue(0) {}
+				};
 
-		EmbryoHungry()
-			: LimitedValue(0) {}
-};
+				struct Embryo {
+						BaseIdType      id;
+						Energy          energy;
+						Life            life;
+						Health          health;
+						Volume          volume;
+						Genetic::Genome genome;
+						int             age;
+						Vec3            position;
 
-struct Embryo {
-		BaseIdType id;
-		Energy     energy;
-		Life       life;
-		Health     health;
-		Volume     volume;
-		Genome     genome;
-		int        age;
-		Vec3       position;
+						[[nodiscard]] Size size() const noexcept {
+							return Size{.lateral = volume.value * 0.8,
+										.height  = volume.value * 0.5,
+										.depth   = volume.value};
+						}
 
-		[[nodiscard]] Size size() const noexcept {
-			return Size{.lateral = volume.value * 0.8,
-						.height  = volume.value * 0.5,
-						.depth   = volume.value};
-		}
+						[[nodiscard]] EntityId build_id() const noexcept {
+							return create_embryo_id(id);
+						}
 
-		[[nodiscard]] EntityId build_id() const noexcept {
-			return EntityIDF::create_embryo_id(id);
-		}
+						[[nodiscard]] EmbryoHungry hungry() const;
 
-		[[nodiscard]] EmbryoHungry hungry() const;
+						[[nodiscard]] double specie_relative_volume() const;
+						[[nodiscard]] float  specie_relative_energy_max() const;
+						[[nodiscard]] float  specie_relative_life() const;
+				};
 
-		[[nodiscard]] double specie_relative_volume() const;
-		[[nodiscard]] float  specie_relative_energy_max() const;
-		[[nodiscard]] float  specie_relative_life() const;
-};
+				using EmbryoFunction = void (*)(Embryo &);
 
-using EmbryoFunction = void (*)(Embryo &);
+			} // namespace Embryo
+		} // namespace Entities
+	} // namespace Organisms
+} // namespace Karkinolution

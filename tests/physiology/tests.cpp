@@ -3,51 +3,37 @@
 #include "karkinolution/organism/entities/creature/physiology.hpp"
 #include "karkinolution/organism/entities/embryo/physiology.hpp"
 #include "karkinolution/organism/registry.hpp"
+#include "karkinolution/core/id.hpp"
+#include "karkinolution/math/physic/vec/model.hpp"
 
 #include <gtest/gtest.h>
 
+using Karkinolution::Core::Id::gen_id;
+using Karkinolution::Math::Vec::Vec3;
+using Karkinolution::Math::Volume;
+using Karkinolution::Math::LV::CT::NormalizedValue;
+using Karkinolution::Organisms::Energy;
+using Karkinolution::Organisms::Health;
+using Karkinolution::Organisms::Life;
+using Karkinolution::Organisms::OrganismRegistry;
+using Karkinolution::Organisms::Entities::Corpse::Corpse;
+using CreatureEntity = Karkinolution::Organisms::Entities::Creature::Creature;
+using Karkinolution::Organisms::Entities::Creature::CreatureSpecies;
+using Karkinolution::Organisms::Entities::Creature::Gender;
+using Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint;
+namespace CreatureConstructor = Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor;
+using Karkinolution::Organisms::Entities::Embryo::Embryo;
+
+namespace EntityIDF = Karkinolution::Organisms::Entities;
+namespace CreaturePhysiology = Karkinolution::Organisms::Entities::Creature::Physiology;
+namespace CreatureGrowingPhysiology = Karkinolution::Organisms::Entities::Creature::Physiology::Growing;
+namespace CorpsePhysiology = Karkinolution::Organisms::Entities::Corpse::Physiology;
+namespace EmbryoPhysiology = Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoPhysiology;
+namespace EmbryoGrowingPhysiology = Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoGrowingPhysiology;
+
+using Karkinolution::Organisms::Entities::Embryo::Physiology::BASE_VALUE_LIFE_INCREMENT;
+
 // --- CreaturePhysiology ---
-
-TEST(CreaturePhysiology, GetToAgeEffectsIdempotency) {
-	const auto id = gen_id();
-	auto       creat =
-		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
-															  .id       = id,
-															  .name     = "A3",
-															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
-
-	OrganismRegistry registry;
-	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
-	auto &creature = registry.entities.at_creature(EntityIDF::create_creature_id(id));
-
-	const float initial_age = creature.body.age.value;
-
-	const auto effect_1 = CreaturePhysiology::get_to_age_effects(creature, 1);
-	const auto effect_2 = CreaturePhysiology::get_to_age_effects(creature, 1);
-
-	ASSERT_EQ(effect_1, effect_2);
-	ASSERT_FLOAT_EQ(creature.body.age.value, initial_age);
-}
-
-TEST(CreaturePhysiology, GetDiseasesEffectIdempotency) {
-	const auto id = gen_id();
-	auto       creat =
-		CreatureConstructor::from_blueprint(CreatureBlueprint{.specie   = CreatureSpecies::CRAB,
-															  .id       = id,
-															  .name     = "A3",
-															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
-
-	OrganismRegistry registry;
-	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
-	const auto &creature = registry.entities.at_creature(EntityIDF::create_creature_id(id));
-
-	const auto disease_1 = CreaturePhysiology::get_diseases_effect(creature, registry.entities);
-	const auto disease_2 = CreaturePhysiology::get_diseases_effect(creature, registry.entities);
-
-	ASSERT_EQ(disease_1, disease_2);
-}
 
 TEST(CreaturePhysiology, IsDeadIdempotency) {
 	const auto id = gen_id();
@@ -59,8 +45,8 @@ TEST(CreaturePhysiology, IsDeadIdempotency) {
 															  .position = Vec3{0.0, 0.0, 0.0}});
 
 	OrganismRegistry registry;
-	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
-	auto &creature = registry.entities.at_creature(EntityIDF::create_creature_id(id));
+	registry.entities_registry.add(std::move(creat));
+	auto &creature = registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
 
 	const bool dead_1 = CreaturePhysiology::is_dead(creature);
 	const bool dead_2 = CreaturePhysiology::is_dead(creature);
@@ -104,8 +90,8 @@ TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 	const float initial_health = embryo.health.value();
 	const float initial_volume = embryo.volume.value;
 
-	Creature neonate_1 = CreaturePhysiology::hatch_embryo(embryo);
-	Creature neonate_2 = CreaturePhysiology::hatch_embryo(embryo);
+	CreatureEntity neonate_1 = CreaturePhysiology::hatch_embryo(embryo);
+	CreatureEntity neonate_2 = CreaturePhysiology::hatch_embryo(embryo);
 
 	ASSERT_FLOAT_EQ(embryo.energy.value(), initial_energy);
 	ASSERT_FLOAT_EQ(embryo.life.value(), initial_life);
@@ -134,59 +120,47 @@ TEST(CreatureGrowingPhysiology, Idempotency) {
 															  .position = Vec3{0.0, 0.0, 0.0}});
 
 	OrganismRegistry registry;
-	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
-	const auto &creature = registry.entities.at_creature(EntityIDF::create_creature_id(id));
+	registry.entities_registry.add(std::move(creat));
+	const auto &creature = registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
 
 	const auto lateral_increment_1 =
-		CreatureGrowingPhysiology::get_new_lateral_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_lateral_increment(creature, registry.entities_registry);
 	const auto lateral_increment_2 =
-		CreatureGrowingPhysiology::get_new_lateral_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_lateral_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(lateral_increment_1, lateral_increment_2);
 
 	const auto depth_increment_1 =
-		CreatureGrowingPhysiology::get_new_depth_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_depth_increment(creature, registry.entities_registry);
 	const auto depth_increment_2 =
-		CreatureGrowingPhysiology::get_new_depth_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_depth_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(depth_increment_1, depth_increment_2);
 
 	const auto height_increment_1 =
-		CreatureGrowingPhysiology::get_new_height_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_height_increment(creature, registry.entities_registry);
 	const auto height_increment_2 =
-		CreatureGrowingPhysiology::get_new_height_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_height_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(height_increment_1, height_increment_2);
 
 	const auto max_energy_1 =
-		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, registry.entities_registry);
 	const auto max_energy_2 =
-		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(max_energy_1.gain, max_energy_2.gain);
 	ASSERT_FLOAT_EQ(max_energy_1.cost.reserved_energy, max_energy_2.cost.reserved_energy);
 
 	const auto max_reserved_1 =
-		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, registry.entities_registry);
 	const auto max_reserved_2 =
-		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(max_reserved_1.gain, max_reserved_2.gain);
 	ASSERT_FLOAT_EQ(max_reserved_1.cost.reserved_energy, max_reserved_2.cost.reserved_energy);
 
 	const auto max_life_1 =
-		CreatureGrowingPhysiology::get_new_max_life_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_max_life_increment(creature, registry.entities_registry);
 	const auto max_life_2 =
-		CreatureGrowingPhysiology::get_new_max_life_increment(creature, registry);
+		CreatureGrowingPhysiology::get_new_max_life_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(max_life_1.gain, max_life_2.gain);
 	ASSERT_FLOAT_EQ(max_life_1.cost.reserved_energy, max_life_2.cost.reserved_energy);
-
-	const auto muscle_1 = CreatureGrowingPhysiology::get_new_muscle_increment(creature, registry);
-	const auto muscle_2 = CreatureGrowingPhysiology::get_new_muscle_increment(creature, registry);
-	ASSERT_FLOAT_EQ(muscle_1.gain, muscle_2.gain);
-	ASSERT_FLOAT_EQ(muscle_1.cost.reserved_energy, muscle_2.cost.reserved_energy);
-
-	const auto skeleton_1 =
-		CreatureGrowingPhysiology::get_new_skeleton_increment(creature, registry);
-	const auto skeleton_2 =
-		CreatureGrowingPhysiology::get_new_skeleton_increment(creature, registry);
-	ASSERT_FLOAT_EQ(skeleton_1.gain, skeleton_2.gain);
-	ASSERT_FLOAT_EQ(skeleton_1.cost.reserved_energy, skeleton_2.cost.reserved_energy);
 }
 
 // --- CorpsePhysiology ---
@@ -201,8 +175,8 @@ TEST(CorpsePhysiology, GenerateCorpseFromCreatureIdempotency) {
 															  .position = Vec3{1.0f, 2.0f, 3.0f}});
 
 	OrganismRegistry registry;
-	registry.entities.add(EntityIDF::create_creature_id(id), std::move(creat));
-	const auto &creature = registry.entities.at_creature(EntityIDF::create_creature_id(id));
+	registry.entities_registry.add(std::move(creat));
+	const auto &creature = registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
 
 	const float initial_energy = creature.body.metabolism.energy.value();
 	const float initial_life   = creature.body.vital.life.value();

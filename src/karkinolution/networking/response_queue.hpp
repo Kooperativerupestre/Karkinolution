@@ -5,6 +5,9 @@
 #include <karkinolution/core/error.hpp>
 #include <queue>
 #include <vector>
+
+namespace Karkinolution::Networking {
+
 inline constexpr size_t RESPONSE_QUEUE_MAX_SIZE = 200;
 
 class ResponseQueue {
@@ -33,3 +36,5 @@ class ResponseQueue {
 			return frame;
 		}
 };
+
+} // namespace Karkinolution::Networking

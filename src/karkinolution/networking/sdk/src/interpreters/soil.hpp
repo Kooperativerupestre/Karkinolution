@@ -20,7 +20,7 @@ namespace KarkinolutionSDK {
 
 			template <HasRequest T>
 			std::optional<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
-			see_soil(T &client, BaseIdType id) {
+			see_soil(T &client, Karkinolution::Core::Id::BaseIdType id) {
 				const auto payload = SoilSRI::Request::make_see_soil(id);
 
 				const auto built = Karkinolution::Binary::Frames::Motor::make_request(

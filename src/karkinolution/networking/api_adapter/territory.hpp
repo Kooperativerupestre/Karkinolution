@@ -9,7 +9,7 @@ namespace Karkinolution {
 	namespace Networking {
 		namespace APIBYA {
 			namespace Territory {
-				ResponseFrame see_territory(const World &world, RequestId request_id);
+				ResponseFrame see_territory(const Karkinolution::World::World &world, RequestId request_id);
 			} // namespace Territory
 		} // namespace APIBYA
 	} // namespace Networking

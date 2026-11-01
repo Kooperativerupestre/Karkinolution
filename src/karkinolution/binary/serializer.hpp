@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Serializer {
+namespace Karkinolution::Binary::Serializer {
 
 	namespace Core {
 		template <typename T>
@@ -111,4 +111,4 @@ namespace Serializer {
 		}
 	}
 
-} // namespace Serializer
+} // namespace Karkinolution::Binary::Serializer

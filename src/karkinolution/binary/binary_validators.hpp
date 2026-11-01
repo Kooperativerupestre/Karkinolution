@@ -3,9 +3,9 @@
 
 #include <cstdint>
 #include <format>
+#include <karkinolution/binary/errors.hpp>
 #include <karkinolution/binary/protocol/aliases.hpp>
 #include <karkinolution/binary/protocol/contract.hpp>
-#include <karkinolution/core/error.hpp>
 #include <magic_enum/magic_enum.hpp>
 #include <string>
 

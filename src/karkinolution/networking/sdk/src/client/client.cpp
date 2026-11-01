@@ -12,7 +12,8 @@
 #include <karkinolution/networking/asio_types.hpp>
 #include <karkinolution/networking/sdk/src/client/client.hpp>
 #include <thread>
-using KarkinolutionSDK::Client::Client;
+
+namespace KarkinolutionSDK::Client {
 
 Client::~Client() {
 	// Prevent pending receive callbacks from using the operation counter after
@@ -39,17 +40,17 @@ void Client::disconnect() {
 
 void Client::connect() {
 	if (connected) {
-		throw ConnectionError("Client is already connected");
+		throw ClientError("Client is already connected");
 	}
 
-	AsioResolver resolver(io_context_);
+	Karkinolution::Networking::AsioResolver resolver(io_context_);
 
-	AsioErrorCode error;
+	Karkinolution::Networking::AsioErrorCode error;
 
 	const auto endpoints = resolver.resolve(config.host, std::to_string(config.port), error);
 
 	if (error) {
-		throw ConnectionError(
+		throw ClientError(
 			std::format("Failed to resolve {}:{}: {}", config.host, config.port, error.message()));
 	}
 
@@ -58,7 +59,7 @@ void Client::connect() {
 	asio::connect(socket_, endpoints, error);
 
 	if (error) {
-		throw ConnectionError(std::format("Failed to connect to {}:{}: {}",
+		throw ClientError(std::format("Failed to connect to {}:{}: {}",
 										  config.host,
 										  config.port,
 										  error.message()));
@@ -114,7 +115,7 @@ void Client::send() {
 			socket_,
 			asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
 
-			asio::bind_executor(strand_, [this](const AsioErrorCode &error, std::size_t) {
+			asio::bind_executor(strand_, [this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t) {
 				if (error) {
 					if (error == asio::error::operation_aborted) {
 						current_async_operations_running.decrement();
@@ -145,7 +146,7 @@ void Client::receive() {
 		socket_.async_read_some(
 			asio::buffer(temporary_responses),
 			asio::bind_executor(strand_,
-								[this](const AsioErrorCode &error, std::size_t bytes_received) {
+								[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t bytes_received) {
 									if (error) {
 										if (error == asio::error::eof) {
 											on_closed();
@@ -216,3 +217,5 @@ void Client::stop_new_async_operations() {
 	});
 	future.get();
 }
+
+} // namespace KarkinolutionSDK::Client

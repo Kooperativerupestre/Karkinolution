@@ -2,16 +2,18 @@
 
 #include "karkinolution/core/id.hpp"
 
-#include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/world/world.hpp>
 
 namespace Karkinolution {
 	namespace API {
 		namespace Soil {
-			const SoilPiece* see_soil(const World &world, BaseIdType id);
+			const Karkinolution::Terrain::Soil::SoilPiece*
+			see_soil(const Karkinolution::World::World &world,
+					 Karkinolution::Core::Id::BaseIdType id);
 
-			inline auto see_all_soils(const World &world) {
-				return world.territory.registry_values();
+			inline auto see_all_soils(const Karkinolution::World::World &world) {
+				return world.see_territory().registry_values();
 			}
 		} // namespace Soil
 	} // namespace API

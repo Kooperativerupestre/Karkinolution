@@ -6,7 +6,7 @@
 #include <karkinolution/binary/interpreters/territory.hpp>
 #include <karkinolution/networking/api_adapter/territory.hpp>
 
-ResponseFrame Karkinolution::Networking::APIBYA::Territory::see_territory(const World &world,
+ResponseFrame Karkinolution::Networking::APIBYA::Territory::see_territory(const Karkinolution::World::World &world,
 																		  RequestId    request_id) {
 	const auto territory = Karkinolution::API::Territory::see_territory(world);
 	const auto payload   = TerritorySRI::serialize_territory(territory);

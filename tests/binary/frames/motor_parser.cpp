@@ -246,11 +246,11 @@ TEST(FrameMotorRawBytes, RejectsSubtypeFromTheWrongFrameKind) {
 			std::variant<ErrorSubTypes, ResponseSubTypes>{ErrorSubTypes::CORPSE_WAS_NOT_FOUND},
 			request_id,
 			payload),
-		FrameInvariantError);
+		Karkinolution::Binary::Frames::FrameInvariantError);
 	EXPECT_THROW(Frames::Motor::make_response_raw_bytes(
 					 BinaryTypes::Error,
 					 std::variant<ErrorSubTypes, ResponseSubTypes>{ResponseSubTypes::SOIL},
 					 request_id,
 					 payload),
-				 FrameInvariantError);
+				 Karkinolution::Binary::Frames::FrameInvariantError);
 }

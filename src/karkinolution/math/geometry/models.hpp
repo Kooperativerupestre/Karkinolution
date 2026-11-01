@@ -1,32 +1,36 @@
 #pragma once
 #include <karkinolution/math/units.hpp>
 
-namespace GeometryForms {
-	class Circumference : public Meter {
-		public:
+namespace Karkinolution {
+	namespace Math {
+		namespace Geometry {
+			class Circumference : public Units::Meter {
+				public:
 
-			using Meter::Meter;
-	};
+					using Meter::Meter;
+			};
 
-	class Diameter : public Meter {
-		public:
+			class Diameter : public Units::Meter {
+				public:
 
-			using Meter::Meter;
-	};
+					using Meter::Meter;
+			};
 
-	class Area : public Meter {
-		public:
+			class Area : public Units::Meter {
+				public:
 
-			using Meter::Meter;
-	};
+					using Meter::Meter;
+			};
 
-	class Radius : public Meter {
-		public:
+			class Radius : public Units::Meter {
+				public:
 
-			using Meter::Meter;
+					using Meter::Meter;
 
-			[[nodiscard]] Circumference circumference() const noexcept;
-			[[nodiscard]] Diameter      diameter() const noexcept;
-			[[nodiscard]] Area          area() const noexcept;
-	};
-} // namespace GeometryForms
+					[[nodiscard]] Circumference circumference() const noexcept;
+					[[nodiscard]] Diameter      diameter() const noexcept;
+					[[nodiscard]] Area          area() const noexcept;
+			};
+		} // namespace Geometry
+	} // namespace Math
+} // namespace Karkinolution

@@ -13,11 +13,11 @@ namespace Karkinolution {
 			namespace Models {
 				namespace Creature {
 					struct Creature {
-							Gender          gender;
-							CreatureSpecies specie;
-							Vec3            position;
+							Karkinolution::Organisms::Entities::Creature::Gender gender;
+							Karkinolution::Organisms::Entities::Creature::CreatureSpecies specie;
+							Karkinolution::Math::Vec::Vec3            position;
 							std::string     name;
-							BaseIdType      id;
+							Karkinolution::Core::Id::BaseIdType      id;
 					};
 				} // namespace Creature
 			} // namespace Models

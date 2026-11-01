@@ -1,8 +1,13 @@
+
+
+#include <karkinolution/functional/k_random.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
-#include <karkinolution/utils/k_random.hpp>
+#include <karkinolution/organism/internal_aliases.hpp>
 #include <stdexcept>
+
+namespace Karkinolution::Organisms::Entities::Creature {
 
 // Diet
 
@@ -26,7 +31,7 @@ const NormalizedValue<float> &Diet::operator[](FoodHint food_hint) const {
 
 // Gender
 
-Gender GenderF::other_sex(Gender g) {
+Gender inverse_sex(Gender g) {
 	if (g == Gender::MALE) {
 		return Gender::FEMALE;
 	} else {
@@ -34,6 +39,15 @@ Gender GenderF::other_sex(Gender g) {
 	}
 }
 
-Gender GenderF::choice() {
-	return Choices::choice({Gender::MALE, Gender::FEMALE});
+Gender choose_random_gender() {
+	return KRandom::choice(std::vector<Gender>{Gender::FEMALE, Gender::FEMALE});
 }
+
+CreatureSpecies chooes_random_specie() {
+	return KRandom::choice({CreatureSpecies::CRAB,
+							CreatureSpecies::CROCODILE,
+							CreatureSpecies::FISH,
+							CreatureSpecies::HIPPOPOTAMUS});
+}
+
+} // namespace Karkinolution::Organisms::Entities::Creature

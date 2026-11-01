@@ -1,9 +1,12 @@
-#include "karkinolution/terrain/soil.hpp"
+#include "karkinolution/terrain/soil/soil.hpp"
 
 #include <karkinolution/api/soil.hpp>
 
-const SoilPiece* Karkinolution::API::Soil::see_soil(const World &world, BaseIdType id) {
-	const auto soil = world.territory.registry().try_at(SoilPieceId{id});
+const Karkinolution::Terrain::Soil::SoilPiece*
+Karkinolution::API::Soil::see_soil(const Karkinolution::World::World &world,
+								   Karkinolution::Core::Id::BaseIdType id) {
+	const auto soil =
+		world.see_territory().registry().try_at(Karkinolution::Terrain::Soil::SoilPieceId{id});
 
 	if (soil == nullptr) {
 		return nullptr;

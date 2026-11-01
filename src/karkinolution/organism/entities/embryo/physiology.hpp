@@ -2,7 +2,7 @@
 
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/organism/values.hpp>
 
 // Energy 100% (embryotrophic)
 
@@ -16,6 +16,7 @@
 // Reserved for new_max_energy_increment -> 10%
 // Reserved for new_max_life_increment -> 20%
 
+namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 inline constexpr NormalizedValue<float> BASE_VALUE_LIFE_INCREMENT{0.3f};
 inline constexpr NormalizedValue<float> BASE_VALUE_ENERGY_INCREMENT{0.3f};
 inline constexpr NormalizedValue<float> BASE_VALUE_HEALTH_INCREMENT{0.1f};
@@ -24,8 +25,6 @@ inline constexpr NormalizedValue<float> BASE_VALUE_MAX_ENERGY_INCREMENT{0.2f};
 inline constexpr NormalizedValue<float> BASE_VALUE_VOLUME_INCREMENT{0.1f};
 
 inline constexpr float EMBRYO_BASAL_METABOLISM = 10.0f;
-
-using OrganismStats::Energy;
 
 struct ResourceTrade {
 		const NormalizedValue<float> cost;
@@ -56,3 +55,4 @@ namespace EmbryoPhysiology {
 
 	float transfer_into_nutrients(const Embryo &embryo);
 } // namespace EmbryoPhysiology
+} // namespace Karkinolution::Organisms::Entities::Embryo::Physiology

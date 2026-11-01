@@ -6,12 +6,15 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/world/world.hpp>
 
-enum class MoveOutput : uint8_t {
-	SAME_POSITION,
-	OK,
-	ENTITY_MAP_MOTOR_FAILED
-};
+namespace Karkinolution::Organisms::Entities::Creature::Movement::Motor {
+	enum class MoveOutput : uint8_t {
+		SAME_POSITION,
+		OK,
+		ENTITY_MAP_MOTOR_FAILED
+	};
 
-namespace MovementMotor {
-	MoveOutput move(Creature &creature, World &world, const Vec3 &new_position); // atomic operation
-} // namespace MovementMotor
+	namespace MovementMotor {
+		MoveOutput move(Creature &creature, Karkinolution::World::World &world,
+						const Vec3 &new_position); // atomic operation
+	} // namespace MovementMotor
+} // namespace Karkinolution::Organisms::Entities::Creature::Movement::Motor

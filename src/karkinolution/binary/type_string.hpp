@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+namespace Karkinolution::Binary {
+
 template <typename T> constexpr std::string_view nameof() {
 	if constexpr (std::is_same_v<T, bool>) {
 		return "bool";
@@ -36,3 +38,5 @@ template <typename T> constexpr std::string_view nameof() {
 		return "unknown";
 	}
 }
+
+} // namespace Karkinolution::Binary

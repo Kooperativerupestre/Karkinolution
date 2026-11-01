@@ -32,7 +32,7 @@ TEST(FrameModelConstructors, RequestStoresValidatedFields) {
 										   payload,
 										   Resource::CREATURE,
 										   Models::Request::WantExtra{}}),
-				 Frames::FrameError);
+				 Karkinolution::Binary::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
@@ -52,7 +52,7 @@ TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
 						  {},
 						  Resource::TERRITORY,
 						  SeeExtra{.target = SeeTarget::ALL}}),
-				 Frames::FrameError);
+				 Karkinolution::Binary::Frames::FrameError);
 
 	constexpr Resource other_resources[] = {Resource::CREATURE,
 											Resource::EMBRYO,
@@ -80,7 +80,7 @@ TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
 						  {},
 						  Resource::TERRITORY,
 						  SeeExtra{.target = static_cast<SeeTarget>(0)}}),
-				 Frames::FrameError);
+				 Karkinolution::Binary::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
@@ -107,7 +107,7 @@ TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
 											 ResponseSubTypes::NONE,
 											 payload,
 											 ResponseCardinality::ALL}),
-				 Frames::FrameError);
+				 Karkinolution::Binary::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, TerritoryResponseOnlyAcceptsOneCardinality) {
@@ -115,7 +115,7 @@ TEST(FrameModelConstructors, TerritoryResponseOnlyAcceptsOneCardinality) {
 
 	EXPECT_NO_THROW((Response{12, 34, ResponseSubTypes::TERRITORY, {}, ResponseCardinality::ONE}));
 	EXPECT_THROW((Response{12, 34, ResponseSubTypes::TERRITORY, {}, ResponseCardinality::ALL}),
-				 Frames::FrameError);
+				 Karkinolution::Binary::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, ErrorStoresFields) {

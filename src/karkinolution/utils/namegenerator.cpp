@@ -1,6 +1,6 @@
 #include "namegenerator.hpp"
 
-#include "karkinolution/utils/k_random.hpp"
+#include "karkinolution/functional/k_random.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -114,7 +114,7 @@ std::string LetterPool::pick() const {
 	if (m_letters_u32.empty()) {
 		return "";
 	}
-	char32_t chosen = m_letters_u32[m_dist(gen)];
+	char32_t chosen = m_letters_u32[m_dist(Karkinolution::Functional::KRandom::gen)];
 	return utf32_to_utf8(std::u32string(1, chosen));
 }
 
@@ -222,7 +222,7 @@ std::string Pool::weight_pick(const std::vector<std::pair<std::string, double>> 
 		weights.push_back(weight);
 	}
 
-	auto selected = Choices::choices(items, weights, 1);
+	auto selected = Karkinolution::Functional::KRandom::choices(items, weights, 1);
 	if (selected.empty()) {
 		return "";
 	}

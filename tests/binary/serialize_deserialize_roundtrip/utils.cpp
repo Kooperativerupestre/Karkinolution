@@ -27,5 +27,5 @@ TEST(ByteUtilsRoundtrip, ZeroPadding) {
 	EXPECT_EQ(vec[0], std::byte{0xAA});
 	EXPECT_EQ(vec[1], std::byte{0xBB});
 
-	EXPECT_THROW(Karkinolution::Binary::Utils::zero_padding(vec, 3), ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Utils::zero_padding(vec, 3), Karkinolution::Binary::ByteError);
 }

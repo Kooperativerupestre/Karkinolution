@@ -1,0 +1,183 @@
+#pragma once
+#include "karkinolution/core/id.hpp"
+#include "karkinolution/math/geometry/models.hpp"
+
+#include <cstdint>
+#include <functional>
+#include <karkinolution/functional/base_storage.hpp>
+#include <karkinolution/math/physic/vec/model.hpp>
+#include <karkinolution/math/stats/compile_values.hpp>
+#include <karkinolution/organism/entities/properties/properties.hpp>
+#include <karkinolution/organism/values.hpp>
+#include <karkinolution/terrain/rtree/box.hpp>
+#include <memory>
+#include <typeindex>
+#include <unordered_map>
+#include <vector>
+
+namespace Karkinolution {
+	namespace Terrain {
+		namespace Soil {
+			struct Component {
+					virtual ~Component()                    = default;
+					Component()                             = default;
+					Component(const Component &)            = default;
+					Component &operator=(const Component &) = default;
+					Component(Component &&)                 = default;
+					Component &operator=(Component &&)      = default;
+			};
+
+			struct Components {
+					std::unordered_map<std::type_index, std::unique_ptr<Component>> data;
+
+					template <typename T> bool exists() const {
+						return data.contains(std::type_index(typeid(T)));
+					}
+
+					template <typename T> bool add(T component) {
+						if (exists<T>()) {
+							return false;
+						}
+
+						data[std::type_index(typeid(T))] =
+							std::make_unique<T>(std::move(component));
+
+						return true;
+					}
+
+					bool add(std::unique_ptr<Component> component) {
+						if (!component) {
+							return false;
+						}
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpotentially-evaluated-expression"
+#endif
+						const auto component_type = std::type_index(typeid(*component));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+						if (data.contains(component_type)) {
+							return false;
+						}
+
+						data[component_type] = std::move(component);
+						return true;
+					}
+
+					template <typename T> bool del() {
+						return data.erase(std::type_index(typeid(T))) > 0;
+					}
+
+					template <typename T> T* try_get() const {
+						auto it = data.find(std::type_index(typeid(T)));
+
+						if (it == data.end()) {
+							return nullptr;
+						}
+
+						return static_cast<T*>(it->second.get());
+					}
+			};
+
+			enum class SoilTypes : uint8_t {
+				SAND,
+				ROCK,
+				DIRT,
+				WATER
+			};
+
+			enum class SoilProperties : uint8_t {
+				DANGEROUS
+			};
+
+			namespace SoilPieceComponents {
+				struct Damage : Component {
+					public:
+
+						float damage;
+
+						Damage(float damage)
+							: damage(damage) {}
+				};
+
+				struct MovementCost : Component {
+					public:
+
+						float cost;
+
+						MovementCost(float cost)
+							: cost(cost) {}
+				};
+			} // namespace SoilPieceComponents
+
+			struct Blueprint {
+					std::vector<std::function<std::unique_ptr<Component>()>> default_components;
+					std::vector<SoilProperties>                              properties;
+					std::vector<Organisms::Entities::GenericProperty>        required_properties;
+
+					Components gen_components() const;
+			};
+
+			inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
+				{SoilTypes::DIRT,
+				 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
+							   return std::make_unique<SoilPieceComponents::MovementCost>(1);
+						   }},
+						   .properties         = {},
+						   .required_properties =
+							   {Organisms::Entities::Properties::Capabilities::Move::WALK}
+
+				 }},
+
+				{SoilTypes::SAND,
+				 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
+							   return std::make_unique<SoilPieceComponents::MovementCost>(2);
+						   }},
+						   .properties         = {}}},
+
+				{SoilTypes::ROCK,
+				 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
+							   return std::make_unique<SoilPieceComponents::MovementCost>(1);
+						   }},
+						   .properties         = {SoilProperties::DANGEROUS},
+						   .required_properties =
+							   {Organisms::Entities::Properties::Capabilities::Move::WALK}}},
+
+				{SoilTypes::WATER,
+				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
+                               return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                           }},
+						   .properties          = {},
+						   .required_properties = {
+							   Organisms::Entities::Properties::Capabilities::Move::SWIMM}}}};
+
+			using SoilPieceId = Core::Id::BaseIdType;
+
+			struct SoilPiece {
+					SoilTypes                                         type;
+					std::vector<SoilProperties>                       properties;
+					std::vector<Organisms::Entities::GenericProperty> required_capabilities;
+					Components                                        components;
+
+					Math::Geometry::Radius radius;
+					Vec3                   position;
+					SoilPieceId            id;
+			};
+
+			namespace SoilF {
+				SoilPiece gen_soil_piece(SoilTypes                     s_t,
+										 const Math::Geometry::Radius &radius,
+										 const Vec3                   &position);
+			} // namespace SoilF
+
+			class SoilPieceRegistry : public Functional::BaseStorage<SoilPieceId, SoilPiece> {
+				public:
+
+					using BaseStorage<SoilPieceId, SoilPiece>::BaseStorage;
+			};
+
+		} // namespace Soil
+	} // namespace Terrain
+} // namespace Karkinolution

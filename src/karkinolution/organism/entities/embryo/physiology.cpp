@@ -1,11 +1,12 @@
-#include "karkinolution/organism/stats.hpp"
+#include "karkinolution/organism/values.hpp"
 
 #include <algorithm>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/embryo/physiology.hpp>
-#include <karkinolution/utils/k_random.hpp>
+#include <karkinolution/functional/k_random.hpp>
 
+namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 bool EmbryoPhysiology::is_dead(const Embryo &embryo) {
 	return embryo.life.is_zero() || embryo.energy.is_zero();
 }
@@ -17,7 +18,7 @@ float EmbryoPhysiology::basal_metabolism(const Embryo &embryo) {
 NormalizedValue<float>
 EmbryoGrowingPhysiology::get_increment(const NormalizedValue<float> &ratio,
 									   const NormalizedValue<float> &factor) {
-	if (ratio.value() < Approx<float>(0.5)) {
+	if (ratio.value() < Math::Approx<float>(0.5)) {
 		float x = (0.5f - ratio.value()) / 0.5f;
 		return 1.0f + x * x;
 	}
@@ -31,7 +32,6 @@ ResourceTrade EmbryoGrowingPhysiology::get_new_max_energy_increment(const Embryo
 	const float gain = cost.value();
 	return ResourceTrade{.cost = cost, .gain = gain};
 }
-
 ResourceTrade EmbryoGrowingPhysiology::get_new_max_life_increment(const Embryo &embryo) {
 	const NormalizedValue<float> cost =
 		std::min(BASE_VALUE_LIFE_INCREMENT.value(), embryo.specie_relative_life());
@@ -73,3 +73,4 @@ ResourceTrade EmbryoGrowingPhysiology::get_new_volume_increment(const Embryo &em
 	float gain = cost.value();
 	return ResourceTrade{.cost = cost, .gain = gain};
 }
+} // namespace Karkinolution::Organisms::Entities::Embryo::Physiology

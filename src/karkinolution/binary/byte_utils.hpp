@@ -6,9 +6,9 @@
 #include <cstddef>
 #include <deque>
 #include <format>
+#include <karkinolution/binary/errors.hpp>
 #include <karkinolution/binary/protocol/aliases.hpp>
 #include <karkinolution/binary/protocol/contract.hpp>
-#include <karkinolution/core/error.hpp>
 #include <vector>
 
 namespace Karkinolution {

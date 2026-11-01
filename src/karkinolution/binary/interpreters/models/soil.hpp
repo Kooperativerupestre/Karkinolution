@@ -4,7 +4,7 @@
 #include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
-#include "karkinolution/terrain/soil.hpp"
+#include "karkinolution/terrain/soil/soil.hpp"
 
 #include <optional>
 #include <vector>
@@ -26,12 +26,13 @@ namespace Karkinolution {
 							std::optional<DamageComponent>       damage_component;
 							std::optional<MovementCostComponent> movement_cost_component;
 
-							BaseIdType                   id;
-							GeometryForms::Radius        radius;
-							Vec3                         position;
-							SoilTypes                    type;
-							std::vector<SoilProperties>  properties;
-							std::vector<GenericProperty> required_properties;
+							Karkinolution::Core::Id::BaseIdType id;
+							Karkinolution::Math::Geometry::Radius radius;
+							Karkinolution::Math::Vec::Vec3 position;
+							Karkinolution::Terrain::Soil::SoilTypes type;
+							std::vector<Karkinolution::Terrain::Soil::SoilProperties> properties;
+							std::vector<Karkinolution::Organisms::Entities::GenericProperty>
+								required_properties;
 					};
 
 

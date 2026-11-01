@@ -8,31 +8,38 @@
 #include <karkinolution/organism/reproduction/uterus/physiology.hpp>
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 
-void UterusMotor::transfer_energy_to_uterus(Creature &creature) {
-	transfer_energy_to_uterus(creature, NormalizedValue<float>(0.2f), NormalizedValue<float>(0.5f));
-}
+namespace Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor {
 
-void UterusMotor::transfer_energy_to_uterus(Creature &creature, float energy, float reserved) {
-	ReproductionValidator::has_uterus(creature.body.reproductive.state);
+	void transfer_energy_to_uterus(Creature::Creature &creature) {
+		transfer_energy_to_uterus(creature,
+								  NormalizedValue<float>(0.2f),
+								  NormalizedValue<float>(0.5f));
+	}
 
-	auto &uterus = std::get<Uterus>(creature.body.reproductive.state.state);
+	void transfer_energy_to_uterus(Creature::Creature &creature, float energy, float reserved) {
+		State::Validator::has_uterus(creature.body.reproduction.state);
 
-	const float uterus_remaining = uterus.energy.max() - uterus.energy.value();
+		auto &uterus = std::get<Uterus>(creature.body.reproduction.state.state);
 
-	const float real_energy_needed = std::min(uterus_remaining, energy + reserved);
+		const float uterus_remaining = uterus.energy.max() - uterus.energy.value();
 
-	const float energy_used = std::min(energy, real_energy_needed);
+		const float real_energy_needed = std::min(uterus_remaining, energy + reserved);
 
-	const float reserved_used = real_energy_needed - energy_used;
-	uterus.energy += real_energy_needed;
-	creature.body.metabolism.energy -= energy_used;
-	creature.body.metabolism.reserved -= reserved;
-}
+		const float energy_used = std::min(energy, real_energy_needed);
 
-void UterusMotor::transfer_energy_to_uterus(Creature              &creature,
-											NormalizedValue<float> energy_ratio,
-											NormalizedValue<float> reserved_ratio) {
-	transfer_energy_to_uterus(creature,
-							  energy_ratio.value() * creature.body.metabolism.energy.value(),
-							  reserved_ratio.value() * creature.body.metabolism.reserved.value());
-}
+		const float reserved_used = real_energy_needed - energy_used;
+		uterus.energy += real_energy_needed;
+		creature.body.metabolism.energy -= energy_used;
+		creature.body.metabolism.reserved -= reserved;
+	}
+
+	void transfer_energy_to_uterus(Creature::Creature    &creature,
+								   NormalizedValue<float> energy_ratio,
+								   NormalizedValue<float> reserved_ratio) {
+		transfer_energy_to_uterus(creature,
+								  energy_ratio.value() * creature.body.metabolism.energy.value(),
+								  reserved_ratio.value()
+									  * creature.body.metabolism.reserved.value());
+	}
+
+} // namespace Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor

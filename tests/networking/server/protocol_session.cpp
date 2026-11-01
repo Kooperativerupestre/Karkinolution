@@ -8,6 +8,8 @@
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/test/utils.hpp>
 
+using Karkinolution::Networking::ProtocolSession;
+
 TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {
 	auto            world = TestUtils::make_small_world();
 	ProtocolSession session{world};

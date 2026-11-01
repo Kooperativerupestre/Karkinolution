@@ -6,7 +6,6 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/math/units.hpp"
-#include "karkinolution/organism/stats.hpp"
 
 #include <array>
 #include <cstddef>
@@ -41,7 +40,7 @@ namespace Karkinolution {
 					 */
 
 					namespace Layout {
-						using Id        = Field<0, sizeof(BaseIdType)>;
+						using Id        = Field<0, sizeof(Karkinolution::Core::Id::BaseIdType)>;
 						using RawMeat   = Next<Id, 4>;
 						using PositionX = Next<RawMeat, VecSRI::Layout::AXIS_SIZE>;
 						using PositionY = Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
@@ -57,31 +56,35 @@ namespace Karkinolution {
 						using Corpse = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArrays
 
-					IdBytes                     serialize_id(BaseIdType id);
-					Serializer::Core::FourBytes serialize_raw_meat(const RawMeat &raw_meat);
-					VecSRI::BytesArrays::Vec    serialize_position(const Vec3 &position);
-					Units::BytesArrays::Size    serialize_size(const Size &size);
+					IdBytes                     serialize_id(Karkinolution::Core::Id::BaseIdType id);
+					Karkinolution::Binary::Serializer::Core::FourBytes
+					serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat);
+					VecSRI::BytesArrays::Vec    serialize_position(const Karkinolution::Math::Vec::Vec3 &position);
+					Units::BytesArrays::Size
+					serialize_size(const Karkinolution::Math::Units::Size &size);
 
-					BytesArrays::Corpse serialize_corpse(const class Corpse &corpse);
+					BytesArrays::Corpse serialize_corpse(
+						const Karkinolution::Organisms::Entities::Corpse::Corpse &corpse);
 
 					namespace Request {
-						std::array<std::byte, 8> make_see_corpse(BaseIdType id);
+						std::array<std::byte, 8> make_see_corpse(Karkinolution::Core::Id::BaseIdType id);
 					} // namespace Request
 				} // namespace Corpse
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Corpse {
-					BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
-					OrganismStats::Body::RawMeat get_raw_meat(const std::vector<std::byte> &payload,
-															  std::size_t                   offset);
-					Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
-					Size get_size(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Core::Id::BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Organisms::RawMeat
+					get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Vec::Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Units::Size
+					get_size(const std::vector<std::byte> &payload, std::size_t offset);
 					Interpreters::Models::Corpse::Corpse
 					get_corpse(const std::vector<std::byte> &payload, std::size_t offset);
 
 					namespace Request {
-						BaseIdType interpret_like_see_corpse(const std::vector<std::byte> &payload);
+						Karkinolution::Core::Id::BaseIdType interpret_like_see_corpse(const std::vector<std::byte> &payload);
 					} // namespace Request
 				} // namespace Corpse
 			} // namespace DSI

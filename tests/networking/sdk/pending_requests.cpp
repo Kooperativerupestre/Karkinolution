@@ -12,6 +12,7 @@ using KarkinolutionSDK::Protocol::FutureRequest;
 using KarkinolutionSDK::Protocol::PendingRequests;
 using KarkinolutionSDK::Protocol::RequestFailure;
 using KarkinolutionSDK::Protocol::ResponseResult;
+using KarkinolutionSDK::CPPSdkError;
 
 namespace {
 

@@ -3,6 +3,7 @@
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/world/queriers/creature.hpp"
+#include "karkinolution/view/world/queriers/territory.hpp"
 
 #include <algorithm>
 #include <karkinolution/view/world/queriers/corpse.hpp>
@@ -72,7 +73,12 @@ KarkinolutionView::World::Terrain::sync_soil(BaseIdType                         
 	return EntitySyncOutput::UPDATED;
 }
 
-void KarkinolutionView::World::Terrain::sync_size(KarkinolutionView::Client::Client &client) {}
+void KarkinolutionView::World::Terrain::sync_size(KarkinolutionView::Client::Client &client) {
+
+	if constexpr (SYNC_TERRAIN_SIZE) {
+		size = KarkinolutionView::World::Queriers::Territory::see_territory(client)->size;
+	}
+}
 
 void KarkinolutionView::World::Terrain::sync(KarkinolutionView::Client::Client &client) {
 	std::vector<BaseIdType> soils_id_to_add;
@@ -85,6 +91,13 @@ void KarkinolutionView::World::Terrain::sync(KarkinolutionView::Client::Client &
 	for (size_t i = 0; i < soils_id_to_add.size(); i++) {
 		sync_soil(soils_id_to_add[i], client);
 	}
+	sync_size(client);
+}
+
+KarkinolutionView::World::Terrain::Terrain(KarkinolutionView::Client::Client &client)
+	: size(KarkinolutionView::World::Queriers::Territory::see_territory(client)->size) {
+
+	sync(client);
 }
 
 // World implementation

@@ -8,51 +8,67 @@
 #include <karkinolution/organism/foods/foods.hpp>
 #include <stdexcept>
 
-struct AttackedEvent {
-		EntityId attacker_id;
-		float    damage;
-};
+namespace Karkinolution {
+	namespace Organisms {
+		namespace Entities {
+			namespace Creature {
 
-enum class Gender : uint8_t {
-	MALE,
-	FEMALE
-};
+				struct AttackedEvent {
+						EntityId attacker_id;
+						float    damage;
+				};
 
-namespace GenderF {
-	Gender choice();
-	Gender other_sex(Gender g);
-} // namespace GenderF
+				enum class Gender : uint8_t {
+					MALE,
+					FEMALE
+				};
+				enum class CreatureSpecies : uint8_t {
+					CRAB,
+					FISH,
+					CROCODILE,
+					HIPPOPOTAMUS
+				};
 
-class Diet {
-	private:
+				CreatureSpecies chooes_random_specie();
+				Gender          choose_random_gender();
+				Gender          inverse_sex(Gender g);
 
-		NormalizedValue<float> _grass_matter_score;
-		NormalizedValue<float> _raw_meat_score;
+				class Diet {
+					private:
 
-	public:
+						NormalizedValue<float> _grass_matter_score;
+						NormalizedValue<float> _raw_meat_score;
 
-		const NormalizedValue<float> &grass_matter_score() const;
-		const NormalizedValue<float> &raw_meat_score() const;
+					public:
 
-		const NormalizedValue<float> &operator[](FoodHint food_hint) const;
+						const NormalizedValue<float> &grass_matter_score() const;
+						const NormalizedValue<float> &raw_meat_score() const;
 
-		Diet(NormalizedValue<float> grass_score, NormalizedValue<float> raw_meat_score) {
-			if ((grass_score + raw_meat_score).value() > 1.0f) {
-				throw std::invalid_argument("Sum of scores > 1.0");
-			}
+						const NormalizedValue<float> &operator[](FoodHint food_hint) const;
 
-			_grass_matter_score = grass_score;
-			_raw_meat_score     = raw_meat_score;
-		}
-};
+						Diet(NormalizedValue<float> grass_score,
+							 NormalizedValue<float> raw_meat_score) {
+							if ((grass_score + raw_meat_score).value() > 1.0f) {
+								throw std::invalid_argument("Sum of scores > 1.0");
+							}
 
-enum class Temperament : uint8_t {
-	PASSIVE,
-	NEUTRAL,
-	AGGRESSIVE,
-	TERRITORIAL
-};
+							_grass_matter_score = grass_score;
+							_raw_meat_score     = raw_meat_score;
+						}
+				};
 
-struct VisionRadius : public GeometryForms::Radius {
-		using GeometryForms::Radius::Radius;
-};
+				enum class Temperament : uint8_t {
+					PASSIVE,
+					NEUTRAL,
+					AGGRESSIVE,
+					TERRITORIAL
+				};
+
+				struct VisionRadius : public Karkinolution::Math::Geometry::Radius {
+						using Karkinolution::Math::Geometry::Radius::Radius;
+				};
+
+			} // namespace Creature
+		} // namespace Entities
+	} // namespace Organisms
+} // namespace Karkinolution

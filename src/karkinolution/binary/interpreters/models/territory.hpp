@@ -10,7 +10,7 @@ namespace Karkinolution {
 					class Territory {
 						public:
 
-							Size size;
+							Karkinolution::Math::Units::Size size;
 					};
 				} // namespace Territory
 			} // namespace Models

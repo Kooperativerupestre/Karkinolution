@@ -50,11 +50,14 @@ namespace Karkinolution {
 						using Creature = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArrays
 
-					std::byte              serialize_gender(const Gender &gender);
-					std::byte              serialize_specie(const CreatureSpecies &specie);
+					std::byte serialize_gender(
+						const Karkinolution::Organisms::Entities::Creature::Gender &gender);
+					std::byte serialize_specie(
+						const Karkinolution::Organisms::Entities::Creature::CreatureSpecies &specie);
 					std::vector<std::byte> serialize_name(const std::string &name);
 
-					BytesArrays::Creature serialize_creature(const class Creature &creature);
+					BytesArrays::Creature serialize_creature(
+						const Karkinolution::Organisms::Entities::Creature::Creature &creature);
 
 					namespace Request {
 						namespace Layout {
@@ -73,37 +76,42 @@ namespace Karkinolution {
 							} // namespace CreateCreature
 						} // namespace Layout
 
-						std::array<std::byte, 8> make_see_creature(BaseIdType id);
+						std::array<std::byte, 8> make_see_creature(Karkinolution::Core::Id::BaseIdType id);
 						std::array<std::byte, Layout::CreateCreature::TOTAL_SIZE>
-						make_create_creature(std::optional<Gender>             gender,
-											 std::optional<CreatureSpecies>    specie,
-											 const std::optional<Vec3>        &position,
-											 const std::optional<std::string> &name);
+						make_create_creature(
+							std::optional<Karkinolution::Organisms::Entities::Creature::Gender>
+								gender,
+							std::optional<
+								Karkinolution::Organisms::Entities::Creature::CreatureSpecies>
+								specie,
+							const std::optional<Karkinolution::Math::Vec::Vec3> &position,
+							const std::optional<std::string> &name);
 					} // namespace Request
 				} // namespace Creature
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Creature {
-					Gender get_gender(const std::vector<std::byte> &payload, std::size_t offset);
-					CreatureSpecies get_specie(const std::vector<std::byte> &payload,
-											   std::size_t                   offset);
+					Karkinolution::Organisms::Entities::Creature::Gender
+					get_gender(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Organisms::Entities::Creature::CreatureSpecies
+					get_specie(const std::vector<std::byte> &payload, std::size_t offset);
 
 
 					uint8_t get_name_size(const std::vector<std::byte> &payload,
 										  std::size_t                   offset);
 
 					std::string get_name(const std::vector<std::byte> &payload, std::size_t offset);
-					BaseIdType  get_id(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Core::Id::BaseIdType  get_id(const std::vector<std::byte> &payload, std::size_t offset);
 					Interpreters::Models::Creature::Creature
 					get_creature(const std::vector<std::byte> &payload, std::size_t offset);
 
 					namespace Request {
 
 
-						BaseIdType
+						Karkinolution::Core::Id::BaseIdType
 						interpret_like_get_creature(const std::vector<std::byte> &payload);
-						CreatureBlueprint
+						Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint
 						interpret_like_create_creature(const std::vector<std::byte> &payload);
 
 					} // namespace Request

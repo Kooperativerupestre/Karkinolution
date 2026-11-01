@@ -3,7 +3,7 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 
-namespace CreatureValidator {
+namespace Karkinolution::Organisms::Entities::Creature::Validator {
 	inline void is_female(const Creature &creature) {
 		assert(creature.ontology.gender == Gender::FEMALE);
 	}
@@ -19,4 +19,4 @@ namespace CreatureValidator {
 	inline void is_different_specie(const Creature &A, const Creature &B) {
 		assert(A.genome.core_genome.specie != B.genome.core_genome.specie);
 	}
-} // namespace CreatureValidator
+} // namespace Karkinolution::Organisms::Entities::Creature::Validator

@@ -2,113 +2,116 @@
 #include <karkinolution/core/error.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 
-class FloatValue {
-	public:
+namespace Karkinolution {
 
-		float value;
+	namespace Math {
+		class FloatValue {
+			public:
 
-		FloatValue(float value)
-			: value(static_cast<float>(value)) {}
-};
+				float value;
 
-class DoubleValue {
-	public:
+				FloatValue(float value)
+					: value(static_cast<float>(value)) {}
+		};
 
-		double value;
+		class DoubleValue {
+			public:
 
-		constexpr DoubleValue(double value)
-			: value(static_cast<double>(value)) {}
-};
+				double value;
 
-template <typename T> class IntegerValue {
-	public:
+				constexpr DoubleValue(double value)
+					: value(static_cast<double>(value)) {}
+		};
 
-		T value;
+		template <typename T> class IntegerValue {
+			public:
 
-		template <typename U>
+				T value;
 
-		IntegerValue(U value)
-			: value(static_cast<T>(value)) {}
-};
+				template <typename U>
 
-namespace PhysicsStats {
-	class Volume : public DoubleValue {
-		public:
+				IntegerValue(U value)
+					: value(static_cast<T>(value)) {}
+		};
 
-			using DoubleValue::DoubleValue;
-	};
+		class Volume : public DoubleValue {
+			public:
 
-	class SharedVolume : public NormalizedValue<double> {
-		public:
+				using DoubleValue::DoubleValue;
+		};
 
-			using NormalizedValue::NormalizedValue;
-	};
+		class SharedVolume : public LV::CT::NormalizedValue<double> {
+			public:
 
-	class Efficiency : public NormalizedValue<float> {
-		public:
+				using NormalizedValue::NormalizedValue;
+		};
 
-			using NormalizedValue::NormalizedValue;
-	};
+		class Efficiency : public LV::CT::NormalizedValue<float> {
+			public:
 
-	class Quality : public NormalizedValue<float> {
-		public:
+				using NormalizedValue::NormalizedValue;
+		};
 
-			using NormalizedValue::NormalizedValue;
-	};
+		class Quality : public LV::CT::NormalizedValue<float> {
+			public:
 
-	class Mass : public DoubleValue {
-		public:
+				using NormalizedValue::NormalizedValue;
+		};
 
-			using DoubleValue::DoubleValue;
-	};
+		namespace Units {
+			class Mass : public DoubleValue {
+				public:
 
-	class Density : public DoubleValue {
-		public:
+					using DoubleValue::DoubleValue;
+			};
 
-			using DoubleValue::DoubleValue;
-	};
+			class Density : public DoubleValue {
+				public:
 
-	class Meter : public DoubleValue {
-		public:
+					using DoubleValue::DoubleValue;
+			};
 
-			using DoubleValue::DoubleValue;
-	};
-} // namespace PhysicsStats
+			class Meter : public DoubleValue {
+				public:
 
-using PhysicsStats::Efficiency;
-using PhysicsStats::Meter;
-using PhysicsStats::Volume;
+					using DoubleValue::DoubleValue;
+			};
 
-struct Lateral : public Meter {
-		using Meter::Meter;
-};
+			struct Lateral : public Meter {
+					using Meter::Meter;
+			};
 
-struct Height : public Meter {
-		using Meter::Meter;
-};
+			struct Height : public Meter {
+					using Meter::Meter;
+			};
 
-struct Depth : public Meter {
-		using Meter::Meter;
-};
+			struct Depth : public Meter {
+					using Meter::Meter;
+			};
 
-class Size {
-	public:
+			class Size {
+				public:
 
-		Lateral lateral;
-		Height  height;
-		Depth   depth;
+					Lateral lateral;
+					Height  height;
+					Depth   depth;
 
-		static Volume volume(Lateral lateral, Height height, Depth back) {
-			return Volume{lateral.value * height.value * back.value};
-		}
+					static Volume volume(Lateral lateral, Height height, Depth back) {
+						return Volume{lateral.value * height.value * back.value};
+					}
 
-		void modify(const NormalizedValue<float> &ratio) {
-			lateral.value *= ratio.value();
-			height.value *= ratio.value();
-			depth.value *= ratio.value();
-		}
+					void modify(const LV::CT::NormalizedValue<float> &ratio) {
+						lateral.value *= ratio.value();
+						height.value *= ratio.value();
+						depth.value *= ratio.value();
+					}
 
-		Volume volume() const {
-			return Size::volume(lateral, height, depth);
-		}
-};
+					Volume volume() const {
+						return Size::volume(lateral, height, depth);
+					}
+			};
+		} // namespace Units
+
+
+	} // namespace Math
+} // namespace Karkinolution

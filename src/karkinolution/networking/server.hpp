@@ -1,7 +1,9 @@
 #pragma once
 
+#include "karkinolution/binary/frames/aliases.hpp"
 #include "karkinolution/binary/frames/processor.hpp"
 #include "karkinolution/core/error.hpp"
+#include "karkinolution/core/id.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 
 #include <asio/io_context.hpp>
@@ -12,26 +14,30 @@
 #include <karkinolution/networking/port.hpp>
 #include <karkinolution/world/world.hpp>
 
-class Server {
-	public:
+namespace Karkinolution::Networking {
 
-		Server(IoContext &io_context, Port port, World &w);
+	class Server {
+		public:
 
-		const World &world_view() const {
-			return world;
-		}
+			Server(IoContext &io_context, Port port, Karkinolution::World::World &w);
 
-		~Server();
-		void stop();
+			const Karkinolution::World::World &world_view() const {
+				return world;
+			}
 
-	private:
+			~Server();
+			void stop();
 
-		std::vector<std::unique_ptr<Connection>> connections;
+		private:
 
-		void             accept();
-		void             remove_connection(Connection &connection);
-		World           &world;
-		Acceptor         acceptor_;
-		IoContext       &io_context;
-		asio::signal_set signals_;
-};
+			std::vector<std::unique_ptr<Connection>> connections;
+
+			void                         accept();
+			void                         remove_connection(Connection &connection);
+			Karkinolution::World::World &world;
+			Acceptor                     acceptor_;
+			IoContext                   &io_context;
+			asio::signal_set             signals_;
+	};
+
+} // namespace Karkinolution::Networking

@@ -2,7 +2,7 @@
 
 #include <karkinolution/networking/sdk/src/client/request_queue.hpp>
 
-using KarkinolutionSDK::Protocol::RequestQueue;
+namespace KarkinolutionSDK::Protocol {
 
 bool RequestQueue::add(std::span<const std::byte> bytes) {
 	std::lock_guard lock{mutex};
@@ -25,3 +25,5 @@ std::optional<std::vector<std::byte>> RequestQueue::pop_front() {
 	queue.pop();
 	return front;
 }
+
+} // namespace KarkinolutionSDK::Protocol

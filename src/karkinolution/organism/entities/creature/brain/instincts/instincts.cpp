@@ -5,214 +5,240 @@
 #include "karkinolution/organism/entities/creature/brain/instincts/metabolism.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
 
+#include <karkinolution/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
-#include <karkinolution/organism/stats.hpp>
-#include <karkinolution/utils/k_random.hpp>
+#include <karkinolution/organism/values.hpp>
 #include <utility>
 #include <variant>
 
-NormalizedValue<float> BrainFeelingsCalculator::pregnancy_risK(const Creature &creature) {
-	NormalizedValue<float> factor;
-	if (!creature.body.reproductive.state.is_pregnant()) {
-		throw EntityError("Only pregnant creature have risk factor");
-	}
-
-	ReproductionValidator::is_pregnant(creature.body.reproductive.state);
-
-	const auto uterus = std::get<Uterus>(creature.body.reproductive.state.state);
-
-	factor += uterus.get_pregnant_uterus().born_count.ratio();
-	return factor;
-}
-
-NormalizedValue<float> BrainFeelingsCalculator::fear(const Creature &creature) {
-	NormalizedValue<float> factor;
-
-	const auto life_ratio = creature.body.vital.life.ratio();
-
-	if (life_ratio.value() < 0.3f) {
-		factor += life_ratio - 0.05;
-	}
-	const auto &pregnant_uterus =
-		std::get<Uterus>(creature.body.reproductive.state.state).get_pregnant_uterus();
-
-	if (creature.body.reproductive.state.is_pregnant()) {
-		factor += pregnant_uterus.gestation.ratio() * 0.5;
-	}
-	factor += creature.specie_relative_age() * 0.4;
-	return factor;
-}
-
-float ScorerIntents::score_find_food(const Creature &creature) {
-	NormalizedValue<float> factor;
-
-	const auto hungry = creature.body.hungry();
-
-	if (hungry.value() > 0.75f) {
-		factor += hungry * 1.3;
-	} else {
-		factor += hungry * 1.12;
-	}
-
-	if (creature.body.reproductive.state.is_pregnant()) {
-		factor += std::get<Uterus>(creature.body.reproductive.state.state)
-					  .get_pregnant_uterus()
-					  .gestation.ratio()
-			* 0.4;
-	}
-	return factor.value();
-}
-
-float ScorerIntents::score_nothing(const Creature &creature) {
-	const float base = 0.6;
-
-	NormalizedValue<float> factor{base};
-
-	factor += creature.specie_relative_age() * 0.25f;
-	return factor.value();
-}
-
-IntentTypes Instincts::take(const Creature &creature) {
-	std::array<ScoredIntent, 2> scored_intents;
-
-	// 0 -> Nothing
-	// 1 -> Find Food
-
-	scored_intents[0] =
-		ScoredIntent{.type = IntentTypes::NOTHING, .score = ScorerIntents::score_nothing(creature)};
-	scored_intents[1] = ScoredIntent{.type  = IntentTypes::FIND_FOOD,
-									 .score = ScorerIntents::score_find_food(creature)};
-
-
-	ScoredIntent best_s_i{.type  = IntentTypes::NOTHING,
-						  .score = std::numeric_limits<float>().lowest()};
-	for (auto s_i : scored_intents) {
-		if (s_i.score > best_s_i.score) {
-			best_s_i = s_i;
+namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
+	NormalizedValue<float> BrainFeelingsCalculator::pregnancy_risK(const Creature &creature) {
+		NormalizedValue<float> factor;
+		if (!creature.body.reproduction.state.is_pregnant()) {
+			throw Karkinolution::Errors::SimulationError("Only pregnant creature have risk factor");
 		}
+
+		Reproduction::State::Validator::is_pregnant(creature.body.reproduction.state);
+
+		const auto uterus =
+			std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+				creature.body.reproduction.state.state);
+
+		factor += uterus.get_pregnant_uterus().born_count.ratio();
+		return factor;
 	}
-	return best_s_i.type;
-}
 
-std::optional<PlannerFindFood::Goal> PlannerFindFood::choose_goal(const Creature   &creature,
-																  const Perception &perception) {
-	const auto output = PerceptionAnalyzer::reduce(perception, FIND_FOOD_RADIUS);
+	NormalizedValue<float> BrainFeelingsCalculator::fear(const Creature &creature) {
+		NormalizedValue<float> factor;
 
-	FoodCandidate*                                  food_canditate = nullptr;
-	NormalizedValue<float>                          best_score{0.0};
-	std::optional<std::variant<EntityId, NatureId>> id = std::nullopt;
+		const auto life_ratio = creature.body.vital.life.ratio();
 
-	for (const auto &_entity : output.resolved_entities()) {
-		const auto &entity = _entity.get();
-		if (std::holds_alternative<PerceivedCorpse>(entity)) {
-			const auto   &corpse      = std::get<PerceivedCorpse>(entity);
-			FoodCandidate current_f_c = MetabolismInstincts::make_corpse_canditate(corpse);
+		if (life_ratio.value() < 0.3f) {
+			factor += life_ratio - 0.05;
+		}
+		const auto &pregnant_uterus =
+			std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+				creature.body.reproduction.state.state)
+				.get_pregnant_uterus();
 
-			const auto current_score =
-				MetabolismInstincts::preference(current_f_c, creature, perception);
+		if (creature.body.reproduction.state.is_pregnant()) {
+			factor += pregnant_uterus.gestation.ratio() * 0.5;
+		}
+		factor += creature.specie_relative_age() * 0.4;
+		return factor;
+	}
+
+	float ScorerIntents::score_find_food(const Creature &creature) {
+		NormalizedValue<float> factor;
+
+		const auto hungry = creature.body.hungry();
+
+		if (hungry.value() > 0.75f) {
+			factor += hungry * 1.3;
+		} else {
+			factor += hungry * 1.12;
+		}
+
+		if (creature.body.reproduction.state.is_pregnant()) {
+			factor += std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+						  creature.body.reproduction.state.state)
+						  .get_pregnant_uterus()
+						  .gestation.ratio()
+				* 0.4;
+		}
+		return factor.value();
+	}
+
+	float ScorerIntents::score_nothing(const Creature &creature) {
+		const float base = 0.6;
+
+		NormalizedValue<float> factor{base};
+
+		factor += creature.specie_relative_age() * 0.25f;
+		return factor.value();
+	}
+
+	Intents::IntentTypes Instincts::take(const Creature &creature) {
+		std::array<ScoredIntent, 2> scored_intents;
+
+		// 0 -> Nothing
+		// 1 -> Find Food
+
+		scored_intents[0] = ScoredIntent{.type  = Intents::IntentTypes::NOTHING,
+										 .score = ScorerIntents::score_nothing(creature)};
+		scored_intents[1] = ScoredIntent{.type  = Intents::IntentTypes::FIND_FOOD,
+										 .score = ScorerIntents::score_find_food(creature)};
 
 
-			if (food_canditate == nullptr || best_score < current_score) {
-				food_canditate = &current_f_c;
-				best_score     = current_score;
-				id             = corpse.id;
+		ScoredIntent best_s_i{.type  = Intents::IntentTypes::NOTHING,
+							  .score = std::numeric_limits<float>().lowest()};
+		for (auto s_i : scored_intents) {
+			if (s_i.score > best_s_i.score) {
+				best_s_i = s_i;
 			}
 		}
+		return best_s_i.type;
 	}
 
-	for (const auto &_nature : output.resolve_natures()) {
-		const auto &nature = _nature.get();
-		if (std::holds_alternative<PerceivedGrass>(nature)) {
-			const auto   &grass       = std::get<PerceivedGrass>(nature);
-			FoodCandidate current_f_c = MetabolismInstincts::make_grass_candidate(grass);
+	std::optional<PlannerFindFood::Goal> PlannerFindFood::choose_goal(
+		const Creature &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+			&perception) {
+		const auto output = Karkinolution::Organisms::Entities::Creature::Brain::Perception::
+			PerceptionAnalyzer::reduce(perception, FIND_FOOD_RADIUS);
 
-			const auto current_score =
-				MetabolismInstincts::preference(current_f_c, creature, perception);
+		FoodCandidate*         food_canditate = nullptr;
+		NormalizedValue<float> best_score{0.0};
+		std::optional<std::variant<EntityId, Karkinolution::Organisms::Nature::NatureId>> id =
+			std::nullopt;
+
+		for (const auto &_entity : output.resolved_entities()) {
+			const auto &entity = _entity.get();
+			if (std::holds_alternative<Karkinolution::Organisms::Entities::Creature::Brain::
+										   Perception::PerceivedCorpse>(entity)) {
+				const auto &corpse = std::get<Karkinolution::Organisms::Entities::Creature::Brain::
+												  Perception::PerceivedCorpse>(entity);
+				FoodCandidate current_f_c = MetabolismInstincts::make_corpse_canditate(corpse);
+
+				const auto current_score =
+					MetabolismInstincts::preference(current_f_c, creature, perception);
 
 
-			if (food_canditate == nullptr || best_score < current_score) {
-				food_canditate = &current_f_c;
-				best_score = current_score, id = grass.id;
-				id = grass.id;
+				if (food_canditate == nullptr || best_score < current_score) {
+					food_canditate = &current_f_c;
+					best_score     = current_score;
+					id             = corpse.id;
+				}
 			}
 		}
-	}
 
-	if (food_canditate == nullptr) {
-		throw SimulationError("Food candidate cannot be null");
-	}
+		for (const auto &_nature : output.resolve_natures()) {
+			const auto &nature = _nature.get();
+			if (std::holds_alternative<Karkinolution::Organisms::Entities::Creature::Brain::
+										   Perception::PerceivedGrass>(nature)) {
+				const auto   &grass = std::get<Karkinolution::Organisms::Entities::Creature::Brain::
+												   Perception::PerceivedGrass>(nature);
+				FoodCandidate current_f_c = MetabolismInstincts::make_grass_candidate(grass);
 
-	if (!id.has_value()) {
-		return std::nullopt;
-	}
+				const auto current_score =
+					MetabolismInstincts::preference(current_f_c, creature, perception);
 
-	return Goal{.position = food_canditate->position,
-				.hint     = food_canditate->hint,
-				.id       = id.value()};
-}
 
-FindFoodPresets PlannerFindFood::plan(const Creature &creature, const Perception &perception) {
-	const auto goal_ = choose_goal(creature, perception);
+				if (food_canditate == nullptr || best_score < current_score) {
+					food_canditate = &current_f_c;
+					best_score = current_score, id = grass.id;
+					id = grass.id;
+				}
+			}
+		}
 
-	if (!goal_.has_value()) {
-		return FindFoodPresets{std::monostate()};
-	}
-	const auto &goal = goal_.value();
+		if (food_canditate == nullptr) {
+			throw SimulationError("Food candidate cannot be null");
+		}
 
-	if (goal.position.distance_squared_to(creature.position) > MIN_SQUARED_DISTANCE_TO_EAT) {
-		return FindFoodPresets{MovePreset{.new_coord = goal.position}};
-	}
-	return FindFoodPresets{EatPreset{.hint = goal.hint, .id = goal.id}};
-}
-
-NothingPresets PlannerNothing::plan(const Creature &creature, const Perception &perception) {
-	bool const want_to_move = Choices::choice_bool(0.5, 0.5);
-
-	if (want_to_move) {
-		const Vec3 new_coord = creature.position + Vec3{1.0, 0.0, 0.0};
-		return NothingPresets{MovePreset{.new_coord = new_coord}};
-	}
-	return NothingPresets{std::monostate()};
-}
-
-std::variant<FindFoodPresets, NothingPresets>
-Planner::resolve_intent(const Creature &creature, const Perception &perception) {
-	if (creature.brain.intent().type == IntentTypes::NOTHING) {
-		return PlannerNothing::plan(creature, perception);
-	} else if (creature.brain.intent().type == IntentTypes::FIND_FOOD) {
-		return PlannerFindFood::plan(creature, perception);
-	}
-
-	std::unreachable();
-}
-
-std::optional<AllPresets> Planner::plan(const Creature &creature, const Perception &perception) {
-	const auto output = resolve_intent(creature, perception);
-
-	if (std::holds_alternative<FindFoodPresets>(output)) {
-		const auto &preset = std::get<FindFoodPresets>(output);
-
-		if (std::holds_alternative<EatPreset>(preset.value)) {
-			return std::get<EatPreset>(preset.value);
-		} else if (std::holds_alternative<MovePreset>(preset.value)) {
-			return std::get<MovePreset>(preset.value);
-		} else if (std::holds_alternative<std::monostate>(preset.value)) {
+		if (!id.has_value()) {
 			return std::nullopt;
 		}
-		std::unreachable();
-	} else if (std::holds_alternative<NothingPresets>(output)) {
-		const auto &preset = std::get<NothingPresets>(output);
 
-		if (std::holds_alternative<MovePreset>(preset.value)) {
-			return std::get<MovePreset>(preset.value);
-		} else if (std::holds_alternative<std::monostate>(preset.value)) {
-			return std::nullopt;
+		return Goal{.position = food_canditate->position,
+					.hint     = food_canditate->hint,
+					.id       = id.value()};
+	}
+
+	FindFoodPresets PlannerFindFood::plan(
+		const Creature &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+			&perception) {
+		const auto goal_ = choose_goal(creature, perception);
+
+		if (!goal_.has_value()) {
+			return FindFoodPresets{std::monostate()};
+		}
+		const auto &goal = goal_.value();
+
+		if (goal.position.distance_squared_to(creature.position) > MIN_SQUARED_DISTANCE_TO_EAT) {
+			return FindFoodPresets{Actions::MovePreset{.new_coord = goal.position}};
+		}
+		return FindFoodPresets{Actions::EatPreset{.hint = goal.hint, .id = goal.id}};
+	}
+
+	NothingPresets PlannerNothing::plan(
+		const Creature &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+			&perception) {
+		bool const want_to_move = Karkinolution::Functional::KRandom::choice_bool(0.5, 0.5);
+
+		if (want_to_move) {
+			const Vec3 new_coord = creature.position + Vec3{1.0, 0.0, 0.0};
+			return NothingPresets{Actions::MovePreset{.new_coord = new_coord}};
+		}
+		return NothingPresets{std::monostate()};
+	}
+
+	std::variant<FindFoodPresets, NothingPresets> Planner::resolve_intent(
+		const Creature &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+			&perception) {
+		if (creature.brain.intent().type == Intents::IntentTypes::NOTHING) {
+			return PlannerNothing::plan(creature, perception);
+		} else if (creature.brain.intent().type == Intents::IntentTypes::FIND_FOOD) {
+			return PlannerFindFood::plan(creature, perception);
+		}
+
+		std::unreachable();
+	}
+
+	std::optional<Actions::AllPresets>
+	Planner::plan(const Creature &creature,
+				  const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+					  &perception) {
+		const auto output = resolve_intent(creature, perception);
+
+		if (std::holds_alternative<FindFoodPresets>(output)) {
+			const auto &preset = std::get<FindFoodPresets>(output);
+
+			if (std::holds_alternative<Actions::EatPreset>(preset.value)) {
+				return std::get<Actions::EatPreset>(preset.value);
+			} else if (std::holds_alternative<Actions::MovePreset>(preset.value)) {
+				return std::get<Actions::MovePreset>(preset.value);
+			} else if (std::holds_alternative<std::monostate>(preset.value)) {
+				return std::nullopt;
+			}
+			std::unreachable();
+		} else if (std::holds_alternative<NothingPresets>(output)) {
+			const auto &preset = std::get<NothingPresets>(output);
+
+			if (std::holds_alternative<Actions::MovePreset>(preset.value)) {
+				return std::get<Actions::MovePreset>(preset.value);
+			} else if (std::holds_alternative<std::monostate>(preset.value)) {
+				return std::nullopt;
+			}
+			std::unreachable();
 		}
 		std::unreachable();
 	}
-	std::unreachable();
-}
+} // namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts

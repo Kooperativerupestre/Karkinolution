@@ -5,6 +5,7 @@
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
+#include "karkinolution/networking/sdk/src/error.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 #include "karkinolution/networking/sdk/src/client/protocol_session.hpp"
 #include "karkinolution/networking/sdk/src/client/request_queue.hpp"
@@ -16,7 +17,6 @@
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <string>
-inline constexpr std::size_t MAX_TEMPORARY_RESPONSE_SIZE = 8192;
 
 namespace KarkinolutionSDK {
 	struct SendingState {
@@ -25,6 +25,8 @@ namespace KarkinolutionSDK {
 	};
 
 	namespace Client {
+		inline constexpr std::size_t MAX_TEMPORARY_RESPONSE_SIZE = 8192;
+
 		struct RequestData {
 				RequestSubTypes                                              sub_type;
 				Resource                                                     resource;
@@ -34,10 +36,10 @@ namespace KarkinolutionSDK {
 
 		struct Config {
 				std::string   host = "127.0.0.1";
-				std::uint16_t port = PORT;
+				std::uint16_t port = Karkinolution::Networking::PORT;
 		};
 
-		using ClientSideResponseBuffer = RawFrameBuffer;
+		using ClientSideResponseBuffer = Karkinolution::Networking::RawFrameBuffer;
 
 		class AsyncOperationsRunning {
 			private:
@@ -80,7 +82,7 @@ namespace KarkinolutionSDK {
 		class Client {
 			public:
 
-				explicit Client(IoContext         &io,
+				explicit Client(Karkinolution::Networking::IoContext &io,
 								Config             config = {},
 								const std::string &name   = "Client")
 					: io_context_(io)
@@ -161,7 +163,7 @@ namespace KarkinolutionSDK {
 
 
 				Config     config;
-				IoContext &io_context_;
+				Karkinolution::Networking::IoContext &io_context_;
 
 				// Serializes every handler and posted task that touches the client state,
 				// so no two threads access it at the same time.
@@ -170,7 +172,7 @@ namespace KarkinolutionSDK {
 				asio::ip::tcp::socket                         socket_;
 
 
-				std::atomic<BaseIdType> next_request_id = 0;
+				std::atomic<Karkinolution::Core::Id::BaseIdType> next_request_id = 0;
 
 
 				// These two data structures below use mutex
@@ -191,7 +193,7 @@ namespace KarkinolutionSDK {
 		namespace Validator {
 			void constexpr validate_is_connected(const Client &client) {
 				if (!client.is_connected()) {
-					throw ConnectionError("Client isn't connected");
+					throw ClientError("Client isn't connected");
 				}
 			}
 		}; // namespace Validator

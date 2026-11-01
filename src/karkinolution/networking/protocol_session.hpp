@@ -7,6 +7,8 @@
 #include <karkinolution/networking/response_queue.hpp>
 #include <karkinolution/world/world.hpp>
 
+namespace Karkinolution::Networking {
+
 enum class ReceiveOverflowMode : uint8_t {
 	VERIFY_ALL_BYTES,
 	VERIFY_BYTE_PER_BYTE
@@ -28,7 +30,7 @@ void constexpr log_receive_overflow_mode() {
 class ProtocolSession {
 	public:
 
-		explicit ProtocolSession(World &world)
+		explicit ProtocolSession(Karkinolution::World::World &world)
 			: world(world) {}
 
 		void receive(std::span<const std::byte> bytes);
@@ -39,7 +41,7 @@ class ProtocolSession {
 
 	private:
 
-		World         &world;
+		Karkinolution::World::World         &world;
 		ResponseQueue  responses;
 		RawFrameBuffer request_buffer;
 
@@ -47,3 +49,5 @@ class ProtocolSession {
 		void process_frames();
 		void clear_requests();
 };
+
+} // namespace Karkinolution::Networking

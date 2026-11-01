@@ -6,6 +6,8 @@
 #include <gtest/gtest.h>
 #include <networking/server_fixture.hpp>
 
+using KarkinolutionSDK::ClientError;
+
 TEST_F(ClientTest, PendingRequestFailsWhenServerDrops) {
 	KarkinolutionClient client{
 		io,

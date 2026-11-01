@@ -22,26 +22,29 @@ namespace Karkinolution {
 
 					} // namespace Layout
 
-					UnitsSRI::StandardPhysicBytes serialize_radius(GeometryForms::Radius radius);
 					UnitsSRI::StandardPhysicBytes
-					serialize_circumference(GeometryForms::Circumference circumference);
+					serialize_radius(Karkinolution::Math::Geometry::Radius radius);
 					UnitsSRI::StandardPhysicBytes
-					serialize_diameter(GeometryForms::Diameter diameter);
-					UnitsSRI::StandardPhysicBytes serialize_area(GeometryForms::Area area);
+					serialize_circumference(
+						Karkinolution::Math::Geometry::Circumference circumference);
+					UnitsSRI::StandardPhysicBytes
+					serialize_diameter(Karkinolution::Math::Geometry::Diameter diameter);
+					UnitsSRI::StandardPhysicBytes
+					serialize_area(Karkinolution::Math::Geometry::Area area);
 				} // namespace Geometry
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Geometry {
-					GeometryForms::Radius deserialize_radius(const std::vector<std::byte> &payload,
-															 std::size_t                   offset);
-					GeometryForms::Circumference
+					Karkinolution::Math::Geometry::Radius
+					deserialize_radius(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Geometry::Circumference
 					deserialize_circumference(const std::vector<std::byte> &payload,
 											  std::size_t                   offset);
-					GeometryForms::Diameter
+					Karkinolution::Math::Geometry::Diameter
 					deserialize_diameter(const std::vector<std::byte> &payload, std::size_t offset);
-					GeometryForms::Area deserialize_area(const std::vector<std::byte> &payload,
-														 std::size_t                   offset);
+					Karkinolution::Math::Geometry::Area
+					deserialize_area(const std::vector<std::byte> &payload, std::size_t offset);
 				} // namespace Geometry
 			} // namespace DSI
 		} // namespace Interpreters

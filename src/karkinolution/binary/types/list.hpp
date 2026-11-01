@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/core/error.hpp"
+#include "karkinolution/binary/errors.hpp"
 
 #include <concepts>
 #include <format>
@@ -106,7 +106,7 @@ namespace Karkinolution {
 
 						inline auto make_header(std::size_t size) {
 
-							return Serializer::serialize<ListSize>(static_cast<ListSize>(size));
+							return Karkinolution::Binary::Serializer::serialize<ListSize>(static_cast<ListSize>(size));
 						}
 
 						template <std::size_t SizeofSerializedObject>
@@ -371,7 +371,7 @@ namespace Karkinolution {
 							throw ByteError("The list offset is outside the serialized bytes.");
 						}
 
-						return Deserializer::read_uint16_t(bytes, offset);
+						return Karkinolution::Binary::Deserializer::read_uint16_t(bytes, offset);
 					}
 
 					namespace Details {

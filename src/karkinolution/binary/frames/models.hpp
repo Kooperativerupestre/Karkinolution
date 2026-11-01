@@ -1,9 +1,8 @@
 #pragma once
-#include "karkinolution/binary/frames/error.hpp"
+#include "karkinolution/binary/frames/errors.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/protocol/layouts.hpp"
-#include "karkinolution/core/error.hpp"
 #include "karkinolution/functional/unreachable_or_throw.hpp"
 
 #include <karkinolution/binary/byte_range.hpp>

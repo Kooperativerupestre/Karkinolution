@@ -7,10 +7,7 @@
 #include <karkinolution/networking/sdk/src/client/pending_request.hpp>
 #include <karkinolution/networking/sdk/src/error.hpp>
 
-using KarkinolutionSDK::Protocol::FutureRequest;
-using KarkinolutionSDK::Protocol::PendingRequests;
-using KarkinolutionSDK::Protocol::RequestFailure;
-using KarkinolutionSDK::Protocol::ResponseResult;
+namespace KarkinolutionSDK::Protocol {
 
 FutureRequest::FutureRequest()
 	: promise(std::in_place)
@@ -212,3 +209,5 @@ void PendingRequests::fail_all_by_disconnection() {
 		request->fail(RequestFailure::DISCONNECTION);
 	}
 }
+
+} // namespace KarkinolutionSDK::Protocol

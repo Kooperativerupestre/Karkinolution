@@ -3,7 +3,7 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/math/units.hpp"
-#include "karkinolution/organism/stats.hpp"
+#include "karkinolution/organism/values.hpp"
 
 namespace Karkinolution {
 	namespace Binary {
@@ -11,10 +11,10 @@ namespace Karkinolution {
 			namespace Models {
 				namespace Corpse {
 					struct Corpse {
-							BaseIdType                   id;
-							OrganismStats::Body::RawMeat raw_meat;
-							Vec3                         position;
-							Size                         size;
+							Karkinolution::Core::Id::BaseIdType                   id;
+							Karkinolution::Organisms::RawMeat raw_meat;
+							Karkinolution::Math::Vec::Vec3                         position;
+							Karkinolution::Math::Units::Size size;
 					};
 				} // namespace Corpse
 			} // namespace Models

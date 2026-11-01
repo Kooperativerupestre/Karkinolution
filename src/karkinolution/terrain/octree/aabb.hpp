@@ -7,14 +7,16 @@
 #include <karkinolution/organism/entities/identity.hpp>
 #include <memory>
 #include <vector>
+
+namespace Karkinolution::Terrain::Trees::Octree {
 inline constexpr size_t MAX_OCTREE_CHILDREN = 8;
 inline constexpr size_t MAX_ENTRIES         = 8;
 
 struct AABB {
-		Vec3 max;
-		Vec3 min;
+		Karkinolution::Math::Vec::Vec3 max;
+		Karkinolution::Math::Vec::Vec3 min;
 
-		[[nodiscard]] Vec3 center() const noexcept {
+		[[nodiscard]] Karkinolution::Math::Vec::Vec3 center() const noexcept {
 			return (min + max) / 2.0;
 		}
 
@@ -35,12 +37,12 @@ struct AABB {
 };
 
 namespace AABBConversion {
-	AABB to_aabb(const Size &size, const Vec3 &position);
-	AABB to_aabb(const GeometryForms::Radius &radius, const Vec3 &position);
+	AABB to_aabb(const Karkinolution::Math::Units::Size &size, const Karkinolution::Math::Vec::Vec3 &position);
+	AABB to_aabb(const Karkinolution::Math::Geometry::Radius &radius, const Karkinolution::Math::Vec::Vec3 &position);
 } // namespace AABBConversion
 
 struct OctreeEntry {
-		EntityId entity_id;
+		Karkinolution::Organisms::Entities::EntityId entity_id;
 		AABB     bound;
 };
 
@@ -92,23 +94,25 @@ class OctreeNode {
 		void               subdivide();
 		std::optional<int> child_containing(const AABB &bounds) const;
 		OctreeNode        &insert(const OctreeEntry &entry);
-		bool               remove(EntityId id);
+		bool               remove(Karkinolution::Organisms::Entities::EntityId id);
 
-		bool remove(EntityId id, const AABB &old_box);
+		bool remove(Karkinolution::Organisms::Entities::EntityId id, const AABB &old_box);
 
-		bool update(EntityId id, const AABB &old_box, const AABB &new_box);
-		bool update(EntityId id, const AABB &new_box);
+		bool update(Karkinolution::Organisms::Entities::EntityId id, const AABB &old_box, const AABB &new_box);
+		bool update(Karkinolution::Organisms::Entities::EntityId id, const AABB &new_box);
 
 		// Update is logically atomic
 
-		bool exists(EntityId id) const;
-		bool exists(EntityId id, const AABB &old_box) const;
+		bool exists(Karkinolution::Organisms::Entities::EntityId id) const;
+		bool exists(Karkinolution::Organisms::Entities::EntityId id, const AABB &old_box) const;
 
 		std::vector<OctreeEntry*>       find(const AABB &aabb);
 		std::vector<const OctreeEntry*> find(const AABB &aabb) const;
 
-		std::vector<EntityId> find_ids(const AABB &aabb) const;
+		std::vector<Karkinolution::Organisms::Entities::EntityId>   find_ids(const AABB &aabb) const;
+		std::optional<Karkinolution::Organisms::Entities::EntityId> if_find_one_stop(const AABB &aabb) const;
 
+		bool can_contain(const AABB &aabb) const;
 		/*
 	func(...) -> Do if it exists
 	func(..., old_box) -> Do if it exists and the correct old_box is provided
@@ -120,3 +124,4 @@ class OctreeNode {
 	func(..., old_box) is more efficient than func(...)
 	*/
 };
+} // namespace Karkinolution::Terrain::Trees::Octree

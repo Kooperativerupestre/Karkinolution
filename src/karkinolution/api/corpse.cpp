@@ -2,11 +2,14 @@
 
 #include <karkinolution/api/corpse.hpp>
 
-const Corpse* Karkinolution::API::Corpse::see_corpse(const World &world, BaseIdType id) {
-	const auto corpse = world.organism_registry.entities.try_at(EntityIDF::create_corpse_id(id));
+const Karkinolution::Organisms::Entities::Corpse::Corpse*
+Karkinolution::API::Corpse::see_corpse(const Karkinolution::World::World &world,
+									   Karkinolution::Core::Id::BaseIdType id) {
+	const auto entity_id = Karkinolution::Organisms::Entities::create_corpse_id(id);
 
-	if (corpse == nullptr) {
+	if (!world.see_entities_registry().exists(entity_id)) {
 		return nullptr;
 	}
-	return &std::get<::Corpse>(*corpse);
+	return &std::get<Karkinolution::Organisms::Entities::Corpse::Corpse>(
+		world.at_entity(entity_id));
 }

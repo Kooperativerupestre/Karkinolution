@@ -1,7 +1,8 @@
 #pragma once
 #include <karkinolution/terrain/rtree/box.hpp>
-#include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/soil/soil.hpp>
 
+namespace Karkinolution::Terrain::Trees::RTree {
 enum class NodeType : uint8_t {
 	LEAF,
 	INTERNAL
@@ -19,3 +20,4 @@ template <typename IdType> struct RtreeNode {
 		std::optional<Box3D>            box;
 		std::vector<RtreeEntry<IdType>> entries;
 };
+} // namespace Karkinolution::Terrain::Trees::RTree

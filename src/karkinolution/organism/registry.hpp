@@ -1,10 +1,13 @@
 #pragma once
 
-
-#include <karkinolution/core/basestorage.hpp>
 #include <karkinolution/organism/entities/entities.hpp>
 #include <karkinolution/organism/nature/natures.hpp>
 
-struct OrganismRegistry {
-		EntitiesRegistry entities;
-};
+namespace Karkinolution {
+	namespace Organisms {
+		struct OrganismRegistry {
+				Entities::EntitiesRegistry entities_registry;
+				Nature::NatureRegistry     natures_registry;
+		};
+	} // namespace Organisms
+} // namespace Karkinolution

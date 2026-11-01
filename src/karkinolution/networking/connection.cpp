@@ -3,6 +3,8 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/connection.hpp>
 
+namespace Karkinolution::Networking {
+
 void Connection::on_error(const std::string &error_message) {
 	std::cerr << "Error: " << error_message << "\n";
 
@@ -20,7 +22,7 @@ void Connection::start() {
 	receive();
 }
 
-Connection::Connection(Socket socket, World &world)
+Connection::Connection(Socket socket, Karkinolution::World::World &world)
 	: world(world)
 	, socket_(std::move(socket))
 	, protocol_session(world) {}
@@ -93,3 +95,5 @@ void Connection::send_next() {
 void Connection::close() {
 	socket_.close();
 }
+
+} // namespace Karkinolution::Networking

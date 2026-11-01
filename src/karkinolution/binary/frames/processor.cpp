@@ -4,7 +4,6 @@
 #include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/core/error.hpp"
 #include "karkinolution/networking/api_adapter/corpse.hpp"
 
 #include <karkinolution/binary/frames/processor.hpp>
@@ -14,7 +13,7 @@
 #include <karkinolution/networking/api_adapter/territory.hpp>
 
 ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFrame &frame,
-																World              &world) {
+																Karkinolution::World::World              &world) {
 
 	const auto sub_type = frame.get_sub_type();
 
@@ -24,9 +23,13 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 	if (sub_type == RequestSubTypes::SEE) {
 		const auto extra = std::get<Models::Request::SeeExtra>(frame.get_extra());
 		if (resource == Resource::CREATURE) {
-			return CreatureAPIBYA::see_creature(world, frame.get_id(), frame.get_payload());
+			return Karkinolution::Networking::APIBYA::Creature::see_creature(world,
+																			 frame.get_id(),
+																			 frame.get_payload());
 		} else if (resource == Resource::CORPSE) {
-			return CorpseAPIBYA::see_corpse(world, frame.get_id(), frame.get_payload());
+			return Karkinolution::Networking::APIBYA::Corpse::see_corpse(world,
+																		frame.get_id(),
+																		frame.get_payload());
 		} else if (resource == Resource::SOIL) {
 			if (extra.target == Protocol::Request::SeeTarget::ONE) {
 				return Karkinolution::Networking::APIBYA::Soil::see_soil(world,
@@ -43,7 +46,9 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 		}
 	} else if (sub_type == RequestSubTypes::CREATE) {
 		if (resource == Resource::CREATURE) {
-			return CreatureAPIBYA::create_creature(world, frame.get_id(), frame.get_payload());
+			return Karkinolution::Networking::APIBYA::Creature::create_creature(world,
+																				frame.get_id(),
+																				frame.get_payload());
 		}
 	}
 

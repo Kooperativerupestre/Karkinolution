@@ -2,6 +2,7 @@
 
 #include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/deserializer.hpp"
+#include "karkinolution/binary/errors.hpp"
 #include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/core/error.hpp"
 #include "karkinolution/core/id.hpp"
@@ -16,23 +17,25 @@
 #include <magic_enum/magic_enum.hpp>
 
 // SRI implementations
-std::byte CreatureSRI::serialize_gender(const Gender &gender) {
-	if (gender == Gender::FEMALE) {
+std::byte CreatureSRI::serialize_gender(
+	const Karkinolution::Organisms::Entities::Creature::Gender &gender) {
+	if (gender == Karkinolution::Organisms::Entities::Creature::Gender::FEMALE) {
 		return std::byte(0x01);
-	} else if (gender == Gender::MALE) {
+	} else if (gender == Karkinolution::Organisms::Entities::Creature::Gender::MALE) {
 		return std::byte(0x02);
 	}
-	throw ByteError(
+	throw Karkinolution::Binary::ByteError(
 		std::format("Invalid creature gender byte: {}", static_cast<unsigned int>(gender)));
 }
 
-std::byte CreatureSRI::serialize_specie(const CreatureSpecies &specie) {
-	return Serializer::convert_uint8_t(static_cast<uint8_t>(specie));
+std::byte CreatureSRI::serialize_specie(
+	const Karkinolution::Organisms::Entities::Creature::CreatureSpecies &specie) {
+	return Karkinolution::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(specie));
 }
 
 std::vector<std::byte> CreatureSRI::serialize_name(const std::string &name) {
 	if (name.size() > Layout::MAX_NAME_SIZE) {
-		throw ByteError(std::format("The size of the name {} is bigger than allowed {}",
+		throw Karkinolution::Binary::ByteError(std::format("The size of the name {} is bigger than allowed {}",
 									name,
 									Layout::MAX_NAME_SIZE));
 	}
@@ -41,16 +44,17 @@ std::vector<std::byte> CreatureSRI::serialize_name(const std::string &name) {
 
 	const auto name_size = name.size();
 	if (name_size > std::numeric_limits<uint8_t>::max()) {
-		throw ByteError(std::format("The size of name {} exceeds the uint8_t max {}",
+		throw Karkinolution::Binary::ByteError(std::format("The size of name {} exceeds the uint8_t max {}",
 									name_size,
 									std::numeric_limits<uint8_t>::max()));
 	}
-	bytes.push_back(Serializer::convert_uint8_t(static_cast<uint8_t>(name.size())));
-	Karkinolution::Binary::Utils::append_bytes(bytes, Serializer::convert_string(name));
+	bytes.push_back(Karkinolution::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(name.size())));
+	Karkinolution::Binary::Utils::append_bytes(bytes, Karkinolution::Binary::Serializer::convert_string(name));
 	return bytes;
 }
 
-CreatureSRI::BytesArrays::Creature CreatureSRI::serialize_creature(const class Creature &creature) {
+CreatureSRI::BytesArrays::Creature CreatureSRI::serialize_creature(
+	const Karkinolution::Organisms::Entities::Creature::Creature &creature) {
 	CreatureSRI::BytesArrays::Creature bytes{};
 
 	// Gender
@@ -74,24 +78,25 @@ CreatureSRI::BytesArrays::Creature CreatureSRI::serialize_creature(const class C
 
 	// Id
 
-	const auto id = Serializer::serialize<BaseIdType>(creature.ontology.id);
+	const auto id = Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(creature.ontology.id);
 	Karkinolution::Binary::Utils::append_bytes(bytes, id, Layout::Id::OFFSET);
 
 	return bytes;
 }
 
-std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(BaseIdType id) {
-	return Serializer::serialize<BaseIdType>(id);
+std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(Karkinolution::Core::Id::BaseIdType id) {
+	return Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(id);
 }
 
 std::array<std::byte, CreatureSRI::Request::Layout::CreateCreature::TOTAL_SIZE>
-CreatureSRI::Request::make_create_creature(std::optional<Gender>             gender,
-										   std::optional<CreatureSpecies>    specie,
-										   const std::optional<Vec3>        &position,
-										   const std::optional<std::string> &name) {
+CreatureSRI::Request::make_create_creature(
+	std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender,
+	std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
+	const std::optional<Karkinolution::Math::Vec::Vec3> &position,
+	const std::optional<std::string> &name) {
 	if (name) {
 		if (name->size() > CreatureSRI::Layout::MAX_NAME_SIZE) {
-			throw SimulationError(std::format("The max size of name is {}, received {}",
+			throw Karkinolution::Errors::SimulationError(std::format("The max size of name is {}, received {}",
 											  CreatureSRI::Layout::MAX_NAME_SIZE,
 											  name->size()));
 		}
@@ -103,11 +108,11 @@ CreatureSRI::Request::make_create_creature(std::optional<Gender>             gen
 
 	if (!gender) {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(false),
+												   Karkinolution::Binary::Serializer::convert_bool(false),
 												   Layout::CreateCreature::HasGender::OFFSET);
 	} else {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(true),
+												   Karkinolution::Binary::Serializer::convert_bool(true),
 												   Layout::CreateCreature::HasGender::OFFSET);
 		Karkinolution::Binary::Utils::append_bytes(bytes,
 												   CreatureSRI::serialize_gender(*gender),
@@ -116,12 +121,12 @@ CreatureSRI::Request::make_create_creature(std::optional<Gender>             gen
 
 	if (!specie) {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(false),
+												   Karkinolution::Binary::Serializer::convert_bool(false),
 												   Layout::CreateCreature::HasSpecies::OFFSET);
 
 	} else {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(true),
+												   Karkinolution::Binary::Serializer::convert_bool(true),
 												   Layout::CreateCreature::HasSpecies::OFFSET);
 		Karkinolution::Binary::Utils::append_bytes(bytes,
 												   CreatureSRI::serialize_specie(*specie),
@@ -130,12 +135,12 @@ CreatureSRI::Request::make_create_creature(std::optional<Gender>             gen
 
 	if (!position) {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(false),
+												   Karkinolution::Binary::Serializer::convert_bool(false),
 												   Layout::CreateCreature::HasPosition::OFFSET);
 
 	} else {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(true),
+												   Karkinolution::Binary::Serializer::convert_bool(true),
 												   Layout::CreateCreature::HasPosition::OFFSET);
 		Karkinolution::Binary::Utils::append_bytes(bytes,
 												   VecSRI::serialize_vec(*position),
@@ -144,39 +149,42 @@ CreatureSRI::Request::make_create_creature(std::optional<Gender>             gen
 
 	if (!name) {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(false),
+												   Karkinolution::Binary::Serializer::convert_bool(false),
 												   Layout::CreateCreature::HasName::OFFSET);
 	} else {
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_bool(false),
+												   Karkinolution::Binary::Serializer::convert_bool(false),
 												   Layout::CreateCreature::HasName::OFFSET);
 		Karkinolution::Binary::Utils::append_bytes(
 			bytes,
-			Serializer::convert_uint8_t(static_cast<uint8_t>(name->size())),
+			Karkinolution::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(name->size())),
 			Layout::CreateCreature::NameSize::OFFSET);
 		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Serializer::convert_string(*name),
+												   Karkinolution::Binary::Serializer::convert_string(*name),
 												   Layout::CreateCreature::Name::OFFSET);
 	}
 	return bytes;
 }
 
 // DSI implementations
-Gender CreatureDSI::get_gender(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Organisms::Entities::Creature::Gender
+CreatureDSI::get_gender(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto raw_gender = payload[offset];
-	const auto gender     = Gender(raw_gender);
+	const auto gender = Karkinolution::Organisms::Entities::Creature::Gender(raw_gender);
 	if (!magic_enum::enum_contains(gender)) {
-		throw ByteError(std::format("Invalid gender: {}",
+		throw Karkinolution::Binary::ByteError(std::format("Invalid gender: {}",
 									Karkinolution::Binary::Utils::byte_to_int(raw_gender)));
 	}
 	return gender;
 }
 
-CreatureSpecies CreatureDSI::get_specie(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Organisms::Entities::Creature::CreatureSpecies
+CreatureDSI::get_specie(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto raw_specie = payload[offset];
-	const auto specie     = CreatureSpecies(raw_specie);
+	const auto specie =
+		Karkinolution::Organisms::Entities::Creature::CreatureSpecies(raw_specie);
 	if (!magic_enum::enum_contains(specie)) {
-		throw ByteError(std::format("Invalid speciie: {}",
+		throw Karkinolution::Binary::ByteError(std::format("Invalid speciie: {}",
 									Karkinolution::Binary::Utils::byte_to_int(raw_specie)));
 	}
 	return specie;
@@ -193,43 +201,44 @@ CreatureDSI::get_creature(const std::vector<std::byte> &payload, std::size_t off
 }
 
 uint8_t CreatureDSI::get_name_size(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Deserializer::read_uint8_t(payload, offset);
+	return Karkinolution::Binary::Deserializer::read_uint8_t(payload, offset);
 }
 
 std::string CreatureDSI::get_name(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto name_size = get_name_size(payload, offset);
-	return Deserializer::read_string(payload, offset + sizeof(name_size), name_size);
+	return Karkinolution::Binary::Deserializer::read_string(payload, offset + sizeof(name_size), name_size);
 }
 
-BaseIdType CreatureDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Deserializer::deserialize<BaseIdType>(payload, offset);
+Karkinolution::Core::Id::BaseIdType CreatureDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, offset);
 }
 
-BaseIdType
+Karkinolution::Core::Id::BaseIdType
 CreatureDSI::Request::interpret_like_get_creature(const std::vector<std::byte> &payload) {
-	return BaseIdType{Deserializer::deserialize<BaseIdType>(payload, 0)};
+	return Karkinolution::Core::Id::BaseIdType{Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, 0)};
 }
 
-CreatureBlueprint
+Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint
 CreatureDSI::Request::interpret_like_create_creature(const std::vector<std::byte> &payload) {
-	std::optional<Gender>          gender   = std::nullopt;
-	std::optional<CreatureSpecies> species  = std::nullopt;
-	std::optional<Vec3>            position = std::nullopt;
+	std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender = std::nullopt;
+	std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> species =
+		std::nullopt;
+	std::optional<Karkinolution::Math::Vec::Vec3>            position = std::nullopt;
 	std::optional<std::string>     name     = std::nullopt;
 
-	const auto has_gender = Deserializer::deserialize<bool>(
+	const auto has_gender = Karkinolution::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasGender::OFFSET);
 
-	const auto has_specie = Deserializer::deserialize<bool>(
+	const auto has_specie = Karkinolution::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasSpecies::OFFSET);
 
-	const auto has_position = Deserializer::deserialize<bool>(
+	const auto has_position = Karkinolution::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasPosition::OFFSET);
 
-	const auto has_name = Deserializer::deserialize<bool>(
+	const auto has_name = Karkinolution::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasName::OFFSET);
 
@@ -254,8 +263,9 @@ CreatureDSI::Request::interpret_like_create_creature(const std::vector<std::byte
 			CreatureDSI::get_name(payload,
 								  CreatureSRI::Request::Layout::CreateCreature::NameSize::OFFSET);
 	}
-	return CreatureBlueprint{.specie   = species,
-							 .name     = name,
-							 .gender   = gender,
-							 .position = position};
+	return Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint{
+		.specie   = species,
+		.name     = name,
+		.gender   = gender,
+		.position = position};
 }

@@ -272,3 +272,17 @@ and accumulating bytes until the frame parser can extract a complete frame. The 
 from the maximum accumulated frame size: the former controls each asynchronous read, while the latter bounds a full
 frame. The current 64 KiB frame-buffer limit accommodates larger collection responses without relying on one read
 containing the entire response.
+
+# 1.6 - Structural namespace refactor
+
+## Why did I remove muscle and skeleton from creatures?
+
+I realized that I had added muscle and skeleton to the model simply because I could, without a concrete reason or any
+real use for them—not even now. Since there was no compelling reason to keep them, I used the structural namespace
+refactor as an opportunity to remove them as well.
+
+## Why did I remove transformations from Karkinolution's genetics?
+
+For the same reason: I thought transformations would make the system easier to use, but when I actually needed them,
+they turned out to be an almost unreadable abstraction. They added overhead and made the very thing I wanted to
+simplify more difficult.

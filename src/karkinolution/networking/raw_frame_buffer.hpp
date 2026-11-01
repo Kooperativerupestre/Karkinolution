@@ -6,6 +6,9 @@
 #include <karkinolution/binary/protocol/layouts.hpp>
 #include <optional>
 #include <vector>
+
+namespace Karkinolution::Networking {
+
 inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 64 * 1024;
 
 
@@ -121,3 +124,5 @@ namespace FrameBufferAnalyzer {
 	std::optional<std::vector<std::byte>> get_frame(const RawFrameBuffer &buffer);
 
 } // namespace FrameBufferAnalyzer
+
+} // namespace Karkinolution::Networking

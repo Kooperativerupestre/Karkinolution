@@ -10,100 +10,106 @@
 #include <karkinolution/organism/entities/creature/metabolism/motor.hpp>
 #include <karkinolution/organism/entities/creature/motor.hpp>
 #include <karkinolution/organism/entities/creature/physiology.hpp>
-#include <karkinolution/organism/registry.hpp>
-#include <karkinolution/world/motor.hpp>
 #include <karkinolution/world/world.hpp>
 #include <variant>
 
-void BrainMotor::run(Brain &brain, const Creature &creature) {
-	const auto stop = BrainPhysiology::should_stop_intent(brain);
+namespace Karkinolution::Organisms::Entities::Creature::Brain::Motor {
+	void BrainMotor::run(Karkinolution::Organisms::Entities::Creature::Brain::Brain &brain,
+						 const Creature                                             &creature) {
+		const auto stop = Physiology::BrainPhysiology::should_stop_intent(brain);
 
-	if (stop) {
-		brain.switch_intent(Instincts::take(creature));
+		if (stop) {
+			brain.switch_intent(
+				Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Instincts::take(
+					creature));
+		}
+
+		brain.pass_intent();
+	}
+} // namespace Karkinolution::Organisms::Entities::Creature::Brain::Motor
+
+namespace Karkinolution::Organisms::Entities::Creature::Motor {
+	void CreatureMotor::update_map(const Creature &creature, Karkinolution::World::World &world) {
+		world.update(creature.build_id(), creature.position);
 	}
 
-	brain.pass_intent();
-}
+	void
+	CreatureMotor::grow(Creature                                                   &creature,
+						const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
+		auto &body         = creature.body;
+		auto  lateral_grow = Physiology::Growing::get_new_lateral_increment(creature, organisms);
+		auto  depth_grow   = Physiology::Growing::get_new_depth_increment(creature, organisms);
+		auto  height_grow  = Physiology::Growing::get_new_height_increment(creature, organisms);
 
-void CreatureMotor::update_map(const Creature &creature, World &world) {
-	world.entity_map.root().update(
-		creature.build_id(),
-		AABBConversion::to_aabb(creature.body.morphology.size, creature.position));
-}
+		body.morphology.size.height.value += height_grow;
+		body.morphology.size.depth.value += depth_grow;
+		body.morphology.size.lateral.value += lateral_grow;
 
-void CreatureMotor::grow(Creature &creature, const OrganismRegistry &organisms) {
-	auto &body        = creature.body;
-	auto  muscle_grow = CreatureGrowingPhysiology::get_new_muscle_increment(creature, organisms);
+		auto max_energy_grow =
+			Physiology::Growing::get_new_max_energy_increment(creature, organisms);
+		body.metabolism.energy.max_ref() += max_energy_grow.gain;
+		body.metabolism.reserved -= max_energy_grow.cost.reserved_energy;
 
-	body.muscle.muscle.value += muscle_grow.gain;
-	body.metabolism.reserved -= muscle_grow.cost.reserved_energy;
-
-	auto skeleton_grow = CreatureGrowingPhysiology::get_new_skeleton_increment(creature, organisms);
-
-	body.skeleton.bone.value += skeleton_grow.gain;
-	body.metabolism.reserved -= skeleton_grow.cost.reserved_energy;
-
-	auto lateral_grow = CreatureGrowingPhysiology::get_new_lateral_increment(creature, organisms);
-	auto depth_grow   = CreatureGrowingPhysiology::get_new_depth_increment(creature, organisms);
-	auto height_grow  = CreatureGrowingPhysiology::get_new_height_increment(creature, organisms);
-
-	body.morphology.size.height.value += height_grow;
-	body.morphology.size.depth.value += depth_grow;
-	body.morphology.size.lateral.value += lateral_grow;
-
-	auto max_energy_grow =
-		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, organisms);
-	body.metabolism.energy.max_ref() += max_energy_grow.gain;
-	body.metabolism.reserved -= max_energy_grow.cost.reserved_energy;
-
-	auto max_reserved_grow =
-		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, organisms);
-	body.metabolism.reserved.max_ref() += max_reserved_grow.gain;
-	body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
-}
-
-std::optional<AllPresets>
-CreatureMotor::resolve_presets(Creature &creature, const Perception &perception, World &world) {
-	const auto preset_ = Planner::plan(creature, perception);
-
-	if (!preset_.has_value()) {
-		return std::nullopt;
-	}
-	const auto &preset = preset_.value();
-
-	if (std::holds_alternative<MovePreset>(preset)) {
-		MovementMotor::move(creature, world, std::get<MovePreset>(preset).new_coord);
-	} else if (std::holds_alternative<EatPreset>(preset)) {
-		MetabolismMotor::eat(
-			creature,
-			std::get<std::reference_wrapper<RawMeat>>(
-				MetabolismResolver::resolve_preset(std::get<EatPreset>(preset), world))
-				.get());
-	}
-	return preset_;
-}
-
-void CreatureMotor::run(Creature &creature, World &world) {
-	// aliases
-
-	auto &organisms = world.organism_registry;
-
-	// code
-	if (CreaturePhysiology::is_dead(creature)) {
-		WorldMotor::remove(creature.build_id(), world);
+		auto max_reserved_grow =
+			Physiology::Growing::get_new_max_energy_reserved_increment(creature, organisms);
+		body.metabolism.reserved.max_ref() += max_reserved_grow.gain;
+		body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 	}
 
-	const auto age_effects = CreaturePhysiology::get_to_age_effects(creature);
-	auto      &body        = creature.body;
-	age_effects(creature);
-	grow(creature, organisms);
+	std::optional<Actions::AllPresets> CreatureMotor::resolve_presets(
+		Creature &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+									&perception,
+		Karkinolution::World::World &world) {
+		const auto preset_ =
+			Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Planner::plan(
+				creature,
+				perception);
 
-	if (creature.body.reproductive.state.is_pregnant()) {
-		ReproductionStateMotor::run(creature);
+		if (!preset_.has_value()) {
+			return std::nullopt;
+		}
+		const auto &preset = preset_.value();
+
+		if (std::holds_alternative<Actions::MovePreset>(preset)) {
+			Karkinolution::Organisms::Entities::Creature::Movement::Motor::MovementMotor::move(
+				creature,
+				world,
+				std::get<Actions::MovePreset>(preset).new_coord);
+		} else if (std::holds_alternative<Actions::EatPreset>(preset)) {
+			Karkinolution::Organisms::Entities::Creature::Metabolism::Motor::MetabolismMotor::eat(
+				creature,
+				std::get<std::reference_wrapper<RawMeat>>(
+					Karkinolution::Organisms::Entities::Creature::Metabolism::Resolver::
+						MetabolismResolver::resolve_preset(std::get<Actions::EatPreset>(preset),
+														   world))
+					.get());
+		}
+		return preset_;
 	}
 
-	const Perception perception = Perceiver::perceive(creature, world);
-	BrainMotor::run(creature.brain, creature);
+	void CreatureMotor::run(Creature &creature, Karkinolution::World::World &world) {
+		// aliases
 
-	const auto preset = resolve_presets(creature, perception, world);
-}
+		const auto &organisms = world.see_entities_registry();
+
+		// code
+		if (Physiology::is_dead(creature)) {
+			world.remove(creature.build_id());
+		}
+
+		grow(creature, organisms);
+
+		if (creature.body.reproduction.state.is_pregnant()) {
+			Reproduction::State::Motor::run(creature);
+		}
+
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+			perception = Karkinolution::Organisms::Entities::Creature::Brain::Perception::
+				Perceiver::perceive(creature, world);
+		Karkinolution::Organisms::Entities::Creature::Brain::Motor::BrainMotor::run(creature.brain,
+																					creature);
+
+		const auto preset = resolve_presets(creature, perception, world);
+	}
+} // namespace Karkinolution::Organisms::Entities::Creature::Motor

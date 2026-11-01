@@ -8,7 +8,7 @@ TEST(ListSerialize, WritesHeaderAndElementsInOrder) {
 
 	const auto serialized =
 		ListTSRI::serialize<sizeof(std::uint32_t)>(values, [](std::uint32_t value) {
-			return Serializer::convert_uint32_t(value);
+			return Karkinolution::Binary::Serializer::convert_uint32_t(value);
 		});
 
 	const std::vector<std::byte> expected = {

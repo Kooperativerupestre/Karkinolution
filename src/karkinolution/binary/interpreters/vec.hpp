@@ -27,11 +27,11 @@ namespace Karkinolution {
 					} // namespace BytesArrays
 
 					/*
-					 * Always, a Vec3 must be like this
+					 * Always, a Karkinolution::Math::Vec::Vec3 must be like this
 					 * [x](8 bytes)[y](8 bytes)[z](8 bytes)
 					 */
 
-					BytesArrays::Vec serialize_vec(const Vec3 &vec);
+					BytesArrays::Vec serialize_vec(const Karkinolution::Math::Vec::Vec3 &vec);
 				} // namespace Vec
 			} // namespace SRI
 
@@ -40,7 +40,7 @@ namespace Karkinolution {
 					double get_x(const std::vector<std::byte> &payload, std::size_t offset);
 					double get_y(const std::vector<std::byte> &payload, std::size_t offset);
 					double get_z(const std::vector<std::byte> &payload, std::size_t offset);
-					Vec3   get_vec(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Vec::Vec3   get_vec(const std::vector<std::byte> &payload, std::size_t offset);
 				} // namespace Vec
 			} // namespace DSI
 		} // namespace Interpreters

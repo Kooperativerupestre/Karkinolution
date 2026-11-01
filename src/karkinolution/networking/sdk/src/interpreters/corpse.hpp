@@ -26,7 +26,7 @@ namespace KarkinolutionSDK {
 			 */
 			template <HasRequest T>
 			std::optional<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse>
-			see_corpse(T &client, BaseIdType id) {
+			see_corpse(T &client, Karkinolution::Core::Id::BaseIdType id) {
 				const auto payload = CorpseSRI::Request::make_see_corpse(id);
 
 				const auto built = Karkinolution::Binary::Frames::Motor::make_request(

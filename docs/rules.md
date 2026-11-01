@@ -100,4 +100,7 @@ Comments must be simple and concise. Organizational comments must be minimal and
 - When exposing simulator models to external clients or extensions, mirror the core's file grouping.
 - Do not fragment tightly coupled unit families into individual micro-files when the core simulator maintains them in a single cohesive file (e.g., keep Size and physical units together in `units.hpp`).
 
+# Namespace Aliases
 
+- Files whose names indicate aliases are wrapped in namespace blocks.
+- Namespace aliases may be declared inside an appropriate namespace.

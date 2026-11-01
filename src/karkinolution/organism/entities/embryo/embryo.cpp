@@ -1,5 +1,7 @@
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 
+namespace Karkinolution::Organisms::Entities::Embryo {
+
 EmbryoHungry Embryo::hungry() const {
 	return (1.0f - life.ratio().value()) + (1.0f - energy.ratio().value())
 		+ (1.0f - health.value() / 2.0f);
@@ -16,3 +18,5 @@ EmbryoHungry Embryo::hungry() const {
 [[nodiscard]] float Embryo::specie_relative_life() const {
 	return life.max() / genome.calculate_embryo_average_life();
 }
+
+} // namespace Karkinolution::Organisms::Entities::Embryo

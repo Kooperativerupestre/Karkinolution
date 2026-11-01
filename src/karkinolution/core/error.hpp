@@ -2,151 +2,16 @@
 #include <stdexcept>
 #include <string>
 
-// BASE SIMULATION EXCEPTION
-class SimulationError : public std::runtime_error {
-	public:
+namespace Karkinolution {
+	namespace Errors {
 
-		explicit SimulationError(const std::string &message)
-			: std::runtime_error(message) {}
-};
 
-// NETWORKING
+		class SimulationError : public std::runtime_error {
+			public:
 
-class NetworkingError : public SimulationError {
-	public:
+				explicit SimulationError(const std::string &message)
+					: std::runtime_error(message) {}
+		};
 
-		explicit NetworkingError(const std::string &message)
-			: SimulationError(message) {}
-};
-
-class BufferError : public NetworkingError {
-	public:
-
-		explicit BufferError(const std::string &message)
-			: NetworkingError(message) {}
-};
-
-class ConnectionError : public NetworkingError {
-	public:
-
-		explicit ConnectionError(const std::string &message)
-			: NetworkingError(message) {}
-};
-
-class FrameInvariantError : public NetworkingError {
-	public:
-
-		explicit FrameInvariantError(const std::string &message)
-			: NetworkingError(message) {}
-};
-
-// MAIN SUBDOMAINS
-class ByteError : public SimulationError {
-	public:
-
-		explicit ByteError(const std::string &message)
-			: SimulationError(message) {}
-};
-
-class IdError : public SimulationError {
-	public:
-
-		explicit IdError(const std::string &message)
-			: SimulationError(message) {}
-};
-
-class CoordinateError : public SimulationError {
-	public:
-
-		explicit CoordinateError(const std::string &message)
-			: SimulationError(message) {}
-};
-
-class EntityError : public SimulationError {
-	public:
-
-		explicit EntityError(const std::string &message)
-			: SimulationError(message) {}
-};
-
-class NonMotileError : public SimulationError {
-	public:
-
-		explicit NonMotileError(const std::string &message)
-			: SimulationError(message) {}
-};
-
-// REPRODUCTIVE SUBDOMAIN (Inherits from EntityError)
-class ReproductiveError : public EntityError {
-	public:
-
-		explicit ReproductiveError(const std::string &message)
-			: EntityError(message) {}
-};
-
-class GenderError : public ReproductiveError {
-	public:
-
-		explicit GenderError(const std::string &message)
-			: ReproductiveError(message) {}
-};
-
-class AlreadyPregnantError : public ReproductiveError {
-	public:
-
-		explicit AlreadyPregnantError(const std::string &message)
-			: ReproductiveError(message) {}
-};
-
-class DifferentSpeciesError : public ReproductiveError {
-	public:
-
-		explicit DifferentSpeciesError(const std::string &message)
-			: ReproductiveError(message) {}
-};
-
-// ID SUBDOMAIN (Inherits from IdError)
-class IdNotFoundError : public IdError {
-	public:
-
-		explicit IdNotFoundError(const std::string &message)
-			: IdError(message) {}
-};
-
-class IdAlreadyExistsError : public IdError {
-	public:
-
-		explicit IdAlreadyExistsError(const std::string &message)
-			: IdError(message) {}
-};
-
-// COORD SUBDOMAIN (Inherits from CoordinateError)
-class CoordinateNotFoundError : public CoordinateError {
-	public:
-
-		explicit CoordinateNotFoundError(const std::string &message)
-			: CoordinateError(message) {}
-};
-
-class CoordinateAlreadyExistsError : public CoordinateError {
-	public:
-
-		explicit CoordinateAlreadyExistsError(const std::string &message)
-			: CoordinateError(message) {}
-};
-
-// ENTITY TYPE ERROR (Inherits from EntityError)
-class EntityTypeError : public EntityError {
-	public:
-
-		explicit EntityTypeError(const std::string &message)
-			: EntityError(message) {}
-};
-
-// ENERGY TYPE ERROR (Inherits from EntityError)
-class InsufficientEnergyError : public EntityError {
-	public:
-
-		explicit InsufficientEnergyError(const std::string &message)
-			: EntityError(message) {}
-};
+	} // namespace Errors
+} // namespace Karkinolution

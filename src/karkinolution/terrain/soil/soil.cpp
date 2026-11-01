@@ -2,7 +2,9 @@
 #include "karkinolution/math/physic/vec/model.hpp"
 
 #include <karkinolution/core/id.hpp>
-#include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/soil/soil.hpp>
+
+namespace Karkinolution::Terrain::Soil {
 
 // Blueprint
 Components Blueprint::gen_components() const {
@@ -16,14 +18,15 @@ Components Blueprint::gen_components() const {
 
 // SoilF
 
-SoilPiece
-SoilF::gen_soil_piece(SoilTypes s_t, const GeometryForms::Radius &radius, const Vec3 &position) {
+SoilPiece SoilF::gen_soil_piece(SoilTypes                     s_t,
+								const Math::Geometry::Radius &radius,
+								const Vec3                   &position) {
 
 	SoilPiece soil{.radius = radius};
 
 	soil.position = position;
 	soil.type     = s_t;
-	soil.id       = gen_id();
+	soil.id       = Core::Id::gen_id();
 
 	const auto &blueprint = blueprints[s_t];
 
@@ -33,3 +36,5 @@ SoilF::gen_soil_piece(SoilTypes s_t, const GeometryForms::Radius &radius, const 
 	soil.required_capabilities = blueprint.required_properties;
 	return soil;
 }
+
+} // namespace Karkinolution::Terrain::Soil

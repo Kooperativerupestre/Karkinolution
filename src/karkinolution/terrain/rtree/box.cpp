@@ -3,7 +3,8 @@
 #include <karkinolution/terrain/rtree/box.hpp>
 #include <utility>
 
-const Vec3 &Box3D::operator[](Bound bound) const noexcept {
+namespace Karkinolution::Terrain::Trees::RTree {
+const Karkinolution::Math::Vec::Vec3 &Box3D::operator[](Bound bound) const noexcept {
 	if (bound == Bound::MAX) {
 		return max;
 	} else if (bound == Bound::MIN) {
@@ -13,7 +14,7 @@ const Vec3 &Box3D::operator[](Bound bound) const noexcept {
 	std::unreachable();
 }
 
-Vec3 &Box3D::operator[](Bound bound) noexcept {
+Karkinolution::Math::Vec::Vec3 &Box3D::operator[](Bound bound) noexcept {
 	if (bound == Bound::MAX) {
 		return max;
 	} else if (bound == Bound::MIN) {
@@ -56,12 +57,12 @@ Vec3 &Box3D::operator[](Bound bound) noexcept {
 }
 
 [[nodiscard]] Box3D Box3DMotor::intersection(const Box3D &A, const Box3D &B) {
-	return Box3D{.max = Vec3{std::min(A.max.x, B.max.x),
-							 std::min(A.max.y, B.max.y),
-							 std::min(A.max.z, B.max.z)},
-				 .min = Vec3{std::max(A.min.x, B.min.x),
-							 std::max(A.min.y, B.min.y),
-							 std::max(A.min.z, B.min.z)}};
+	return Box3D{.max = Karkinolution::Math::Vec::Vec3{std::min(A.max.x, B.max.x),
+													   std::min(A.max.y, B.max.y),
+													   std::min(A.max.z, B.max.z)},
+				 .min = Karkinolution::Math::Vec::Vec3{std::max(A.min.x, B.min.x),
+													   std::max(A.min.y, B.min.y),
+													   std::max(A.min.z, B.min.z)}};
 }
 
 [[nodiscard]] double Box3DMotor::overlap_volume(const Box3D &A, const Box3D &B) {
@@ -76,17 +77,19 @@ Vec3 &Box3D::operator[](Bound bound) noexcept {
 	return dx * dy * dz;
 }
 
-[[nodiscard]] Vec3 Box3D::center() const noexcept {
-	return Vec3{(min.x + max.x) / 2, (min.y + max.y) / 2, (min.z + max.z) / 2};
+[[nodiscard]] Karkinolution::Math::Vec::Vec3 Box3D::center() const noexcept {
+	return Karkinolution::Math::Vec::Vec3{(min.x + max.x) / 2,
+										  (min.y + max.y) / 2,
+										  (min.z + max.z) / 2};
 }
 
 [[nodiscard]] Box3D Box3DMotor::combine(const Box3D &A, const Box3D &B) {
-	return Box3D{.max = Vec3{std::max(A.max.x, B.max.x),
-							 std::max(A.max.y, B.max.y),
-							 std::max(A.max.z, B.max.z)},
-				 .min = Vec3{std::min(A.min.x, B.min.x),
-							 std::min(A.min.y, B.min.y),
-							 std::min(A.min.z, B.min.z)}};
+	return Box3D{.max = Karkinolution::Math::Vec::Vec3{std::max(A.max.x, B.max.x),
+													   std::max(A.max.y, B.max.y),
+													   std::max(A.max.z, B.max.z)},
+				 .min = Karkinolution::Math::Vec::Vec3{std::min(A.min.x, B.min.x),
+													   std::min(A.min.y, B.min.y),
+													   std::min(A.min.z, B.min.z)}};
 }
 
 [[nodiscard]] double Box3DMotor::enlargement(const Box3D &current, const Box3D &canditate) {
@@ -98,3 +101,4 @@ Vec3 &Box3D::operator[](Bound bound) noexcept {
 		&& container.min.z <= contained.min.z && container.max.x >= contained.max.x
 		&& container.max.y >= contained.max.y && container.max.z >= contained.max.z;
 }
+} // namespace Karkinolution::Terrain::Trees::RTree

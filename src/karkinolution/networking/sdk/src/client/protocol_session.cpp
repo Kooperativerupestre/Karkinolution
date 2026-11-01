@@ -10,7 +10,7 @@
 #include <karkinolution/networking/sdk/src/error.hpp>
 #include <unistd.h>
 
-using KarkinolutionSDK::Protocol::ProtocolSession;
+namespace KarkinolutionSDK::Protocol {
 
 void ProtocolSession::receive(std::span<const std::byte> bytes) {
 	incoming_responses.add(bytes);
@@ -19,9 +19,11 @@ void ProtocolSession::receive(std::span<const std::byte> bytes) {
 
 void ProtocolSession::sync_requests() {
 
-	while (FrameBufferAnalyzer::has_frame(incoming_responses) == BufferExistence::YES) {
+	while (Karkinolution::Networking::FrameBufferAnalyzer::has_frame(incoming_responses)
+		   == Karkinolution::Networking::BufferExistence::YES) {
 
-		const auto raw_frame = FrameBufferAnalyzer::get_frame(incoming_responses).value();
+		const auto raw_frame =
+			Karkinolution::Networking::FrameBufferAnalyzer::get_frame(incoming_responses).value();
 		for (std::size_t i = 0; i < raw_frame.size(); ++i) {
 			incoming_responses.pop_front();
 		}
@@ -58,14 +60,16 @@ std::optional<std::vector<std::byte>> ProtocolSession::pop_request() {
 	return requests.pop_front();
 }
 
-KarkinolutionSDK::Protocol::ResponseResult ProtocolSession::pop_response(RequestId id) {
+ResponseResult ProtocolSession::pop_response(RequestId id) {
 	return pending_requests.pop_response(id);
 }
 
-KarkinolutionSDK::Protocol::ResponseResult ProtocolSession::await_response(RequestId id) {
+ResponseResult ProtocolSession::await_response(RequestId id) {
 	return pending_requests.await_response(id);
 }
 
 void ProtocolSession::fail_pending_requests() {
 	pending_requests.fail_all_by_disconnection();
 }
+
+} // namespace KarkinolutionSDK::Protocol

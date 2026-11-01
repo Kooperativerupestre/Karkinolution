@@ -7,6 +7,10 @@
 #include <karkinolution/binary/types/list.hpp>
 #include <unordered_set>
 
+using Karkinolution::Core::Id::BaseIdType;
+using Karkinolution::Terrain::Soil::SoilPiece;
+using Karkinolution::World::World;
+
 namespace {
 	class SoilListClient {
 		public:
@@ -16,7 +20,7 @@ namespace {
 
 			KarkinolutionSDK::Client::ResponseResult
 			request(const KarkinolutionSDK::Client::RequestData &) {
-				const auto soil_pieces = world.territory.registry_values();
+				const auto soil_pieces = world.see_territory().registry_values();
 				const auto payload     = ListTSRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
                     soil_pieces,
                     [](const SoilPiece &soil) {
@@ -41,7 +45,7 @@ TEST(SoilSDKInterpreter, ReturnsAllSoils) {
 	const World                    world = TestUtils::make_small_world();
 	SoilListClient                 client{world};
 	std::unordered_set<BaseIdType> expected_soil_ids;
-	for (const auto &soil : world.territory.registry_values()) {
+	for (const auto &soil : world.see_territory().registry_values()) {
 		expected_soil_ids.insert(soil.id);
 	}
 

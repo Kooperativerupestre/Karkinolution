@@ -8,6 +8,8 @@
 #include <karkinolution/networking/server.hpp>
 #include <span>
 
+namespace Karkinolution::Networking {
+
 void Server::stop() {
 	std::cout << "Stopping server...\n";
 
@@ -24,7 +26,7 @@ void Server::stop() {
 	io_context.stop();
 }
 
-Server::Server(IoContext &io_context, Port port, World &world)
+Server::Server(IoContext &io_context, Port port, Karkinolution::World::World &world)
 	: world(world)
 	, io_context(io_context)
 	, acceptor_(io_context)
@@ -89,3 +91,5 @@ void Server::accept() {
 Server::~Server() {
 	std::cout << "Server was killed 🦀\n";
 }
+
+} // namespace Karkinolution::Networking

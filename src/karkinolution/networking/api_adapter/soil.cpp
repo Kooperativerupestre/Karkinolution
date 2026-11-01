@@ -3,7 +3,7 @@
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/terrain/soil.hpp"
+#include "karkinolution/terrain/soil/soil.hpp"
 
 #include <karkinolution/api/soil.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
@@ -12,7 +12,7 @@
 #include <karkinolution/networking/api_adapter/soil.hpp>
 
 ResponseFrame
-Karkinolution::Networking::APIBYA::Soil::see_soil(const World                  &world,
+Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolution::World::World                  &world,
 												  RequestId                     request_id,
 												  const std::vector<std::byte> &payload) {
 	const auto id = SoilDSI::Request::interpret_like_get_soil(payload);
@@ -30,7 +30,7 @@ Karkinolution::Networking::APIBYA::Soil::see_soil(const World                  &
 }
 
 ResponseFrame
-Karkinolution::Networking::APIBYA::Soil::see_all_soils(const World                  &world,
+Karkinolution::Networking::APIBYA::Soil::see_all_soils(const Karkinolution::World::World                  &world,
 													   RequestId                     request_id,
 													   const std::vector<std::byte> &payload) {
 	auto all_soils = Karkinolution::API::Soil::see_all_soils(world);
@@ -38,7 +38,7 @@ Karkinolution::Networking::APIBYA::Soil::see_all_soils(const World              
 	std::vector<std::byte> r_payload =
 		Binary::Types::List::SRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
 			all_soils,
-			[](const SoilPiece &soil) {
+			[](const Karkinolution::Terrain::Soil::SoilPiece &soil) {
 				return SoilSRI::serialize_soil(soil);
 			});
 

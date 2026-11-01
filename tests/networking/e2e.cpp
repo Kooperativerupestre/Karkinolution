@@ -11,6 +11,11 @@
 #include <latch>
 #include <networking/server_fixture.hpp>
 
+using Karkinolution::Networking::IoContext;
+using Karkinolution::Networking::PORT;
+using Karkinolution::Networking::Server;
+using Karkinolution::World::World;
+
 TEST_F(ClientTest, ServerE2E) {
 	IoContext server_io;
 
@@ -122,7 +127,7 @@ TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 	IoContext server_io;
 
 	World      world               = TestUtils::make_small_world();
-	const auto expected_soil_count = world.territory.registry_values().size();
+	const auto expected_soil_count = world.see_territory().registry_values().size();
 	Server     server{server_io, PORT, world};
 
 	std::thread server_thread{[&] {

@@ -4,20 +4,19 @@
 
 namespace Karkinolution {
 	namespace Functional {
-		namespace Errors {
-			class FunctionalError : public SimulationError {
-				public:
 
-					explicit FunctionalError(const std::string &message)
-						: SimulationError(message) {}
-			};
+		class FunctionalError : public Errors::SimulationError {
+			public:
 
-			class UnreachableError : public FunctionalError {
-				public:
+				explicit FunctionalError(const std::string &message)
+					: SimulationError(message) {}
+		};
 
-					explicit UnreachableError(const std::string &message)
-						: FunctionalError(message) {}
-			};
-		} // namespace Errors
+		class UnreachableError : public FunctionalError {
+			public:
+
+				explicit UnreachableError(const std::string &message)
+					: FunctionalError(message) {}
+		};
 	} // namespace Functional
 } // namespace Karkinolution

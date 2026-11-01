@@ -2,12 +2,13 @@
 #include <mutex>
 #include <queue>
 #include <vector>
-inline constexpr std::size_t MAX_REQUEST_QUEUE_SIZE = 200;
 
 // Mutex is used here to allow different threads using the same queue
 
 namespace KarkinolutionSDK {
 	namespace Protocol {
+		inline constexpr std::size_t MAX_REQUEST_QUEUE_SIZE = 200;
+
 		class RequestQueue {
 			private:
 

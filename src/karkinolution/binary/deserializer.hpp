@@ -10,12 +10,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
-#include <karkinolution/core/error.hpp>
+#include <karkinolution/binary/errors.hpp>
 #include <string>
 #include <string_view>
 #include <vector>
 
-namespace Deserializer {
+namespace Karkinolution::Binary::Deserializer {
 
 	namespace Core {
 
@@ -314,4 +314,4 @@ namespace Deserializer {
 	}
 
 
-} // namespace Deserializer
+} // namespace Karkinolution::Binary::Deserializer

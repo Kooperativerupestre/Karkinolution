@@ -9,7 +9,7 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/units.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
-#include "karkinolution/terrain/soil.hpp"
+#include "karkinolution/terrain/soil/soil.hpp"
 
 #include <array>
 #include <cstddef>
@@ -90,22 +90,28 @@ namespace Karkinolution {
 						using Soil = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArray
 
-					std::byte serialize_type(SoilTypes type);
-					std::byte serialize_property(SoilProperties property);
+					std::byte serialize_type(Karkinolution::Terrain::Soil::SoilTypes type);
+					std::byte
+					serialize_property(Karkinolution::Terrain::Soil::SoilProperties property);
 
 					BytesArray::Properties
-					serialize_properties(const std::vector<SoilProperties> &properties);
+					serialize_properties(
+						const std::vector<Karkinolution::Terrain::Soil::SoilProperties> &properties);
 
 					BytesArray::RequiredCapabilities serialize_required_capabilities(
-						const std::vector<GenericProperty> &capabilities);
-					BytesArray::DamageComponent serialize_damage(const SoilPiece &soil);
-					BytesArray::MovementCost    serialize_movement_cost(const SoilPiece &soil);
-					IdBytes                     serialize_id(const SoilPiece &soil);
+						const std::vector<Karkinolution::Organisms::Entities::GenericProperty>
+							&capabilities);
+					BytesArray::DamageComponent
+					serialize_damage(const Karkinolution::Terrain::Soil::SoilPiece &soil);
+					BytesArray::MovementCost
+					serialize_movement_cost(const Karkinolution::Terrain::Soil::SoilPiece &soil);
+					IdBytes serialize_id(const Karkinolution::Terrain::Soil::SoilPiece &soil);
 
-					BytesArray::Soil serialize_soil(const SoilPiece &soil);
+					BytesArray::Soil
+					serialize_soil(const Karkinolution::Terrain::Soil::SoilPiece &soil);
 
 					namespace Request {
-						std::array<std::byte, 8> make_see_soil(BaseIdType id);
+						std::array<std::byte, 8> make_see_soil(Karkinolution::Core::Id::BaseIdType id);
 						std::array<std::byte, 1> make_see_all_soils();
 					} // namespace Request
 
@@ -118,14 +124,16 @@ namespace Karkinolution {
 					get_damage(const std::vector<std::byte> &payload, std::size_t offset);
 					std::optional<Interpreters::Models::Soil::MovementCostComponent>
 					get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset);
-					BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
-					Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
-					SoilTypes get_type(const std::vector<std::byte> &payload, std::size_t offset);
-					Radius    get_radius(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Core::Id::BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Vec::Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Terrain::Soil::SoilTypes
+					get_type(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Geometry::Radius
+					get_radius(const std::vector<std::byte> &payload, std::size_t offset);
 
-					std::vector<SoilProperties>
+					std::vector<Karkinolution::Terrain::Soil::SoilProperties>
 					get_soil_properties(const std::vector<std::byte> &payload, std::size_t offset);
-					std::vector<GenericProperty>
+					std::vector<Karkinolution::Organisms::Entities::GenericProperty>
 					get_required_properties(const std::vector<std::byte> &payload,
 											std::size_t                   offset);
 
@@ -133,7 +141,7 @@ namespace Karkinolution {
 															  std::size_t                   offset);
 
 					namespace Request {
-						BaseIdType interpret_like_get_soil(const std::vector<std::byte> &payload);
+						Karkinolution::Core::Id::BaseIdType interpret_like_get_soil(const std::vector<std::byte> &payload);
 					} // namespace Request
 				} // namespace Soil
 			} // namespace DSI

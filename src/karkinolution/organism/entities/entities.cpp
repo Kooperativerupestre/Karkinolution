@@ -9,92 +9,115 @@
 // ============================================================================
 // EntitiesRegistry
 // ============================================================================
+namespace Karkinolution::Organisms::Entities {
 
-Creature &EntitiesRegistry::at_creature(EntityId id) {
-	return std::get<Creature>(this->at(id));
-}
-
-const Creature &EntitiesRegistry::at_creature(EntityId id) const {
-	return std::get<Creature>(this->at(id));
-}
-
-Corpse &EntitiesRegistry::at_corpse(EntityId id) {
-	return std::get<Corpse>(this->at(id));
-}
-
-const Corpse &EntitiesRegistry::at_corpse(EntityId id) const {
-	return std::get<Corpse>(this->at(id));
-}
-
-Embryo &EntitiesRegistry::at_embryo(EntityId id) {
-	return std::get<Embryo>(this->at(id));
-}
-
-const Embryo &EntitiesRegistry::at_embryo(EntityId id) const {
-	return std::get<Embryo>(this->at(id));
-}
-
-Egg &EntitiesRegistry::at_egg(EntityId id) {
-	return std::get<Egg>(this->at(id));
-}
-
-const Egg &EntitiesRegistry::at_egg(EntityId id) const {
-	return std::get<Egg>(this->at(id));
-}
-
-// ============================================================================
-// EntityGetters
-// ============================================================================
-
-EntityId EntityGetters::get_id(const Entity &entity) {
-	return std::visit(
-		[](const auto &value) {
-			return get_id(value);
-		},
-		entity);
-}
-
-EntityId EntityGetters::get_id(const Corpse &corpse) {
-	return EntityIDF::create_corpse_id(corpse.id);
-}
-
-EntityId EntityGetters::get_id(const Creature &creature) {
-	return EntityIDF::create_creature_id(creature.ontology.id);
-}
-
-EntityId EntityGetters::get_id(const Embryo &embryo) {
-	return EntityIDF::create_embryo_id(embryo.id);
-}
-
-EntityId EntityGetters::get_id(const Egg &egg) {
-	return egg.build_id();
-}
-
-Vec3 &EntityGetters::get_position(Entity &entity) {
-	return std::visit(
-		[](auto &entity) -> Vec3 & {
-			return entity.position;
-		},
-		entity);
-}
-
-const Vec3 &EntityGetters::get_position(const Entity &entity) {
-	return std::visit(
-		[](const auto &entity) -> const Vec3 & {
-			return entity.position;
-		},
-		entity);
-}
-
-Size EntityGetters::get_size(const Entity &entity) {
-	if (std::holds_alternative<Creature>(entity)) {
-		return std::get<Creature>(entity).body.morphology.size;
-	} else if (std::holds_alternative<Corpse>(entity)) {
-		return std::get<Corpse>(entity).size;
-	} else if (std::holds_alternative<Embryo>(entity)) {
-		return std::get<Embryo>(entity).size();
-	} else if (std::holds_alternative<Egg>(entity)) {
-		return std::get<Egg>(entity).size;
+	bool EntitiesRegistry::add(Entity &&entity) {
+		return registry.try_add(EntityGetters::get_id(entity), std::move(entity));
 	}
-	std::unreachable();
-}
+
+	Entity &EntitiesRegistry::at(EntityId id) {
+		return registry.at(id);
+	}
+
+	const Entity &EntitiesRegistry::at(EntityId id) const {
+		return registry.at(id);
+	}
+
+	Karkinolution::Organisms::Entities::Creature::Creature &
+	EntitiesRegistry::at_creature(Karkinolution::Organisms::Entities::EntityId id) {
+		return std::get<Creature::Creature>(this->at(id));
+	}
+
+	const Karkinolution::Organisms::Entities::Creature::Creature &
+	EntitiesRegistry::at_creature(Karkinolution::Organisms::Entities::EntityId id) const {
+		return std::get<Creature::Creature>(this->at(id));
+	}
+
+	Corpse::Corpse &EntitiesRegistry::at_corpse(Karkinolution::Organisms::Entities::EntityId id) {
+		return std::get<Corpse::Corpse>(this->at(id));
+	}
+
+	const Corpse::Corpse &
+	EntitiesRegistry::at_corpse(Karkinolution::Organisms::Entities::EntityId id) const {
+		return std::get<Corpse::Corpse>(this->at(id));
+	}
+
+	Embryo::Embryo &EntitiesRegistry::at_embryo(Karkinolution::Organisms::Entities::EntityId id) {
+		return std::get<Embryo::Embryo>(this->at(id));
+	}
+
+	const Embryo::Embryo &
+	EntitiesRegistry::at_embryo(Karkinolution::Organisms::Entities::EntityId id) const {
+		return std::get<Embryo::Embryo>(this->at(id));
+	}
+
+	Egg::Egg &EntitiesRegistry::at_egg(Karkinolution::Organisms::Entities::EntityId id) {
+		return std::get<Egg::Egg>(this->at(id));
+	}
+
+	const Egg::Egg &
+	EntitiesRegistry::at_egg(Karkinolution::Organisms::Entities::EntityId id) const {
+		return std::get<Egg::Egg>(this->at(id));
+	}
+
+	// ============================================================================
+	// EntityGetters
+	// ============================================================================
+
+	Karkinolution::Organisms::Entities::EntityId EntityGetters::get_id(const Entity &entity) {
+		return std::visit(
+			[](const auto &value) {
+				return get_id(value);
+			},
+			entity);
+	}
+
+	Karkinolution::Organisms::Entities::EntityId
+	EntityGetters::get_id(const Corpse::Corpse &corpse) {
+		return Karkinolution::Organisms::Entities::create_corpse_id(corpse.id);
+	}
+
+	Karkinolution::Organisms::Entities::EntityId
+	EntityGetters::get_id(const Creature::Creature &creature) {
+		return Karkinolution::Organisms::Entities::create_creature_id(creature.ontology.id);
+	}
+
+	Karkinolution::Organisms::Entities::EntityId
+	EntityGetters::get_id(const Embryo::Embryo &embryo) {
+		return Karkinolution::Organisms::Entities::create_embryo_id(embryo.id);
+	}
+
+	Karkinolution::Organisms::Entities::EntityId EntityGetters::get_id(const Egg::Egg &egg) {
+		return egg.build_id();
+	}
+
+	Karkinolution::Math::Vec::Vec3 &EntityGetters::get_position(Entity &entity) {
+		return std::visit(
+			[](auto &entity) -> Karkinolution::Math::Vec::Vec3 & {
+				return entity.position;
+			},
+			entity);
+	}
+
+	const Karkinolution::Math::Vec::Vec3 &EntityGetters::get_position(const Entity &entity) {
+		return std::visit(
+			[](const auto &entity) -> const Karkinolution::Math::Vec::Vec3 & {
+				return entity.position;
+			},
+			entity);
+	}
+
+	Karkinolution::Math::Units::Size EntityGetters::get_size(const Entity &entity) {
+		if (std::holds_alternative<Creature::Creature>(entity)) {
+			return std::get<Creature::Creature>(entity).body.morphology.size;
+		} else if (std::holds_alternative<Corpse::Corpse>(entity)) {
+			return std::get<Corpse::Corpse>(entity).size;
+		} else if (std::holds_alternative<Embryo::Embryo>(entity)) {
+			return std::get<Embryo::Embryo>(entity).size();
+		} else if (std::holds_alternative<Egg::Egg>(entity)) {
+			return std::get<Egg::Egg>(entity).size;
+		}
+		std::unreachable();
+	}
+
+} // namespace Karkinolution::Organisms::Entities

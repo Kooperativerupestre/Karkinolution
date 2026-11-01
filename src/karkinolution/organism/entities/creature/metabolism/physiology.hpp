@@ -7,6 +7,8 @@
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 
+namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Physiology {
+
 inline constexpr NormalizedValue<float> FOOD_RATIO_FOR_ENERGY          = 0.5f;
 inline constexpr NormalizedValue<float> FOOD_RATIO_FOR_RESERVED_ENERGY = 0.5f;
 
@@ -14,9 +16,8 @@ struct FoodDivision {
 		float for_energy, for_reserved_energy;
 };
 
-namespace MetabolismPhysiology {
-	FoodDivision divide(float energy);
-	FoodDivision divide(const Energy &energy);
-	FoodDivision divide(const GrassMatter &grass);
+FoodDivision divide(float energy);
+FoodDivision divide(const Karkinolution::Organisms::Energy &energy);
+FoodDivision divide(const Karkinolution::Organisms::Nature::Grass::GrassMatter &grass);
 
-} // namespace MetabolismPhysiology
+} // namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Physiology

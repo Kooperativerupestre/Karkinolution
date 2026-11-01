@@ -5,11 +5,11 @@
 namespace Karkinolution {
 	namespace Functional {
 		[[noreturn]] inline constexpr void unreachable_or_throw() {
-			throw Errors::UnreachableError("Unreachable");
+			throw UnreachableError("Unreachable");
 		}
 
 		[[noreturn]] inline constexpr void unreachable_or_throw(const std::string &message) {
-			throw Errors::UnreachableError(message);
+			throw UnreachableError(message);
 		}
 	} // namespace Functional
 } // namespace Karkinolution

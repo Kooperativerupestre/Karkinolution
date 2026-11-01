@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/core/error.hpp"
+#include "karkinolution/binary/frames/errors.hpp"
 
 #include <cstdint>
 

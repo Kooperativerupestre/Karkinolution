@@ -6,27 +6,36 @@
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/organism/values.hpp>
 
-class GrassMatter : public RuntimeLimitedValue<GrassMatter, float> {
-		using RuntimeLimitedValue<GrassMatter, float>::RuntimeLimitedValue;
-};
+namespace Karkinolution {
+	namespace Organisms {
+		namespace Nature {
+			namespace Grass {
+				class GrassMatter : public RuntimeLimitedValue<GrassMatter, float> {
+						using RuntimeLimitedValue<GrassMatter, float>::RuntimeLimitedValue;
+				};
 
-class Grass {
-	public:
+				class Grass {
+					public:
 
-		BaseIdType id;
+						BaseIdType id;
 
-		PhysicsStats::Quality quality;
-		Vec3                  position;
-		GeometryForms::Radius radius;
-		GrassMatter           matter;
+						Quality                quality;
+						Vec3                   position;
+						Math::Geometry::Radius radius;
+						GrassMatter            matter;
 
-		bool constexpr should_disappear() const {
-			return matter.is_zero();
-		}
+						bool constexpr should_disappear() const {
+							return matter.is_zero();
+						}
 
-		[[nodiscard]] NatureId constexpr build_id() const {
-			return NatureId{.type = NatureTypes::GRASS, .value = id};
-		}
-};
+						[[nodiscard]] NatureId constexpr build_id() const {
+							return NatureId{.type = NatureTypes::GRASS, .value = id};
+						}
+				};
+
+			} // namespace Grass
+		} // namespace Nature
+	} // namespace Organisms
+} // namespace Karkinolution

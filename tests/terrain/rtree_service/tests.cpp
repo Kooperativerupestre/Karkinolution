@@ -1,16 +1,26 @@
-#include "karkinolution/test/rtree_service_test_generator.hpp"
-
 #include <gtest/gtest.h>
 #include <karkinolution/core/id.hpp>
+#include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/units.hpp>
-#include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <karkinolution/terrain/terrain_gen.hpp>
 #include <karkinolution/test/rtree_service_test_generator.hpp>
 
+using Karkinolution::Core::Id::gen_id;
+using Karkinolution::Math::Units::Size;
+using Karkinolution::Math::Vec::Vec3;
+using Karkinolution::Terrain::Territory;
+using Karkinolution::Terrain::Soil::SoilPiece;
+using Karkinolution::Terrain::Soil::SoilTypes;
+using Karkinolution::Terrain::Soil::SoilF::gen_soil_piece;
+using Karkinolution::Terrain::TerrainFactory::gen_terrain;
+using Karkinolution::Terrain::TerrainFactory::TerrainScale;
+namespace BoxConversion = Karkinolution::Terrain::Trees::RTree::BoxConversion;
+
 namespace {
 	Territory give_me_territory(const Size &size = {50.0, 50.0, 50.0}) {
-		return TerrainFactory::gen_terrain(size, 666, TerrainScale::NORMAL, 5.0, 10.0, 20.0);
+		return gen_terrain(size, 666, TerrainScale::NORMAL, 5.0, 10.0, 20.0);
 	}
 } // namespace
 
@@ -21,10 +31,10 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	auto      &internal_tree = RSTServiceTest::get_tree(territory);
 	const auto common_id     = gen_id();
 	// common id -> violating the unique id constraint of BaseStorage
-	SoilPiece soil_A = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_A = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_A.id        = common_id;
 
-	SoilPiece soil_B = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_B = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_B.id        = common_id;
 
 	// unique id constraint
@@ -44,10 +54,10 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	// if registry fails
 
 
-	SoilPiece soil_C = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_C = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_C.id        = common_id;
 
-	SoilPiece soil_D = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_D = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_D.id        = common_id;
 
 	bool was_C_inserted_on_registry = registry.try_add(common_id, std::move(soil_C));
@@ -59,10 +69,10 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	territory.clear();
 	// if internal tree fails
 
-	SoilPiece soil_E = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_E = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_E.id        = common_id;
 
-	SoilPiece soil_F = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_F = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_F.id        = common_id;
 
 
@@ -82,7 +92,7 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 	// if registry fails
 	const auto common_id = gen_id();
 
-	SoilPiece soil_A = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_A = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_A.id        = common_id;
 	internal_tree.insert(soil_A.id, BoxConversion::to_box(soil_A));
 
@@ -96,7 +106,7 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 	// if internal tree fails
 
 
-	SoilPiece soil_B = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
+	SoilPiece soil_B = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_B.id        = common_id;
 
 	registry.add(common_id, std::move(soil_B));
@@ -117,7 +127,7 @@ TEST(RSTServiceTest, AddRejectsPieceOutsideBoundary) {
 
 	const auto id = gen_id();
 
-	SoilPiece soil = SoilF::gen_soil_piece(SoilTypes::ROCK, 10, Vec3{100.0, 100.0, 100.0});
+	SoilPiece soil = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{100.0, 100.0, 100.0});
 	soil.id        = id;
 
 	const bool was_inserted = territory.add(soil.id, std::move(soil));

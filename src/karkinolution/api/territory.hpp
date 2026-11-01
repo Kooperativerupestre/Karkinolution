@@ -6,7 +6,7 @@
 namespace Karkinolution {
 	namespace API {
 		namespace Territory {
-			Binary::Interpreters::Models::Territory::Territory see_territory(const World &world);
+			Binary::Interpreters::Models::Territory::Territory see_territory(const Karkinolution::World::World &world);
 		} // namespace Territory
 	} // namespace API
 } // namespace Karkinolution

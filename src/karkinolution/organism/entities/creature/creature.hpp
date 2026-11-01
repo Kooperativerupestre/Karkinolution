@@ -2,6 +2,7 @@
 
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
+#include "karkinolution/organism/reproduction/state/ontology.hpp"
 
 #include <cstdint>
 #include <karkinolution/math/stats/compile_values.hpp>
@@ -10,190 +11,167 @@
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
+#include <karkinolution/organism/internal_aliases.hpp>
 #include <karkinolution/organism/reproduction/state/state.hpp>
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/organism/values.hpp>
 
-using OrganismStats::Energy;
-using OrganismStats::Life;
-using OrganismStats::Body::Strength;
-using OrganismStats::Health::Health;
-using OrganismStats::Health::Immunity;
-using OrganismStats::Muscle::Muscle;
-using OrganismStats::Muscle::MuscleEfficiency;
-using OrganismStats::Muscle::MuscleQuality;
-using OrganismStats::Skeleton::Bone;
-using OrganismStats::Skeleton::SkeletonQuality;
-using OrganismStats::Time::Age;
-using OrganismStats::Time::FertilityCooldown;
-using PhysicsStats::Density;
-using PhysicsStats::Mass;
-using PhysicsStats::SharedVolume;
-using PhysicsStats::Volume;
+namespace Karkinolution {
+	namespace Organisms {
+		namespace Entities {
+			namespace Creature {
 
-struct Metabolism {
-		Energy energy;
-		Energy reserved;
-		Diet   diet;
 
-		[[nodiscard]]
-		NormalizedValue<float> hungry() const;
+				struct MetabolismPart {
+						Energy energy;
+						Energy reserved;
+						Diet   diet;
 
-		Metabolism(Energy energy, Energy reserved, Diet &&diet)
-			: energy(energy)
-			, reserved(reserved)
-			, diet(diet) {}
-};
+						[[nodiscard]]
+						NormalizedValue<float> hungry() const;
 
-struct Vital {
-		Life     life;
-		Immunity immunity;
-		Health   health;
-};
+						MetabolismPart(Energy energy, Energy reserved, Diet &&diet)
+							: energy(energy)
+							, reserved(reserved)
+							, diet(diet) {}
+				};
 
-struct MuscleStructure {
-		Muscle           muscle;
-		MuscleEfficiency efficiency;
-		MuscleQuality    quality;
-		SharedVolume     shared_volume;
-};
+				struct VitalPart {
+						Life     life;
+						Immunity immunity;
+						Health   health;
+				};
 
-struct BodyReproductive {
-		FertilityCooldown fertility;
-		ReproductiveState state;
-};
+				struct MorphologyPart {
+						Size size;
+						Mass mass;
 
-struct Morphology {
-		Size size;
-		Mass mass;
+						[[nodiscard]]
+						Mass density() const noexcept;
 
-		[[nodiscard]]
-		Mass density() const noexcept;
+						[[nodiscard]]
+						Volume volume() const noexcept;
+				};
 
-		[[nodiscard]]
-		Volume volume() const noexcept;
-};
+				struct ReproductivePart {
+						FertilityCooldown               fertility;
+						Reproduction::ReproductiveState state;
+				};
 
-struct SkeletonStructure {
-		SharedVolume    shared_volume;
-		Bone            bone;
-		SkeletonQuality quality;
-};
+				struct Body {
+						MetabolismPart   metabolism;
+						VitalPart        vital;
+						MorphologyPart   morphology;
+						ReproductivePart reproduction;
 
-struct Body {
-		Metabolism        metabolism;
-		Vital             vital;
-		BodyReproductive  reproductive;
-		Morphology        morphology;
-		SkeletonStructure skeleton;
-		MuscleStructure   muscle;
+						Age age;
 
-		Age age;
+						[[nodiscard]]
+						NormalizedValue<float> hungry() const noexcept;
 
-		[[nodiscard]]
-		Strength strength() const noexcept;
+						[[nodiscard]]
+						float needed_energy() const noexcept;
+				};
 
-		[[nodiscard]]
-		NormalizedValue<float> hungry() const noexcept;
+				struct Ontology {
+						Gender      gender;
+						std::string name;
+						BaseIdType  id;
+				};
 
-		[[nodiscard]]
-		float needed_energy() const noexcept;
-};
+				struct Creature;
 
-struct Ontology {
-		Gender      gender;
-		std::string name;
-		BaseIdType  id;
-};
+				namespace Brain {
+					class Brain {
+							friend class Creature;
 
-struct Creature;
+						private:
 
-class Brain {
-		friend class Creature;
+							Intents::Intent intent_;
 
-	private:
+						public:
 
-		Intent intent_;
+							Brain() {
+								intent_.type = Intents::IntentTypes::NOTHING, intent_.time = 0;
+							}
 
-	public:
+							std::optional<AttackedEvent> last_attack = std::nullopt;
+							NormalizedValue<float>       sociability;
 
-		Brain() {
-			intent_.type = IntentTypes::NOTHING, intent_.time = 0;
-		}
+							const Intents::Intent &intent() const {
+								return intent_;
+							}
 
-		std::optional<AttackedEvent> last_attack = std::nullopt;
-		NormalizedValue<float>       sociability;
+							void pass_intent() {
+								intent_.time++;
+							}
 
-		const Intent &intent() const {
-			return intent_;
-		}
+							void switch_intent(Intents::IntentTypes type) {
+								intent_.type = type;
+								intent_.time = 0;
+							}
+					};
+				} // namespace Brain
 
-		void pass_intent() {
-			intent_.time++;
-		}
+				struct Creature {
+						Genetic::Genome genome;
 
-		void switch_intent(IntentTypes type) {
-			intent_.type = type;
-			intent_.time = 0;
-		}
-};
+						Brain::Brain brain;
+						Ontology     ontology;
+						Body         body;
 
-struct Creature {
-		Genome genome;
+						Vec3 position;
 
-		Brain    brain;
-		Ontology ontology;
-		Body     body;
+						[[nodiscard]]
+						Strength strength() const noexcept;
 
-		Vec3 position;
+						Creature(Genetic::Genome &&genome,
+								 Brain::Brain    &&brain,
+								 Ontology        &&ontology,
+								 Body            &&body,
+								 Vec3              position)
+							: genome(std::move(genome))
+							, brain(brain)
+							, ontology(std::move(ontology))
+							, body(std::move(body))
+							, position(position) {}
 
-		Creature(Genome &&genome, Brain &&brain, Ontology &&ontology, Body &&body, Vec3 position)
-			: genome(std::move(genome))
-			, brain(brain)
-			, ontology(std::move(ontology))
-			, body(std::move(body))
-			, position(position) {}
+						Creature(const Genetic::Genome &genome,
+								 Brain::Brain         &&brain,
+								 Ontology             &&ontology,
+								 Body                 &&body,
+								 Vec3                   position)
+							: genome(genome)
+							, brain(brain)
+							, ontology(std::move(ontology))
+							, body(std::move(body))
+							, position(position) {}
 
-		Creature(const Genome &genome,
-				 Brain       &&brain,
-				 Ontology    &&ontology,
-				 Body        &&body,
-				 Vec3          position)
-			: genome(genome)
-			, brain(brain)
-			, ontology(std::move(ontology))
-			, body(std::move(body))
-			, position(position) {}
+						Creature(const Creature &)            = delete;
+						Creature &operator=(const Creature &) = delete;
 
-		Creature(const Creature &)            = delete;
-		Creature &operator=(const Creature &) = delete;
+						Creature(Creature &&)            = default;
+						Creature &operator=(Creature &&) = default;
 
-		Creature(Creature &&)            = default;
-		Creature &operator=(Creature &&) = default;
+						[[nodiscard]] EntityId build_id() const noexcept {
+							return create_creature_id(ontology.id);
+						}
 
-		[[nodiscard]] EntityId build_id() const noexcept {
-			return EntityIDF::create_creature_id(ontology.id);
-		}
+						[[nodiscard]]
+						float specie_relative_max_energy() const noexcept;
 
-		[[nodiscard]]
-		float specie_relative_muscle() const noexcept;
+						[[nodiscard]]
+						float specie_relative_max_reserved_energy() const noexcept;
 
-		[[nodiscard]]
-		float specie_relative_bone() const noexcept;
+						[[nodiscard]]
+						float specie_relative_mass() const noexcept;
 
-		[[nodiscard]]
-		float specie_relative_max_energy() const noexcept;
+						[[nodiscard]]
+						float specie_relative_volume() const noexcept;
 
-		[[nodiscard]]
-		float specie_relative_max_reserved_energy() const noexcept;
-
-		[[nodiscard]]
-		float specie_relative_mass() const noexcept;
-
-		[[nodiscard]]
-		float specie_relative_volume() const noexcept;
-
-		[[nodiscard]]
-		float specie_relative_age() const noexcept;
-};
-
-using CreatureFunction = void (*)(Creature &);
+						[[nodiscard]]
+						float specie_relative_age() const noexcept;
+				};
+			} // namespace Creature
+		} // namespace Entities
+	} // namespace Organisms
+} // namespace Karkinolution

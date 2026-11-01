@@ -40,10 +40,6 @@ namespace KarkinolutionSDK {
 				if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
 					return std::nullopt;
 				}
-				if (frame.get_sub_type() != ResponseSubTypes::TERRITORY
-					|| frame.get_cardinality() != ResponseCardinality::ONE) {
-					throw ClientError("Server returned an unexpected territory response");
-				}
 				return TerritoryDSI::deserialize_territory(frame.get_payload(), 0);
 			}
 		} // namespace Territory

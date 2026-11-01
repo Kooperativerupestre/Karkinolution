@@ -4,6 +4,8 @@
 #include <karkinolution/world/world.hpp>
 #include <vector>
 
+namespace Karkinolution::Networking {
+
 struct SendingState {
 	public:
 
@@ -15,7 +17,7 @@ struct SendingState {
 class Connection {
 	public:
 
-		Connection(Socket socket, World &world);
+		Connection(Socket socket, Karkinolution::World::World &world);
 
 		void                                        start();
 		std::move_only_function<void(Connection &)> on_closed;
@@ -32,9 +34,11 @@ class Connection {
 		void clear_sending_state();
 
 		ProtocolSession protocol_session;
-		World          &world;
+		Karkinolution::World::World          &world;
 		Socket          socket_;
 
 		std::array<std::byte, RESPONSE_QUEUE_MAX_SIZE> temporary_requests;
 		SendingState                                   sending_state;
 };
+
+} // namespace Karkinolution::Networking

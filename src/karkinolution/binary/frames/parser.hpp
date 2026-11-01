@@ -1,9 +1,9 @@
 #pragma once
 #include "karkinolution/binary/core_aliases.hpp"
+#include "karkinolution/binary/errors.hpp"
 #include "karkinolution/binary/frames/invariants.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/core/error.hpp"
 #include "karkinolution/functional/unreachable_or_throw.hpp"
 
 #include <cstdint>
@@ -58,7 +58,7 @@ namespace Karkinolution {
 					constexpr std::uint32_t calculate_payload_size(const T    &bytes,
 																   std::size_t fixed_header_size) {
 						const auto declared_size =
-							Deserializer::read_uint32_t(bytes,
+							Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
 														ProtocolLayout::DeclaredSize::OFFSET);
 						return calculate_payload_size(declared_size, fixed_header_size);
 					}
@@ -73,7 +73,7 @@ namespace Karkinolution {
 						}
 
 						const auto declared_size =
-							Deserializer::read_uint32_t(bytes,
+							Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
 														ProtocolLayout::DeclaredSize::OFFSET);
 						const auto minimum_declared_size =
 							fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
@@ -97,7 +97,7 @@ namespace Karkinolution {
 						}
 
 						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE
-							+ Deserializer::read_uint32_t(bytes,
+							+ Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
 														  ProtocolLayout::DeclaredSize::OFFSET);
 						std::vector<std::byte> frame;
 						frame.reserve(frame_size);
@@ -109,12 +109,12 @@ namespace Karkinolution {
 				} // namespace Internal
 
 				template <ByteRange T> std::uint32_t get_declared_size(const T &bytes) {
-					return Deserializer::read_uint32_t(bytes, 0);
+					return Karkinolution::Binary::Deserializer::read_uint32_t(bytes, 0);
 				}
 
 				template <ByteRange T> BinaryTypes get_type(const T &bytes) {
 					const auto raw =
-						Deserializer::read_uint8_t(bytes, ProtocolLayout::DeclaredSize::SIZE);
+						Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::DeclaredSize::SIZE);
 
 					Protocol::Validator::validate_type(raw);
 					return static_cast<BinaryTypes>(raw);
@@ -125,7 +125,7 @@ namespace Karkinolution {
 					Karkinolution::Binary::Protocol::Detail::CodeVariant sub_type;
 					const auto                                           type = get_type(bytes);
 					const auto                                           read =
-						Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
+						Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
 
 					Karkinolution::Binary::Protocol::Validator::validate_sub_type(type, read);
 
@@ -153,7 +153,7 @@ namespace Karkinolution {
 
 				namespace Request {
 					template <ByteRange T> RequestId get_id(const T &bytes) {
-						return Deserializer::deserialize<RequestId>(
+						return Karkinolution::Binary::Deserializer::deserialize<RequestId>(
 							bytes,
 							ProtocolLayout::Request::Id::OFFSET);
 					}
@@ -163,7 +163,7 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> Resource get_resource(const T &bytes) {
-						auto read = Deserializer::deserialize<Protocol::Aliases::FrameSubType>(
+						auto read = Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::FrameSubType>(
 							bytes,
 							ProtocolLayout::Request::Resource::OFFSET);
 
@@ -180,7 +180,7 @@ namespace Karkinolution {
 						template <ByteRange T>
 						Protocol::Request::SeeTarget get_target(const T &bytes) {
 							return static_cast<Protocol::Request::SeeTarget>(
-								Deserializer::deserialize<
+								Karkinolution::Binary::Deserializer::deserialize<
 									Protocol::Aliases::Request::FrameSeeTarget>(
 									bytes,
 									ProtocolLayout::Request::See::Target::OFFSET));
@@ -591,7 +591,7 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> RequestId get_request_id(const T &bytes) {
-						return Deserializer::deserialize<RequestId>(
+						return Karkinolution::Binary::Deserializer::deserialize<RequestId>(
 							bytes,
 							ProtocolLayout::Response::RequestId::OFFSET);
 					}
@@ -602,7 +602,7 @@ namespace Karkinolution {
 
 					template <ByteRange T> ResponseCardinality get_cardinality(const T &bytes) {
 						return static_cast<ResponseCardinality>(
-							Deserializer::deserialize<Protocol::Aliases::Response::Cardinality>(
+							Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::Response::Cardinality>(
 								bytes,
 								ProtocolLayout::Response::Cardinality::OFFSET));
 					}
@@ -659,7 +659,7 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> RequestId get_request_id(const T &bytes) {
-						return Deserializer::deserialize<RequestId>(
+						return Karkinolution::Binary::Deserializer::deserialize<RequestId>(
 							bytes,
 							ProtocolLayout::Error::RequestId::OFFSET);
 					}

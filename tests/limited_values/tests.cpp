@@ -2,6 +2,9 @@
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
 
+using Karkinolution::Math::LV::CT::GenericLimitedValue;
+using Karkinolution::Math::LV::RT::GenericRuntimeValue;
+
 // ==================== Factor ====================
 
 TEST(Factor, AdditionClampsToMaximum) {

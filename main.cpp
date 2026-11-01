@@ -7,13 +7,16 @@
 int main() {
 	asio::io_context io_context;
 
-	WorldPreset preset{
-		.seed    = 1,
-		.size    = Size{.lateral = Lateral{100.0}, .height = Height{100.0}, .depth = Depth{100.0}},
+	Karkinolution::World::WorldPreset preset{
+		.seed = 1,
+		.size =
+			Karkinolution::Math::Units::Size{.lateral = Karkinolution::Math::Units::Lateral{100.0},
+											 .height  = Karkinolution::Math::Units::Height{100.0},
+											 .depth   = Karkinolution::Math::Units::Depth{100.0}},
 		.epsilon = 5.0f};
 
-	auto   world = WorldFactory::create_world(preset);
-	Server server(io_context, PORT, world);
+	Karkinolution::World::World       world{preset};
+	Karkinolution::Networking::Server server(io_context, Karkinolution::Networking::PORT, world);
 
 	io_context.run();
 

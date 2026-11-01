@@ -12,6 +12,10 @@ workflow:
       purpose: "Presets and build/test/run commands."
     - file: "docs/skills/"
       purpose: "Operational skills that govern development and agent behavior."
+    - file: "tests/HOW_TO_CREATE_TESTS.md"
+      purpose: "Test purpose, organization, and verification requirements."
+    - file: "src/karkinolution/api/HOW_TO_CREATE_API.md"
+      purpose: "Architecture and verification requirements for client-accessible APIs."
   principles:
     - rule: "Document every architectural or protocol decision in the relevant documentation file before or alongside code implementation."
     - rule: "Read and modify one file at a time rather than mass-reading entire directory trees."
@@ -23,7 +27,7 @@ workflow:
 boundaries:
   compilation_and_tests:
     allowed: true
-    rule: "Agents must compile the project and run tests to verify changes."
+    rule: "Agents must build the debug, sanitizers, and view-debug presets, and run the complete test suite. If concurrency-related code is changed, agents must also build the tsan preset and run the complete test suite with ThreadSanitizer."
   requirements:
     uncertainty: "Never assume. Ask the active programmer clarifying questions when in doubt."
   language: "English only for all code, comments, documentation, and commits."

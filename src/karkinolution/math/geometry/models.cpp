@@ -1,14 +1,16 @@
 #include <karkinolution/math/constants.hpp>
 #include <karkinolution/math/geometry/models.hpp>
 
-[[nodiscard]] GeometryForms::Circumference GeometryForms::Radius::circumference() const noexcept {
+using namespace Karkinolution::Math;
+
+[[nodiscard]] Geometry::Circumference Geometry::Radius::circumference() const noexcept {
 	return Circumference{value * Constants::two_pi};
 }
 
-[[nodiscard]] GeometryForms::Diameter GeometryForms::Radius::diameter() const noexcept {
+[[nodiscard]] Geometry::Diameter Geometry::Radius::diameter() const noexcept {
 	return Diameter{2.0 * value};
 }
 
-[[nodiscard]] GeometryForms::Area GeometryForms::Radius::area() const noexcept {
+[[nodiscard]] Geometry::Area Geometry::Radius::area() const noexcept {
 	return Area{Constants::pi * value * value};
 }

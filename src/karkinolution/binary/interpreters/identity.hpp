@@ -10,8 +10,8 @@ namespace Karkinolution {
 		namespace Interpreters {
 			namespace CoreBytes {
 				namespace Identity {
-					static_assert(sizeof(BaseIdType) == sizeof(int64_t));
-					using Id = Serializer::Core::EightBytes;
+					static_assert(sizeof(Karkinolution::Core::Id::BaseIdType) == sizeof(int64_t));
+					using Id = Karkinolution::Binary::Serializer::Core::EightBytes;
 				} // namespace Identity
 			} // namespace CoreBytes
 		} // namespace Interpreters

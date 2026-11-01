@@ -2,11 +2,13 @@
 
 #include "karkinolution/core/error.hpp"
 
-class CPPSdkError : public SimulationError {
+namespace KarkinolutionSDK {
+
+class CPPSdkError : public Karkinolution::Errors::SimulationError {
 	public:
 
 		explicit CPPSdkError(const std::string &message)
-			: SimulationError(message) {}
+			: Karkinolution::Errors::SimulationError(message) {}
 };
 
 class ClientError : public CPPSdkError {
@@ -15,3 +17,5 @@ class ClientError : public CPPSdkError {
 		explicit ClientError(const std::string &message)
 			: CPPSdkError(message) {}
 };
+
+} // namespace KarkinolutionSDK

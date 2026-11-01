@@ -25,7 +25,7 @@ namespace KarkinolutionSDK {
 
 				void            sync_requests();
 				PendingRequests pending_requests;
-				RawFrameBuffer  incoming_responses;
+				Karkinolution::Networking::RawFrameBuffer incoming_responses;
 				RequestQueue    requests;
 		};
 	} // namespace Protocol

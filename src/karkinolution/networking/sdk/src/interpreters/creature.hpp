@@ -19,7 +19,7 @@ namespace KarkinolutionSDK {
 			// Returns std::nullopt when the server responds with "none" (entity not found).
 			template <HasRequest T>
 			std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
-			see_creature(T &client, BaseIdType id) {
+			see_creature(T &client, Karkinolution::Core::Id::BaseIdType id) {
 				const auto payload = CreatureSRI::Request::make_see_creature(id);
 				const auto built   = Karkinolution::Binary::Frames::Motor::make_request(
                     RequestSubTypes::SEE,
@@ -49,9 +49,10 @@ namespace KarkinolutionSDK {
 			template <HasRequest T>
 			std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 			make_creature(T                                &client,
-						  std::optional<Gender>             gender,
-						  std::optional<CreatureSpecies>    specie,
-						  const std::optional<Vec3>        &position,
+						  std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender,
+						  std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies>
+							  specie,
+						  const std::optional<Karkinolution::Math::Vec::Vec3>        &position,
 						  const std::optional<std::string> &name) {
 				const auto payload =
 					CreatureSRI::Request::make_create_creature(gender, specie, position, name);

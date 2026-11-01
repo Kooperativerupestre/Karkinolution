@@ -5,33 +5,33 @@
 #include "karkinolution/binary/interpreters/identity.hpp"
 #include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/core/id.hpp"
-#include "karkinolution/organism/stats.hpp"
 
 #include <cstddef>
 #include <karkinolution/binary/interpreters/unit.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
 
-using OrganismStats::Body::RawMeat;
-
 // SRI implementations
 Karkinolution::Binary::Interpreters::CoreBytes::Identity::Id
-CorpseSRI::serialize_id(BaseIdType id) {
-	return Serializer::convert_uint64_t(id);
+CorpseSRI::serialize_id(Karkinolution::Core::Id::BaseIdType id) {
+	return Karkinolution::Binary::Serializer::convert_uint64_t(id);
 }
 
-Serializer::Core::FourBytes CorpseSRI::serialize_raw_meat(const RawMeat &raw_meat) {
-	return Serializer::convert_float(raw_meat.value);
+Karkinolution::Binary::Serializer::Core::FourBytes CorpseSRI::serialize_raw_meat(
+	const Karkinolution::Organisms::RawMeat &raw_meat) {
+	return Karkinolution::Binary::Serializer::convert_float(raw_meat.value);
 }
 
-VecSRI::BytesArrays::Vec CorpseSRI::serialize_position(const Vec3 &position) {
+VecSRI::BytesArrays::Vec CorpseSRI::serialize_position(const Karkinolution::Math::Vec::Vec3 &position) {
 	return VecSRI::serialize_vec(position);
 }
 
-UnitsSRI::BytesArrays::Size CorpseSRI::serialize_size(const Size &size) {
+UnitsSRI::BytesArrays::Size
+CorpseSRI::serialize_size(const Karkinolution::Math::Units::Size &size) {
 	return UnitsSRI::serialize_size(size);
 }
 
-CorpseSRI::BytesArrays::Corpse CorpseSRI::serialize_corpse(const class Corpse &corpse) {
+CorpseSRI::BytesArrays::Corpse CorpseSRI::serialize_corpse(
+	const Karkinolution::Organisms::Entities::Corpse::Corpse &corpse) {
 	BytesArrays::Corpse bytes{};
 
 	const auto id_bytes = serialize_id(corpse.id);
@@ -55,24 +55,26 @@ CorpseSRI::BytesArrays::Corpse CorpseSRI::serialize_corpse(const class Corpse &c
 	return bytes;
 }
 
-std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(BaseIdType id) {
-	return Serializer::serialize<BaseIdType>(id);
+std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(Karkinolution::Core::Id::BaseIdType id) {
+	return Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(id);
 }
 
 // DSI implementations
-BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Deserializer::deserialize<BaseIdType>(payload, offset);
+Karkinolution::Core::Id::BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, offset);
 }
 
-RawMeat CorpseDSI::get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset) {
-	return RawMeat(Deserializer::read_float(payload, offset));
+Karkinolution::Organisms::RawMeat
+CorpseDSI::get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Organisms::RawMeat(Karkinolution::Binary::Deserializer::read_float(payload, offset));
 }
 
-Vec3 CorpseDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Math::Vec::Vec3 CorpseDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
 	return VecDSI::get_vec(payload, offset);
 }
 
-Size CorpseDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Math::Units::Size
+CorpseDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
 	return UnitsDSI::deserialize_size(payload, offset);
 }
 
@@ -86,6 +88,6 @@ CorpseDSI::get_corpse(const std::vector<std::byte> &payload, std::size_t offset)
 	};
 }
 
-BaseIdType CorpseDSI::Request::interpret_like_see_corpse(const std::vector<std::byte> &payload) {
-	return BaseIdType{Deserializer::deserialize<BaseIdType>(payload, 0)};
+Karkinolution::Core::Id::BaseIdType CorpseDSI::Request::interpret_like_see_corpse(const std::vector<std::byte> &payload) {
+	return Karkinolution::Core::Id::BaseIdType{Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, 0)};
 }

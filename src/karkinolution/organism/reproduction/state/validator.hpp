@@ -6,31 +6,45 @@
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 #include <variant>
 
-namespace ReproductionValidator {
-	inline void has_uterus(const ReproductiveState &reproduction) {
-		assert(std::holds_alternative<Uterus>(reproduction.state));
+namespace Karkinolution::Organisms::Entities::Reproduction::State::Validator {
+
+	inline void has_uterus(
+		const Karkinolution::Organisms::Entities::Reproduction::ReproductiveState &reproduction) {
+		assert(std::holds_alternative<
+			   Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+			reproduction.state));
 	}
 
-	inline void does_not_have_uterus(const ReproductiveState &reproduction) {
+	inline void does_not_have_uterus(
+		const Karkinolution::Organisms::Entities::Reproduction::ReproductiveState &reproduction) {
 		assert(std::holds_alternative<std::monostate>(reproduction.state));
 	}
 
-	inline void is_pregnant(const ReproductiveState &reproduction) {
+	inline void is_pregnant(
+		const Karkinolution::Organisms::Entities::Reproduction::ReproductiveState &reproduction) {
 		has_uterus(reproduction);
 
-		assert(std::get<Uterus>(reproduction.state).is_pregnant());
+		assert(std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+				   reproduction.state)
+				   .is_pregnant());
 	}
 
-	inline void is_not_pregnant(const ReproductiveState &reproduction) {
+	inline void is_not_pregnant(
+		const Karkinolution::Organisms::Entities::Reproduction::ReproductiveState &reproduction) {
 		has_uterus(reproduction);
-		assert(!std::get<Uterus>(reproduction.state).is_pregnant());
+		assert(!std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
+					reproduction.state)
+					.is_pregnant());
 	}
 
-	inline void is_oviparous(const ReproductiveState &reproduction) {
-		assert(reproduction.reproductive_way == ReproductiveWays::OVIPAROUS);
+	inline void is_oviparous(
+		const Karkinolution::Organisms::Entities::Reproduction::ReproductiveState &reproduction) {
+		assert(reproduction.reproductive_way == Ontology::ReproductiveWays::OVIPAROUS);
 	}
 
-	inline void is_viviparous(const ReproductiveState &reproduction) {
-		assert(reproduction.reproductive_way == ReproductiveWays::VIVIPAROUS);
+	inline void is_viviparous(
+		const Karkinolution::Organisms::Entities::Reproduction::ReproductiveState &reproduction) {
+		assert(reproduction.reproductive_way == Ontology::ReproductiveWays::VIVIPAROUS);
 	}
-} // namespace ReproductionValidator
+
+} // namespace Karkinolution::Organisms::Entities::Reproduction::State::Validator

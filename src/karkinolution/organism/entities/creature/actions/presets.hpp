@@ -3,16 +3,21 @@
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
-#include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/soil/soil.hpp>
 #include <variant>
 
+namespace Karkinolution::Organisms::Entities::Creature::Actions {
+
 struct MovePreset {
-		Vec3 new_coord;
+		Karkinolution::Math::Vec::Vec3 new_coord;
 };
 
 struct EatPreset {
-		FoodHint                         hint;
-		std::variant<EntityId, NatureId> id;
+		Karkinolution::Organisms::FoodHint hint;
+		std::variant<Karkinolution::Organisms::Entities::EntityId,
+					 Karkinolution::Organisms::Nature::NatureId> id;
 };
 
 using AllPresets = std::variant<MovePreset, EatPreset>;
+
+} // namespace Karkinolution::Organisms::Entities::Creature::Actions

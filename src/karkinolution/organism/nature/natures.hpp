@@ -1,23 +1,26 @@
 #pragma once
-#include <karkinolution/core/basestorage.hpp>
+#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
 
-using Nature = std::variant<Grass>;
+namespace Karkinolution {
+	namespace Organisms {
+		namespace Nature {
 
-class NatureRegistry : public BaseStorage<NatureId, Nature> {
-	public:
+			using NatureEntity = std::variant<Grass::Grass>;
 
-		Grass &at_grass(const NatureId &id) {
-			return std::get<Grass>(at(id));
-		}
+			class NatureRegistry : public Functional::BaseStorage<NatureId, NatureEntity> {
+				public:
+					Grass::Grass &at_grass(NatureId id) {
+						return std::get<Grass::Grass>(at(id));
+					}
+			};
 
-		const Grass &at_grass(const NatureId &id) const {
-			return std::get<Grass>(at(id));
-		}
-};
+			namespace NatureGetters {
+				const Math::Geometry::Radius &get_radius(const NatureEntity &nature);
+				const Vec3                   &get_position(const NatureEntity &nature);
+			} // namespace NatureGetters
 
-namespace NatureGetters {
-	const GeometryForms::Radius &get_radius(const Nature &nature);
-	const Vec3                  &get_position(const Nature &nature);
-} // namespace NatureGetters
+		} // namespace Nature
+	} // namespace Organisms
+} // namespace Karkinolution

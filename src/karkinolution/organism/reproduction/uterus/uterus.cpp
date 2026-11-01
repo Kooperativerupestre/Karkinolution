@@ -1,11 +1,7 @@
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
 
-// Gestation
-
-
-// Embryo
-
+namespace Karkinolution::Organisms::Entities::Reproduction::Uterus {
 
 // PregnantUterus
 
@@ -54,3 +50,5 @@ PregnantUterus &Uterus::get_pregnant_uterus() {
 const PregnantUterus &Uterus::get_pregnant_uterus() const {
 	return std::get<PregnantUterus>(state);
 }
+
+} // namespace Karkinolution::Organisms::Entities::Reproduction::Uterus

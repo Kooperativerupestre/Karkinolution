@@ -1,10 +1,18 @@
 #pragma once
 #include "karkinolution/terrain/rtree/service.hpp"
 
-#include <karkinolution/core/basestorage.hpp>
+#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
-#include <karkinolution/terrain/soil.hpp>
+#include <karkinolution/terrain/soil/soil.hpp>
 
-class Territory : public RSTService<SoilPieceId, SoilPiece, SoilPieceRegistry> {
-		using RSTService<SoilPieceId, SoilPiece, SoilPieceRegistry>::RSTService;
-};
+namespace Karkinolution {
+	namespace Terrain {
+		class Territory : public Trees::RSTService<Soil::SoilPieceId,
+												   Soil::SoilPiece,
+												   Soil::SoilPieceRegistry> {
+				using RSTService<Soil::SoilPieceId, Soil::SoilPiece, Soil::SoilPieceRegistry>::
+					RSTService;
+		};
+
+	} // namespace Terrain
+} // namespace Karkinolution

@@ -1,10 +1,22 @@
 
 #include <gtest/gtest.h>
 #include <karkinolution/core/id.hpp>
+#include <karkinolution/functional/k_random.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/terrain/octree/aabb.hpp>
 #include <karkinolution/terrain/octree/octree.hpp>
-#include <karkinolution/utils/k_random.hpp>
+
+using Karkinolution::Core::Id::gen_id;
+using Karkinolution::Math::Units::Size;
+using Karkinolution::Math::Vec::Vec3;
+using Karkinolution::Organisms::Entities::create_creature_id;
+using Karkinolution::Organisms::Entities::EntityId;
+using Karkinolution::Terrain::Trees::Octree::AABB;
+using Karkinolution::Terrain::Trees::Octree::MAX_ENTRIES;
+using Karkinolution::Terrain::Trees::Octree::MAX_OCTREE_CHILDREN;
+using Karkinolution::Terrain::Trees::Octree::Octree;
+using Karkinolution::Terrain::Trees::Octree::OctreeEntry;
+using Karkinolution::Terrain::Trees::Octree::OctreeNode;
 
 /*
 Invariants
@@ -24,16 +36,17 @@ find() == vector of entries that intersect
 
 namespace {
 	AABB generate_random_aabb() {
-		return AABB{.max = RandomGenerators::generate<Vec3>(),
-					.min = RandomGenerators::generate<Vec3>()};
+		return AABB{.max = Karkinolution::Functional::KRandom::RandomGenerators::generate<Vec3>(),
+					.min = Karkinolution::Functional::KRandom::RandomGenerators::generate<Vec3>()};
 	}
 
 	void fill_entries(std::vector<OctreeEntry> &entries, Octree &octree) {
 		for (size_t i = 0; i < 100; i++) {
-			const AABB     aabb{.max = RandomGenerators::generate<Vec3>(),
-								.min = RandomGenerators::generate<Vec3>()};
+			const AABB aabb{
+				.max = Karkinolution::Functional::KRandom::RandomGenerators::generate<Vec3>(),
+				.min = Karkinolution::Functional::KRandom::RandomGenerators::generate<Vec3>()};
 			const auto     id_value = gen_id();
-			const EntityId id       = EntityIDF::create_creature_id(id_value);
+			const EntityId id       = create_creature_id(id_value);
 			entries.push_back(OctreeEntry{.entity_id = id, .bound = aabb});
 
 			octree.root().insert(entries.back());
@@ -44,7 +57,7 @@ namespace {
 		for (size_t i = 0; i < 100; i++) {
 			const auto     aabb     = generate_random_aabb();
 			const auto     id_value = gen_id();
-			const EntityId id       = EntityIDF::create_creature_id(id_value);
+			const EntityId id       = create_creature_id(id_value);
 
 			octree.root().insert(OctreeEntry{.entity_id = id, .bound = aabb});
 		}
@@ -53,7 +66,7 @@ namespace {
 	void fill_ids(std::vector<EntityId> &ids) {
 		for (size_t i = 0; i < 100; i++) {
 			const auto     id_value = gen_id();
-			const EntityId id       = EntityIDF::create_creature_id(id_value);
+			const EntityId id       = create_creature_id(id_value);
 			ids.push_back(id);
 		}
 	}

@@ -1,10 +1,10 @@
-#include <karkinolution/core/global_epsilon.hpp>
+#include <karkinolution/math/global_epsilon.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
-#include <karkinolution/organism/stats.hpp>
+#include <karkinolution/organism/values.hpp>
 
-using PhysicsStats::Mass;
+namespace Karkinolution::Organisms::Entities::Creature {
 
 /*
 [[nodiscard]] NormalizedValue<float> Body::senescence() const noexcept {
@@ -19,27 +19,36 @@ NormalizedValue<float> Body::reproductive_maturity() const {
 							*/
 
 
-[[nodiscard]] NormalizedValue<float> Metabolism::hungry() const {
+[[nodiscard]] NormalizedValue<float> MetabolismPart::hungry() const {
 	return energy.ratio();
 }
 
-[[nodiscard]] Mass Morphology::density() const noexcept {
-	if (volume().value == Approx<float>(0.0f)) {
+[[nodiscard]] Karkinolution::Math::Units::Mass MorphologyPart::density() const noexcept {
+	if (volume().value == Math::Approx<float>(0.0f)) {
 		return 0.0f;
 	}
 	return mass.value / volume().value;
 }
 
-[[nodiscard]] Volume Morphology::volume() const noexcept {
+[[nodiscard]] Volume MorphologyPart::volume() const noexcept {
 	return size.volume();
 }
 
-[[nodiscard]] Strength Body::strength() const noexcept {
-	return muscle.muscle.value * muscle.efficiency.value() * muscle.quality.value();
-}
-
-[[nodiscard]] float Creature::specie_relative_bone() const noexcept {
-	return body.skeleton.bone.value / genome.creature_genome.skeleton.average_bones.value;
+[[nodiscard]] Strength Creature::strength() const noexcept {
+	float specie_strength = 0.0f;
+	switch (genome.core_genome.specie) {
+		case CreatureSpecies::HIPPOPOTAMUS:
+		case CreatureSpecies::CROCODILE:
+			specie_strength = 35.0f;
+			break;
+		case CreatureSpecies::CRAB:
+			specie_strength = 15.0f;
+			break;
+		case CreatureSpecies::FISH:
+			specie_strength = 3.0f;
+			break;
+	}
+	return Strength{specie_strength * body.vital.life.ratio().value()};
 }
 
 [[nodiscard]] float Creature::specie_relative_max_energy() const noexcept {
@@ -54,10 +63,6 @@ NormalizedValue<float> Body::reproductive_maturity() const {
 	return body.morphology.mass.value / genome.creature_genome.morphology.average_mass.value;
 }
 
-[[nodiscard]] float Creature::specie_relative_muscle() const noexcept {
-	return body.muscle.muscle.value / genome.creature_genome.muscle.average_muscles.value;
-}
-
 [[nodiscard]] float Creature::specie_relative_volume() const noexcept {
 	return body.morphology.volume().value
 		/ Size::volume(genome.creature_genome.morphology.average_lateral,
@@ -69,5 +74,7 @@ NormalizedValue<float> Body::reproductive_maturity() const {
 [[nodiscard]] float Creature::specie_relative_age() const noexcept {
 	return body.age.value / genome.creature_genome.vital.average_age.value;
 }
+
+} // namespace Karkinolution::Organisms::Entities::Creature
 
 // All of this average values (genome) must be > 0

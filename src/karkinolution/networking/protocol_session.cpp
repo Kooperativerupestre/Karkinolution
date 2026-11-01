@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <karkinolution/networking/protocol_session.hpp>
 
+namespace Karkinolution::Networking {
+
 void ProtocolSession::clear_requests() {
 	request_buffer.clear();
 }
@@ -59,3 +61,5 @@ bool ProtocolSession::has_response() const {
 ResponseFrame ProtocolSession::pop_response() {
 	return responses.pop_front();
 }
+
+} // namespace Karkinolution::Networking

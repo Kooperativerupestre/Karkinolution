@@ -5,6 +5,11 @@
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>
 
+using Karkinolution::Networking::Acceptor;
+using Karkinolution::Networking::EndPoint;
+using Karkinolution::Networking::IoContext;
+using Karkinolution::Networking::Socket;
+
 class FakeServer {
 	public:
 
