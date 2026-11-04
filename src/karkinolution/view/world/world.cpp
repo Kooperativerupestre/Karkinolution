@@ -9,6 +9,7 @@
 #include <karkinolution/view/world/queriers/corpse.hpp>
 #include <karkinolution/view/world/queriers/soil.hpp>
 #include <karkinolution/view/world/world.hpp>
+#include <stdexcept>
 
 // Terrain implementation
 
@@ -95,7 +96,13 @@ void KarkinolutionView::World::Terrain::sync(KarkinolutionView::Client::Client &
 }
 
 KarkinolutionView::World::Terrain::Terrain(KarkinolutionView::Client::Client &client)
-	: size(KarkinolutionView::World::Queriers::Territory::see_territory(client)->size) {
+	: size([&client] {
+		const auto territory = KarkinolutionView::World::Queriers::Territory::see_territory(client);
+		if (!territory) {
+			throw std::runtime_error("Failed to initialize terrain: territory was not found");
+		}
+		return territory->size;
+	}()) {
 
 	sync(client);
 }

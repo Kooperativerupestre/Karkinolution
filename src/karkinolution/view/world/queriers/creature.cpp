@@ -3,7 +3,7 @@
 
 std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 KarkinolutionView::World::Queriers::Creature::see_creature(
-	BaseIdType                         id,
-	KarkinolutionView::Client::Client &client) {
+	Karkinolution::Core::Id::BaseIdType id,
+	KarkinolutionView::Client::Client  &client) {
 	return KarkinolutionSDK::Interpreters::Creature::see_creature(client, id);
 }

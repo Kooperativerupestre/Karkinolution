@@ -1,0 +1,35 @@
+#include "karkinolution/view/gui/components/low_level/label.hpp"
+
+#include <utility>
+
+namespace KarkinolutionView {
+	namespace Gui {
+		namespace Components {
+			namespace LowLevel {
+				namespace {
+					Rectangle make_rectangle(const Geometry::Rectangle          &bounds,
+											 const Karkinolution::Colors::Color &color) {
+						return Rectangle{bounds, color};
+					}
+				} // namespace
+
+				RectangleLabel::RectangleLabel(const Geometry::Rectangle          &bounds,
+											   std::string                         text,
+											   const Karkinolution::Colors::Color &rectangle_color,
+											   const Karkinolution::Colors::Color &text_color,
+											   GreaterThanZeroValue<int>           font_size)
+					: rectangle_(make_rectangle(bounds, rectangle_color))
+					, text_(bounds, std::move(text), text_color, font_size) {}
+
+				void RectangleLabel::set_text(std::string text) {
+					text_.set_text(std::move(text));
+				}
+
+				void RectangleLabel::draw() const {
+					rectangle_.draw();
+					text_.draw();
+				}
+			} // namespace LowLevel
+		} // namespace Components
+	} // namespace Gui
+} // namespace KarkinolutionView

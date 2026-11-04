@@ -1,10 +1,13 @@
 #pragma once
 #include "karkinolution/math/stats/compile_values.hpp"
 
+#include <algorithm>
 #include <cmath>
+#include <cstdarg>
 #include <functional>
+#include <spanstream>
 
-using namespace Karkinolution::Math::LV::CompileTime;
+using namespace Karkinolution::Math::LV::CT;
 
 namespace KarkinolutionView {
 	namespace Gui {
@@ -20,6 +23,22 @@ namespace KarkinolutionView {
 					constexpr Position(float x, float y) noexcept
 						: x(x)
 						, y(y) {}
+
+					constexpr Position move_to_left(float value) const {
+						return {x - value, y};
+					}
+
+					constexpr Position move_to_right(float value) const {
+						return {x + value, y};
+					}
+
+					constexpr Position move_up(float value) const {
+						return {x, y - value};
+					}
+
+					constexpr Position move_down(float value) const {
+						return {x, y + value};
+					}
 
 					constexpr bool operator==(const Position &) const noexcept = default;
 
@@ -94,6 +113,102 @@ namespace KarkinolutionView {
 
 			struct Column : public NonNegativeValue<int> {};
 
+			struct Radius : public NonNegativeValue<float> {};
+
+			// Edge comparisons express geometric ordering, not raw coordinate ordering.
+			// In particular, vertical edges account for screen-space Y increasing downward.
+			class Top {
+				public:
+
+					float value;
+
+					constexpr bool operator==(const Top &top) const {
+						return value == top.value;
+					}
+
+					constexpr bool operator>(const Top &top) const {
+						return value > top.value;
+					}
+
+					constexpr bool operator>=(const Top &top) const {
+						return value >= top.value;
+					}
+
+					constexpr bool operator<(const Top &top) const {
+						return value < top.value;
+					}
+
+					constexpr bool operator<=(const Top &top) const {
+						return value <= top.value;
+					}
+			};
+
+			class Floor {
+				public:
+
+					float value;
+
+					constexpr bool operator>(const Floor &floor) const {
+						return value < floor.value;
+					}
+
+					constexpr bool operator>=(const Floor &floor) const {
+						return value <= floor.value;
+					}
+
+					constexpr bool operator<(const Floor &floor) const {
+						return value > floor.value;
+					}
+
+					constexpr bool operator<=(const Floor &floor) const {
+						return value >= floor.value;
+					}
+			};
+
+			class Left {
+				public:
+
+					float value;
+
+					constexpr bool operator>(const Left &left) const {
+						return value > left.value;
+					}
+
+					constexpr bool operator>=(const Left &left) const {
+						return value >= left.value;
+					}
+
+					constexpr bool operator<(const Left &left) const {
+						return value < left.value;
+					}
+
+					constexpr bool operator<=(const Left &left) const {
+						return value <= left.value;
+					}
+			};
+
+			class Right {
+				public:
+
+					float value;
+
+					constexpr bool operator>(const Right &right) const {
+						return value < right.value;
+					}
+
+					constexpr bool operator>=(const Right &right) const {
+						return value <= right.value;
+					}
+
+					constexpr bool operator<(const Right &right) const {
+						return value > right.value;
+					}
+
+					constexpr bool operator<=(const Right &right) const {
+						return value >= right.value;
+					}
+			};
+
 			class Rectangle {
 				public:
 
@@ -107,75 +222,104 @@ namespace KarkinolutionView {
 						, width(width)
 						, height(height) {}
 
+					constexpr Top top() const {
+						return {position.move_up(static_cast<float>(height.value()) / 2.0f).y};
+					}
+
+					constexpr Floor floor() const {
+						return {position.move_down(static_cast<float>(height.value()) / 2.0f).y};
+					}
+
+					constexpr Left left() const {
+						return {position.move_to_left(static_cast<float>(width.value()) / 2.0f).x};
+					}
+
+					constexpr Right right() const {
+						return {position.move_to_right(static_cast<float>(width.value()) / 2.0f).x};
+					}
+
 					constexpr bool operator==(const Rectangle &) const noexcept = default;
+			};
 
-					// Rectangle + Rectangle
-					constexpr Rectangle operator+(const Rectangle &other) const noexcept {
-						return {position + other.position,
-								Width{width + other.width},
-								Height{height + other.height}};
+			class Circle {
+				public:
+
+					Position position;
+					Radius   radius;
+
+					constexpr float area() const noexcept {
+						return std::numbers::pi_v<float> * radius.value() * radius.value();
 					}
 
-					constexpr Rectangle &operator+=(const Rectangle &other) noexcept {
-						position += other.position;
-						width += other.width;
-						height += other.height;
-						return *this;
+					constexpr float circumference() const noexcept {
+						return 2.0f * std::numbers::pi_v<float> * radius.value();
 					}
 
-					// Rectangle - Rectangle
-					constexpr Rectangle operator-(const Rectangle &other) const noexcept {
-						return {position - other.position,
-								Width{width - other.width},
-								Height{height - other.height}};
+					constexpr Top top() const {
+						return {position.move_up(static_cast<float>(radius.value())).y};
 					}
 
-					constexpr Rectangle &operator-=(const Rectangle &other) noexcept {
-						position -= other.position;
-						width -= other.width;
-						height -= other.height;
-						return *this;
+					constexpr Left left() const {
+						return {position.move_to_left(static_cast<float>(radius.value())).x};
 					}
 
-					// Rectangle * scalar
-					constexpr Rectangle operator*(float scalar) const noexcept {
-						return {position * scalar, Width{width * scalar}, Height{height * scalar}};
+					constexpr Right right() const {
+						return {position.move_to_right(static_cast<float>(radius.value())).x};
 					}
 
-					constexpr Rectangle &operator*=(float scalar) noexcept {
-						position *= scalar;
-						width *= scalar;
-						height *= scalar;
-						return *this;
-					}
-
-					// Rectangle / scalar
-					constexpr Rectangle operator/(float scalar) const {
-						return {position / scalar, Width{width / scalar}, Height{height / scalar}};
-					}
-
-					constexpr Rectangle &operator/=(float scalar) {
-						position /= scalar;
-						width /= scalar;
-						height /= scalar;
-						return *this;
-					}
-
-					// Unary +
-					constexpr Rectangle operator+() const noexcept {
-						return *this;
-					}
-
-					// Unary -
-					constexpr Rectangle operator-() const noexcept {
-						return {-position, Width{-width}, Height{-height}};
+					constexpr Floor floor() const {
+						return {position.move_down(static_cast<float>(radius.value())).y};
 					}
 			};
 
-			constexpr Rectangle operator*(float scalar, const Rectangle &rectangle) noexcept {
-				return rectangle * scalar;
+			constexpr bool can_contain(const Rectangle &container, const Rectangle &contained) {
+				return container.top() <= contained.top() && container.left() <= contained.left()
+					&& container.floor() <= contained.floor()
+					&& container.right() <= contained.right();
 			}
 
+			constexpr bool can_contain(const Rectangle &container, const Circle &contained) {
+				return container.top() <= contained.top() && container.left() <= contained.left()
+					&& container.floor() <= contained.floor()
+					&& container.right() <= contained.right();
+			}
+
+			constexpr bool can_contain(const Rectangle &container, const Position &contained) {
+				return contained.x >= container.left().value
+					&& contained.x <= container.right().value
+					&& contained.y >= container.top().value
+					&& contained.y <= container.floor().value;
+			}
+
+			constexpr bool can_contain(const Circle &container, const Position &contained) {
+				return contained.distance_to(container.position) <= container.radius.value();
+			}
+
+			constexpr bool intersects(const Rectangle &first, const Rectangle &second) {
+				const float horizontal_distance = std::abs(first.position.x - second.position.x);
+				const float vertical_distance   = std::abs(first.position.y - second.position.y);
+
+				return horizontal_distance <= (first.width.value() + second.width.value()) / 2.0
+					&& vertical_distance <= (first.height.value() + second.height.value()) / 2.0;
+			}
+
+			constexpr bool intersects(const Circle &first, const Circle &second) {
+				return first.position.distance_to(second.position)
+					<= first.radius.value() + second.radius.value();
+			}
+
+			inline bool intersects(const Rectangle &rectangle, const Circle &circle) {
+				const float closest_x =
+					std::clamp(circle.position.x, rectangle.left().value, rectangle.right().value);
+				const float closest_y =
+					std::clamp(circle.position.y, rectangle.top().value, rectangle.floor().value);
+				return Geometry::Position{closest_x, closest_y}.distance_to(circle.position)
+					<= circle.radius.value();
+			}
+
+			inline bool intersects(const Circle &circle, const Rectangle &rectangle) {
+				return intersects(rectangle, circle);
+			}
 		} // namespace Geometry
 	} // namespace Gui
 } // namespace KarkinolutionView

@@ -1,6 +1,7 @@
 #pragma once
 #include "karkinolution/binary/interpreters/models/soil.hpp"
 #include "karkinolution/core/id.hpp"
+#include "karkinolution/math/units.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/view/client/client.hpp"
@@ -10,6 +11,9 @@
 
 namespace KarkinolutionView {
 	namespace World {
+		using Karkinolution::Core::Id::BaseIdType;
+		using Karkinolution::Math::Units::Size;
+
 		inline constexpr bool SYNC_TERRAIN_SIZE = false;
 
 
@@ -83,6 +87,9 @@ namespace KarkinolutionView {
 				bool has(BaseIdType id) const;
 
 			public:
+
+				explicit World(KarkinolutionView::Client::Client &client)
+					: terrain(client) {}
 
 				const std::vector<Karkinolution::Binary::Interpreters::Models::Creature::Creature> &
 				get_creatures() const {

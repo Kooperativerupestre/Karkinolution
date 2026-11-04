@@ -9,7 +9,8 @@ namespace KarkinolutionView {
 		namespace Queriers {
 			namespace Creature {
 				std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
-				see_creature(BaseIdType id, KarkinolutionView::Client::Client &client);
+				see_creature(Karkinolution::Core::Id::BaseIdType id,
+							 KarkinolutionView::Client::Client  &client);
 			} // namespace Creature
 		} // namespace Queriers
 	} // namespace World
