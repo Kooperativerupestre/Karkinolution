@@ -6,9 +6,8 @@
 
 namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Resolver {
 	namespace MetabolismResolver {
-		std::variant<
-			std::reference_wrapper<Karkinolution::Organisms::RawMeat>,
-			std::reference_wrapper<Karkinolution::Organisms::Nature::Grass::GrassMatter>>
+		std::variant<std::reference_wrapper<Karkinolution::Organisms::RawMeat>,
+					 std::reference_wrapper<Karkinolution::Organisms::Nature::Grass::GrassMatter>>
 		resolve_preset(const Actions::EatPreset &preset, Karkinolution::World::World &world);
 	} // namespace MetabolismResolver
 } // namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Resolver

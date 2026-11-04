@@ -5,10 +5,10 @@
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
-#include "karkinolution/networking/sdk/src/error.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 #include "karkinolution/networking/sdk/src/client/protocol_session.hpp"
 #include "karkinolution/networking/sdk/src/client/request_queue.hpp"
+#include "karkinolution/networking/sdk/src/error.hpp"
 
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
@@ -83,8 +83,8 @@ namespace KarkinolutionSDK {
 			public:
 
 				explicit Client(Karkinolution::Networking::IoContext &io,
-								Config             config = {},
-								const std::string &name   = "Client")
+								Config                                config = {},
+								const std::string                    &name   = "Client")
 					: io_context_(io)
 					, socket_(io_context_)
 					, strand_(asio::make_strand(io_context_))
@@ -162,7 +162,7 @@ namespace KarkinolutionSDK {
 				std::string name;
 
 
-				Config     config;
+				Config                                config;
 				Karkinolution::Networking::IoContext &io_context_;
 
 				// Serializes every handler and posted task that touches the client state,

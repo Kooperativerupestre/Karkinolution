@@ -5,73 +5,91 @@
 #include <optional>
 
 namespace Karkinolution::Terrain::Trees::Octree {
-AABB AABBConversion::to_aabb(const Karkinolution::Math::Units::Size &size, const Karkinolution::Math::Vec::Vec3 &position) {
-	// Each dimension grows S/2 in both directions from position.
-	// e.g. size {10, 10, 10} centered at origin → bounds [-5, -5, -5] to [5, 5, 5].
-	const Karkinolution::Math::Vec::Vec3 half_size{size.lateral.value / 2.0, size.height.value / 2.0, size.depth.value / 2.0};
+	AABB AABBConversion::to_aabb(const Karkinolution::Math::Units::Size &size,
+								 const Karkinolution::Math::Vec::Vec3   &position) {
+		// Each dimension grows S/2 in both directions from position.
+		// e.g. size {10, 10, 10} centered at origin → bounds [-5, -5, -5] to [5, 5, 5].
+		const Karkinolution::Math::Vec::Vec3 half_size{size.lateral.value / 2.0,
+													   size.height.value / 2.0,
+													   size.depth.value / 2.0};
 
-	return AABB{.max = position + half_size, .min = position - half_size};
-}
-
-AABB AABBConversion::to_aabb(const Karkinolution::Math::Geometry::Radius &radius, const Karkinolution::Math::Vec::Vec3 &position) {
-	Karkinolution::Math::Vec::Vec3 extent{radius.value, radius.value, radius.value};
-
-	return AABB{.max = position + extent, .min = position - extent};
-}
-
-bool OctreeNode::can_contain(const AABB &aabb) const {
-	return bounds_.intersects(aabb);
-}
-
-void OctreeNode::subdivide() {
-	const auto center = bounds_.center();
-
-	for (int i = 0; i < 8; ++i) {
-		Karkinolution::Math::Vec::Vec3 child_min;
-		Karkinolution::Math::Vec::Vec3 child_max;
-
-		child_min.x = (i & 1) ? center.x : bounds_.min.x;
-		child_max.x = (i & 1) ? bounds_.max.x : center.x;
-
-		child_min.y = (i & 2) ? center.y : bounds_.min.y;
-		child_max.y = (i & 2) ? bounds_.max.y : center.y;
-
-		child_min.z = (i & 4) ? center.z : bounds_.min.z;
-		child_max.z = (i & 4) ? bounds_.max.z : center.z;
-
-		children[i] = std::make_unique<OctreeNode>(AABB{child_min, child_max});
-	}
-}
-
-std::optional<int> OctreeNode::child_containing(const AABB &other_bounds) const {
-	if (is_leaf()) {
-		return std::nullopt;
+		return AABB{.max = position + half_size, .min = position - half_size};
 	}
 
-	for (size_t i = 0; i < MAX_OCTREE_CHILDREN; i++) {
-		if (children[i].get()->bounds_.contains(other_bounds)) {
-			return static_cast<int>(i);
+	AABB AABBConversion::to_aabb(const Karkinolution::Math::Geometry::Radius &radius,
+								 const Karkinolution::Math::Vec::Vec3        &position) {
+		Karkinolution::Math::Vec::Vec3 extent{radius.value, radius.value, radius.value};
+
+		return AABB{.max = position + extent, .min = position - extent};
+	}
+
+	bool OctreeNode::can_contain(const AABB &aabb) const {
+		return bounds_.intersects(aabb);
+	}
+
+	void OctreeNode::subdivide() {
+		const auto center = bounds_.center();
+
+		for (int i = 0; i < 8; ++i) {
+			Karkinolution::Math::Vec::Vec3 child_min;
+			Karkinolution::Math::Vec::Vec3 child_max;
+
+			child_min.x = (i & 1) ? center.x : bounds_.min.x;
+			child_max.x = (i & 1) ? bounds_.max.x : center.x;
+
+			child_min.y = (i & 2) ? center.y : bounds_.min.y;
+			child_max.y = (i & 2) ? bounds_.max.y : center.y;
+
+			child_min.z = (i & 4) ? center.z : bounds_.min.z;
+			child_max.z = (i & 4) ? bounds_.max.z : center.z;
+
+			children[i] = std::make_unique<OctreeNode>(AABB{child_min, child_max});
 		}
 	}
 
-	return std::nullopt;
-}
+	std::optional<int> OctreeNode::child_containing(const AABB &other_bounds) const {
+		if (is_leaf()) {
+			return std::nullopt;
+		}
 
-OctreeNode &OctreeNode::insert(const OctreeEntry &entry) {
-	if (is_leaf()) {
-		if (is_full()) {
-			subdivide();
+		for (size_t i = 0; i < MAX_OCTREE_CHILDREN; i++) {
+			if (children[i].get()->bounds_.contains(other_bounds)) {
+				return static_cast<int>(i);
+			}
+		}
 
-			for (size_t i = entries.size(); i-- > 0;) {
-				auto      &self_entry = entries[i];
-				const auto index      = child_containing(self_entry.bound);
+		return std::nullopt;
+	}
+
+	OctreeNode &OctreeNode::insert(const OctreeEntry &entry) {
+		if (is_leaf()) {
+			if (is_full()) {
+				subdivide();
+
+				for (size_t i = entries.size(); i-- > 0;) {
+					auto      &self_entry = entries[i];
+					const auto index      = child_containing(self_entry.bound);
+
+					if (index.has_value()) {
+						children[index.value()]->insert(self_entry);
+						entries.erase(entries.begin() + i);
+					}
+				}
+
+				const auto index = child_containing(entry.bound);
 
 				if (index.has_value()) {
-					children[index.value()]->insert(self_entry);
-					entries.erase(entries.begin() + i);
+					children[index.value()]->insert(entry);
+					return *children[index.value()];
 				}
-			}
 
+				entries.push_back(entry);
+				return *this;
+			} else {
+				entries.push_back(entry);
+				return *this;
+			}
+		} else {
 			const auto index = child_containing(entry.bound);
 
 			if (index.has_value()) {
@@ -81,231 +99,222 @@ OctreeNode &OctreeNode::insert(const OctreeEntry &entry) {
 
 			entries.push_back(entry);
 			return *this;
-		} else {
-			entries.push_back(entry);
-			return *this;
-		}
-	} else {
-		const auto index = child_containing(entry.bound);
-
-		if (index.has_value()) {
-			children[index.value()]->insert(entry);
-			return *children[index.value()];
-		}
-
-		entries.push_back(entry);
-		return *this;
-	}
-}
-
-bool OctreeNode::remove(Karkinolution::Organisms::Entities::EntityId id) {
-	for (size_t i = entries.size(); i-- > 0;) {
-		if (entries[i].entity_id == id) {
-			entries.erase(entries.begin() + i);
-			return true;
 		}
 	}
 
-	if (is_leaf()) {
+	bool OctreeNode::remove(Karkinolution::Organisms::Entities::EntityId id) {
+		for (size_t i = entries.size(); i-- > 0;) {
+			if (entries[i].entity_id == id) {
+				entries.erase(entries.begin() + i);
+				return true;
+			}
+		}
+
+		if (is_leaf()) {
+			return false;
+		}
+
+		for (auto &child : children) {
+			if (child == nullptr) {
+				continue;
+			}
+
+			const auto had_remove = child->remove(id);
+
+			if (had_remove) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
-	for (auto &child : children) {
-		if (child == nullptr) {
-			continue;
+	bool OctreeNode::remove(Karkinolution::Organisms::Entities::EntityId id, const AABB &old_box) {
+		for (size_t i = entries.size(); i-- > 0;) {
+			if (entries[i].entity_id == id) {
+				entries.erase(entries.begin() + i);
+				return true;
+			}
 		}
 
-		const auto had_remove = child->remove(id);
-
-		if (had_remove) {
-			return true;
+		if (is_leaf()) {
+			return false;
 		}
+
+		const auto index = child_containing(old_box);
+
+		if (!index.has_value()) {
+			return false;
+		}
+
+		return children[index.value()]->remove(id, old_box);
 	}
 
-	return false;
-}
+	bool OctreeNode::update(Karkinolution::Organisms::Entities::EntityId id, const AABB &new_box) {
+		const auto had_remove = remove(id);
 
-bool OctreeNode::remove(Karkinolution::Organisms::Entities::EntityId id, const AABB &old_box) {
-	for (size_t i = entries.size(); i-- > 0;) {
-		if (entries[i].entity_id == id) {
-			entries.erase(entries.begin() + i);
-			return true;
+		if (!had_remove) {
+			return false; // if removal fails, insertion does not execute
 		}
+
+		insert(OctreeEntry{.entity_id = id, .bound = new_box});
+		return true;
 	}
 
-	if (is_leaf()) {
+	bool OctreeNode::update(Karkinolution::Organisms::Entities::EntityId id,
+							const AABB                                  &old_box,
+							const AABB                                  &new_box) {
+		const auto had_remove = remove(id, old_box);
+
+		if (!had_remove) {
+			return false; // if removal fails, insertion does not execute
+		}
+
+		insert(OctreeEntry{.entity_id = id, .bound = new_box});
+		return true;
+	}
+
+	bool OctreeNode::exists(Karkinolution::Organisms::Entities::EntityId id) const {
+		for (size_t i = entries.size(); i-- > 0;) {
+			if (entries[i].entity_id == id) {
+				return true;
+			}
+		}
+
+		if (is_leaf()) {
+			return false;
+		}
+
+		for (const auto &child : children) {
+			if (child == nullptr) {
+				continue;
+			}
+
+			const auto found = child->exists(id);
+
+			if (found) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
-	const auto index = child_containing(old_box);
+	bool OctreeNode::exists(Karkinolution::Organisms::Entities::EntityId id,
+							const AABB                                  &aabb) const {
+		for (size_t i = entries.size(); i-- > 0;) {
+			if (entries[i].entity_id == id) {
+				return true;
+			}
+		}
 
-	if (!index.has_value()) {
-		return false;
+		if (is_leaf()) {
+			return false;
+		}
+
+		const auto index = child_containing(aabb);
+
+		if (!index.has_value()) {
+			return false;
+		}
+
+		return children[index.value()]->exists(id, aabb);
 	}
 
-	return children[index.value()]->remove(id, old_box);
-}
+	void OctreeNode::find(const AABB &aabb, std::vector<OctreeEntry*> &output_entries) {
+		if (!bounds_.intersects(aabb)) {
+			return;
+		}
 
-bool OctreeNode::update(Karkinolution::Organisms::Entities::EntityId id, const AABB &new_box) {
-	const auto had_remove = remove(id);
+		for (auto &entry : entries) {
+			if (entry.bound.intersects(aabb)) {
+				output_entries.push_back(&entry);
+			}
+		}
 
-	if (!had_remove) {
-		return false; // if removal fails, insertion does not execute
-	}
+		if (is_leaf()) {
+			return;
+		}
 
-	insert(OctreeEntry{.entity_id = id, .bound = new_box});
-	return true;
-}
+		for (auto &child : children) {
+			if (child == nullptr) {
+				continue;
+			}
 
-bool OctreeNode::update(Karkinolution::Organisms::Entities::EntityId id, const AABB &old_box, const AABB &new_box) {
-	const auto had_remove = remove(id, old_box);
-
-	if (!had_remove) {
-		return false; // if removal fails, insertion does not execute
-	}
-
-	insert(OctreeEntry{.entity_id = id, .bound = new_box});
-	return true;
-}
-
-bool OctreeNode::exists(Karkinolution::Organisms::Entities::EntityId id) const {
-	for (size_t i = entries.size(); i-- > 0;) {
-		if (entries[i].entity_id == id) {
-			return true;
+			child->find(aabb, output_entries);
 		}
 	}
 
-	if (is_leaf()) {
-		return false;
-	}
-
-	for (const auto &child : children) {
-		if (child == nullptr) {
-			continue;
+	std::optional<Karkinolution::Organisms::Entities::EntityId>
+	OctreeNode::if_find_one_stop(const AABB &aabb) const {
+		if (!bounds_.intersects(aabb)) {
+			return std::nullopt;
 		}
 
-		const auto found = child->exists(id);
-
-		if (found) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool OctreeNode::exists(Karkinolution::Organisms::Entities::EntityId id, const AABB &aabb) const {
-	for (size_t i = entries.size(); i-- > 0;) {
-		if (entries[i].entity_id == id) {
-			return true;
-		}
-	}
-
-	if (is_leaf()) {
-		return false;
-	}
-
-	const auto index = child_containing(aabb);
-
-	if (!index.has_value()) {
-		return false;
-	}
-
-	return children[index.value()]->exists(id, aabb);
-}
-
-void OctreeNode::find(const AABB &aabb, std::vector<OctreeEntry*> &output_entries) {
-	if (!bounds_.intersects(aabb)) {
-		return;
-	}
-
-	for (auto &entry : entries) {
-		if (entry.bound.intersects(aabb)) {
-			output_entries.push_back(&entry);
-		}
-	}
-
-	if (is_leaf()) {
-		return;
-	}
-
-	for (auto &child : children) {
-		if (child == nullptr) {
-			continue;
+		for (auto &entry : entries) {
+			if (entry.bound.intersects(aabb)) {
+				return entry.entity_id;
+			}
 		}
 
-		child->find(aabb, output_entries);
-	}
-}
+		if (is_leaf()) {
+			return std::nullopt;
+		}
 
-std::optional<Karkinolution::Organisms::Entities::EntityId> OctreeNode::if_find_one_stop(const AABB &aabb) const {
-	if (!bounds_.intersects(aabb)) {
+		for (auto &child : children) {
+			if (child == nullptr) {
+				continue;
+			}
+			return child->if_find_one_stop(aabb);
+		}
 		return std::nullopt;
 	}
 
-	for (auto &entry : entries) {
-		if (entry.bound.intersects(aabb)) {
-			return entry.entity_id;
+	void OctreeNode::find(const AABB &aabb, std::vector<const OctreeEntry*> &output_entries) const {
+		if (!bounds_.intersects(aabb)) {
+			return;
+		}
+
+		for (const auto &entry : entries) {
+			if (entry.bound.intersects(aabb)) {
+				output_entries.push_back(&entry);
+			}
+		}
+
+		if (is_leaf()) {
+			return;
+		}
+
+		for (const auto &child : children) {
+			if (child == nullptr) {
+				continue;
+			}
+
+			child->find(aabb, output_entries);
 		}
 	}
 
-	if (is_leaf()) {
-		return std::nullopt;
+	std::vector<OctreeEntry*> OctreeNode::find(const AABB &aabb) {
+		std::vector<OctreeEntry*> output{};
+		find(aabb, output);
+		return output;
 	}
 
-	for (auto &child : children) {
-		if (child == nullptr) {
-			continue;
+	std::vector<const OctreeEntry*> OctreeNode::find(const AABB &aabb) const {
+		std::vector<const OctreeEntry*> output{};
+		find(aabb, output);
+		return output;
+	}
+
+	std::vector<Karkinolution::Organisms::Entities::EntityId>
+	OctreeNode::find_ids(const AABB &aabb) const {
+		auto found = find(aabb);
+
+		std::vector<Karkinolution::Organisms::Entities::EntityId> output;
+
+		for (const auto &entry : found) {
+			output.push_back(entry->entity_id);
 		}
-		return child->if_find_one_stop(aabb);
+		return output;
 	}
-	return std::nullopt;
-}
-
-void OctreeNode::find(const AABB &aabb, std::vector<const OctreeEntry*> &output_entries) const {
-	if (!bounds_.intersects(aabb)) {
-		return;
-	}
-
-	for (const auto &entry : entries) {
-		if (entry.bound.intersects(aabb)) {
-			output_entries.push_back(&entry);
-		}
-	}
-
-	if (is_leaf()) {
-		return;
-	}
-
-	for (const auto &child : children) {
-		if (child == nullptr) {
-			continue;
-		}
-
-		child->find(aabb, output_entries);
-	}
-}
-
-std::vector<OctreeEntry*> OctreeNode::find(const AABB &aabb) {
-	std::vector<OctreeEntry*> output{};
-	find(aabb, output);
-	return output;
-}
-
-std::vector<const OctreeEntry*> OctreeNode::find(const AABB &aabb) const {
-	std::vector<const OctreeEntry*> output{};
-	find(aabb, output);
-	return output;
-}
-
-std::vector<Karkinolution::Organisms::Entities::EntityId> OctreeNode::find_ids(const AABB &aabb) const {
-	auto found = find(aabb);
-
-	std::vector<Karkinolution::Organisms::Entities::EntityId> output;
-
-	for (const auto &entry : found) {
-		output.push_back(entry->entity_id);
-	}
-	return output;
-}
 } // namespace Karkinolution::Terrain::Trees::Octree

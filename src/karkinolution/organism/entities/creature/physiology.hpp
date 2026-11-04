@@ -1,12 +1,12 @@
 #pragma once
 #include "karkinolution/organism/entities/entities.hpp"
 
+#include <functional>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/entities.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/foods/nutrient.hpp>
-#include <functional>
 
 namespace Karkinolution {
 	namespace Organisms {
@@ -48,9 +48,9 @@ namespace Karkinolution {
 
 					} // namespace Growing
 
-					CreatureFunction get_diseases_effect(const Creature &creature,
+					CreatureFunction get_diseases_effect(const Creature         &creature,
 														 const EntitiesRegistry &entities);
-					bool is_dead(const Creature &creature);
+					bool             is_dead(const Creature &creature);
 
 					// Hatches a mature embryo into a fully-initialised Creature.
 					// Maps the embryo's current energy, life, health, volume, genome and
@@ -61,8 +61,8 @@ namespace Karkinolution {
 						bool should_stop_intent(const Brain::Brain &brain);
 					} // namespace BrainPhysiology
 
-			} // namespace Physiology
-		} // namespace Creature
-	} // namespace Entities
-} // namespace Organisms
+				} // namespace Physiology
+			} // namespace Creature
+		} // namespace Entities
+	} // namespace Organisms
 } // namespace Karkinolution

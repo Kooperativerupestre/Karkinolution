@@ -26,10 +26,10 @@ namespace Karkinolution {
 							std::optional<DamageComponent>       damage_component;
 							std::optional<MovementCostComponent> movement_cost_component;
 
-							Karkinolution::Core::Id::BaseIdType id;
-							Karkinolution::Math::Geometry::Radius radius;
-							Karkinolution::Math::Vec::Vec3 position;
-							Karkinolution::Terrain::Soil::SoilTypes type;
+							Karkinolution::Core::Id::BaseIdType                       id;
+							Karkinolution::Math::Geometry::Radius                     radius;
+							Karkinolution::Math::Vec::Vec3                            position;
+							Karkinolution::Terrain::Soil::SoilTypes                   type;
 							std::vector<Karkinolution::Terrain::Soil::SoilProperties> properties;
 							std::vector<Karkinolution::Organisms::Entities::GenericProperty>
 								required_properties;

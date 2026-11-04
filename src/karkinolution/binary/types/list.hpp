@@ -106,7 +106,8 @@ namespace Karkinolution {
 
 						inline auto make_header(std::size_t size) {
 
-							return Karkinolution::Binary::Serializer::serialize<ListSize>(static_cast<ListSize>(size));
+							return Karkinolution::Binary::Serializer::serialize<ListSize>(
+								static_cast<ListSize>(size));
 						}
 
 						template <std::size_t SizeofSerializedObject>

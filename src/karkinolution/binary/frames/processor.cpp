@@ -12,8 +12,9 @@
 #include <karkinolution/networking/api_adapter/soil.hpp>
 #include <karkinolution/networking/api_adapter/territory.hpp>
 
-ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFrame &frame,
-																Karkinolution::World::World              &world) {
+ResponseFrame
+Karkinolution::Binary::Frames::Processor::process(const RequestFrame          &frame,
+												  Karkinolution::World::World &world) {
 
 	const auto sub_type = frame.get_sub_type();
 
@@ -28,8 +29,8 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 																			 frame.get_payload());
 		} else if (resource == Resource::CORPSE) {
 			return Karkinolution::Networking::APIBYA::Corpse::see_corpse(world,
-																		frame.get_id(),
-																		frame.get_payload());
+																		 frame.get_id(),
+																		 frame.get_payload());
 		} else if (resource == Resource::SOIL) {
 			if (extra.target == Protocol::Request::SeeTarget::ONE) {
 				return Karkinolution::Networking::APIBYA::Soil::see_soil(world,
@@ -46,9 +47,10 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 		}
 	} else if (sub_type == RequestSubTypes::CREATE) {
 		if (resource == Resource::CREATURE) {
-			return Karkinolution::Networking::APIBYA::Creature::create_creature(world,
-																				frame.get_id(),
-																				frame.get_payload());
+			return Karkinolution::Networking::APIBYA::Creature::create_creature(
+				world,
+				frame.get_id(),
+				frame.get_payload());
 		}
 	}
 

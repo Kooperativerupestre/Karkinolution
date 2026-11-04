@@ -9,12 +9,12 @@ namespace Karkinolution {
 	namespace Networking {
 		namespace APIBYA {
 			namespace Soil {
-				ResponseFrame see_soil(const Karkinolution::World::World                  &world,
-									   RequestId                     request_id,
-									   const std::vector<std::byte> &payload);
-				ResponseFrame see_all_soils(const Karkinolution::World::World                  &world,
-											RequestId                     request_id,
-											const std::vector<std::byte> &payload);
+				ResponseFrame see_soil(const Karkinolution::World::World &world,
+									   RequestId                          request_id,
+									   const std::vector<std::byte>      &payload);
+				ResponseFrame see_all_soils(const Karkinolution::World::World &world,
+											RequestId                          request_id,
+											const std::vector<std::byte>      &payload);
 			} // namespace Soil
 		} // namespace APIBYA
 	} // namespace Networking

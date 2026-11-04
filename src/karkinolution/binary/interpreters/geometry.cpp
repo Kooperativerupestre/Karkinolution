@@ -11,8 +11,7 @@ GeometrySRI::serialize_radius(Karkinolution::Math::Geometry::Radius radius) {
 }
 
 UnitsSRI::StandardPhysicBytes
-GeometrySRI::serialize_circumference(
-	Karkinolution::Math::Geometry::Circumference circumference) {
+GeometrySRI::serialize_circumference(Karkinolution::Math::Geometry::Circumference circumference) {
 	return Karkinolution::Binary::Serializer::convert_double(circumference.value);
 }
 
@@ -29,20 +28,24 @@ GeometrySRI::serialize_area(Karkinolution::Math::Geometry::Area area) {
 // DSI implementations
 Karkinolution::Math::Geometry::Radius
 GeometryDSI::deserialize_radius(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Geometry::Radius(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+	return Karkinolution::Math::Geometry::Radius(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
 Karkinolution::Math::Geometry::Circumference
 GeometryDSI::deserialize_circumference(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Geometry::Circumference(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+	return Karkinolution::Math::Geometry::Circumference(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
 Karkinolution::Math::Geometry::Diameter
 GeometryDSI::deserialize_diameter(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Geometry::Diameter(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+	return Karkinolution::Math::Geometry::Diameter(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
 Karkinolution::Math::Geometry::Area
 GeometryDSI::deserialize_area(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Geometry::Area(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+	return Karkinolution::Math::Geometry::Area(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }

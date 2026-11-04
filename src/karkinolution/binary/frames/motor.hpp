@@ -3,12 +3,12 @@
 
 #include "karkinolution/binary/byte_range.hpp"
 #include "karkinolution/binary/byte_utils.hpp"
+#include "karkinolution/binary/frames/errors.hpp"
 #include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/frames/processor.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/binary/frames/errors.hpp"
 
 #include <array>
 #include <karkinolution/binary/core_aliases.hpp>
@@ -37,13 +37,15 @@ namespace Karkinolution {
 					Protocol::Aliases::FrameDeclaredSize declared_size) {
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::FrameDeclaredSize>(declared_size));
+						Karkinolution::Binary::Serializer::serialize<
+							Protocol::Aliases::FrameDeclaredSize>(declared_size));
 				}
 
 				void constexpr append_type(std::vector<std::byte> &frame, BinaryTypes type) {
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<Karkinolution::Binary::Protocol::Aliases::FrameType>(
+						Karkinolution::Binary::Serializer::serialize<
+							Karkinolution::Binary::Protocol::Aliases::FrameType>(
 							static_cast<Karkinolution::Binary::Protocol::Aliases::FrameType>(
 								type)));
 				}
@@ -168,7 +170,8 @@ namespace Karkinolution {
 					if (type == BinaryTypes::Response) {
 						Karkinolution::Binary::Utils::append_bytes(
 							frame,
-							Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Response::Cardinality>(
+							Karkinolution::Binary::Serializer::serialize<
+								Protocol::Aliases::Response::Cardinality>(
 								static_cast<Protocol::Aliases::Response::Cardinality>(
 									cardinality)));
 					}
@@ -209,7 +212,8 @@ namespace Karkinolution {
 
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::FrameSubType>(
+						Karkinolution::Binary::Serializer::serialize<
+							Protocol::Aliases::FrameSubType>(
 							static_cast<Protocol::Aliases::FrameSubType>(request.get_sub_type())));
 
 
@@ -222,7 +226,8 @@ namespace Karkinolution {
 					// resource
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameResource>(
+						Karkinolution::Binary::Serializer::serialize<
+							Protocol::Aliases::Request::FrameResource>(
 							static_cast<Protocol::Aliases::Request::FrameResource>(
 								request.get_resource())));
 
@@ -231,7 +236,8 @@ namespace Karkinolution {
 							std::get<Models::Request::SeeExtra>(request.get_extra()).target;
 						Karkinolution::Binary::Utils::append_bytes(
 							frame,
-							Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameSeeTarget>(
+							Karkinolution::Binary::Serializer::serialize<
+								Protocol::Aliases::Request::FrameSeeTarget>(
 								static_cast<Protocol::Aliases::Request::FrameSeeTarget>(target)));
 					}
 

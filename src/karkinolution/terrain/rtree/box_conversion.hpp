@@ -12,8 +12,8 @@ namespace Karkinolution {
 	namespace Terrain {
 		namespace Trees {
 			namespace RTree::BoxConversion {
-				Karkinolution::Terrain::Trees::RTree::Box3D
-				to_box(const Math::Units::Size &size, const Vec3 &position);
+				Karkinolution::Terrain::Trees::RTree::Box3D to_box(const Math::Units::Size &size,
+																   const Vec3 &position);
 				Karkinolution::Terrain::Trees::RTree::Box3D
 				to_box(const Math::Geometry::Radius &radius, const Vec3 &position);
 				Karkinolution::Terrain::Trees::RTree::Box3D
@@ -26,8 +26,9 @@ namespace Karkinolution {
 
 			template <typename T>
 			concept BoxConvertible = requires(const T &value) {
-				{ RTree::BoxConversion::to_box(value) }
-					-> std::same_as<Karkinolution::Terrain::Trees::RTree::Box3D>;
+				{
+					RTree::BoxConversion::to_box(value)
+				} -> std::same_as<Karkinolution::Terrain::Trees::RTree::Box3D>;
 			};
 
 		} // namespace Trees

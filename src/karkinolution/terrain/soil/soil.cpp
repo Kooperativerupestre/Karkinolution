@@ -6,35 +6,35 @@
 
 namespace Karkinolution::Terrain::Soil {
 
-// Blueprint
-Components Blueprint::gen_components() const {
-	Components comps;
+	// Blueprint
+	Components Blueprint::gen_components() const {
+		Components comps;
 
-	for (const auto &f_component : default_components) {
-		comps.add(f_component());
+		for (const auto &f_component : default_components) {
+			comps.add(f_component());
+		}
+		return comps;
 	}
-	return comps;
-}
 
-// SoilF
+	// SoilF
 
-SoilPiece SoilF::gen_soil_piece(SoilTypes                     s_t,
-								const Math::Geometry::Radius &radius,
-								const Vec3                   &position) {
+	SoilPiece SoilF::gen_soil_piece(SoilTypes                     s_t,
+									const Math::Geometry::Radius &radius,
+									const Vec3                   &position) {
 
-	SoilPiece soil{.radius = radius};
+		SoilPiece soil{.radius = radius};
 
-	soil.position = position;
-	soil.type     = s_t;
-	soil.id       = Core::Id::gen_id();
+		soil.position = position;
+		soil.type     = s_t;
+		soil.id       = Core::Id::gen_id();
 
-	const auto &blueprint = blueprints[s_t];
+		const auto &blueprint = blueprints[s_t];
 
 
-	soil.properties            = blueprint.properties;
-	soil.components            = blueprint.gen_components();
-	soil.required_capabilities = blueprint.required_properties;
-	return soil;
-}
+		soil.properties            = blueprint.properties;
+		soil.components            = blueprint.gen_components();
+		soil.required_capabilities = blueprint.required_properties;
+		return soil;
+	}
 
 } // namespace Karkinolution::Terrain::Soil

@@ -5,95 +5,95 @@
 
 namespace Karkinolution::Networking {
 
-void Connection::on_error(const std::string &error_message) {
-	std::cerr << "Error: " << error_message << "\n";
+	void Connection::on_error(const std::string &error_message) {
+		std::cerr << "Error: " << error_message << "\n";
 
-	on_closed(*this);
+		on_closed(*this);
 
-	close();
-}
+		close();
+	}
 
-void Connection::clear_sending_state() {
-	sending_state.bytes.clear();
-	sending_state.is_sending = false;
-}
+	void Connection::clear_sending_state() {
+		sending_state.bytes.clear();
+		sending_state.is_sending = false;
+	}
 
-void Connection::start() {
-	receive();
-}
+	void Connection::start() {
+		receive();
+	}
 
-Connection::Connection(Socket socket, Karkinolution::World::World &world)
-	: world(world)
-	, socket_(std::move(socket))
-	, protocol_session(world) {}
+	Connection::Connection(Socket socket, Karkinolution::World::World &world)
+		: world(world)
+		, socket_(std::move(socket))
+		, protocol_session(world) {}
 
-void Connection::receive() {
-	socket_.async_read_some(asio::buffer(temporary_requests),
+	void Connection::receive() {
+		socket_.async_read_some(asio::buffer(temporary_requests),
 
-							[this](const AsioErrorCode &error, std::size_t bytes_received) {
-								if (error) {
+								[this](const AsioErrorCode &error, std::size_t bytes_received) {
+									if (error) {
 
-									if (error == asio::error::eof) {
-										on_closed(*this);
-										close();
+										if (error == asio::error::eof) {
+											on_closed(*this);
+											close();
+											return;
+										}
+
+										on_error(error.message());
 										return;
 									}
 
-									on_error(error.message());
-									return;
-								}
+									protocol_session.receive(
+										std::span(temporary_requests).first(bytes_received));
 
-								protocol_session.receive(
-									std::span(temporary_requests).first(bytes_received));
-
-								send_next();
+									send_next();
 
 
-								receive();
-							});
-}
-
-void Connection::send_next() {
-
-	if (sending_state.is_sending) {
-		return;
+									receive();
+								});
 	}
 
-	if (!protocol_session.has_response()) {
-		return;
+	void Connection::send_next() {
+
+		if (sending_state.is_sending) {
+			return;
+		}
+
+		if (!protocol_session.has_response()) {
+			return;
+		}
+
+		auto response = protocol_session.pop_response();
+
+		sending_state.is_sending = true;
+
+
+		sending_state.bytes = Karkinolution::Binary::Frames::Motor::make_response_raw_bytes(
+			BinaryTypes::Response,
+			response.get_sub_type(),
+			response.get_request_id(),
+			response.get_payload(),
+			response.get_cardinality());
+
+		asio::async_write(socket_,
+						  asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
+
+						  [this](const AsioErrorCode &error, std::size_t) {
+							  if (error) {
+								  on_error(error.message());
+								  return;
+							  }
+
+							  clear_sending_state();
+
+							  std::cout << "Response sent 🦀\n";
+
+							  send_next();
+						  });
 	}
 
-	auto response = protocol_session.pop_response();
-
-	sending_state.is_sending = true;
-
-
-	sending_state.bytes =
-		Karkinolution::Binary::Frames::Motor::make_response_raw_bytes(BinaryTypes::Response,
-																	  response.get_sub_type(),
-																	  response.get_request_id(),
-																	  response.get_payload(),
-																	  response.get_cardinality());
-
-	asio::async_write(socket_,
-					  asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
-
-					  [this](const AsioErrorCode &error, std::size_t) {
-						  if (error) {
-							  on_error(error.message());
-							  return;
-						  }
-
-						  clear_sending_state();
-
-						  std::cout << "Response sent 🦀\n";
-
-						  send_next();
-					  });
-}
-
-void Connection::close() {
-	socket_.close();
-}
+	void Connection::close() {
+		socket_.close();
+	}
 
 } // namespace Karkinolution::Networking

@@ -62,9 +62,12 @@ namespace Karkinolution {
 
 						const auto stat = Karkinolution::Math::LV::get(limited_value);
 
-						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(stat.value);
-						const auto serialized_max   = Karkinolution::Binary::Serializer::serialize(stat.max);
-						const auto serialized_min   = Karkinolution::Binary::Serializer::serialize(stat.min);
+						const auto serialized_value =
+							Karkinolution::Binary::Serializer::serialize(stat.value);
+						const auto serialized_max =
+							Karkinolution::Binary::Serializer::serialize(stat.max);
+						const auto serialized_min =
+							Karkinolution::Binary::Serializer::serialize(stat.min);
 
 						Karkinolution::Binary::Utils::append_bytes(bytes,
 																   serialized_value,
@@ -90,9 +93,12 @@ namespace Karkinolution {
 							Karkinolution::Binary::Utils::NumericTypes::get<T>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NLT_Type);
-						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(value.value());
-						const auto serialize_max    = Karkinolution::Binary::Serializer::serialize(T(1));
-						const auto serialized_min   = Karkinolution::Binary::Serializer::serialize(T(0));
+						const auto serialized_value =
+							Karkinolution::Binary::Serializer::serialize(value.value());
+						const auto serialize_max =
+							Karkinolution::Binary::Serializer::serialize(T(1));
+						const auto serialized_min =
+							Karkinolution::Binary::Serializer::serialize(T(0));
 
 						Karkinolution::Binary::Utils::append_bytes(bytes,
 																   serialized_value,
@@ -108,8 +114,7 @@ namespace Karkinolution {
 					}
 
 					template <typename T>
-					BytesArray::Stat
-					serialize_signed_normalized_value(
+					BytesArray::Stat serialize_signed_normalized_value(
 						const Karkinolution::Math::LV::CT::SignedNormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
@@ -119,9 +124,12 @@ namespace Karkinolution {
 							Karkinolution::Binary::Utils::NumericTypes::get<T>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NLT_Type);
-						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(value.value());
-						const auto serialize_max    = Karkinolution::Binary::Serializer::serialize(T(1));
-						const auto serialized_min   = Karkinolution::Binary::Serializer::serialize(T(-1));
+						const auto serialized_value =
+							Karkinolution::Binary::Serializer::serialize(value.value());
+						const auto serialize_max =
+							Karkinolution::Binary::Serializer::serialize(T(1));
+						const auto serialized_min =
+							Karkinolution::Binary::Serializer::serialize(T(-1));
 
 						Karkinolution::Binary::Utils::append_bytes(bytes,
 																   serialized_value,
@@ -143,8 +151,9 @@ namespace Karkinolution {
 					inline Protocol::NumericType get_type(const std::vector<std::byte> &payload,
 														  std::size_t                   offset) {
 						return static_cast<Protocol::NumericType>(
-							Karkinolution::Binary::Deserializer::read_uint8_t(payload,
-													   offset + SRI::Stats::Layout::Type::OFFSET));
+							Karkinolution::Binary::Deserializer::read_uint8_t(
+								payload,
+								offset + SRI::Stats::Layout::Type::OFFSET));
 					}
 
 					template <typename T>
@@ -156,16 +165,16 @@ namespace Karkinolution {
 
 					template <typename T>
 					T get_max(const std::vector<std::byte> &payload, std::size_t offset) {
-						return Karkinolution::Binary::Deserializer::deserialize<T>(payload,
-															offset
-																+ SRI::Stats::Layout::Max::OFFSET);
+						return Karkinolution::Binary::Deserializer::deserialize<T>(
+							payload,
+							offset + SRI::Stats::Layout::Max::OFFSET);
 					}
 
 					template <typename T>
 					T get_min(const std::vector<std::byte> &payload, std::size_t offset) {
-						return Karkinolution::Binary::Deserializer::deserialize<T>(payload,
-															offset
-																+ SRI::Stats::Layout::Min::OFFSET);
+						return Karkinolution::Binary::Deserializer::deserialize<T>(
+							payload,
+							offset + SRI::Stats::Layout::Min::OFFSET);
 					}
 
 					template <typename T>

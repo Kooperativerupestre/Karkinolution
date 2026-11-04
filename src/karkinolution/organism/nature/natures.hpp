@@ -11,6 +11,7 @@ namespace Karkinolution {
 
 			class NatureRegistry : public Functional::BaseStorage<NatureId, NatureEntity> {
 				public:
+
 					Grass::Grass &at_grass(NatureId id) {
 						return std::get<Grass::Grass>(at(id));
 					}

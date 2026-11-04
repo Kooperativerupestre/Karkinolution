@@ -6,39 +6,39 @@
 
 namespace Karkinolution::Networking {
 
-struct SendingState {
-	public:
+	struct SendingState {
+		public:
 
-		bool is_sending = false;
+			bool is_sending = false;
 
-		std::vector<std::byte> bytes;
-};
+			std::vector<std::byte> bytes;
+	};
 
-class Connection {
-	public:
+	class Connection {
+		public:
 
-		Connection(Socket socket, Karkinolution::World::World &world);
+			Connection(Socket socket, Karkinolution::World::World &world);
 
-		void                                        start();
-		std::move_only_function<void(Connection &)> on_closed;
-		void                                        close();
+			void                                        start();
+			std::move_only_function<void(Connection &)> on_closed;
+			void                                        close();
 
-	private:
+		private:
 
-		void receive();
-		void send_next();
-		void send(const std::vector<std::byte> &bytes);
-		void on_error(const std::string &error_message);
+			void receive();
+			void send_next();
+			void send(const std::vector<std::byte> &bytes);
+			void on_error(const std::string &error_message);
 
 
-		void clear_sending_state();
+			void clear_sending_state();
 
-		ProtocolSession protocol_session;
-		Karkinolution::World::World          &world;
-		Socket          socket_;
+			ProtocolSession              protocol_session;
+			Karkinolution::World::World &world;
+			Socket                       socket_;
 
-		std::array<std::byte, RESPONSE_QUEUE_MAX_SIZE> temporary_requests;
-		SendingState                                   sending_state;
-};
+			std::array<std::byte, RESPONSE_QUEUE_MAX_SIZE> temporary_requests;
+			SendingState                                   sending_state;
+	};
 
 } // namespace Karkinolution::Networking

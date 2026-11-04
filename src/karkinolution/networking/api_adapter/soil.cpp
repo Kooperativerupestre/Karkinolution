@@ -12,9 +12,9 @@
 #include <karkinolution/networking/api_adapter/soil.hpp>
 
 ResponseFrame
-Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolution::World::World                  &world,
-												  RequestId                     request_id,
-												  const std::vector<std::byte> &payload) {
+Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolution::World::World &world,
+												  RequestId                          request_id,
+												  const std::vector<std::byte>      &payload) {
 	const auto id = SoilDSI::Request::interpret_like_get_soil(payload);
 
 	auto soil = Karkinolution::API::Soil::see_soil(world, id);
@@ -30,7 +30,7 @@ Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolution::World::Wo
 }
 
 ResponseFrame
-Karkinolution::Networking::APIBYA::Soil::see_all_soils(const Karkinolution::World::World                  &world,
+Karkinolution::Networking::APIBYA::Soil::see_all_soils(const Karkinolution::World::World &world,
 													   RequestId                     request_id,
 													   const std::vector<std::byte> &payload) {
 	auto all_soils = Karkinolution::API::Soil::see_all_soils(world);

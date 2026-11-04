@@ -58,8 +58,9 @@ namespace Karkinolution {
 					constexpr std::uint32_t calculate_payload_size(const T    &bytes,
 																   std::size_t fixed_header_size) {
 						const auto declared_size =
-							Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
-														ProtocolLayout::DeclaredSize::OFFSET);
+							Karkinolution::Binary::Deserializer::read_uint32_t(
+								bytes,
+								ProtocolLayout::DeclaredSize::OFFSET);
 						return calculate_payload_size(declared_size, fixed_header_size);
 					}
 
@@ -73,8 +74,9 @@ namespace Karkinolution {
 						}
 
 						const auto declared_size =
-							Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
-														ProtocolLayout::DeclaredSize::OFFSET);
+							Karkinolution::Binary::Deserializer::read_uint32_t(
+								bytes,
+								ProtocolLayout::DeclaredSize::OFFSET);
 						const auto minimum_declared_size =
 							fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
 						if (declared_size < minimum_declared_size) {
@@ -97,8 +99,9 @@ namespace Karkinolution {
 						}
 
 						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE
-							+ Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
-														  ProtocolLayout::DeclaredSize::OFFSET);
+							+ Karkinolution::Binary::Deserializer::read_uint32_t(
+													bytes,
+													ProtocolLayout::DeclaredSize::OFFSET);
 						std::vector<std::byte> frame;
 						frame.reserve(frame_size);
 						for (std::size_t i = 0; i < frame_size; ++i) {
@@ -113,8 +116,9 @@ namespace Karkinolution {
 				}
 
 				template <ByteRange T> BinaryTypes get_type(const T &bytes) {
-					const auto raw =
-						Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::DeclaredSize::SIZE);
+					const auto raw = Karkinolution::Binary::Deserializer::read_uint8_t(
+						bytes,
+						ProtocolLayout::DeclaredSize::SIZE);
 
 					Protocol::Validator::validate_type(raw);
 					return static_cast<BinaryTypes>(raw);
@@ -124,8 +128,9 @@ namespace Karkinolution {
 				Karkinolution::Binary::Protocol::Detail::CodeVariant get_sub_type(const T &bytes) {
 					Karkinolution::Binary::Protocol::Detail::CodeVariant sub_type;
 					const auto                                           type = get_type(bytes);
-					const auto                                           read =
-						Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
+					const auto read = Karkinolution::Binary::Deserializer::read_uint8_t(
+						bytes,
+						ProtocolLayout::SubType::OFFSET);
 
 					Karkinolution::Binary::Protocol::Validator::validate_sub_type(type, read);
 
@@ -163,7 +168,8 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> Resource get_resource(const T &bytes) {
-						auto read = Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::FrameSubType>(
+						auto read = Karkinolution::Binary::Deserializer::deserialize<
+							Protocol::Aliases::FrameSubType>(
 							bytes,
 							ProtocolLayout::Request::Resource::OFFSET);
 
@@ -602,7 +608,8 @@ namespace Karkinolution {
 
 					template <ByteRange T> ResponseCardinality get_cardinality(const T &bytes) {
 						return static_cast<ResponseCardinality>(
-							Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::Response::Cardinality>(
+							Karkinolution::Binary::Deserializer::deserialize<
+								Protocol::Aliases::Response::Cardinality>(
 								bytes,
 								ProtocolLayout::Response::Cardinality::OFFSET));
 					}

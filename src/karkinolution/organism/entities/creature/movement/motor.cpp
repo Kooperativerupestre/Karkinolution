@@ -1,12 +1,14 @@
 #include "karkinolution/math/physic/vec/model.hpp"
+
 #include <iostream>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/movement/motor.hpp>
 #include <karkinolution/world/world.hpp>
 
 namespace Karkinolution::Organisms::Entities::Creature::Movement::Motor {
-	MoveOutput MovementMotor::move(Creature &creature, Karkinolution::World::World &world,
-								   const Vec3 &new_position) {
+	MoveOutput MovementMotor::move(Creature                    &creature,
+								   Karkinolution::World::World &world,
+								   const Vec3                  &new_position) {
 		if (creature.position == new_position) {
 			std::cerr << "Moving a creature to the same position" << "\n";
 			return MoveOutput::SAME_POSITION;

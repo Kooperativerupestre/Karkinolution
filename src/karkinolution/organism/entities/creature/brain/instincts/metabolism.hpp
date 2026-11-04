@@ -8,26 +8,30 @@
 #include <karkinolution/organism/nature/grass/grass.hpp>
 
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
-struct FoodCandidate {
-		FoodHint hint;
-		Vec3     position;
-		float    energy;
-};
+	struct FoodCandidate {
+			FoodHint hint;
+			Vec3     position;
+			float    energy;
+	};
 
-namespace MetabolismInstincts {
-
-
-	FoodCandidate make_corpse_canditate(
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedCorpse &corpse);
-	FoodCandidate make_grass_candidate(
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedGrass &grass);
+	namespace MetabolismInstincts {
 
 
-	NormalizedValue<float> get_diet_preference(const Diet &diet, FoodHint hint);
-	NormalizedValue<float> get_diet_weight(const Creature &creature);
-	NormalizedValue<float> get_normalized_energy(float energy, const Creature &creature);
-	NormalizedValue<float> preference(const FoodCandidate &food_candidate,
-									  const Creature      &creature,
-									  const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception);
-} // namespace MetabolismInstincts
+		FoodCandidate make_corpse_canditate(
+			const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedCorpse
+				&corpse);
+		FoodCandidate make_grass_candidate(
+			const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedGrass
+				&grass);
+
+
+		NormalizedValue<float> get_diet_preference(const Diet &diet, FoodHint hint);
+		NormalizedValue<float> get_diet_weight(const Creature &creature);
+		NormalizedValue<float> get_normalized_energy(float energy, const Creature &creature);
+		NormalizedValue<float>
+		preference(const FoodCandidate &food_candidate,
+				   const Creature      &creature,
+				   const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
+					   &perception);
+	} // namespace MetabolismInstincts
 } // namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts

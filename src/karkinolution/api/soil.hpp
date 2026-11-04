@@ -9,7 +9,7 @@ namespace Karkinolution {
 	namespace API {
 		namespace Soil {
 			const Karkinolution::Terrain::Soil::SoilPiece*
-			see_soil(const Karkinolution::World::World &world,
+			see_soil(const Karkinolution::World::World  &world,
 					 Karkinolution::Core::Id::BaseIdType id);
 
 			inline auto see_all_soils(const Karkinolution::World::World &world) {

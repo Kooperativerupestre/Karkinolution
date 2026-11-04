@@ -3,7 +3,7 @@
 
 namespace Karkinolution::Lifecycle {
 	void run(Karkinolution::Organisms::Entities::Entity &entity,
-			 Karkinolution::World::World &world);
+			 Karkinolution::World::World                &world);
 
 	void run(Karkinolution::World::World &world);
 } // namespace Karkinolution::Lifecycle

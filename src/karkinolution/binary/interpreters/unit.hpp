@@ -40,12 +40,10 @@ namespace Karkinolution {
 					} // namespace BytesArrays
 
 					StandardPhysicBytes serialize_volume(Karkinolution::Math::Volume volume);
-					StandardPhysicBytes
-					serialize_mass(Karkinolution::Math::Units::Mass mass);
+					StandardPhysicBytes serialize_mass(Karkinolution::Math::Units::Mass mass);
 					StandardPhysicBytes
 					serialize_density(Karkinolution::Math::Units::Density density);
-					StandardPhysicBytes
-					serialize_meter(Karkinolution::Math::Units::Meter meter);
+					StandardPhysicBytes serialize_meter(Karkinolution::Math::Units::Meter meter);
 
 					StandardPhysicBytes
 					serialize_lateral(Karkinolution::Math::Units::Lateral lateral);
@@ -87,10 +85,10 @@ namespace Karkinolution {
 
 					Karkinolution::Math::SharedVolume
 					deserialize_shared_volume(const std::vector<std::byte> &payload,
-											  std::size_t offset);
+											  std::size_t                   offset);
 					Karkinolution::Math::Efficiency
 					deserialize_efficiency(const std::vector<std::byte> &payload,
-										   std::size_t offset);
+										   std::size_t                   offset);
 					Karkinolution::Math::Quality
 					deserialize_quality(const std::vector<std::byte> &payload, std::size_t offset);
 				} // namespace Units

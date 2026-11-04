@@ -7,13 +7,11 @@
 #include <karkinolution/binary/interpreters/stats.hpp>
 
 // SRI implementations
-UnitsSRI::StandardPhysicBytes
-UnitsSRI::serialize_volume(Karkinolution::Math::Volume volume) {
+UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_volume(Karkinolution::Math::Volume volume) {
 	return Karkinolution::Binary::Serializer::convert_double(volume.value);
 }
 
-UnitsSRI::StandardPhysicBytes
-UnitsSRI::serialize_mass(Karkinolution::Math::Units::Mass mass) {
+UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_mass(Karkinolution::Math::Units::Mass mass) {
 	return Karkinolution::Binary::Serializer::convert_double(mass.value);
 }
 
@@ -22,8 +20,7 @@ UnitsSRI::serialize_density(Karkinolution::Math::Units::Density density) {
 	return Karkinolution::Binary::Serializer::convert_double(density.value);
 }
 
-UnitsSRI::StandardPhysicBytes
-UnitsSRI::serialize_meter(Karkinolution::Math::Units::Meter meter) {
+UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_meter(Karkinolution::Math::Units::Meter meter) {
 	return Karkinolution::Binary::Serializer::convert_double(meter.value);
 }
 
@@ -37,13 +34,11 @@ UnitsSRI::serialize_height(Karkinolution::Math::Units::Height height) {
 	return Karkinolution::Binary::Serializer::convert_double(height.value);
 }
 
-UnitsSRI::StandardPhysicBytes
-UnitsSRI::serialize_depth(Karkinolution::Math::Units::Depth depth) {
+UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_depth(Karkinolution::Math::Units::Depth depth) {
 	return Karkinolution::Binary::Serializer::convert_double(depth.value);
 }
 
-UnitsSRI::BytesArrays::Size
-UnitsSRI::serialize_size(const Karkinolution::Math::Units::Size &size) {
+UnitsSRI::BytesArrays::Size UnitsSRI::serialize_size(const Karkinolution::Math::Units::Size &size) {
 	UnitsSRI::BytesArrays::Size bytes;
 
 	const auto lateral_serialized = UnitsSRI::serialize_lateral(size.lateral);
@@ -74,46 +69,53 @@ UnitsSRI::serialize_quality(const Karkinolution::Math::Quality &quality) {
 }
 
 // DSI implementations
-Karkinolution::Math::Volume
-UnitsDSI::deserialize_volume(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Volume(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+Karkinolution::Math::Volume UnitsDSI::deserialize_volume(const std::vector<std::byte> &payload,
+														 std::size_t                   offset) {
+	return Karkinolution::Math::Volume(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-Karkinolution::Math::Units::Mass
-UnitsDSI::deserialize_mass(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Units::Mass(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+Karkinolution::Math::Units::Mass UnitsDSI::deserialize_mass(const std::vector<std::byte> &payload,
+															std::size_t                   offset) {
+	return Karkinolution::Math::Units::Mass(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
 Karkinolution::Math::Units::Density
 UnitsDSI::deserialize_density(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Units::Density(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+	return Karkinolution::Math::Units::Density(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-Karkinolution::Math::Units::Meter
-UnitsDSI::deserialize_meter(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Units::Meter(Karkinolution::Binary::Deserializer::read_double(payload, offset));
+Karkinolution::Math::Units::Meter UnitsDSI::deserialize_meter(const std::vector<std::byte> &payload,
+															  std::size_t offset) {
+	return Karkinolution::Math::Units::Meter(
+		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
 Karkinolution::Math::Units::Lateral
 UnitsDSI::deserialize_lateral(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Units::Lateral(
-		Karkinolution::Binary::Deserializer::read_double(payload, offset + UnitsSRI::Layout::Lateral::OFFSET));
+	return Karkinolution::Math::Units::Lateral(Karkinolution::Binary::Deserializer::read_double(
+		payload,
+		offset + UnitsSRI::Layout::Lateral::OFFSET));
 }
 
 Karkinolution::Math::Units::Height
 UnitsDSI::deserialize_height(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Units::Height(
-		Karkinolution::Binary::Deserializer::read_double(payload, offset + UnitsSRI::Layout::Height::OFFSET));
+	return Karkinolution::Math::Units::Height(Karkinolution::Binary::Deserializer::read_double(
+		payload,
+		offset + UnitsSRI::Layout::Height::OFFSET));
 }
 
-Karkinolution::Math::Units::Depth
-UnitsDSI::deserialize_depth(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Math::Units::Depth UnitsDSI::deserialize_depth(const std::vector<std::byte> &payload,
+															  std::size_t offset) {
 	return Karkinolution::Math::Units::Depth(
-		Karkinolution::Binary::Deserializer::read_double(payload, offset + UnitsSRI::Layout::Depth::OFFSET));
+		Karkinolution::Binary::Deserializer::read_double(payload,
+														 offset + UnitsSRI::Layout::Depth::OFFSET));
 }
 
-Karkinolution::Math::Units::Size
-UnitsDSI::deserialize_size(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Math::Units::Size UnitsDSI::deserialize_size(const std::vector<std::byte> &payload,
+															std::size_t                   offset) {
 	const auto lateral = deserialize_lateral(payload, offset);
 	const auto height  = deserialize_height(payload, offset);
 	const auto depth   = deserialize_depth(payload, offset);
@@ -131,7 +133,7 @@ UnitsDSI::deserialize_efficiency(const std::vector<std::byte> &payload, std::siz
 	return Karkinolution::Math::Efficiency(StatsDSI::get_value<float>(payload, offset));
 }
 
-Karkinolution::Math::Quality
-UnitsDSI::deserialize_quality(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Math::Quality UnitsDSI::deserialize_quality(const std::vector<std::byte> &payload,
+														   std::size_t                   offset) {
 	return Karkinolution::Math::Quality(StatsDSI::get_value<float>(payload, offset));
 }

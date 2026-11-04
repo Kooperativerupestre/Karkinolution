@@ -24,8 +24,7 @@ namespace Karkinolution {
 
 					UnitsSRI::StandardPhysicBytes
 					serialize_radius(Karkinolution::Math::Geometry::Radius radius);
-					UnitsSRI::StandardPhysicBytes
-					serialize_circumference(
+					UnitsSRI::StandardPhysicBytes serialize_circumference(
 						Karkinolution::Math::Geometry::Circumference circumference);
 					UnitsSRI::StandardPhysicBytes
 					serialize_diameter(Karkinolution::Math::Geometry::Diameter diameter);

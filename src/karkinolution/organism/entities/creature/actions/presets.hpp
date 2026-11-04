@@ -8,16 +8,17 @@
 
 namespace Karkinolution::Organisms::Entities::Creature::Actions {
 
-struct MovePreset {
-		Karkinolution::Math::Vec::Vec3 new_coord;
-};
+	struct MovePreset {
+			Karkinolution::Math::Vec::Vec3 new_coord;
+	};
 
-struct EatPreset {
-		Karkinolution::Organisms::FoodHint hint;
-		std::variant<Karkinolution::Organisms::Entities::EntityId,
-					 Karkinolution::Organisms::Nature::NatureId> id;
-};
+	struct EatPreset {
+			Karkinolution::Organisms::FoodHint hint;
+			std::variant<Karkinolution::Organisms::Entities::EntityId,
+						 Karkinolution::Organisms::Nature::NatureId>
+				id;
+	};
 
-using AllPresets = std::variant<MovePreset, EatPreset>;
+	using AllPresets = std::variant<MovePreset, EatPreset>;
 
 } // namespace Karkinolution::Organisms::Entities::Creature::Actions

@@ -12,64 +12,65 @@
 
 namespace KarkinolutionSDK::Protocol {
 
-void ProtocolSession::receive(std::span<const std::byte> bytes) {
-	incoming_responses.add(bytes);
-	sync_requests();
-}
+	void ProtocolSession::receive(std::span<const std::byte> bytes) {
+		incoming_responses.add(bytes);
+		sync_requests();
+	}
 
-void ProtocolSession::sync_requests() {
+	void ProtocolSession::sync_requests() {
 
-	while (Karkinolution::Networking::FrameBufferAnalyzer::has_frame(incoming_responses)
-		   == Karkinolution::Networking::BufferExistence::YES) {
+		while (Karkinolution::Networking::FrameBufferAnalyzer::has_frame(incoming_responses)
+			   == Karkinolution::Networking::BufferExistence::YES) {
 
-		const auto raw_frame =
-			Karkinolution::Networking::FrameBufferAnalyzer::get_frame(incoming_responses).value();
-		for (std::size_t i = 0; i < raw_frame.size(); ++i) {
-			incoming_responses.pop_front();
-		}
-
-		const auto           type  = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
-		ResponseFrameVariant frame = [&]() -> ResponseFrameVariant {
-			if (type == BinaryTypes::Response) {
-				return Karkinolution::Binary::Frames::Parser::parse_response_frame(raw_frame);
-			} else if (type == BinaryTypes::Error) {
-				return Karkinolution::Binary::Frames::Parser::parse_error_frame(raw_frame);
+			const auto raw_frame =
+				Karkinolution::Networking::FrameBufferAnalyzer::get_frame(incoming_responses)
+					.value();
+			for (std::size_t i = 0; i < raw_frame.size(); ++i) {
+				incoming_responses.pop_front();
 			}
-			throw ClientError("Client received a request frame from the server");
-		}();
 
-		const auto added = pending_requests.add_response(frame);
+			const auto           type  = Karkinolution::Binary::Frames::Parser::get_type(raw_frame);
+			ResponseFrameVariant frame = [&]() -> ResponseFrameVariant {
+				if (type == BinaryTypes::Response) {
+					return Karkinolution::Binary::Frames::Parser::parse_response_frame(raw_frame);
+				} else if (type == BinaryTypes::Error) {
+					return Karkinolution::Binary::Frames::Parser::parse_error_frame(raw_frame);
+				}
+				throw ClientError("Client received a request frame from the server");
+			}();
 
-		if (!added) {
-			std::cout << "Pending requests reached the max size\n";
+			const auto added = pending_requests.add_response(frame);
+
+			if (!added) {
+				std::cout << "Pending requests reached the max size\n";
+			}
 		}
 	}
-}
 
-void ProtocolSession::register_request(RequestId id) {
-	if (!pending_requests.add_request(id)) {
-		throw ClientError(std::format("Request ID {} is already pending", id));
+	void ProtocolSession::register_request(RequestId id) {
+		if (!pending_requests.add_request(id)) {
+			throw ClientError(std::format("Request ID {} is already pending", id));
+		}
 	}
-}
 
-void ProtocolSession::enqueue_request(std::span<const std::byte> request) {
-	requests.add(request);
-}
+	void ProtocolSession::enqueue_request(std::span<const std::byte> request) {
+		requests.add(request);
+	}
 
-std::optional<std::vector<std::byte>> ProtocolSession::pop_request() {
-	return requests.pop_front();
-}
+	std::optional<std::vector<std::byte>> ProtocolSession::pop_request() {
+		return requests.pop_front();
+	}
 
-ResponseResult ProtocolSession::pop_response(RequestId id) {
-	return pending_requests.pop_response(id);
-}
+	ResponseResult ProtocolSession::pop_response(RequestId id) {
+		return pending_requests.pop_response(id);
+	}
 
-ResponseResult ProtocolSession::await_response(RequestId id) {
-	return pending_requests.await_response(id);
-}
+	ResponseResult ProtocolSession::await_response(RequestId id) {
+		return pending_requests.await_response(id);
+	}
 
-void ProtocolSession::fail_pending_requests() {
-	pending_requests.fail_all_by_disconnection();
-}
+	void ProtocolSession::fail_pending_requests() {
+		pending_requests.fail_all_by_disconnection();
+	}
 
 } // namespace KarkinolutionSDK::Protocol

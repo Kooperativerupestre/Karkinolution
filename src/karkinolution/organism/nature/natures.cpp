@@ -8,17 +8,17 @@
 #include <utility>
 
 namespace Karkinolution::Organisms::Nature {
-const Math::Geometry::Radius &NatureGetters::get_radius(const NatureEntity &nature_entity) {
-	if (std::holds_alternative<Grass::Grass>(nature_entity)) {
-		return std::get<Grass::Grass>(nature_entity).radius;
+	const Math::Geometry::Radius &NatureGetters::get_radius(const NatureEntity &nature_entity) {
+		if (std::holds_alternative<Grass::Grass>(nature_entity)) {
+			return std::get<Grass::Grass>(nature_entity).radius;
+		}
+		std::unreachable();
 	}
-	std::unreachable();
-}
 
-const Vec3 &NatureGetters::get_position(const NatureEntity &nature) {
-	if (std::holds_alternative<Grass::Grass>(nature)) {
-		return std::get<Grass::Grass>(nature).position;
+	const Vec3 &NatureGetters::get_position(const NatureEntity &nature) {
+		if (std::holds_alternative<Grass::Grass>(nature)) {
+			return std::get<Grass::Grass>(nature).position;
+		}
+		std::unreachable();
 	}
-	std::unreachable();
-}
 } // namespace Karkinolution::Organisms::Nature

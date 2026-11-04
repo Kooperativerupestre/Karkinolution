@@ -3,7 +3,7 @@
 #include <karkinolution/api/soil.hpp>
 
 const Karkinolution::Terrain::Soil::SoilPiece*
-Karkinolution::API::Soil::see_soil(const Karkinolution::World::World &world,
+Karkinolution::API::Soil::see_soil(const Karkinolution::World::World  &world,
 								   Karkinolution::Core::Id::BaseIdType id) {
 	const auto soil =
 		world.see_territory().registry().try_at(Karkinolution::Terrain::Soil::SoilPieceId{id});

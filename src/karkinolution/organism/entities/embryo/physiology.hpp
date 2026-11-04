@@ -17,42 +17,42 @@
 // Reserved for new_max_life_increment -> 20%
 
 namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
-inline constexpr NormalizedValue<float> BASE_VALUE_LIFE_INCREMENT{0.3f};
-inline constexpr NormalizedValue<float> BASE_VALUE_ENERGY_INCREMENT{0.3f};
-inline constexpr NormalizedValue<float> BASE_VALUE_HEALTH_INCREMENT{0.1f};
-inline constexpr NormalizedValue<float> BASE_VALUE_MAX_LIFE_INCREMENT{0.1f};
-inline constexpr NormalizedValue<float> BASE_VALUE_MAX_ENERGY_INCREMENT{0.2f};
-inline constexpr NormalizedValue<float> BASE_VALUE_VOLUME_INCREMENT{0.1f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_LIFE_INCREMENT{0.3f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_ENERGY_INCREMENT{0.3f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_HEALTH_INCREMENT{0.1f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_MAX_LIFE_INCREMENT{0.1f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_MAX_ENERGY_INCREMENT{0.2f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_VOLUME_INCREMENT{0.1f};
 
-inline constexpr float EMBRYO_BASAL_METABOLISM = 10.0f;
+	inline constexpr float EMBRYO_BASAL_METABOLISM = 10.0f;
 
-struct ResourceTrade {
-		const NormalizedValue<float> cost;
-		const float                  gain;
-};
+	struct ResourceTrade {
+			const NormalizedValue<float> cost;
+			const float                  gain;
+	};
 
-namespace EmbryoGrowingPhysiology {
-	NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio,
-										 const NormalizedValue<float> &factor);
+	namespace EmbryoGrowingPhysiology {
+		NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio,
+											 const NormalizedValue<float> &factor);
 
-	ResourceTrade get_new_max_energy_increment(const Embryo &embryo);
+		ResourceTrade get_new_max_energy_increment(const Embryo &embryo);
 
-	ResourceTrade get_new_max_life_increment(const Embryo &embryo);
+		ResourceTrade get_new_max_life_increment(const Embryo &embryo);
 
-	ResourceTrade get_new_life_increment(const Embryo &embryo);
+		ResourceTrade get_new_life_increment(const Embryo &embryo);
 
-	ResourceTrade get_new_energy_increment(const Embryo &embryo);
+		ResourceTrade get_new_energy_increment(const Embryo &embryo);
 
-	ResourceTrade get_new_health_increment(const Embryo &embryo);
+		ResourceTrade get_new_health_increment(const Embryo &embryo);
 
-	ResourceTrade get_new_volume_increment(const Embryo &embryo);
-} // namespace EmbryoGrowingPhysiology
+		ResourceTrade get_new_volume_increment(const Embryo &embryo);
+	} // namespace EmbryoGrowingPhysiology
 
-namespace EmbryoPhysiology {
-	bool is_dead(const Embryo &embryo);
+	namespace EmbryoPhysiology {
+		bool is_dead(const Embryo &embryo);
 
-	float basal_metabolism(const Embryo &embryo);
+		float basal_metabolism(const Embryo &embryo);
 
-	float transfer_into_nutrients(const Embryo &embryo);
-} // namespace EmbryoPhysiology
+		float transfer_into_nutrients(const Embryo &embryo);
+	} // namespace EmbryoPhysiology
 } // namespace Karkinolution::Organisms::Entities::Embryo::Physiology

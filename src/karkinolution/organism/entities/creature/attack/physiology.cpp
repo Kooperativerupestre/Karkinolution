@@ -3,8 +3,7 @@
 #include <karkinolution/organism/values.hpp>
 
 namespace Karkinolution::Organisms::Entities::Creature::Attack::Physiology {
-	Karkinolution::Organisms::Damage
-	AttackPhysiology::calculate_damage(const Creature &creature) {
+	Karkinolution::Organisms::Damage AttackPhysiology::calculate_damage(const Creature &creature) {
 		return creature.strength().value;
 	}
 } // namespace Karkinolution::Organisms::Entities::Creature::Attack::Physiology

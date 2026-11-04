@@ -24,8 +24,10 @@ namespace Karkinolution {
 
 					std::vector<std::byte> serialize_error(const std::string &error);
 
-					SerializedErrorOutput serialize_creature_was_not_found(Karkinolution::Core::Id::BaseIdType id);
-					SerializedErrorOutput serialize_corpse_was_not_found(Karkinolution::Core::Id::BaseIdType id);
+					SerializedErrorOutput
+					serialize_creature_was_not_found(Karkinolution::Core::Id::BaseIdType id);
+					SerializedErrorOutput
+					serialize_corpse_was_not_found(Karkinolution::Core::Id::BaseIdType id);
 				} // namespace Error
 			} // namespace SRI
 		} // namespace Interpreters

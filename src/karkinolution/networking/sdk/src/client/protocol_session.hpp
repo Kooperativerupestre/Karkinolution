@@ -23,10 +23,10 @@ namespace KarkinolutionSDK {
 
 			private:
 
-				void            sync_requests();
-				PendingRequests pending_requests;
+				void                                      sync_requests();
+				PendingRequests                           pending_requests;
 				Karkinolution::Networking::RawFrameBuffer incoming_responses;
-				RequestQueue    requests;
+				RequestQueue                              requests;
 		};
 	} // namespace Protocol
 } // namespace KarkinolutionSDK

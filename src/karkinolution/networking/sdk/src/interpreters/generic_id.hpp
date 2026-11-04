@@ -4,7 +4,7 @@
 
 namespace KarkinolutionSDK::Interpreters {
 
-inline constexpr RequestId GENERIC_INTERPRETER_ID = 45;
+	inline constexpr RequestId GENERIC_INTERPRETER_ID = 45;
 
 } // namespace KarkinolutionSDK::Interpreters
 

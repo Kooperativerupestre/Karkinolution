@@ -4,26 +4,26 @@
 
 namespace KarkinolutionSDK::Protocol {
 
-bool RequestQueue::add(std::span<const std::byte> bytes) {
-	std::lock_guard lock{mutex};
+	bool RequestQueue::add(std::span<const std::byte> bytes) {
+		std::lock_guard lock{mutex};
 
-	if (queue.size() >= MAX_REQUEST_QUEUE_SIZE) {
-		return false;
+		if (queue.size() >= MAX_REQUEST_QUEUE_SIZE) {
+			return false;
+		}
+
+		queue.emplace(bytes.begin(), bytes.end());
+		return true;
 	}
 
-	queue.emplace(bytes.begin(), bytes.end());
-	return true;
-}
+	std::optional<std::vector<std::byte>> RequestQueue::pop_front() {
+		std::lock_guard lock{mutex};
+		if (queue.empty()) {
+			return std::nullopt;
+		}
 
-std::optional<std::vector<std::byte>> RequestQueue::pop_front() {
-	std::lock_guard lock{mutex};
-	if (queue.empty()) {
-		return std::nullopt;
+		auto front = std::move(queue.front());
+		queue.pop();
+		return front;
 	}
-
-	auto front = std::move(queue.front());
-	queue.pop();
-	return front;
-}
 
 } // namespace KarkinolutionSDK::Protocol

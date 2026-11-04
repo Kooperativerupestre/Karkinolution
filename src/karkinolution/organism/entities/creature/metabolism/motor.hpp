@@ -8,7 +8,6 @@
 namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Motor {
 	namespace MetabolismMotor {
 		void eat(Creature &creature, Karkinolution::Organisms::RawMeat &raw_meat);
-		void eat(Creature &creature,
-				 Karkinolution::Organisms::Nature::Grass::GrassMatter &grass);
+		void eat(Creature &creature, Karkinolution::Organisms::Nature::Grass::GrassMatter &grass);
 	} // namespace MetabolismMotor
 } // namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Motor

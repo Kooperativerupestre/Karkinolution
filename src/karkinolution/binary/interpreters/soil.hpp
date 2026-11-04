@@ -94,9 +94,9 @@ namespace Karkinolution {
 					std::byte
 					serialize_property(Karkinolution::Terrain::Soil::SoilProperties property);
 
-					BytesArray::Properties
-					serialize_properties(
-						const std::vector<Karkinolution::Terrain::Soil::SoilProperties> &properties);
+					BytesArray::Properties serialize_properties(
+						const std::vector<Karkinolution::Terrain::Soil::SoilProperties>
+							&properties);
 
 					BytesArray::RequiredCapabilities serialize_required_capabilities(
 						const std::vector<Karkinolution::Organisms::Entities::GenericProperty>
@@ -111,7 +111,8 @@ namespace Karkinolution {
 					serialize_soil(const Karkinolution::Terrain::Soil::SoilPiece &soil);
 
 					namespace Request {
-						std::array<std::byte, 8> make_see_soil(Karkinolution::Core::Id::BaseIdType id);
+						std::array<std::byte, 8>
+						make_see_soil(Karkinolution::Core::Id::BaseIdType id);
 						std::array<std::byte, 1> make_see_all_soils();
 					} // namespace Request
 
@@ -124,8 +125,10 @@ namespace Karkinolution {
 					get_damage(const std::vector<std::byte> &payload, std::size_t offset);
 					std::optional<Interpreters::Models::Soil::MovementCostComponent>
 					get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Core::Id::BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec3 get_position(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Core::Id::BaseIdType
+					get_id(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Vec::Vec3
+					get_position(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Terrain::Soil::SoilTypes
 					get_type(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Math::Geometry::Radius
@@ -141,7 +144,8 @@ namespace Karkinolution {
 															  std::size_t                   offset);
 
 					namespace Request {
-						Karkinolution::Core::Id::BaseIdType interpret_like_get_soil(const std::vector<std::byte> &payload);
+						Karkinolution::Core::Id::BaseIdType
+						interpret_like_get_soil(const std::vector<std::byte> &payload);
 					} // namespace Request
 				} // namespace Soil
 			} // namespace DSI

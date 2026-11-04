@@ -8,33 +8,33 @@
 
 namespace Karkinolution::Networking {
 
-inline constexpr size_t RESPONSE_QUEUE_MAX_SIZE = 200;
+	inline constexpr size_t RESPONSE_QUEUE_MAX_SIZE = 200;
 
-class ResponseQueue {
-	private:
+	class ResponseQueue {
+		private:
 
-		std::queue<ResponseFrame> frames;
+			std::queue<ResponseFrame> frames;
 
-	public:
+		public:
 
-		const auto &view() const {
-			return frames;
-		}
-
-		bool add(ResponseFrame frame) {
-			if (frames.size() >= RESPONSE_QUEUE_MAX_SIZE) {
-				return false;
+			const auto &view() const {
+				return frames;
 			}
 
-			frames.emplace(std::move(frame));
-			return true;
-		}
+			bool add(ResponseFrame frame) {
+				if (frames.size() >= RESPONSE_QUEUE_MAX_SIZE) {
+					return false;
+				}
 
-		ResponseFrame pop_front() {
-			auto frame = std::move(frames.front());
-			frames.pop();
-			return frame;
-		}
-};
+				frames.emplace(std::move(frame));
+				return true;
+			}
+
+			ResponseFrame pop_front() {
+				auto frame = std::move(frames.front());
+				frames.pop();
+				return frame;
+			}
+	};
 
 } // namespace Karkinolution::Networking

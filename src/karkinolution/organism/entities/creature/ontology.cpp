@@ -9,45 +9,45 @@
 
 namespace Karkinolution::Organisms::Entities::Creature {
 
-// Diet
+	// Diet
 
-const NormalizedValue<float> &Diet::grass_matter_score() const {
-	return _grass_matter_score;
-}
-
-const NormalizedValue<float> &Diet::raw_meat_score() const {
-	return _raw_meat_score;
-}
-
-const NormalizedValue<float> &Diet::operator[](FoodHint food_hint) const {
-	if (food_hint == FoodHint::GRASS_MATTER) {
+	const NormalizedValue<float> &Diet::grass_matter_score() const {
 		return _grass_matter_score;
-	} else if (food_hint == FoodHint::RAW_MEAT) {
+	}
+
+	const NormalizedValue<float> &Diet::raw_meat_score() const {
 		return _raw_meat_score;
-	} else {
-		throw std::runtime_error("Enum doesn't exist");
 	}
-}
 
-// Gender
-
-Gender inverse_sex(Gender g) {
-	if (g == Gender::MALE) {
-		return Gender::FEMALE;
-	} else {
-		return Gender::MALE;
+	const NormalizedValue<float> &Diet::operator[](FoodHint food_hint) const {
+		if (food_hint == FoodHint::GRASS_MATTER) {
+			return _grass_matter_score;
+		} else if (food_hint == FoodHint::RAW_MEAT) {
+			return _raw_meat_score;
+		} else {
+			throw std::runtime_error("Enum doesn't exist");
+		}
 	}
-}
 
-Gender choose_random_gender() {
-	return KRandom::choice(std::vector<Gender>{Gender::FEMALE, Gender::FEMALE});
-}
+	// Gender
 
-CreatureSpecies chooes_random_specie() {
-	return KRandom::choice({CreatureSpecies::CRAB,
-							CreatureSpecies::CROCODILE,
-							CreatureSpecies::FISH,
-							CreatureSpecies::HIPPOPOTAMUS});
-}
+	Gender inverse_sex(Gender g) {
+		if (g == Gender::MALE) {
+			return Gender::FEMALE;
+		} else {
+			return Gender::MALE;
+		}
+	}
+
+	Gender choose_random_gender() {
+		return KRandom::choice(std::vector<Gender>{Gender::FEMALE, Gender::FEMALE});
+	}
+
+	CreatureSpecies chooes_random_specie() {
+		return KRandom::choice({CreatureSpecies::CRAB,
+								CreatureSpecies::CROCODILE,
+								CreatureSpecies::FISH,
+								CreatureSpecies::HIPPOPOTAMUS});
+	}
 
 } // namespace Karkinolution::Organisms::Entities::Creature

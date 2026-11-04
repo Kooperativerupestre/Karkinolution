@@ -5,8 +5,10 @@
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/networking/api_adapter/corpse.hpp>
 
-ResponseFrame Karkinolution::Networking::APIBYA::Corpse::see_corpse(
-	const Karkinolution::World::World &world, RequestId request_id, const std::vector<std::byte> &payload) {
+ResponseFrame
+Karkinolution::Networking::APIBYA::Corpse::see_corpse(const Karkinolution::World::World &world,
+													  RequestId                          request_id,
+													  const std::vector<std::byte>      &payload) {
 	const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
 
 	auto corpse = Karkinolution::API::Corpse::see_corpse(world, id);

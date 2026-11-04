@@ -40,7 +40,8 @@ namespace Karkinolution {
 					double get_x(const std::vector<std::byte> &payload, std::size_t offset);
 					double get_y(const std::vector<std::byte> &payload, std::size_t offset);
 					double get_z(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec3   get_vec(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Vec::Vec3 get_vec(const std::vector<std::byte> &payload,
+														   std::size_t                   offset);
 				} // namespace Vec
 			} // namespace DSI
 		} // namespace Interpreters

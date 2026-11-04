@@ -3,8 +3,8 @@
 
 namespace Karkinolution::Organisms::Entities::Corpse {
 
-bool Corpse::ready_to_disapear() const {
-	return raw_meat.value == Math::Approx<float>(0.0f);
-}
+	bool Corpse::ready_to_disapear() const {
+		return raw_meat.value == Math::Approx<float>(0.0f);
+	}
 
 } // namespace Karkinolution::Organisms::Entities::Corpse

@@ -9,15 +9,15 @@
 
 namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Physiology {
 
-inline constexpr NormalizedValue<float> FOOD_RATIO_FOR_ENERGY          = 0.5f;
-inline constexpr NormalizedValue<float> FOOD_RATIO_FOR_RESERVED_ENERGY = 0.5f;
+	inline constexpr NormalizedValue<float> FOOD_RATIO_FOR_ENERGY          = 0.5f;
+	inline constexpr NormalizedValue<float> FOOD_RATIO_FOR_RESERVED_ENERGY = 0.5f;
 
-struct FoodDivision {
-		float for_energy, for_reserved_energy;
-};
+	struct FoodDivision {
+			float for_energy, for_reserved_energy;
+	};
 
-FoodDivision divide(float energy);
-FoodDivision divide(const Karkinolution::Organisms::Energy &energy);
-FoodDivision divide(const Karkinolution::Organisms::Nature::Grass::GrassMatter &grass);
+	FoodDivision divide(float energy);
+	FoodDivision divide(const Karkinolution::Organisms::Energy &energy);
+	FoodDivision divide(const Karkinolution::Organisms::Nature::Grass::GrassMatter &grass);
 
 } // namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Physiology
