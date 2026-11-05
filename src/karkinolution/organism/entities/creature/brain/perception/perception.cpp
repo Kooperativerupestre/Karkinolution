@@ -2,7 +2,7 @@
 #include "karkinolution/math/units.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
 
-#include <karkinolution/functional/base_storage.hpp>
+#include <karkinolution/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -57,38 +57,38 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		std::vector<Karkinolution::Organisms::Nature::NatureId> natures;
 
 		if (entity_filter.has_value()) {
-			for (const auto &[id, entity] : perception.entities().internal_data()) {
+			for (const auto &[id, entity] : perception.entities()) {
 				if (entity_filter.value()(entity)) {
 					entities.push_back(id);
 				}
 			}
 		} else {
-			for (const auto id : perception.entities().keys()) {
-				entities.push_back(id);
+			for (const auto &entry : perception.entities()) {
+				entities.push_back(entry.first);
 			}
 		}
 
 		if (soil_filter.has_value()) {
-			for (const auto &[id, soil] : perception.soils().internal_data()) {
+			for (const auto &[id, soil] : perception.soils()) {
 				if (soil_filter.value()(soil)) {
 					soils.push_back(id);
 				}
 			}
 		} else {
-			for (const auto id : perception.soils().keys()) {
-				soils.push_back(id);
+			for (const auto &entry : perception.soils()) {
+				soils.push_back(entry.first);
 			}
 		}
 
 		if (nature_filter.has_value()) {
-			for (const auto &[id, nature] : perception.natures().internal_data()) {
+			for (const auto &[id, nature] : perception.natures()) {
 				if (nature_filter.value()(nature)) {
 					natures.push_back(id);
 				}
 			}
 		} else {
-			for (const auto id : perception.natures().keys()) {
-				natures.push_back(id);
+			for (const auto &entry : perception.natures()) {
+				natures.push_back(entry.first);
 			}
 		}
 
@@ -113,29 +113,29 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		std::vector<Karkinolution::Organisms::Nature::NatureId> v_natures;
 
 		if (entity_filter.has_value()) {
-			for (const auto &[id, entity] : perception.entities().internal_data()) {
+			for (const auto &[id, entity] : perception.entities()) {
 				if (std::ranges::contains(entities, id) && entity_filter.value()(entity)) {
 					v_entities.push_back(id);
 				}
 			}
 		} else {
-			for (const auto id : perception.entities().keys()) {
-				if (std::ranges::contains(entities, id)) {
-					v_entities.push_back(id);
+			for (const auto &entry : perception.entities()) {
+				if (std::ranges::contains(entities, entry.first)) {
+					v_entities.push_back(entry.first);
 				}
 			}
 		}
 
 		if (soil_filter.has_value()) {
-			for (const auto &[id, soil] : perception.soils().internal_data()) {
+			for (const auto &[id, soil] : perception.soils()) {
 				if (std::ranges::contains(soils, id) && soil_filter.value()(soil)) {
 					v_soils.push_back(id);
 				}
 			}
 		} else {
-			for (const auto id : perception.soils().keys()) {
-				if (std::ranges::contains(soils, id)) {
-					v_soils.push_back(id);
+			for (const auto &entry : perception.soils()) {
+				if (std::ranges::contains(soils, entry.first)) {
+					v_soils.push_back(entry.first);
 				}
 			}
 		}
@@ -146,14 +146,14 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		 * so all perceived natures are considered here.
 		 */
 		if (nature_filter.has_value()) {
-			for (const auto &[id, nature] : perception.natures().internal_data()) {
+			for (const auto &[id, nature] : perception.natures()) {
 				if (nature_filter.value()(nature)) {
 					v_natures.push_back(id);
 				}
 			}
 		} else {
-			for (const auto id : perception.natures().keys()) {
-				v_natures.push_back(id);
+			for (const auto &entry : perception.natures()) {
+				v_natures.push_back(entry.first);
 			}
 		}
 
@@ -228,8 +228,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 															const std::vector<EntityId> &entities) {
 		std::vector<Karkinolution::Terrain::Soil::SoilPieceId> soils;
 
-		for (const auto id : perception.soils().keys()) {
-			soils.push_back(id);
+		for (const auto &entry : perception.soils()) {
+			soils.push_back(entry.first);
 		}
 
 		return PerceptionAnalyzer::filter(perception, entities, soils, std::move(filter));
@@ -257,8 +257,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		const std::vector<Karkinolution::Terrain::Soil::SoilPieceId> &soils) {
 		std::vector<EntityId> entities;
 
-		for (const auto id : perception.entities().keys()) {
-			entities.push_back(id);
+		for (const auto &entry : perception.entities()) {
+			entities.push_back(entry.first);
 		}
 
 		return PerceptionAnalyzer::filter(perception,
@@ -298,7 +298,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		const std::vector<Karkinolution::Organisms::Nature::NatureId> &natures) {
 		std::vector<Karkinolution::Organisms::Nature::NatureId> filtered_natures;
 
-		for (const auto &[id, nature] : perception.natures().internal_data()) {
+		for (const auto &[id, nature] : perception.natures()) {
 			if (std::ranges::contains(natures, id) && filter(nature)) {
 				filtered_natures.push_back(id);
 			}
@@ -307,12 +307,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		std::vector<EntityId>                                  entities;
 		std::vector<Karkinolution::Terrain::Soil::SoilPieceId> soils;
 
-		for (const auto id : perception.entities().keys()) {
-			entities.push_back(id);
+		for (const auto &entry : perception.entities()) {
+			entities.push_back(entry.first);
 		}
 
-		for (const auto id : perception.soils().keys()) {
-			soils.push_back(id);
+		for (const auto &entry : perception.soils()) {
+			soils.push_back(entry.first);
 		}
 
 		return PerceptionView(soils,

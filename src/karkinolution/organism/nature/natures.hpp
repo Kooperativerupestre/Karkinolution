@@ -1,7 +1,11 @@
 #pragma once
-#include <karkinolution/functional/base_storage.hpp>
+
+
+#include "karkinolution/functional/data_structures.hpp"
+
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
+#include <unordered_map>
 
 namespace Karkinolution {
 	namespace Organisms {
@@ -9,18 +13,42 @@ namespace Karkinolution {
 
 			using NatureEntity = std::variant<Grass::Grass>;
 
-			class NatureRegistry : public Functional::BaseStorage<NatureId, NatureEntity> {
+			namespace NatureGetters {
+				const Math::Geometry::Radius &get_radius(const NatureEntity &nature);
+				const Vec3                   &get_position(const NatureEntity &nature);
+				NatureId                      get_id(const NatureEntity &nature);
+			} // namespace NatureGetters
+
+			class NatureRegistry {
+				private:
+
+					std::unordered_map<NatureId, NatureEntity> data_;
+
+
 				public:
+
+					NatureEntity &at(NatureId id) {
+						return data_.at(id);
+					}
+
+					const NatureEntity &at(NatureId id) const {
+						return data_.at(id);
+					}
 
 					Grass::Grass &at_grass(NatureId id) {
 						return std::get<Grass::Grass>(at(id));
 					}
-			};
 
-			namespace NatureGetters {
-				const Math::Geometry::Radius &get_radius(const NatureEntity &nature);
-				const Vec3                   &get_position(const NatureEntity &nature);
-			} // namespace NatureGetters
+					const Grass::Grass &at_grass(NatureId id) const {
+						return std::get<Grass::Grass>(at(id));
+					}
+
+					bool add(NatureEntity &&n_e) {
+						return Functional::try_add(data_,
+												   NatureGetters::get_id(n_e),
+												   std::move(n_e));
+					}
+			};
 
 		} // namespace Nature
 	} // namespace Organisms

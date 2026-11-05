@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <karkinolution/core/id.hpp>
+#include <karkinolution/functional/data_structures.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
@@ -30,7 +31,7 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	auto      &registry      = RSTServiceTest::get_registry(territory);
 	auto      &internal_tree = RSTServiceTest::get_tree(territory);
 	const auto common_id     = gen_id();
-	// common id -> violating the unique id constraint of BaseStorage
+	// A repeated ID violates the registry's unique-key constraint.
 	SoilPiece soil_A = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_A.id        = common_id;
 
@@ -60,7 +61,8 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	SoilPiece soil_D = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_D.id        = common_id;
 
-	bool was_C_inserted_on_registry = registry.try_add(common_id, std::move(soil_C));
+	bool was_C_inserted_on_registry =
+		Karkinolution::Functional::try_add(registry, common_id, std::move(soil_C));
 	ASSERT_TRUE(was_C_inserted_on_registry);
 
 	bool was_D_inserted_on_territory = territory.add(soil_D.id, std::move(soil_D));
@@ -100,7 +102,7 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 
 	ASSERT_FALSE(was_A_removed);
 	ASSERT_TRUE(internal_tree.exists(common_id));
-	ASSERT_FALSE(registry.exists(common_id));
+	ASSERT_FALSE(registry.contains(common_id));
 
 	territory.clear();
 	// if internal tree fails
@@ -109,12 +111,14 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 	SoilPiece soil_B = gen_soil_piece(SoilTypes::ROCK, 10, Vec3{0.0, 0.0, 0.0});
 	soil_B.id        = common_id;
 
-	registry.add(common_id, std::move(soil_B));
+	const bool was_B_added =
+		Karkinolution::Functional::try_add(registry, common_id, std::move(soil_B));
+	ASSERT_TRUE(was_B_added);
 
 	const bool was_B_removed = territory.remove(common_id);
 
 	ASSERT_FALSE(was_B_removed);
-	ASSERT_TRUE(registry.exists(common_id));
+	ASSERT_TRUE(registry.contains(common_id));
 	ASSERT_FALSE(internal_tree.exists(common_id));
 }
 
@@ -133,7 +137,7 @@ TEST(RSTServiceTest, AddRejectsPieceOutsideBoundary) {
 	const bool was_inserted = territory.add(soil.id, std::move(soil));
 
 	ASSERT_FALSE(was_inserted);
-	ASSERT_FALSE(registry.exists(id));
+	ASSERT_FALSE(registry.contains(id));
 	ASSERT_FALSE(internal_tree.exists(id));
 	ASSERT_TRUE(registry.size() == 0);
 	ASSERT_TRUE(internal_tree.size() == 0);

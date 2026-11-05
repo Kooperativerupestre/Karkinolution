@@ -6,6 +6,7 @@
 #include "karkinolution/organism/nature/natures.hpp"
 #include "karkinolution/terrain/terrain.hpp"
 
+#include <karkinolution/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
@@ -81,7 +82,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		for (auto id : soils_id) {
 			const auto &soil = world.see_territory().registry().at(id);
-			p_soils.add(id, perceive(soil, perceiver));
+			(void) Functional::try_add(p_soils, id, perceive(soil, perceiver));
 			data.insert(id, Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(soil));
 		}
 
@@ -94,12 +95,17 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			const auto &entity = world.see_entities_registry().at(id);
 			if (id.type == EntityTypes::CREATURE) {
 
-				p_entities.add(id, perceive(std::get<Creature>(entity), perceiver));
-			} else { // == Corpse
-				p_entities.add(
+				(void) Functional::try_add(
+					p_entities,
 					id,
-					perceive(std::get<Karkinolution::Organisms::Entities::Corpse::Corpse>(entity),
-							 perceiver));
+					PerceivedEntity{perceive(std::get<Creature>(entity), perceiver)});
+			} else { // == Corpse
+				(void) Functional::try_add(
+					p_entities,
+					id,
+					PerceivedEntity{perceive(
+						std::get<Karkinolution::Organisms::Entities::Corpse::Corpse>(entity),
+						perceiver)});
 			}
 			data.insert(
 				id,
@@ -112,10 +118,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			const auto &nature = world.see_natures().registry().at(id);
 
 			if (id.type == Karkinolution::Organisms::Nature::NatureTypes::GRASS) {
-				p_natures.add(
+				(void) Functional::try_add(
+					p_natures,
 					id,
-					perceive(std::get<Karkinolution::Organisms::Nature::Grass::Grass>(nature),
-							 perceiver));
+					PerceivedNature{perceive(
+						std::get<Karkinolution::Organisms::Nature::Grass::Grass>(nature),
+						perceiver)});
 			}
 			data.insert(id,
 						Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(

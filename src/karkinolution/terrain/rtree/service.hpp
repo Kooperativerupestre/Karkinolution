@@ -1,10 +1,11 @@
 #pragma once
 
-#include <karkinolution/functional/base_storage.hpp>
+#include <karkinolution/functional/data_structures.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/terrain/rtree/box_conversion.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
+#include <unordered_map>
 
 // Don't use if you aren't testing.
 // This exists only for creating invalid states.
@@ -14,15 +15,13 @@ namespace Karkinolution {
 		namespace Trees {
 			class RSTServiceTest;
 
-			template <typename ID, BoxConvertible V, typename Registry>
-				requires Functional::BaseStorageChild<Registry, ID, V>
-			class RSTService {
+			template <typename ID, BoxConvertible V> class RSTService {
 					friend class RSTServiceTest;
 
 				private:
 
 					Karkinolution::Terrain::Trees::RTree::RStarTree<ID> tree_;
-					Registry                                            registry_;
+					std::unordered_map<ID, V>                           registry_;
 					Math::Units::Size                                   size_;
 
 				public:
@@ -30,16 +29,12 @@ namespace Karkinolution {
 					RSTService(const Math::Units::Size &size)
 						: size_(size) {}
 
-					const Registry &registry() const {
+					std::unordered_map<ID, V> &registry() {
 						return registry_;
 					}
 
-					auto registry_values() {
-						return registry_.values();
-					}
-
-					auto registry_values() const {
-						return registry_.values();
+					const std::unordered_map<ID, V> &registry() const {
+						return registry_;
 					}
 
 					const Karkinolution::Terrain::Trees::RTree::RStarTree<ID> &tree() const {
@@ -63,11 +58,11 @@ namespace Karkinolution {
 							return false;
 						}
 
-						if (registry_.exists(id) || tree_.exists(id)) {
+						if (registry_.contains(id) || tree_.exists(id)) {
 							return false;
 						}
 
-						bool added = registry_.try_add(id, std::move(value));
+						bool added = Functional::try_add(registry_, id, std::move(value));
 						if (!added) {
 							return false;
 						}
@@ -77,7 +72,7 @@ namespace Karkinolution {
 					}
 
 					bool remove(ID id) {
-						if (!tree_.exists(id) || !registry_.exists(id)) {
+						if (!tree_.exists(id) || !registry_.contains(id)) {
 							return false;
 						}
 
@@ -86,7 +81,7 @@ namespace Karkinolution {
 							return false;
 						}
 
-						return registry_.try_del(id);
+						return Functional::try_remove(registry_, id);
 					}
 
 					std::vector<ID> find(const Math::Geometry::Radius &radius,

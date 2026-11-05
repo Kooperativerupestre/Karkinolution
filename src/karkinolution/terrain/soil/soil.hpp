@@ -4,7 +4,6 @@
 
 #include <cstdint>
 #include <functional>
-#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
@@ -172,11 +171,6 @@ namespace Karkinolution {
 										 const Vec3                   &position);
 			} // namespace SoilF
 
-			class SoilPieceRegistry : public Functional::BaseStorage<SoilPieceId, SoilPiece> {
-				public:
-
-					using BaseStorage<SoilPieceId, SoilPiece>::BaseStorage;
-			};
 
 		} // namespace Soil
 	} // namespace Terrain

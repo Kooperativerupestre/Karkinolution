@@ -29,8 +29,8 @@ namespace Karkinolution::Lifecycle {
 
 	void run(Karkinolution::World::World &world) {
 		world.pass_time();
-		for (auto &piece : world.see_territory().registry_values()) {
-			Karkinolution::Terrain::Soil::Motor::SoilPieceMotor::run(piece);
+		for (auto &entry : world.see_territory().registry()) {
+			Karkinolution::Terrain::Soil::Motor::SoilPieceMotor::run(entry.second);
 		}
 
 		std::vector<Karkinolution::Organisms::Entities::EntityId> entity_ids;

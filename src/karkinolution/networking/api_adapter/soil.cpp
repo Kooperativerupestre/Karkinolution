@@ -11,6 +11,8 @@
 #include <karkinolution/binary/types/list.hpp>
 #include <karkinolution/networking/api_adapter/soil.hpp>
 
+#include <ranges>
+
 ResponseFrame
 Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolution::World::World &world,
 												  RequestId                          request_id,
@@ -33,11 +35,11 @@ ResponseFrame
 Karkinolution::Networking::APIBYA::Soil::see_all_soils(const Karkinolution::World::World &world,
 													   RequestId                     request_id,
 													   const std::vector<std::byte> &payload) {
-	auto all_soils = Karkinolution::API::Soil::see_all_soils(world);
+	const auto &all_soils = Karkinolution::API::Soil::see_all_soils(world);
 
 	std::vector<std::byte> r_payload =
 		Binary::Types::List::SRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
-			all_soils,
+			std::views::values(all_soils),
 			[](const Karkinolution::Terrain::Soil::SoilPiece &soil) {
 				return SoilSRI::serialize_soil(soil);
 			});

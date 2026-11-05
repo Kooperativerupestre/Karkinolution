@@ -1,11 +1,11 @@
 #include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 
-#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
 #include <karkinolution/organism/nature/natures.hpp>
 #include <utility>
+#include <variant>
 
 namespace Karkinolution::Organisms::Nature {
 	const Math::Geometry::Radius &NatureGetters::get_radius(const NatureEntity &nature_entity) {
@@ -18,6 +18,13 @@ namespace Karkinolution::Organisms::Nature {
 	const Vec3 &NatureGetters::get_position(const NatureEntity &nature) {
 		if (std::holds_alternative<Grass::Grass>(nature)) {
 			return std::get<Grass::Grass>(nature).position;
+		}
+		std::unreachable();
+	}
+
+	NatureId NatureGetters::get_id(const NatureEntity &nature) {
+		if (std::holds_alternative<Grass::Grass>(nature)) {
+			return std::get<Grass::Grass>(nature).build_id();
 		}
 		std::unreachable();
 	}

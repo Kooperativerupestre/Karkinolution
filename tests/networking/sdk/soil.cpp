@@ -5,6 +5,7 @@
 
 #include <gtest/gtest.h>
 #include <karkinolution/binary/types/list.hpp>
+#include <ranges>
 #include <unordered_set>
 
 using Karkinolution::Core::Id::BaseIdType;
@@ -20,12 +21,12 @@ namespace {
 
 			KarkinolutionSDK::Client::ResponseResult
 			request(const KarkinolutionSDK::Client::RequestData &) {
-				const auto soil_pieces = world.see_territory().registry_values();
+				const auto &soil_pieces = world.see_territory().registry();
 				const auto payload     = ListTSRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
-                    soil_pieces,
-                    [](const SoilPiece &soil) {
-                        return SoilSRI::serialize_soil(soil);
-                    });
+					std::views::values(soil_pieces),
+					[](const SoilPiece &soil) {
+						return SoilSRI::serialize_soil(soil);
+					});
 				const auto response =
 					Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::SOIL,
 																		RequestId{0},
@@ -45,7 +46,7 @@ TEST(SoilSDKInterpreter, ReturnsAllSoils) {
 	const World                    world = TestUtils::make_small_world();
 	SoilListClient                 client{world};
 	std::unordered_set<BaseIdType> expected_soil_ids;
-	for (const auto &soil : world.see_territory().registry_values()) {
+	for (const auto &soil : std::views::values(world.see_territory().registry())) {
 		expected_soil_ids.insert(soil.id);
 	}
 

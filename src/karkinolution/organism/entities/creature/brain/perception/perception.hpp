@@ -5,7 +5,6 @@
 #include "karkinolution/terrain/rtree/box.hpp"
 
 #include <functional>
-#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
@@ -16,6 +15,7 @@
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <optional>
+#include <unordered_map>
 
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	struct PerceivedSoil {
@@ -66,33 +66,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	using PerceivedEntity = std::variant<PerceivedCreature, PerceivedCorpse>;
 	using PerceivedNature = std::variant<PerceivedGrass>;
 
-	class PerceptionEntityRegistry
-		: public Karkinolution::Functional::
-			  BaseStorage<Karkinolution::Organisms::Entities::EntityId, PerceivedEntity> {
-		public:
-
-			using Karkinolution::Functional::BaseStorage<
-				Karkinolution::Organisms::Entities::EntityId,
-				PerceivedEntity>::BaseStorage;
-	};
-
-	class PerceptionNatureRegistry
-		: public Karkinolution::Functional::BaseStorage<Karkinolution::Organisms::Nature::NatureId,
-														PerceivedNature> {
-		public:
-
-			using Karkinolution::Functional::BaseStorage<Karkinolution::Organisms::Nature::NatureId,
-														 PerceivedNature>::BaseStorage;
-	};
-
-	class PerceptionSoilRegistry
-		: public Karkinolution::Functional::BaseStorage<Karkinolution::Terrain::Soil::SoilPieceId,
-														PerceivedSoil> {
-		public:
-
-			using Karkinolution::Functional::BaseStorage<Karkinolution::Terrain::Soil::SoilPieceId,
-														 PerceivedSoil>::BaseStorage;
-	};
+	using PerceptionEntityRegistry =
+		std::unordered_map<Karkinolution::Organisms::Entities::EntityId, PerceivedEntity>;
+	using PerceptionNatureRegistry =
+		std::unordered_map<Karkinolution::Organisms::Nature::NatureId, PerceivedNature>;
+	using PerceptionSoilRegistry =
+		std::unordered_map<Karkinolution::Terrain::Soil::SoilPieceId, PerceivedSoil>;
 
 	using EntityFilter = std::move_only_function<bool(const PerceivedEntity &)>;
 	using SoilFilter   = std::move_only_function<bool(const PerceivedSoil &)>;
@@ -291,15 +270,15 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			}
 
 			[[nodiscard]] bool exists(EntityId id) const {
-				return entities_.exists(id);
+				return entities_.contains(id);
 			}
 
 			[[nodiscard]] bool exists(Karkinolution::Terrain::Soil::SoilPieceId id) const {
-				return soils_.exists(id);
+				return soils_.contains(id);
 			}
 
 			[[nodiscard]] bool exists(Karkinolution::Organisms::Nature::NatureId id) const {
-				return natures_.exists(id);
+				return natures_.contains(id);
 			}
 
 			[[nodiscard]] Karkinolution::Terrain::Trees::RTree::Box3D radius_box() const {

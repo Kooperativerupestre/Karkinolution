@@ -3,7 +3,6 @@
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/terrain/terrain.hpp"
 
-#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/math/geometry/models.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/units.hpp>

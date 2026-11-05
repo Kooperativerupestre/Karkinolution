@@ -12,7 +12,7 @@
 namespace Karkinolution::Organisms::Entities {
 
 	bool EntitiesRegistry::add(Entity &&entity) {
-		return registry.try_add(EntityGetters::get_id(entity), std::move(entity));
+		return Functional::try_add(registry, EntityGetters::get_id(entity), std::move(entity));
 	}
 
 	Entity &EntitiesRegistry::at(EntityId id) {

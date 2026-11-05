@@ -6,7 +6,6 @@
 #include "karkinolution/organism/entities/identity.hpp"
 
 #include <cassert>
-#include <karkinolution/functional/base_storage.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>

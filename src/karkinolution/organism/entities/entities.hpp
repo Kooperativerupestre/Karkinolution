@@ -1,9 +1,8 @@
 #pragma once
-#include "karkinolution/functional/base_storage.hpp"
 #include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/egg/egg.hpp"
 
-#include <karkinolution/functional/base_storage.hpp>
+#include <karkinolution/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
@@ -18,12 +17,11 @@ namespace Karkinolution {
 			class EntitiesRegistry {
 				private:
 
-					Functional::BaseStorage<EntityId, Entity> registry;
+					std::unordered_map<EntityId, Entity> registry;
 
 				public:
 
-					EntitiesRegistry()
-						: registry() {}
+					EntitiesRegistry() {}
 
 					bool add(Entity &&entity);
 
@@ -43,15 +41,21 @@ namespace Karkinolution {
 					const Entity &at(EntityId id) const;
 
 					bool exists(EntityId id) const {
-						return registry.exists(id);
+						return registry.contains(id);
 					}
 
-					auto keys() const {
-						return registry.keys();
+					std::vector<EntityId> keys() const {
+						std::vector<EntityId> ks;
+
+						ks.reserve(registry.size());
+						for (const auto &entry : registry) {
+							ks.push_back(entry.first);
+						}
+						return ks;
 					}
 
 					bool remove(EntityId id) {
-						return registry.try_del(id);
+						return Functional::try_remove(registry, id);
 					}
 			};
 

@@ -12,8 +12,8 @@ namespace Karkinolution {
 			see_soil(const Karkinolution::World::World  &world,
 					 Karkinolution::Core::Id::BaseIdType id);
 
-			inline auto see_all_soils(const Karkinolution::World::World &world) {
-				return world.see_territory().registry_values();
+			inline const auto& see_all_soils(const Karkinolution::World::World &world) {
+				return world.see_territory().registry();
 			}
 		} // namespace Soil
 	} // namespace API

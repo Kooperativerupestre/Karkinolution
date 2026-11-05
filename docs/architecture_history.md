@@ -286,3 +286,15 @@ refactor as an opportunity to remove them as well.
 For the same reason: I thought transformations would make the system easier to use, but when I actually needed them,
 they turned out to be an almost unreadable abstraction. They added overhead and made the very thing I wanted to
 simplify more difficult.
+
+# 1.7 - Removing BaseStorage
+
+## Why did I remove `BaseStorage`?
+
+`BaseStorage` originated in the Python version of Karkinolution, where the dictionary interface felt too limited and
+did not provide accessible, consistent APIs for some common operations. During the migration to C++, I carried the
+class over without reconsidering the key question: was this abstraction still necessary?
+
+It was not. Keeping `BaseStorage` in C++ added indirection on top of `std::unordered_map` without providing enough
+value to justify it. The `try_add`, `try_at`, and `try_remove` operations remain useful, so they now live as
+`Karkinolution::Functional` helpers that operate directly on `std::unordered_map`.
