@@ -13,10 +13,9 @@ namespace Karkinolution::Terrain::Trees {
 		public:
 
 			template <typename ID, BoxConvertible V>
-			static RSTService<ID, V>
-			create(RTree::RStarTree<ID> &tree,
-				   std::unordered_map<ID, V> &registry,
-				   const Math::Units::Size &size) {
+			static RSTService<ID, V> create(RTree::RStarTree<ID>      &tree,
+											std::unordered_map<ID, V> &registry,
+											const Math::Units::Size   &size) {
 				RSTService<ID, V> service{size};
 				service.tree_     = std::move(tree);
 				service.registry_ = std::move(registry);
@@ -34,8 +33,7 @@ namespace Karkinolution::Terrain::Trees {
 			}
 
 			template <typename ID, BoxConvertible V>
-			static const std::unordered_map<ID, V> &
-			get_registry(const RSTService<ID, V> &service) {
+			static const std::unordered_map<ID, V> &get_registry(const RSTService<ID, V> &service) {
 				return service.registry_;
 			}
 

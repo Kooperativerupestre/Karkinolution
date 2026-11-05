@@ -10,7 +10,6 @@
 #include <karkinolution/binary/interpreters/soil.hpp>
 #include <karkinolution/binary/types/list.hpp>
 #include <karkinolution/networking/api_adapter/soil.hpp>
-
 #include <ranges>
 
 ResponseFrame
