@@ -1,5 +1,6 @@
 #include <asio/buffer.hpp>
 #include <asio/write.hpp>
+#include <iostream>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/connection.hpp>
 

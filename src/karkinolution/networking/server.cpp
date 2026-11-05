@@ -32,8 +32,6 @@ namespace Karkinolution::Networking {
 		, acceptor_(io_context)
 		, signals_(io_context, SIGINT, SIGTERM) {
 
-		log_receive_overflow_mode();
-
 		acceptor_.open(asio::ip::tcp::v4());
 		acceptor_.set_option(asio::socket_base::reuse_address(true));
 		acceptor_.bind(asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port));
@@ -60,6 +58,7 @@ namespace Karkinolution::Networking {
 							   });
 
 		if (it != connections.end()) {
+			std::cout << "Disconnected 🦀\n";
 			connections.erase(it);
 		}
 	}

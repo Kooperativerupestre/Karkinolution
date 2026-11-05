@@ -3,6 +3,7 @@
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 
 #include <iomanip>
+#include <iostream>
 #include <karkinolution/networking/protocol_session.hpp>
 
 namespace Karkinolution::Networking {

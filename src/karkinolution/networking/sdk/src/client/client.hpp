@@ -14,6 +14,7 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/strand.hpp>
 #include <atomic>
+#include <iostream>
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <string>
