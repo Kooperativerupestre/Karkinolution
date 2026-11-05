@@ -52,7 +52,7 @@ namespace Karkinolution {
 						using ValueType = typename T::value_type;
 
 						Karkinolution::Binary::Protocol::Validator::NumericType::
-							validate_dynamic_type_exists<ValueType()>;
+							validate_dynamic_type_exists<ValueType>();
 
 
 						constexpr auto NTL_Type =
