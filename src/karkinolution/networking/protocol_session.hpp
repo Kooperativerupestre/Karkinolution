@@ -2,6 +2,7 @@
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/math/units.hpp"
 
+#include <iostream>
 #include <karkinolution/networking/port.hpp>
 #include <karkinolution/networking/raw_frame_buffer.hpp>
 #include <karkinolution/networking/response_queue.hpp>

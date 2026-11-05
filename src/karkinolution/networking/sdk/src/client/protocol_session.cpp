@@ -5,6 +5,7 @@
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 
+#include <iostream>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/sdk/src/client/protocol_session.hpp>
 #include <karkinolution/networking/sdk/src/error.hpp>

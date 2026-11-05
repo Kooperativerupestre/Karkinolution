@@ -4,8 +4,8 @@
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/terrain/terrain.hpp"
 
+#include <iostream>
 #include <karkinolution/terrain/terrain_gen.hpp>
-
 using namespace Karkinolution::World;
 
 namespace Karkinolution::World {

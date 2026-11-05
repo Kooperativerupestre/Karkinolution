@@ -8,6 +8,7 @@
 #include <asio/connect.hpp>
 #include <asio/write.hpp>
 #include <chrono>
+#include <iostream>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <karkinolution/networking/sdk/src/client/client.hpp>

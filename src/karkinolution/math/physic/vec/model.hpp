@@ -1,7 +1,9 @@
 #pragma once
+#include <algorithm>
 #include <cmath>
-#include <functional>
-#include <iostream>
+#include <concepts>
+#include <cstdint>
+#include <type_traits>
 
 namespace Karkinolution {
 	namespace Math {
@@ -212,28 +214,7 @@ namespace Karkinolution {
 				return vec * scalar;
 			}
 
-			inline std::ostream &operator<<(std::ostream &os, const Vec3 &vec) {
-				os << "Vec3(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
-				return os;
-			}
-
-			inline std::istream &operator>>(std::istream &is, Vec3 &vec) {
-				is >> vec.x >> vec.y >> vec.z;
-				return is;
-			}
-
 
 		} // namespace Vec
 	} // namespace Math
 } // namespace Karkinolution
-
-namespace std {
-	template <> struct hash<Karkinolution::Math::Vec::Vec3> {
-			size_t operator()(const Karkinolution::Math::Vec::Vec3 &v) const noexcept {
-				size_t h1 = hash<double>()(v.x);
-				size_t h2 = hash<double>()(v.y);
-				size_t h3 = hash<double>()(v.z);
-				return h1 ^ (h2 << 1) ^ (h3 << 2);
-			}
-	};
-} // namespace std
