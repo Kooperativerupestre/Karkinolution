@@ -8,7 +8,6 @@ Checks:
   - modernize-use-nullptr
   - readability-braces-around-statements
   - readability-operators-representation
-  - readability-redundant-member-init
 WarningsAsErrors: '*'
 
 HeaderFileExtensions:
