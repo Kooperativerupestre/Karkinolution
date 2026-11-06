@@ -78,6 +78,9 @@ file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
 "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
 )
 list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/view/.*")
+list(APPEND KARKINOLUTION_SOURCES
+    "${CMAKE_SOURCE_DIR}/src/karkinolution/view/gui/panel/layout/layout.cpp"
+)
 
 add_library(karkinolution)
 
@@ -114,6 +117,7 @@ if (KARKINOLUTION_BUILD_VIEW)
     file(GLOB_RECURSE KARKINOLUTION_VIEW_SOURCES CONFIGURE_DEPENDS
         "${CMAKE_SOURCE_DIR}/src/karkinolution/view/*.cpp"
     )
+    list(FILTER KARKINOLUTION_VIEW_SOURCES EXCLUDE REGEX ".*/panel/layout/layout.cpp")
 
     add_executable(karkinolution_view ${KARKINOLUTION_VIEW_SOURCES})
 
