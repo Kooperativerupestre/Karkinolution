@@ -6,10 +6,12 @@
 #include <karkinolution/view/gui/components/low_level/text.hpp>
 #include <karkinolution/view/gui/panel/panel.hpp>
 #include <memory>
+#include <string_view>
 
 namespace {
 	namespace Geometry   = KarkinolutionView::Gui::Geometry;
 	namespace Components = KarkinolutionView::Gui::Components;
+	namespace Drivers    = Components::Drivers;
 	namespace LowLevel   = Components::LowLevel;
 	namespace Panel      = KarkinolutionView::Gui::Panel;
 	using Karkinolution::Colors::Presets::White;
@@ -24,6 +26,18 @@ namespace {
 
 	std::shared_ptr<Components::Component> circle_component(const Geometry::Circle &bounds) {
 		return std::make_shared<Components::Component>(Components::AllComponents{LowLevel::Circle{bounds, White}});
+	}
+
+	std::shared_ptr<Components::Component> text_component(const Geometry::Rectangle &bounds) {
+		const auto measure = [](const std::string_view, const int32_t) {
+			return Drivers::Font::TextMeasurement{20.0F, 10.0F};
+		};
+		return std::make_shared<Components::Component>(
+			Components::AllComponents{LowLevel::Text{bounds,
+													 "rollback",
+													 White,
+													 Karkinolution::Math::LV::CT::GreaterThanZeroValue<int>{10},
+													 measure}});
 	}
 } // namespace
 
@@ -49,6 +63,19 @@ TEST(GuiPanel, SetBoundsRejectsUnknownAndOutOfBoundsSlots) {
 	EXPECT_FALSE(panel.set_bounds(unknown, rectangle(0, 0)));
 	EXPECT_FALSE(panel.set_bounds(id, rectangle(49, 0, 10, 10)));
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(0, 0)).has_value());
+}
+
+TEST(GuiPanel, SetBoundsRollsBackWhenTheComponentRejectsItsSlot) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   component  = text_component(rectangle(0, 0, 80, 30));
+	const auto   id         = component->get_id();
+	const auto   old_bounds = component->get_bounds();
+
+	ASSERT_TRUE(panel.add(component));
+	EXPECT_FALSE(panel.set_bounds(id, rectangle(0, 0, 1, 1)));
+
+	EXPECT_EQ(std::get<Geometry::Rectangle>(component->get_bounds()), std::get<Geometry::Rectangle>(old_bounds));
+	EXPECT_EQ(panel.collides(rectangle(39, 0, 2, 2)).size(), 1);
 }
 
 TEST(GuiPanel, ResizeRejectsBoundsThatWouldLoseAnIndexedComponent) {
@@ -130,4 +157,33 @@ TEST(GuiPanel, RelayoutAppliesAssignmentsAndClearsDirtyFlag) {
 	EXPECT_FALSE(panel.relayout().applied);
 	EXPECT_TRUE(panel.find_one_collision_in_area(::rectangle(-40, 0)).has_value());
 	EXPECT_TRUE(panel.find_one_collision_in_area(::rectangle(-30, 0)).has_value());
+}
+
+TEST(GuiPanel, RelayoutRollsBackEarlierAssignmentsWhenALaterComponentRejects) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   rectangle_component_ptr = rectangle_component(rectangle(-30, 0));
+	const auto   text_component_ptr      = text_component(rectangle(0, 0, 80, 30));
+	const auto   rectangle_id            = rectangle_component_ptr->get_id();
+	const auto   text_id                 = text_component_ptr->get_id();
+
+	ASSERT_TRUE(panel.add(rectangle_component_ptr));
+	ASSERT_TRUE(panel.add(text_component_ptr));
+
+	const auto rectangle_child = std::make_shared<const Panel::Layout::Node>(
+		Panel::Layout::Node{Panel::Layout::Leaf{rectangle_id, [] {
+													return Panel::Layout::Size{10, 10};
+												}}});
+	const auto text_child = std::make_shared<const Panel::Layout::Node>(
+		Panel::Layout::Node{Panel::Layout::Leaf{text_id, [] {
+													return Panel::Layout::Size{10, 10};
+												}}});
+	panel.set_layout(Panel::Layout::Node{Panel::Layout::Stack{
+		.direction = Panel::Layout::Direction::HORIZONTAL,
+		.children  = {{Panel::Layout::Fixed{20}, rectangle_child}, {Panel::Layout::Fixed{1}, text_child}}}});
+
+	const auto result = panel.relayout();
+
+	EXPECT_FALSE(result.applied);
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-30, 0)).has_value());
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(0, 0, 80, 30)).has_value());
 }
