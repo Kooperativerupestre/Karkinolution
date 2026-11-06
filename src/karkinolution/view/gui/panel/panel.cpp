@@ -1,6 +1,7 @@
 #include "karkinolution/view/gui/panel/panel.hpp"
 
 #include <stdexcept>
+#include <unordered_set>
 #include <utility>
 
 namespace KarkinolutionView {
@@ -130,6 +131,74 @@ namespace KarkinolutionView {
 				}
 
 				entry->second.indexed_bound = slot;
+				return true;
+			}
+
+			bool Panel::resize(const Geometry::Rectangle &bounds) {
+				std::unordered_map<Components::ComponentId, Geometry::Rectangle> target_bounds;
+				target_bounds.reserve(components_.size());
+
+				if (layout_root_) {
+					const Layout::Edges                         edges{bounds.left().value,
+                                              bounds.top().value,
+                                              bounds.right().value,
+                                              bounds.floor().value};
+					const auto                                  result = Layout::layout(edges, *layout_root_);
+					std::unordered_set<Components::ComponentId> assigned_ids;
+					for (const auto &assignment : result.assignments) {
+						if (!components_.contains(assignment.id) || !Geometry::can_contain(bounds, assignment.slot)
+							|| !assigned_ids.insert(assignment.id).second) {
+							return false;
+						}
+						target_bounds.emplace(assignment.id, assignment.slot);
+					}
+				}
+
+				for (const auto &[id, entry] : components_) {
+					if (!target_bounds.contains(id)) {
+						if (!Geometry::can_contain(bounds, entry.indexed_bound)) {
+							return false;
+						}
+						target_bounds.emplace(id, entry.indexed_bound);
+					}
+				}
+
+				std::vector<std::pair<Components::ComponentId, Geometry::Rectangle>> changed;
+				for (const auto &[id, target] : target_bounds) {
+					const auto entry = components_.find(id);
+					if (entry->second.indexed_bound == target) {
+						continue;
+					}
+					const auto old = entry->second.indexed_bound;
+					if (!entry->second.component->set_slot(target)) {
+						for (auto rollback = changed.rbegin(); rollback != changed.rend(); ++rollback) {
+							if (!components_.at(rollback->first).component->set_slot(rollback->second)) {
+								throw std::logic_error("Failed to roll back component resize");
+							}
+						}
+						return false;
+					}
+					changed.emplace_back(id, old);
+				}
+
+				Quadtree::Quadtree replacement{bounds};
+				for (const auto &[id, target] : target_bounds) {
+					if (!replacement.add(id, target)) {
+						for (auto rollback = changed.rbegin(); rollback != changed.rend(); ++rollback) {
+							if (!components_.at(rollback->first).component->set_slot(rollback->second)) {
+								throw std::logic_error("Failed to roll back component resize");
+							}
+						}
+						return false;
+					}
+				}
+
+				for (const auto &[id, target] : target_bounds) {
+					components_.at(id).indexed_bound = target;
+				}
+				quadtree_     = std::move(replacement);
+				bounds_       = bounds;
+				layout_dirty_ = false;
 				return true;
 			}
 

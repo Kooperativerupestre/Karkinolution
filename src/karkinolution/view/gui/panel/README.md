@@ -42,3 +42,13 @@ shape. Exact collision filtering remains responsible for the component's
 actual geometry. This keeps layout independent from shape-specific rendering
 rules and follows the rectangular widget arrangement model used by established
 UI systems.
+
+## Resizing
+
+Resizing is an atomic layout invalidation. The panel first computes target
+slots, updates components transactionally, and builds a replacement quadtree
+for the new boundary. The current state is replaced only after every component
+and indexed bound is valid. A resize that cannot keep every component inside
+the new boundary is rejected; components are never silently removed from the
+index. This preserves stable component identity while maintaining the
+quadtree's containment invariant.

@@ -55,6 +55,7 @@ namespace KarkinolutionView {
 					bool remove(Components::ComponentId id);
 
 					[[nodiscard]] bool set_bounds(Components::ComponentId id, const Geometry::Rectangle &slot);
+					[[nodiscard]] bool resize(const Geometry::Rectangle &bounds);
 
 					void                            set_layout(Layout::Node layout_root);
 					void                            mark_layout_dirty() noexcept;
