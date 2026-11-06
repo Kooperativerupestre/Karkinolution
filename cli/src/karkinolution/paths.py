@@ -16,11 +16,12 @@ SOURCE_EXTENSIONS = {
 }
 
 FORBIDDEN_DIR_NAMES = {"dependencies"}
+BUILD_DIR_PREFIX = "build"
 
 
 def is_forbidden_path(path: Path) -> bool:
     resolved = path.resolve()
-    return any(part in FORBIDDEN_DIR_NAMES for part in resolved.parts)
+    return any(part in FORBIDDEN_DIR_NAMES or part.startswith(BUILD_DIR_PREFIX) for part in resolved.parts)
 
 
 def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
@@ -45,7 +46,9 @@ def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
             continue
 
         for root, dirs, filenames in os.walk(path):
-            dirs[:] = [d for d in dirs if d not in FORBIDDEN_DIR_NAMES]
+            dirs[:] = [
+                d for d in dirs if d not in FORBIDDEN_DIR_NAMES and not d.startswith(BUILD_DIR_PREFIX)
+            ]
             root_path = Path(root)
             for filename in filenames:
                 file = root_path / filename

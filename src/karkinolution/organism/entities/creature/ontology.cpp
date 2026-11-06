@@ -44,10 +44,8 @@ namespace Karkinolution::Organisms::Entities::Creature {
 	}
 
 	CreatureSpecies chooes_random_specie() {
-		return KRandom::choice({CreatureSpecies::CRAB,
-								CreatureSpecies::CROCODILE,
-								CreatureSpecies::FISH,
-								CreatureSpecies::HIPPOPOTAMUS});
+		return KRandom::choice(
+			{CreatureSpecies::CRAB, CreatureSpecies::CROCODILE, CreatureSpecies::FISH, CreatureSpecies::HIPPOPOTAMUS});
 	}
 
 } // namespace Karkinolution::Organisms::Entities::Creature

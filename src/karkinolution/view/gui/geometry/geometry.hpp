@@ -274,21 +274,17 @@ namespace KarkinolutionView {
 
 			constexpr bool can_contain(const Rectangle &container, const Rectangle &contained) {
 				return container.top() <= contained.top() && container.left() <= contained.left()
-					&& container.floor() <= contained.floor()
-					&& container.right() <= contained.right();
+					&& container.floor() <= contained.floor() && container.right() <= contained.right();
 			}
 
 			constexpr bool can_contain(const Rectangle &container, const Circle &contained) {
 				return container.top() <= contained.top() && container.left() <= contained.left()
-					&& container.floor() <= contained.floor()
-					&& container.right() <= contained.right();
+					&& container.floor() <= contained.floor() && container.right() <= contained.right();
 			}
 
 			constexpr bool can_contain(const Rectangle &container, const Position &contained) {
-				return contained.x >= container.left().value
-					&& contained.x <= container.right().value
-					&& contained.y >= container.top().value
-					&& contained.y <= container.floor().value;
+				return contained.x >= container.left().value && contained.x <= container.right().value
+					&& contained.y >= container.top().value && contained.y <= container.floor().value;
 			}
 
 			constexpr bool can_contain(const Circle &container, const Position &contained) {
@@ -304,17 +300,13 @@ namespace KarkinolutionView {
 			}
 
 			constexpr bool intersects(const Circle &first, const Circle &second) {
-				return first.position.distance_to(second.position)
-					<= first.radius.value() + second.radius.value();
+				return first.position.distance_to(second.position) <= first.radius.value() + second.radius.value();
 			}
 
 			inline bool intersects(const Rectangle &rectangle, const Circle &circle) {
-				const float closest_x =
-					std::clamp(circle.position.x, rectangle.left().value, rectangle.right().value);
-				const float closest_y =
-					std::clamp(circle.position.y, rectangle.top().value, rectangle.floor().value);
-				return Geometry::Position{closest_x, closest_y}.distance_to(circle.position)
-					<= circle.radius.value();
+				const float closest_x = std::clamp(circle.position.x, rectangle.left().value, rectangle.right().value);
+				const float closest_y = std::clamp(circle.position.y, rectangle.top().value, rectangle.floor().value);
+				return Geometry::Position{closest_x, closest_y}.distance_to(circle.position) <= circle.radius.value();
 			}
 
 			inline bool intersects(const Circle &circle, const Rectangle &rectangle) {

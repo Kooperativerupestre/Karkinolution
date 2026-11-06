@@ -32,8 +32,7 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 	};
 
 	namespace EmbryoGrowingPhysiology {
-		NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio,
-											 const NormalizedValue<float> &factor);
+		NormalizedValue<float> get_increment(const NormalizedValue<float> &ratio, const NormalizedValue<float> &factor);
 
 		ResourceTrade get_new_max_energy_increment(const Embryo &embryo);
 

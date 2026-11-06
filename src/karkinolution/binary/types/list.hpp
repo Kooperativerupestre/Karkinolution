@@ -21,8 +21,8 @@ namespace Karkinolution {
 				using ListSize = std::uint16_t;
 
 				template <typename R>
-				concept ListContainer = std::ranges::sized_range<R>
-					&& requires(R &&range, std::size_t index) { range[index]; };
+				concept ListContainer =
+					std::ranges::sized_range<R> && requires(R &&range, std::size_t index) { range[index]; };
 
 				template <typename R>
 				concept ListRange = std::ranges::input_range<R>;
@@ -39,8 +39,7 @@ namespace Karkinolution {
 
 				// The function already includes Elements::OFFSET.
 				template <std::size_t Sizeof>
-				constexpr std::size_t get_offset_based_on_index(std::size_t index,
-																std::size_t offset) {
+				constexpr std::size_t get_offset_based_on_index(std::size_t index, std::size_t offset) {
 
 					return index * Sizeof + offset + Layout::Elements::OFFSET;
 				}
@@ -50,15 +49,13 @@ namespace Karkinolution {
 					namespace Details {
 
 						template <typename R>
-						concept SerializedByteRange =
-							std::ranges::input_range<R> && std::ranges::sized_range<R>
+						concept SerializedByteRange = std::ranges::input_range<R> && std::ranges::sized_range<R>
 							&& std::same_as<std::ranges::range_value_t<R>, std::byte>;
 
 						template <typename R>
 						concept IndexableSizedRange = ListContainer<R>;
 
-						template <std::size_t SizeofSerializedObject>
-						void validate_size(std::size_t size) {
+						template <std::size_t SizeofSerializedObject> void validate_size(std::size_t size) {
 
 							if (size > std::numeric_limits<ListSize>::max()) {
 								throw ByteError("The number of elements exceeds the maximum "
@@ -69,8 +66,7 @@ namespace Karkinolution {
 
 							if (size > (max - sizeof(ListSize)) / SizeofSerializedObject) {
 
-								throw ByteError(
-									"The serialized list size exceeds std::size_t limits.");
+								throw ByteError("The serialized list size exceeds std::size_t limits.");
 							}
 						}
 
@@ -84,8 +80,7 @@ namespace Karkinolution {
 							return static_cast<std::size_t>(size);
 						}
 
-						template <std::size_t SizeofSerializedObject>
-						void ensure_can_append(std::size_t current_size) {
+						template <std::size_t SizeofSerializedObject> void ensure_can_append(std::size_t current_size) {
 
 							if (current_size >= std::numeric_limits<ListSize>::max()) {
 
@@ -95,19 +90,16 @@ namespace Karkinolution {
 
 							constexpr auto max = std::numeric_limits<std::size_t>::max();
 
-							constexpr auto max_elements =
-								(max - sizeof(ListSize)) / SizeofSerializedObject;
+							constexpr auto max_elements = (max - sizeof(ListSize)) / SizeofSerializedObject;
 
 							if (current_size >= max_elements) {
-								throw ByteError(
-									"The serialized list size exceeds std::size_t limits.");
+								throw ByteError("The serialized list size exceeds std::size_t limits.");
 							}
 						}
 
 						inline auto make_header(std::size_t size) {
 
-							return Karkinolution::Binary::Serializer::serialize<ListSize>(
-								static_cast<ListSize>(size));
+							return Karkinolution::Binary::Serializer::serialize<ListSize>(static_cast<ListSize>(size));
 						}
 
 						template <std::size_t SizeofSerializedObject>
@@ -115,8 +107,7 @@ namespace Karkinolution {
 
 							validate_size<SizeofSerializedObject>(size);
 
-							const auto total_size =
-								sizeof(ListSize) + SizeofSerializedObject * size;
+							const auto total_size = sizeof(ListSize) + SizeofSerializedObject * size;
 
 							std::vector<std::byte> bytes;
 
@@ -130,13 +121,10 @@ namespace Karkinolution {
 							const auto header = make_header(size);
 
 							if (std::ranges::size(header) != sizeof(ListSize)) {
-								throw ByteError(
-									"The serialized list header has an unexpected size.");
+								throw ByteError("The serialized list header has an unexpected size.");
 							}
 
-							bytes.insert(bytes.end(),
-										 std::ranges::begin(header),
-										 std::ranges::end(header));
+							bytes.insert(bytes.end(), std::ranges::begin(header), std::ranges::end(header));
 
 							return bytes;
 						}
@@ -159,9 +147,7 @@ namespace Karkinolution {
 												"the end of the output buffer.");
 							}
 
-							bytes.insert(bytes.end(),
-										 std::ranges::begin(serialized),
-										 std::ranges::end(serialized));
+							bytes.insert(bytes.end(), std::ranges::begin(serialized), std::ranges::end(serialized));
 						}
 
 						inline void write_header(std::vector<std::byte> &bytes, std::size_t size) {
@@ -169,14 +155,12 @@ namespace Karkinolution {
 							const auto header = make_header(size);
 
 							if (std::ranges::size(header) != sizeof(ListSize)) {
-								throw ByteError(
-									"The serialized list header has an unexpected size.");
+								throw ByteError("The serialized list header has an unexpected size.");
 							}
 
 							const auto header_offset = Layout::Size::OFFSET;
 
-							if (header_offset > bytes.size()
-								|| bytes.size() - header_offset < sizeof(ListSize)) {
+							if (header_offset > bytes.size() || bytes.size() - header_offset < sizeof(ListSize)) {
 
 								throw ByteError("The output buffer does not contain enough space "
 												"for the list header.");
@@ -187,12 +171,9 @@ namespace Karkinolution {
 									  bytes.begin() + header_offset);
 						}
 
-						template <std::size_t SizeofSerializedObject,
-								  typename R,
-								  typename SerializerFunction>
-						std::vector<std::byte> serialize_known_size(R                 &&range,
-																	SerializerFunction &serializer,
-																	std::size_t         size) {
+						template <std::size_t SizeofSerializedObject, typename R, typename SerializerFunction>
+						std::vector<std::byte>
+						serialize_known_size(R &&range, SerializerFunction &serializer, std::size_t size) {
 
 							auto bytes = make_buffer<SizeofSerializedObject>(size);
 
@@ -205,8 +186,7 @@ namespace Karkinolution {
 								}
 
 								decltype(auto) serialized =
-									std::invoke(serializer,
-												std::forward<decltype(element)>(element));
+									std::invoke(serializer, std::forward<decltype(element)>(element));
 
 								append_serialized<SizeofSerializedObject>(
 									bytes,
@@ -256,11 +236,8 @@ namespace Karkinolution {
 							return size;
 						}
 
-						template <std::size_t SizeofSerializedObject,
-								  typename R,
-								  typename SerializerFunction>
-						std::vector<std::byte>
-						serialize_single_pass(R &&range, SerializerFunction &serializer) {
+						template <std::size_t SizeofSerializedObject, typename R, typename SerializerFunction>
+						std::vector<std::byte> serialize_single_pass(R &&range, SerializerFunction &serializer) {
 
 							std::vector<std::byte> bytes(sizeof(ListSize), std::byte{});
 
@@ -271,8 +248,7 @@ namespace Karkinolution {
 								ensure_can_append<SizeofSerializedObject>(size);
 
 								decltype(auto) serialized =
-									std::invoke(serializer,
-												std::forward<decltype(element)>(element));
+									std::invoke(serializer, std::forward<decltype(element)>(element));
 
 								append_serialized<SizeofSerializedObject>(
 									bytes,
@@ -291,9 +267,7 @@ namespace Karkinolution {
 
 					} // namespace Details
 
-					template <std::size_t SizeofSerializedObject,
-							  typename R,
-							  typename SerializerFunction>
+					template <std::size_t SizeofSerializedObject, typename R, typename SerializerFunction>
 					std::vector<std::byte> serialize(R &&range, SerializerFunction serializer) {
 
 						if constexpr (SizeofSerializedObject == 0) {
@@ -308,19 +282,16 @@ namespace Karkinolution {
 										  "List::SRI::serialize: the first argument must be "
 										  "a range that can be iterated.");
 
-						} else if constexpr (!std::invocable<SerializerFunction &,
-															 std::ranges::range_reference_t<R>>) {
+						} else if constexpr (!std::invocable<SerializerFunction &, std::ranges::range_reference_t<R>>) {
 
-							static_assert(std::invocable<SerializerFunction &,
-														 std::ranges::range_reference_t<R>>,
+							static_assert(std::invocable<SerializerFunction &, std::ranges::range_reference_t<R>>,
 										  "List::SRI::serialize: the serializer must be "
 										  "callable with an element from the supplied range.");
 
 						} else {
 
 							using Serialized = std::remove_cvref_t<
-								std::invoke_result_t<SerializerFunction &,
-													 std::ranges::range_reference_t<R>>>;
+								std::invoke_result_t<SerializerFunction &, std::ranges::range_reference_t<R>>>;
 
 							if constexpr (!Details::SerializedByteRange<Serialized>) {
 
@@ -334,23 +305,19 @@ namespace Karkinolution {
 
 								if constexpr (std::ranges::sized_range<R>) {
 
-									const auto size =
-										Details::checked_list_size(std::ranges::size(range));
+									const auto size = Details::checked_list_size(std::ranges::size(range));
 
-									return Details::serialize_known_size<SizeofSerializedObject>(
-										std::forward<R>(range),
-										serializer,
-										size);
+									return Details::serialize_known_size<SizeofSerializedObject>(std::forward<R>(range),
+																								 serializer,
+																								 size);
 
 								} else if constexpr (std::ranges::forward_range<R>) {
 
-									const auto size =
-										Details::count_forward_range<SizeofSerializedObject>(range);
+									const auto size = Details::count_forward_range<SizeofSerializedObject>(range);
 
-									return Details::serialize_known_size<SizeofSerializedObject>(
-										std::forward<R>(range),
-										serializer,
-										size);
+									return Details::serialize_known_size<SizeofSerializedObject>(std::forward<R>(range),
+																								 serializer,
+																								 size);
 
 								} else {
 
@@ -366,8 +333,7 @@ namespace Karkinolution {
 
 				namespace DSI {
 
-					inline ListSize get_size(const std::vector<std::byte> &bytes,
-											 std::size_t                   offset) {
+					inline ListSize get_size(const std::vector<std::byte> &bytes, std::size_t offset) {
 						if (offset > bytes.size() || bytes.size() - offset < sizeof(ListSize)) {
 							throw ByteError("The list offset is outside the serialized bytes.");
 						}
@@ -377,9 +343,7 @@ namespace Karkinolution {
 
 					namespace Details {
 
-						template <std::size_t SizeofSerializedObject,
-								  typename T,
-								  typename DeserializerFunction>
+						template <std::size_t SizeofSerializedObject, typename T, typename DeserializerFunction>
 						std::vector<T> deserialize_impl(const std::vector<std::byte> &bytes,
 														DeserializerFunction         &deserializer,
 														std::size_t                   offset) {
@@ -395,12 +359,10 @@ namespace Karkinolution {
 
 							if (size > (max - sizeof(ListSize)) / SizeofSerializedObject) {
 
-								throw ByteError(
-									"The serialized list size exceeds std::size_t limits.");
+								throw ByteError("The serialized list size exceeds std::size_t limits.");
 							}
 
-							const auto elements_size =
-								static_cast<std::size_t>(size) * SizeofSerializedObject;
+							const auto elements_size = static_cast<std::size_t>(size) * SizeofSerializedObject;
 
 							const auto serialized_size = sizeof(ListSize) + elements_size;
 
@@ -414,11 +376,10 @@ namespace Karkinolution {
 
 							for (std::size_t index = 0; index < size; ++index) {
 
-								deserialized_values.emplace_back(std::invoke(
-									deserializer,
-									bytes,
-									get_offset_based_on_index<SizeofSerializedObject>(index,
-																					  offset)));
+								deserialized_values.emplace_back(
+									std::invoke(deserializer,
+												bytes,
+												get_offset_based_on_index<SizeofSerializedObject>(index, offset)));
 							}
 
 							return deserialized_values;
@@ -441,29 +402,25 @@ namespace Karkinolution {
 															 const std::vector<std::byte> &,
 															 std::size_t>) {
 
-							static_assert(std::invocable<DeserializerFunction &,
-														 const std::vector<std::byte> &,
-														 std::size_t>,
-										  "List::DSI::deserialize: the deserializer must "
-										  "accept (const std::vector<std::byte>&, std::size_t).");
-
-						} else if constexpr (std::is_void_v<std::invoke_result_t<
-												 DeserializerFunction &,
-												 const std::vector<std::byte> &,
-												 std::size_t>>) {
-
 							static_assert(
-								!std::is_void_v<std::invoke_result_t<DeserializerFunction &,
-																	 const std::vector<std::byte> &,
-																	 std::size_t>>,
+								std::invocable<DeserializerFunction &, const std::vector<std::byte> &, std::size_t>,
 								"List::DSI::deserialize: the deserializer must "
-								"return the object reconstructed from the bytes.");
+								"accept (const std::vector<std::byte>&, std::size_t).");
+
+						} else if constexpr (std::is_void_v<std::invoke_result_t<DeserializerFunction &,
+																				 const std::vector<std::byte> &,
+																				 std::size_t>>) {
+
+							static_assert(!std::is_void_v<std::invoke_result_t<DeserializerFunction &,
+																			   const std::vector<std::byte> &,
+																			   std::size_t>>,
+										  "List::DSI::deserialize: the deserializer must "
+										  "return the object reconstructed from the bytes.");
 
 						} else {
 
-							using Result = std::invoke_result_t<DeserializerFunction &,
-																const std::vector<std::byte> &,
-																std::size_t>;
+							using Result = std::
+								invoke_result_t<DeserializerFunction &, const std::vector<std::byte> &, std::size_t>;
 
 							using T = std::remove_cvref_t<Result>;
 
@@ -476,10 +433,9 @@ namespace Karkinolution {
 
 							} else {
 
-								return Details::deserialize_impl<SizeofSerializedObject, T>(
-									bytes,
-									deserializer,
-									offset);
+								return Details::deserialize_impl<SizeofSerializedObject, T>(bytes,
+																							deserializer,
+																							offset);
 							}
 						}
 					}

@@ -25,10 +25,7 @@ namespace Karkinolution::Terrain {
 	EntityMap::EntityMap(const Size &size)
 		: quadtree(territory_aabb(size)) {}
 
-	bool EntityMap::add(EntityId         id,
-						const Vec2      &position,
-						const Size      &size,
-						const Territory &territory) {
+	bool EntityMap::add(EntityId id, const Vec2 &position, const Size &size, const Territory &territory) {
 		if (quadtree.exists(id))
 			return false;
 		const auto entity_aabb = to_aabb(size, position);
@@ -61,8 +58,7 @@ namespace Karkinolution::Terrain {
 		return quadtree.exists(id);
 	}
 
-	std::optional<EntityId> EntityMap::if_find_one_stop(const Size &size,
-														const Vec2 &position) const {
+	std::optional<EntityId> EntityMap::if_find_one_stop(const Size &size, const Vec2 &position) const {
 		return quadtree.if_find_one_stop(to_aabb(size, position));
 	}
 
@@ -77,8 +73,7 @@ namespace Karkinolution::Terrain {
 		const auto new_bound = to_aabb(current_size, new_position);
 		if (!territory_aabb(territory.size()).contains(new_bound))
 			return false;
-		return quadtree.update(id, new_bound, old_bound)
-			== Functional::Quadtree::UpdateOutput::UPDATED;
+		return quadtree.update(id, new_bound, old_bound) == Functional::Quadtree::UpdateOutput::UPDATED;
 	}
 
 	bool EntityMap::can_contain(const Size &size, const Vec2 &position) const {

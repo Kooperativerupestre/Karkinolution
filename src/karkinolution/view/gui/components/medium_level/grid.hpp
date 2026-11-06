@@ -21,12 +21,11 @@ namespace KarkinolutionView {
 						const Geometry::Width     max_cell_width_;
 						const Geometry::Height    max_cell_height_;
 
-						double get_line_x_based_on_column(Geometry::Column column) const;
-						double get_line_y_based_on_row(Geometry::Row row) const;
-						double get_cell_x_based_on_column(Geometry::Column column) const;
-						double get_cell_y_based_on_row(Geometry::Row row) const;
-						Geometry::Position get_cell_position(Geometry::Column column,
-															 Geometry::Row    row) const;
+						double             get_line_x_based_on_column(Geometry::Column column) const;
+						double             get_line_y_based_on_row(Geometry::Row row) const;
+						double             get_cell_x_based_on_column(Geometry::Column column) const;
+						double             get_cell_y_based_on_row(Geometry::Row row) const;
+						Geometry::Position get_cell_position(Geometry::Column column, Geometry::Row row) const;
 
 					public:
 
@@ -50,14 +49,12 @@ namespace KarkinolutionView {
 
 						[[nodiscard]]
 						NonNegativeValue<int> rows() const {
-							return {static_cast<int>(bounds_.height.value()
-													 / max_cell_height_.value())};
+							return {static_cast<int>(bounds_.height.value() / max_cell_height_.value())};
 						}
 
 						[[nodiscard]]
 						NonNegativeValue<int> columns() const {
-							return {
-								static_cast<int>(bounds_.width.value() / max_cell_width_.value())};
+							return {static_cast<int>(bounds_.width.value() / max_cell_width_.value())};
 						}
 
 						[[nodiscard]]

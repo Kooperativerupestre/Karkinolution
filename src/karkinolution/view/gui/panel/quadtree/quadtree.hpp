@@ -15,20 +15,17 @@ namespace KarkinolutionView::Gui::Panel::Quadtree {
 	class Quadtree {
 		private:
 
-			using FunctionalTree =
-				Karkinolution::Functional::Quadtree::Quadtree<Components::ComponentId>;
+			using FunctionalTree = Karkinolution::Functional::Quadtree::Quadtree<Components::ComponentId>;
 			FunctionalTree tree_;
 
-			static Karkinolution::Functional::Quadtree::AABB
-			to_aabb(const Geometry::Rectangle &rectangle) {
+			static Karkinolution::Functional::Quadtree::AABB to_aabb(const Geometry::Rectangle &rectangle) {
 				const auto half_width  = static_cast<float>(rectangle.width.value()) / 2.0f;
 				const auto half_height = static_cast<float>(rectangle.height.value()) / 2.0f;
 				return {{rectangle.position.x - half_width, rectangle.position.y - half_height},
 						{rectangle.position.x + half_width, rectangle.position.y + half_height}};
 			}
 
-			static Karkinolution::Functional::Quadtree::AABB
-			to_aabb(const Geometry::Circle &circle) {
+			static Karkinolution::Functional::Quadtree::AABB to_aabb(const Geometry::Circle &circle) {
 				const auto radius = circle.radius.value();
 				return {{circle.position.x - radius, circle.position.y - radius},
 						{circle.position.x + radius, circle.position.y + radius}};
@@ -74,9 +71,8 @@ namespace KarkinolutionView::Gui::Panel::Quadtree {
 				return tree_.update(id, to_aabb(form));
 			}
 
-			UpdateOutput update(Components::ComponentId    id,
-								const Geometry::Rectangle &form,
-								const Geometry::Rectangle &old_form) {
+			UpdateOutput
+			update(Components::ComponentId id, const Geometry::Rectangle &form, const Geometry::Rectangle &old_form) {
 				return tree_.update(id, to_aabb(form), to_aabb(old_form));
 			}
 
@@ -84,9 +80,8 @@ namespace KarkinolutionView::Gui::Panel::Quadtree {
 				return tree_.update(id, to_aabb(form));
 			}
 
-			UpdateOutput update(Components::ComponentId id,
-								const Geometry::Circle &form,
-								const Geometry::Circle &old_form) {
+			UpdateOutput
+			update(Components::ComponentId id, const Geometry::Circle &form, const Geometry::Circle &old_form) {
 				return tree_.update(id, to_aabb(form), to_aabb(old_form));
 			}
 
@@ -94,23 +89,19 @@ namespace KarkinolutionView::Gui::Panel::Quadtree {
 				return tree_.exists(id);
 			}
 
-			[[nodiscard]] bool exists(Components::ComponentId    id,
-									  const Geometry::Rectangle &form) const {
+			[[nodiscard]] bool exists(Components::ComponentId id, const Geometry::Rectangle &form) const {
 				return tree_.exists(id, to_aabb(form));
 			}
 
-			[[nodiscard]] bool exists(Components::ComponentId id,
-									  const Geometry::Circle &form) const {
+			[[nodiscard]] bool exists(Components::ComponentId id, const Geometry::Circle &form) const {
 				return tree_.exists(id, to_aabb(form));
 			}
 
-			[[nodiscard]] std::vector<Components::ComponentId>
-			find_in_area(const Geometry::Rectangle &area) const {
+			[[nodiscard]] std::vector<Components::ComponentId> find_in_area(const Geometry::Rectangle &area) const {
 				return tree_.find(to_aabb(area));
 			}
 
-			[[nodiscard]] std::vector<Components::ComponentId>
-			find_in_area(const Geometry::Circle &area) const {
+			[[nodiscard]] std::vector<Components::ComponentId> find_in_area(const Geometry::Circle &area) const {
 				return tree_.find(to_aabb(area));
 			}
 
@@ -119,8 +110,7 @@ namespace KarkinolutionView::Gui::Panel::Quadtree {
 				return tree_.if_find_one_stop(to_aabb(area));
 			}
 
-			[[nodiscard]] std::optional<Components::ComponentId>
-			if_find_one_stop(const Geometry::Circle &area) const {
+			[[nodiscard]] std::optional<Components::ComponentId> if_find_one_stop(const Geometry::Circle &area) const {
 				return tree_.if_find_one_stop(to_aabb(area));
 			}
 	};

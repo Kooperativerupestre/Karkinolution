@@ -24,8 +24,7 @@ namespace KarkinolutionSDK::Protocol {
 			   == Karkinolution::Networking::BufferExistence::YES) {
 
 			const auto raw_frame =
-				Karkinolution::Networking::FrameBufferAnalyzer::get_frame(incoming_responses)
-					.value();
+				Karkinolution::Networking::FrameBufferAnalyzer::get_frame(incoming_responses).value();
 			for (std::size_t i = 0; i < raw_frame.size(); ++i) {
 				incoming_responses.pop_front();
 			}

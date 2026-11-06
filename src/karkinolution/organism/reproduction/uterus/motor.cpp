@@ -11,9 +11,7 @@
 namespace Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor {
 
 	void transfer_energy_to_uterus(Creature::Creature &creature) {
-		transfer_energy_to_uterus(creature,
-								  NormalizedValue<float>(0.2f),
-								  NormalizedValue<float>(0.5f));
+		transfer_energy_to_uterus(creature, NormalizedValue<float>(0.2f), NormalizedValue<float>(0.5f));
 	}
 
 	void transfer_energy_to_uterus(Creature::Creature &creature, float energy, float reserved) {
@@ -38,8 +36,7 @@ namespace Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor {
 								   NormalizedValue<float> reserved_ratio) {
 		transfer_energy_to_uterus(creature,
 								  energy_ratio.value() * creature.body.metabolism.energy.value(),
-								  reserved_ratio.value()
-									  * creature.body.metabolism.reserved.value());
+								  reserved_ratio.value() * creature.body.metabolism.reserved.value());
 	}
 
 } // namespace Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor

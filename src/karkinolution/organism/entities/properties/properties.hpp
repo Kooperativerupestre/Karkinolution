@@ -42,8 +42,7 @@ namespace Karkinolution {
 				template <typename T, typename V> struct IsAlternativeOf;
 
 				template <typename T, typename... Ts>
-				struct IsAlternativeOf<T, std::variant<Ts...>>
-					: std::bool_constant<(std::is_same_v<T, Ts> || ...)> {};
+				struct IsAlternativeOf<T, std::variant<Ts...>> : std::bool_constant<(std::is_same_v<T, Ts> || ...)> {};
 
 				template <typename T>
 				concept PropertyEnum = IsAlternativeOf<T, AnyProperty>::value;
@@ -57,8 +56,7 @@ namespace Karkinolution {
 						constexpr GenericProperty(E value)
 							: data_(value) {}
 
-						static constexpr std::optional<GenericProperty> fromRaw(Kind kind,
-																				Type raw) {
+						static constexpr std::optional<GenericProperty> fromRaw(Kind kind, Type raw) {
 							return fromRawImpl<0>(kind.value, raw.value);
 						}
 
@@ -91,8 +89,7 @@ namespace Karkinolution {
 
 
 						template <std::size_t I>
-						static constexpr std::optional<GenericProperty>
-						fromRawImpl(std::size_t kind, uint8_t raw) {
+						static constexpr std::optional<GenericProperty> fromRawImpl(std::size_t kind, uint8_t raw) {
 							if constexpr (I == std::variant_size_v<Variant>) {
 								return std::nullopt;
 							} else {
@@ -126,8 +123,8 @@ namespace Karkinolution {
 } // namespace Karkinolution
 
 template <> struct std::hash<Karkinolution::Organisms::Entities::Properties::GenericProperty> {
-		std::size_t operator()(const Karkinolution::Organisms::Entities::Properties::GenericProperty
-								   &p) const noexcept {
+		std::size_t
+		operator()(const Karkinolution::Organisms::Entities::Properties::GenericProperty &p) const noexcept {
 			return (p.kind().value << 8) | p.raw().value;
 		}
 };

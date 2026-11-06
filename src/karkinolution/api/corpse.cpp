@@ -10,6 +10,5 @@ Karkinolution::API::Corpse::see_corpse(const Karkinolution::World::World  &world
 	if (!world.see_entities_registry().exists(entity_id)) {
 		return nullptr;
 	}
-	return &std::get<Karkinolution::Organisms::Entities::Corpse::Corpse>(
-		world.at_entity(entity_id));
+	return &std::get<Karkinolution::Organisms::Entities::Corpse::Corpse>(world.at_entity(entity_id));
 }

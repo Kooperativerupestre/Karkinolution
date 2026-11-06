@@ -18,10 +18,7 @@ namespace Karkinolution::Organisms::Entities::Corpse::Physiology {
 		raw_meat.value += metabolism.energy.value() * 0.5f;
 		raw_meat.value += metabolism.reserved.value() * 0.75f;
 		raw_meat.value += morphology.area().value * 0.20f * metabolism.reserved.value();
-		return Corpse{creature.body.morphology.size,
-					  creature.position,
-					  raw_meat,
-					  Karkinolution::Core::Id::gen_id()};
+		return Corpse{creature.body.morphology.size, creature.position, raw_meat, Karkinolution::Core::Id::gen_id()};
 	}
 
 	Corpse generate_corpse(const Karkinolution::Organisms::Entities::Embryo::Embryo &embryo) {

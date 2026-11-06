@@ -23,46 +23,40 @@ namespace KarkinolutionView {
 
 				double Grid::get_line_x_based_on_column(Geometry::Column column) const {
 					if (column.value() > columns().value()) {
-						throw Karkinolution::Errors::SimulationError(
-							"Column is outside of grid bounds");
+						throw Karkinolution::Errors::SimulationError("Column is outside of grid bounds");
 					}
 					return left() + column.value() * max_cell_width_.value();
 				}
 
 				double Grid::get_line_y_based_on_row(Geometry::Row row) const {
 					if (row.value() > rows().value()) {
-						throw Karkinolution::Errors::SimulationError(
-							"Row is outside of grid bounds");
+						throw Karkinolution::Errors::SimulationError("Row is outside of grid bounds");
 					}
 					return top() + row.value() * max_cell_height_.value();
 				}
 
 				double Grid::get_cell_x_based_on_column(Geometry::Column column) const {
 					if (column.value() >= columns().value()) {
-						throw Karkinolution::Errors::SimulationError(
-							"Column is outside of cell bounds of the grid");
+						throw Karkinolution::Errors::SimulationError("Column is outside of cell bounds of the grid");
 					}
 					return left() + column.value() * max_cell_width_.value();
 				}
 
 				double Grid::get_cell_y_based_on_row(Geometry::Row row) const {
 					if (row.value() >= rows().value()) {
-						throw Karkinolution::Errors::SimulationError(
-							"Row is outside of cell bounds of the grid");
+						throw Karkinolution::Errors::SimulationError("Row is outside of cell bounds of the grid");
 					}
 					return top() + row.value() * max_cell_height_.value();
 				}
 
-				Geometry::Position Grid::get_cell_position(Geometry::Column column,
-														   Geometry::Row    row) const {
+				Geometry::Position Grid::get_cell_position(Geometry::Column column, Geometry::Row row) const {
 					return {static_cast<float>(get_cell_x_based_on_column(column)),
 							static_cast<float>(get_cell_y_based_on_row(row))};
 				}
 
 				void Grid::draw() const {
 					for (int column = 0; column <= columns().value(); ++column) {
-						const float x = static_cast<float>(
-							get_line_x_based_on_column(Geometry::Column{column}));
+						const float    x = static_cast<float>(get_line_x_based_on_column(Geometry::Column{column}));
 						LowLevel::Line line{{x, static_cast<float>(top())},
 											{x, static_cast<float>(bottom())},
 											thickness_,
@@ -71,8 +65,7 @@ namespace KarkinolutionView {
 					}
 
 					for (int row = 0; row <= rows().value(); ++row) {
-						const float y =
-							static_cast<float>(get_line_y_based_on_row(Geometry::Row{row}));
+						const float    y = static_cast<float>(get_line_y_based_on_row(Geometry::Row{row}));
 						LowLevel::Line line{{static_cast<float>(left()), y},
 											{static_cast<float>(right()), y},
 											thickness_,
@@ -106,12 +99,11 @@ namespace KarkinolutionView {
 					}
 
 					const auto                position = get_cell_position(column, row);
-					const LowLevel::Rectangle cell_rectangle{
-						{{position.x + static_cast<float>(width.value()) / 2.0f,
-						  position.y + static_cast<float>(height.value()) / 2.0f},
-						 Geometry::Width{width.value() - thickness_.value()},
-						 Geometry::Height{height.value() - thickness_.value()}},
-						cell_color};
+					const LowLevel::Rectangle cell_rectangle{{{position.x + static_cast<float>(width.value()) / 2.0f,
+															   position.y + static_cast<float>(height.value()) / 2.0f},
+															  Geometry::Width{width.value() - thickness_.value()},
+															  Geometry::Height{height.value() - thickness_.value()}},
+															 cell_color};
 					cell_rectangle.draw();
 				}
 			} // namespace MediumLevel

@@ -40,12 +40,10 @@ namespace Karkinolution {
 						BytesArrays::Properties bytes;
 
 						bytes[Layout::Kind::OFFSET] =
-							Karkinolution::Binary::Serializer::convert_uint8_t(
-								property.kind().value);
+							Karkinolution::Binary::Serializer::convert_uint8_t(property.kind().value);
 
 						bytes[Layout::Type::OFFSET] =
-							Karkinolution::Binary::Serializer::convert_uint8_t(
-								property.raw().value);
+							Karkinolution::Binary::Serializer::convert_uint8_t(property.raw().value);
 
 						return bytes;
 					}
@@ -55,26 +53,21 @@ namespace Karkinolution {
 			namespace DSI {
 				namespace Properties {
 					template <ByteRange T>
-					Karkinolution::Organisms::Entities::GenericProperty constexpr deserialize(
-						const T    &payload,
-						std::size_t offset) {
+					Karkinolution::Organisms::Entities::GenericProperty constexpr deserialize(const T    &payload,
+																							  std::size_t offset) {
 						Karkinolution::Organisms::Entities::Properties::Kind kind{
-							Karkinolution::Binary::Deserializer::read_uint8_t(
-								payload,
-								SRI::Properties::Layout::Kind::OFFSET + offset)};
+							Karkinolution::Binary::Deserializer::read_uint8_t(payload,
+																			  SRI::Properties::Layout::Kind::OFFSET
+																				  + offset)};
 
 						Karkinolution::Organisms::Entities::Properties::Type type(
-							Karkinolution::Binary::Deserializer::read_uint8_t(
-								payload,
-								SRI::Properties::Layout::Type::OFFSET + offset));
-						auto property =
-							Karkinolution::Organisms::Entities::GenericProperty::fromRaw(kind,
-																						 type);
+							Karkinolution::Binary::Deserializer::read_uint8_t(payload,
+																			  SRI::Properties::Layout::Type::OFFSET
+																				  + offset));
+						auto property = Karkinolution::Organisms::Entities::GenericProperty::fromRaw(kind, type);
 						if (!property) {
 							throw ByteError(
-								std::format("Invalid combination of kind {} and type {}",
-											kind.value,
-											type.value));
+								std::format("Invalid combination of kind {} and type {}", kind.value, type.value));
 						}
 						return property.value();
 					}

@@ -19,19 +19,17 @@ namespace {
 			explicit SoilListClient(const World &world)
 				: world(world) {}
 
-			KarkinolutionSDK::Client::ResponseResult
-			request(const KarkinolutionSDK::Client::RequestData &) {
+			KarkinolutionSDK::Client::ResponseResult request(const KarkinolutionSDK::Client::RequestData &) {
 				const auto &soil_pieces = world.see_territory().registry();
-				const auto payload     = ListTSRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
-					std::views::values(soil_pieces),
-					[](const SoilPiece &soil) {
-						return SoilSRI::serialize_soil(soil);
-					});
-				const auto response =
-					Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::SOIL,
-																		RequestId{0},
-																		payload,
-																		ResponseCardinality::ALL);
+				const auto  payload =
+					ListTSRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(std::views::values(soil_pieces),
+																	 [](const SoilPiece &soil) {
+																		 return SoilSRI::serialize_soil(soil);
+																	 });
+				const auto response = Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::SOIL,
+																						  RequestId{0},
+																						  payload,
+																						  ResponseCardinality::ALL);
 
 				return std::optional<ResponseFrameVariant>{response};
 			}

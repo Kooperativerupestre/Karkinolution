@@ -42,8 +42,7 @@ namespace Karkinolution {
 
 						[[nodiscard]] Size size() const noexcept {
 							const double width = std::sqrt(area.value * 1.6);
-							return Size{.width  = Width{width},
-										.height = Height{area.value / width}};
+							return Size{.width = Width{width}, .height = Height{area.value / width}};
 						}
 
 						[[nodiscard]] EntityId build_id() const noexcept {

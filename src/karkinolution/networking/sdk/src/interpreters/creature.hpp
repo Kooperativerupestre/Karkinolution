@@ -48,20 +48,18 @@ namespace KarkinolutionSDK {
 
 			template <HasRequest T>
 			std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
-			make_creature(
-				T                                                                           &client,
-				std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
-				std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-				const std::optional<Karkinolution::Math::Vec::Vec2> &position,
-				const std::optional<std::string>                    &name) {
-				const auto payload =
-					CreatureSRI::Request::make_create_creature(gender, specie, position, name);
-				const auto built = Karkinolution::Binary::Frames::Motor::make_request(
-					RequestSubTypes::CREATE,
-					GENERIC_INTERPRETER_ID,
-					Resource::CREATURE,
-					std::vector<std::byte>(payload.begin(), payload.end()),
-					CreateExtra{});
+			make_creature(T                                                                           &client,
+						  std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
+						  std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
+						  const std::optional<Karkinolution::Math::Vec::Vec2>                         &position,
+						  const std::optional<std::string>                                            &name) {
+				const auto payload = CreatureSRI::Request::make_create_creature(gender, specie, position, name);
+				const auto built   = Karkinolution::Binary::Frames::Motor::make_request(
+                    RequestSubTypes::CREATE,
+                    GENERIC_INTERPRETER_ID,
+                    Resource::CREATURE,
+                    std::vector<std::byte>(payload.begin(), payload.end()),
+                    CreateExtra{});
 
 				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.get_sub_type(),
 																 .resource = built.get_resource(),

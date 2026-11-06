@@ -6,11 +6,10 @@
 #include <stdexcept>
 #include <utility>
 
-KarkinolutionView::Gui::Components::LowLevel::Text::Text(
-	const KarkinolutionView::Gui::Geometry::Rectangle &max_bound,
-	std::string                                        text,
-	const Karkinolution::Colors::Color                &color,
-	GreaterThanZeroValue<int>                          font_size)
+KarkinolutionView::Gui::Components::LowLevel::Text::Text(const KarkinolutionView::Gui::Geometry::Rectangle &max_bound,
+														 std::string                                        text,
+														 const Karkinolution::Colors::Color                &color,
+														 GreaterThanZeroValue<int>                          font_size)
 	: max_bound_(max_bound)
 	, current_bound_(max_bound)
 	, text_()
@@ -20,8 +19,7 @@ KarkinolutionView::Gui::Components::LowLevel::Text::Text(
 }
 
 void KarkinolutionView::Gui::Components::LowLevel::Text::set_text(std::string text) {
-	const auto text_size =
-		MeasureTextEx(GetFontDefault(), text.c_str(), static_cast<float>(font_size.value()), 1.0F);
+	const auto text_size = MeasureTextEx(GetFontDefault(), text.c_str(), static_cast<float>(font_size.value()), 1.0F);
 	const Geometry::Rectangle candidate_bound{max_bound_.position,
 											  Geometry::Width{text_size.x},
 											  Geometry::Height{text_size.y}};

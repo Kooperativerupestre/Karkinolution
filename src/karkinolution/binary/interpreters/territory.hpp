@@ -33,8 +33,8 @@ namespace Karkinolution {
 						using Territory = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArrays
 
-					BytesArrays::Territory serialize_territory(
-						const Interpreters::Models::Territory::Territory &territory);
+					BytesArrays::Territory
+					serialize_territory(const Interpreters::Models::Territory::Territory &territory);
 
 					namespace Request {
 						std::array<std::byte, 0> make_see_territory();
@@ -45,8 +45,7 @@ namespace Karkinolution {
 			namespace DSI {
 				namespace Territory {
 					Interpreters::Models::Territory::Territory
-					deserialize_territory(const std::vector<std::byte> &payload,
-										  std::size_t                   offset);
+					deserialize_territory(const std::vector<std::byte> &payload, std::size_t offset);
 				} // namespace Territory
 			} // namespace DSI
 		} // namespace Interpreters

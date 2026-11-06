@@ -19,12 +19,11 @@ namespace Karkinolution::World {
 	}
 
 	bool Karkinolution::World::World::add(Organisms::Entities::Entity &&entity) {
-		const auto id = Organisms::Entities::EntityGetters::get_id(entity);
-		const auto was_inserted_on_map =
-			entity_map.add(id,
-						   Organisms::Entities::EntityGetters::get_position(entity),
-						   Organisms::Entities::EntityGetters::get_size(entity),
-						   territory);
+		const auto id                  = Organisms::Entities::EntityGetters::get_id(entity);
+		const auto was_inserted_on_map = entity_map.add(id,
+														Organisms::Entities::EntityGetters::get_position(entity),
+														Organisms::Entities::EntityGetters::get_size(entity),
+														territory);
 
 
 		if (!was_inserted_on_map) {
@@ -48,7 +47,7 @@ namespace Karkinolution::World {
 	}
 
 	bool Karkinolution::World::World::update(Karkinolution::Organisms::Entities::EntityId id,
-											 const Karkinolution::Math::Vec::Vec2 &new_position) {
+											 const Karkinolution::Math::Vec::Vec2        &new_position) {
 		if (!exists_entity(id)) {
 			return false;
 		}
@@ -69,11 +68,10 @@ namespace Karkinolution::World {
 	World::World(const WorldPreset &preset)
 		: entity_map(preset.size)
 		, natures(preset.size)
-		, territory(
-			  Terrain::TerrainFactory::gen_terrain(preset.size,
-												   preset.seed,
-												   Terrain::TerrainFactory::TerrainScale::NORMAL,
-												   preset.epsilon,
-												   Karkinolution::Math::Geometry::Radius(10.0),
-												   Karkinolution::Math::Geometry::Radius(20.0))) {}
+		, territory(Terrain::TerrainFactory::gen_terrain(preset.size,
+														 preset.seed,
+														 Terrain::TerrainFactory::TerrainScale::NORMAL,
+														 preset.epsilon,
+														 Karkinolution::Math::Geometry::Radius(10.0),
+														 Karkinolution::Math::Geometry::Radius(20.0))) {}
 } // namespace Karkinolution::World

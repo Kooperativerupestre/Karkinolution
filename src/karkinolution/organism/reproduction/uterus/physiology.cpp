@@ -10,8 +10,7 @@ namespace Karkinolution::Organisms::Entities::Reproduction::Uterus::Physiology {
 
 	NormalizedValue<float> embryotrophy_energy(const Uterus &uterus, const Embryo::Embryo &embryo) {
 		float dist = embryo.hungry().ratio().value() - 0.85; // max = 0.15 (1 - 0.85)
-		return KRandom::RandomGenerators::generate(0.85 - dist, 1.0)
-			/ uterus.get_pregnant_uterus().embryos_count()
+		return KRandom::RandomGenerators::generate(0.85 - dist, 1.0) / uterus.get_pregnant_uterus().embryos_count()
 			+ dist;
 	}
 

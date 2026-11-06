@@ -35,37 +35,31 @@ namespace Karkinolution {
 
 				namespace Internal {
 					constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size,
-																	std::size_t fixed_header_size) {
-						return fixed_header_size - ProtocolLayout::DeclaredSize::SIZE
-							+ payload_size;
+																	std::size_t   fixed_header_size) {
+						return fixed_header_size - ProtocolLayout::DeclaredSize::SIZE + payload_size;
 					}
 
 					constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size,
-																   std::size_t fixed_header_size) {
-						const auto minimum_declared_size =
-							fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
+																   std::size_t   fixed_header_size) {
+						const auto minimum_declared_size = fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
 
 						if (declared_size < minimum_declared_size) {
-							throw ByteError(std::format(
-								"Cannot get payload bytes because size {} < minimum size {}",
-								declared_size,
-								minimum_declared_size));
+							throw ByteError(std::format("Cannot get payload bytes because size {} < minimum size {}",
+														declared_size,
+														minimum_declared_size));
 						}
 						return declared_size - minimum_declared_size;
 					}
 
 					template <ByteRange T>
-					constexpr std::uint32_t calculate_payload_size(const T    &bytes,
-																   std::size_t fixed_header_size) {
+					constexpr std::uint32_t calculate_payload_size(const T &bytes, std::size_t fixed_header_size) {
 						const auto declared_size =
-							Karkinolution::Binary::Deserializer::read_uint32_t(
-								bytes,
-								ProtocolLayout::DeclaredSize::OFFSET);
+							Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
+																			   ProtocolLayout::DeclaredSize::OFFSET);
 						return calculate_payload_size(declared_size, fixed_header_size);
 					}
 
-					template <ByteRange T>
-					FrameExistence has_frame(const T &bytes, std::size_t fixed_header_size) {
+					template <ByteRange T> FrameExistence has_frame(const T &bytes, std::size_t fixed_header_size) {
 						if (bytes.size() == 0) {
 							return FrameExistence::NO;
 						}
@@ -74,34 +68,28 @@ namespace Karkinolution {
 						}
 
 						const auto declared_size =
-							Karkinolution::Binary::Deserializer::read_uint32_t(
-								bytes,
-								ProtocolLayout::DeclaredSize::OFFSET);
-						const auto minimum_declared_size =
-							fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
+							Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
+																			   ProtocolLayout::DeclaredSize::OFFSET);
+						const auto minimum_declared_size = fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
 						if (declared_size < minimum_declared_size) {
-							throw ByteError(std::format(
-								"Declared size {} is lower than the minimum frame size {}",
-								declared_size,
-								minimum_declared_size));
+							throw ByteError(std::format("Declared size {} is lower than the minimum frame size {}",
+														declared_size,
+														minimum_declared_size));
 						}
 
 						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE + declared_size;
-						return bytes.size() >= frame_size ? FrameExistence::YES
-														  : FrameExistence::INCOMPLETE;
+						return bytes.size() >= frame_size ? FrameExistence::YES : FrameExistence::INCOMPLETE;
 					}
 
 					template <ByteRange T>
-					std::vector<std::byte> get_frame(const T    &bytes,
-													 std::size_t fixed_header_size) {
+					std::vector<std::byte> get_frame(const T &bytes, std::size_t fixed_header_size) {
 						if (has_frame(bytes, fixed_header_size) != FrameExistence::YES) {
 							throw ByteError("Cannot extract a frame from an incomplete buffer");
 						}
 
 						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE
-							+ Karkinolution::Binary::Deserializer::read_uint32_t(
-													bytes,
-													ProtocolLayout::DeclaredSize::OFFSET);
+							+ Karkinolution::Binary::Deserializer::read_uint32_t(bytes,
+																				 ProtocolLayout::DeclaredSize::OFFSET);
 						std::vector<std::byte> frame;
 						frame.reserve(frame_size);
 						for (std::size_t i = 0; i < frame_size; ++i) {
@@ -116,9 +104,8 @@ namespace Karkinolution {
 				}
 
 				template <ByteRange T> BinaryTypes get_type(const T &bytes) {
-					const auto raw = Karkinolution::Binary::Deserializer::read_uint8_t(
-						bytes,
-						ProtocolLayout::DeclaredSize::SIZE);
+					const auto raw =
+						Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::DeclaredSize::SIZE);
 
 					Protocol::Validator::validate_type(raw);
 					return static_cast<BinaryTypes>(raw);
@@ -128,9 +115,8 @@ namespace Karkinolution {
 				Karkinolution::Binary::Protocol::Detail::CodeVariant get_sub_type(const T &bytes) {
 					Karkinolution::Binary::Protocol::Detail::CodeVariant sub_type;
 					const auto                                           type = get_type(bytes);
-					const auto read = Karkinolution::Binary::Deserializer::read_uint8_t(
-						bytes,
-						ProtocolLayout::SubType::OFFSET);
+					const auto                                           read =
+						Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
 
 					Karkinolution::Binary::Protocol::Validator::validate_sub_type(type, read);
 
@@ -168,13 +154,11 @@ namespace Karkinolution {
 					}
 
 					template <ByteRange T> Resource get_resource(const T &bytes) {
-						auto read = Karkinolution::Binary::Deserializer::deserialize<
-							Protocol::Aliases::FrameSubType>(
+						auto read = Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::FrameSubType>(
 							bytes,
 							ProtocolLayout::Request::Resource::OFFSET);
 
-						Karkinolution::Binary::Protocol::Validator::Request::validate_resource(
-							read);
+						Karkinolution::Binary::Protocol::Validator::Request::validate_resource(read);
 						return Resource(read);
 					}
 
@@ -183,8 +167,7 @@ namespace Karkinolution {
 					}
 
 					namespace See {
-						template <ByteRange T>
-						Protocol::Request::SeeTarget get_target(const T &bytes) {
+						template <ByteRange T> Protocol::Request::SeeTarget get_target(const T &bytes) {
 							return static_cast<Protocol::Request::SeeTarget>(
 								Karkinolution::Binary::Deserializer::deserialize<
 									Protocol::Aliases::Request::FrameSeeTarget>(
@@ -198,270 +181,210 @@ namespace Karkinolution {
 
 						template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 							std::vector<std::byte> payload;
-							payload.insert(
-								payload.end(),
-								bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET,
-								bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET
-									+ Internal::calculate_payload_size(
-										bytes,
-										ProtocolLayout::Request::See::FIXED_HEADER_SIZE));
+							payload.insert(payload.end(),
+										   bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET,
+										   bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET
+											   + Internal::calculate_payload_size(
+												   bytes,
+												   ProtocolLayout::Request::See::FIXED_HEADER_SIZE));
 							return payload;
 						}
 
-						constexpr std::uint32_t
-						calculate_declared_size(std::uint32_t payload_size) {
-							return Internal::calculate_declared_size(
-								payload_size,
-								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
+							return Internal::calculate_declared_size(payload_size,
+																	 ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t
-						calculate_payload_size(std::uint32_t declared_size) {
-							return Internal::calculate_payload_size(
-								declared_size,
-								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+							return Internal::calculate_payload_size(declared_size,
+																	ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 						}
 
-						template <ByteRange T>
-						constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-							return Internal::calculate_payload_size(
-								bytes,
-								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
+						template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							return Internal::calculate_payload_size(bytes,
+																	ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> bool has_payload(const T &bytes) {
 							const auto payload_size = calculate_payload_size(bytes);
-							return bytes.size()
-								>= ProtocolLayout::Request::See::Payload::OFFSET + payload_size;
+							return bytes.size() >= ProtocolLayout::Request::See::Payload::OFFSET + payload_size;
 						}
 
 						template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-							return Internal::has_frame(
-								bytes,
-								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
+							return Internal::has_frame(bytes, ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-							return Internal::get_frame(
-								bytes,
-								ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
+							return Internal::get_frame(bytes, ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 						}
 					} // namespace See
 
 					namespace Create {
 						template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 							std::vector<std::byte> payload;
-							payload.insert(
-								payload.end(),
-								bytes.begin() + ProtocolLayout::Request::Create::Payload::OFFSET,
-								bytes.begin() + ProtocolLayout::Request::Create::Payload::OFFSET
-									+ Internal::calculate_payload_size(
-										bytes,
-										ProtocolLayout::Request::Create::FIXED_HEADER_SIZE));
+							payload.insert(payload.end(),
+										   bytes.begin() + ProtocolLayout::Request::Create::Payload::OFFSET,
+										   bytes.begin() + ProtocolLayout::Request::Create::Payload::OFFSET
+											   + Internal::calculate_payload_size(
+												   bytes,
+												   ProtocolLayout::Request::Create::FIXED_HEADER_SIZE));
 							return payload;
 						}
 
-						constexpr std::uint32_t
-						calculate_declared_size(std::uint32_t payload_size) {
+						constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
 							return Internal::calculate_declared_size(
 								payload_size,
 								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t
-						calculate_payload_size(std::uint32_t declared_size) {
-							return Internal::calculate_payload_size(
-								declared_size,
-								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+							return Internal::calculate_payload_size(declared_size,
+																	ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
 						}
 
-						template <ByteRange T>
-						constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-							return Internal::calculate_payload_size(
-								bytes,
-								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
+						template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							return Internal::calculate_payload_size(bytes,
+																	ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> bool has_payload(const T &bytes) {
 							const auto payload_size = calculate_payload_size(bytes);
-							return bytes.size()
-								>= ProtocolLayout::Request::Create::Payload::OFFSET + payload_size;
+							return bytes.size() >= ProtocolLayout::Request::Create::Payload::OFFSET + payload_size;
 						}
 
 						template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-							return Internal::has_frame(
-								bytes,
-								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
+							return Internal::has_frame(bytes, ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-							return Internal::get_frame(
-								bytes,
-								ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
+							return Internal::get_frame(bytes, ProtocolLayout::Request::Create::FIXED_HEADER_SIZE);
 						}
 					} // namespace Create
 
 					namespace Cycle {
 						template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 							std::vector<std::byte> payload;
-							payload.insert(
-								payload.end(),
-								bytes.begin() + ProtocolLayout::Request::Cycle::Payload::OFFSET,
-								bytes.begin() + ProtocolLayout::Request::Cycle::Payload::OFFSET
-									+ Internal::calculate_payload_size(
-										bytes,
-										ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE));
+							payload.insert(payload.end(),
+										   bytes.begin() + ProtocolLayout::Request::Cycle::Payload::OFFSET,
+										   bytes.begin() + ProtocolLayout::Request::Cycle::Payload::OFFSET
+											   + Internal::calculate_payload_size(
+												   bytes,
+												   ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE));
 							return payload;
 						}
 
-						constexpr std::uint32_t
-						calculate_declared_size(std::uint32_t payload_size) {
-							return Internal::calculate_declared_size(
-								payload_size,
-								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
+							return Internal::calculate_declared_size(payload_size,
+																	 ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t
-						calculate_payload_size(std::uint32_t declared_size) {
-							return Internal::calculate_payload_size(
-								declared_size,
-								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+							return Internal::calculate_payload_size(declared_size,
+																	ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 						}
 
-						template <ByteRange T>
-						constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-							return Internal::calculate_payload_size(
-								bytes,
-								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
+						template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							return Internal::calculate_payload_size(bytes,
+																	ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> bool has_payload(const T &bytes) {
 							const auto payload_size = calculate_payload_size(bytes);
-							return bytes.size()
-								>= ProtocolLayout::Request::Cycle::Payload::OFFSET + payload_size;
+							return bytes.size() >= ProtocolLayout::Request::Cycle::Payload::OFFSET + payload_size;
 						}
 
 						template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-							return Internal::has_frame(
-								bytes,
-								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
+							return Internal::has_frame(bytes, ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-							return Internal::get_frame(
-								bytes,
-								ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
+							return Internal::get_frame(bytes, ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 						}
 					} // namespace Cycle
 
 					namespace Erase {
 						template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 							std::vector<std::byte> payload;
-							payload.insert(
-								payload.end(),
-								bytes.begin() + ProtocolLayout::Request::Erase::Payload::OFFSET,
-								bytes.begin() + ProtocolLayout::Request::Erase::Payload::OFFSET
-									+ Internal::calculate_payload_size(
-										bytes,
-										ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE));
+							payload.insert(payload.end(),
+										   bytes.begin() + ProtocolLayout::Request::Erase::Payload::OFFSET,
+										   bytes.begin() + ProtocolLayout::Request::Erase::Payload::OFFSET
+											   + Internal::calculate_payload_size(
+												   bytes,
+												   ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE));
 							return payload;
 						}
 
-						constexpr std::uint32_t
-						calculate_declared_size(std::uint32_t payload_size) {
-							return Internal::calculate_declared_size(
-								payload_size,
-								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
+							return Internal::calculate_declared_size(payload_size,
+																	 ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t
-						calculate_payload_size(std::uint32_t declared_size) {
-							return Internal::calculate_payload_size(
-								declared_size,
-								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+							return Internal::calculate_payload_size(declared_size,
+																	ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 						}
 
-						template <ByteRange T>
-						constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-							return Internal::calculate_payload_size(
-								bytes,
-								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
+						template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							return Internal::calculate_payload_size(bytes,
+																	ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> bool has_payload(const T &bytes) {
 							const auto payload_size = calculate_payload_size(bytes);
-							return bytes.size()
-								>= ProtocolLayout::Request::Erase::Payload::OFFSET + payload_size;
+							return bytes.size() >= ProtocolLayout::Request::Erase::Payload::OFFSET + payload_size;
 						}
 
 						template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-							return Internal::has_frame(
-								bytes,
-								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
+							return Internal::has_frame(bytes, ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-							return Internal::get_frame(
-								bytes,
-								ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
+							return Internal::get_frame(bytes, ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 						}
 					} // namespace Erase
 
 					namespace Want {
 						template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 							std::vector<std::byte> payload;
-							payload.insert(
-								payload.end(),
-								bytes.begin() + ProtocolLayout::Request::Want::Payload::OFFSET,
-								bytes.begin() + ProtocolLayout::Request::Want::Payload::OFFSET
-									+ Internal::calculate_payload_size(
-										bytes,
-										ProtocolLayout::Request::Want::FIXED_HEADER_SIZE));
+							payload.insert(payload.end(),
+										   bytes.begin() + ProtocolLayout::Request::Want::Payload::OFFSET,
+										   bytes.begin() + ProtocolLayout::Request::Want::Payload::OFFSET
+											   + Internal::calculate_payload_size(
+												   bytes,
+												   ProtocolLayout::Request::Want::FIXED_HEADER_SIZE));
 							return payload;
 						}
 
-						constexpr std::uint32_t
-						calculate_declared_size(std::uint32_t payload_size) {
-							return Internal::calculate_declared_size(
-								payload_size,
-								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
+							return Internal::calculate_declared_size(payload_size,
+																	 ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 						}
 
-						constexpr std::uint32_t
-						calculate_payload_size(std::uint32_t declared_size) {
-							return Internal::calculate_payload_size(
-								declared_size,
-								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
+						constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
+							return Internal::calculate_payload_size(declared_size,
+																	ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 						}
 
-						template <ByteRange T>
-						constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-							return Internal::calculate_payload_size(
-								bytes,
-								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
+						template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							return Internal::calculate_payload_size(bytes,
+																	ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> bool has_payload(const T &bytes) {
 							const auto payload_size = calculate_payload_size(bytes);
-							return bytes.size()
-								>= ProtocolLayout::Request::Want::Payload::OFFSET + payload_size;
+							return bytes.size() >= ProtocolLayout::Request::Want::Payload::OFFSET + payload_size;
 						}
 
 						template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-							return Internal::has_frame(
-								bytes,
-								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
+							return Internal::has_frame(bytes, ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 						}
 
 						template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-							return Internal::get_frame(
-								bytes,
-								ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
+							return Internal::get_frame(bytes, ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 						}
 					} // namespace Want
 
-					inline std::uint32_t calculate_declared_size(std::uint32_t   payload_size,
-																 RequestSubTypes sub_type) {
+					inline std::uint32_t calculate_declared_size(std::uint32_t payload_size, RequestSubTypes sub_type) {
 						switch (sub_type) {
 							case RequestSubTypes::SEE:
 								return See::calculate_declared_size(payload_size);
@@ -477,8 +400,7 @@ namespace Karkinolution {
 						Karkinolution::Functional::unreachable_or_throw();
 					}
 
-					inline std::uint32_t calculate_payload_size(std::uint32_t   declared_size,
-																RequestSubTypes sub_type) {
+					inline std::uint32_t calculate_payload_size(std::uint32_t declared_size, RequestSubTypes sub_type) {
 						switch (sub_type) {
 							case RequestSubTypes::SEE:
 								return See::calculate_payload_size(declared_size);
@@ -578,22 +500,17 @@ namespace Karkinolution {
 
 				namespace Response {
 					constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
-						return Internal::calculate_declared_size(
-							payload_size,
-							ProtocolLayout::Response::Payload::OFFSET);
+						return Internal::calculate_declared_size(payload_size,
+																 ProtocolLayout::Response::Payload::OFFSET);
 					}
 
 					constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
-						return Internal::calculate_payload_size(
-							declared_size,
-							ProtocolLayout::Response::Payload::OFFSET);
+						return Internal::calculate_payload_size(declared_size,
+																ProtocolLayout::Response::Payload::OFFSET);
 					}
 
-					template <ByteRange T>
-					constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-						return Internal::calculate_payload_size(
-							bytes,
-							ProtocolLayout::Response::Payload::OFFSET);
+					template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+						return Internal::calculate_payload_size(bytes, ProtocolLayout::Response::Payload::OFFSET);
 					}
 
 					template <ByteRange T> RequestId get_request_id(const T &bytes) {
@@ -608,8 +525,7 @@ namespace Karkinolution {
 
 					template <ByteRange T> ResponseCardinality get_cardinality(const T &bytes) {
 						return static_cast<ResponseCardinality>(
-							Karkinolution::Binary::Deserializer::deserialize<
-								Protocol::Aliases::Response::Cardinality>(
+							Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::Response::Cardinality>(
 								bytes,
 								ProtocolLayout::Response::Cardinality::OFFSET));
 					}
@@ -620,49 +536,39 @@ namespace Karkinolution {
 
 					template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 						std::vector<std::byte> payload;
-						payload.insert(payload.end(),
-									   bytes.begin() + ProtocolLayout::Response::Payload::OFFSET,
-									   bytes.begin() + ProtocolLayout::Response::Payload::OFFSET
-										   + Internal::calculate_payload_size(
-											   bytes,
-											   ProtocolLayout::Response::Payload::OFFSET));
+						payload.insert(
+							payload.end(),
+							bytes.begin() + ProtocolLayout::Response::Payload::OFFSET,
+							bytes.begin() + ProtocolLayout::Response::Payload::OFFSET
+								+ Internal::calculate_payload_size(bytes, ProtocolLayout::Response::Payload::OFFSET));
 						return payload;
 					}
 
 					template <ByteRange T> bool has_payload(const T &bytes) {
-						return bytes.size() >= ProtocolLayout::Response::Payload::OFFSET
-							+ calculate_payload_size(bytes);
+						return bytes.size()
+							>= ProtocolLayout::Response::Payload::OFFSET + calculate_payload_size(bytes);
 					}
 
 					template <ByteRange T> FrameExistence has_frame(const T &bytes) {
-						return Internal::has_frame(bytes,
-												   ProtocolLayout::Response::Payload::OFFSET);
+						return Internal::has_frame(bytes, ProtocolLayout::Response::Payload::OFFSET);
 					}
 
 					template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-						return Internal::get_frame(bytes,
-												   ProtocolLayout::Response::Payload::OFFSET);
+						return Internal::get_frame(bytes, ProtocolLayout::Response::Payload::OFFSET);
 					}
 				} // namespace Response
 
 				namespace Error {
 					constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size) {
-						return Internal::calculate_declared_size(
-							payload_size,
-							ProtocolLayout::Error::Payload::OFFSET);
+						return Internal::calculate_declared_size(payload_size, ProtocolLayout::Error::Payload::OFFSET);
 					}
 
 					constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
-						return Internal::calculate_payload_size(
-							declared_size,
-							ProtocolLayout::Error::Payload::OFFSET);
+						return Internal::calculate_payload_size(declared_size, ProtocolLayout::Error::Payload::OFFSET);
 					}
 
-					template <ByteRange T>
-					constexpr std::uint32_t calculate_payload_size(const T &bytes) {
-						return Internal::calculate_payload_size(
-							bytes,
-							ProtocolLayout::Error::Payload::OFFSET);
+					template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+						return Internal::calculate_payload_size(bytes, ProtocolLayout::Error::Payload::OFFSET);
 					}
 
 					template <ByteRange T> RequestId get_request_id(const T &bytes) {
@@ -678,18 +584,16 @@ namespace Karkinolution {
 					template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 						std::vector<std::byte> payload;
 
-						payload.insert(payload.end(),
-									   bytes.begin() + ProtocolLayout::Error::Payload::OFFSET,
-									   bytes.begin() + ProtocolLayout::Error::Payload::OFFSET
-										   + Internal::calculate_payload_size(
-											   bytes,
-											   ProtocolLayout::Error::Payload::OFFSET));
+						payload.insert(
+							payload.end(),
+							bytes.begin() + ProtocolLayout::Error::Payload::OFFSET,
+							bytes.begin() + ProtocolLayout::Error::Payload::OFFSET
+								+ Internal::calculate_payload_size(bytes, ProtocolLayout::Error::Payload::OFFSET));
 						return payload;
 					}
 
 					template <ByteRange T> bool has_payload(const T &bytes) {
-						return bytes.size() >= ProtocolLayout::Error::Payload::OFFSET
-							+ calculate_payload_size(bytes);
+						return bytes.size() >= ProtocolLayout::Error::Payload::OFFSET + calculate_payload_size(bytes);
 					}
 
 					template <ByteRange T> FrameExistence has_frame(const T &bytes) {
@@ -730,15 +634,12 @@ namespace Karkinolution {
 				}
 
 				// The public dispatchers route by frame type and CodeVariant subtype.
-				constexpr std::uint32_t
-				calculate_declared_size(std::uint32_t                        payload_size,
-										BinaryTypes                          type,
-										const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t calculate_declared_size(std::uint32_t                        payload_size,
+																BinaryTypes                          type,
+																const Protocol::Detail::CodeVariant &sub_type) {
 					if (type == BinaryTypes::Request) {
-						if (const auto* request_sub_type =
-								std::get_if<RequestSubTypes>(&sub_type)) {
-							return Request::calculate_declared_size(payload_size,
-																	*request_sub_type);
+						if (const auto* request_sub_type = std::get_if<RequestSubTypes>(&sub_type)) {
+							return Request::calculate_declared_size(payload_size, *request_sub_type);
 						}
 					} else if (type == BinaryTypes::Response) {
 						if (std::holds_alternative<ResponseSubTypes>(sub_type)) {
@@ -752,15 +653,12 @@ namespace Karkinolution {
 					throw ByteError("Frame type and sub type do not match");
 				}
 
-				constexpr std::uint32_t
-				calculate_payload_size(std::uint32_t                        declared_size,
-									   BinaryTypes                          type,
-									   const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t calculate_payload_size(std::uint32_t                        declared_size,
+															   BinaryTypes                          type,
+															   const Protocol::Detail::CodeVariant &sub_type) {
 					if (type == BinaryTypes::Request) {
-						if (const auto* request_sub_type =
-								std::get_if<RequestSubTypes>(&sub_type)) {
-							return Request::calculate_payload_size(declared_size,
-																   *request_sub_type);
+						if (const auto* request_sub_type = std::get_if<RequestSubTypes>(&sub_type)) {
+							return Request::calculate_payload_size(declared_size, *request_sub_type);
 						}
 					} else if (type == BinaryTypes::Response) {
 						if (std::holds_alternative<ResponseSubTypes>(sub_type)) {
@@ -775,10 +673,9 @@ namespace Karkinolution {
 				}
 
 				template <ByteRange T>
-				constexpr std::uint32_t
-				calculate_payload_size(const T                             &bytes,
-									   BinaryTypes                          type,
-									   const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t calculate_payload_size(const T                             &bytes,
+															   BinaryTypes                          type,
+															   const Protocol::Detail::CodeVariant &sub_type) {
 					return calculate_payload_size(get_declared_size(bytes), type, sub_type);
 				}
 
@@ -816,8 +713,7 @@ namespace Karkinolution {
 					Karkinolution::Functional::unreachable_or_throw();
 				}
 
-				template <ByteRange T>
-				Models::Request::Request parse_request_frame(const T &bytes) {
+				template <ByteRange T> Models::Request::Request parse_request_frame(const T &bytes) {
 					const auto sub_type = std::get<RequestSubTypes>(get_sub_type(bytes));
 					const auto resource = Request::get_resource(bytes);
 
@@ -825,8 +721,7 @@ namespace Karkinolution {
 
 					switch (sub_type) {
 						case Protocol::Request::Operation::SEE:
-							extra = Models::Request::SeeExtra{.target =
-																  Request::See::get_target(bytes)};
+							extra = Models::Request::SeeExtra{.target = Request::See::get_target(bytes)};
 							break;
 						case Protocol::Request::Operation::WANT:
 							extra = Models::Request::WantExtra{};
@@ -851,14 +746,12 @@ namespace Karkinolution {
 													std::move(extra)};
 				}
 
-				template <ByteRange T>
-				Models::Response::Response parse_response_frame(const T &bytes) {
-					return Models::Response::Response{
-						get_declared_size(bytes),
-						Response::get_request_id(bytes),
-						std::get<ResponseSubTypes>(get_sub_type(bytes)),
-						Response::get_payload(bytes),
-						Response::get_cardinality(bytes)};
+				template <ByteRange T> Models::Response::Response parse_response_frame(const T &bytes) {
+					return Models::Response::Response{get_declared_size(bytes),
+													  Response::get_request_id(bytes),
+													  std::get<ResponseSubTypes>(get_sub_type(bytes)),
+													  Response::get_payload(bytes),
+													  Response::get_cardinality(bytes)};
 				}
 
 				template <ByteRange T> Models::Error::Error parse_error_frame(const T &bytes) {

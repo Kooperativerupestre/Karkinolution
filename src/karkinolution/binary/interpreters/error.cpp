@@ -10,9 +10,8 @@
 
 std::vector<std::byte> ErrorSRI::serialize_error(const std::string &error) {
 	if (error.size() > ErrorSRI::Layout::ERROR_MAX_SIZE) {
-		throw Karkinolution::Binary::ByteError(std::format("Max error size is {}, {} isn't allowed",
-														   ErrorSRI::Layout::ERROR_MAX_SIZE,
-														   error.size()));
+		throw Karkinolution::Binary::ByteError(
+			std::format("Max error size is {}, {} isn't allowed", ErrorSRI::Layout::ERROR_MAX_SIZE, error.size()));
 	};
 	return Karkinolution::Binary::Serializer::convert_string(error);
 }

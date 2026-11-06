@@ -14,7 +14,7 @@ namespace KarkinolutionSDK {
 				void register_request(RequestId id);
 				void enqueue_request(std::span<const std::byte> request);
 
-				void add_response(std::span<const std::byte> response);
+				void                                  add_response(std::span<const std::byte> response);
 				std::optional<std::vector<std::byte>> pop_request();
 
 				KarkinolutionSDK::Protocol::ResponseResult pop_response(RequestId id);

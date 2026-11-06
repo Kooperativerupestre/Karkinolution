@@ -23,9 +23,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			Vec2                                      position;
 			Karkinolution::Math::Geometry::Radius     radius;
 
-			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage> damage;
-			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost>
-				movement_cost;
+			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage>       damage;
+			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost> movement_cost;
 
 			bool has_damage() const {
 				return damage.has_value();
@@ -59,19 +58,16 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			Karkinolution::Math::Geometry::Radius                radius;
 	};
 
-	using PerceptionData = Karkinolution::Terrain::Trees::RTree::RStarTree<
-		std::variant<Karkinolution::Terrain::Soil::SoilPieceId,
-					 Karkinolution::Organisms::Entities::EntityId,
-					 Karkinolution::Organisms::Nature::NatureId>>;
+	using PerceptionData =
+		Karkinolution::Terrain::Trees::RTree::RStarTree<std::variant<Karkinolution::Terrain::Soil::SoilPieceId,
+																	 Karkinolution::Organisms::Entities::EntityId,
+																	 Karkinolution::Organisms::Nature::NatureId>>;
 	using PerceivedEntity = std::variant<PerceivedCreature, PerceivedCorpse>;
 	using PerceivedNature = std::variant<PerceivedGrass>;
 
-	using PerceptionEntityRegistry =
-		std::unordered_map<Karkinolution::Organisms::Entities::EntityId, PerceivedEntity>;
-	using PerceptionNatureRegistry =
-		std::unordered_map<Karkinolution::Organisms::Nature::NatureId, PerceivedNature>;
-	using PerceptionSoilRegistry =
-		std::unordered_map<Karkinolution::Terrain::Soil::SoilPieceId, PerceivedSoil>;
+	using PerceptionEntityRegistry = std::unordered_map<Karkinolution::Organisms::Entities::EntityId, PerceivedEntity>;
+	using PerceptionNatureRegistry = std::unordered_map<Karkinolution::Organisms::Nature::NatureId, PerceivedNature>;
+	using PerceptionSoilRegistry   = std::unordered_map<Karkinolution::Terrain::Soil::SoilPieceId, PerceivedSoil>;
 
 	using EntityFilter = std::move_only_function<bool(const PerceivedEntity &)>;
 	using SoilFilter   = std::move_only_function<bool(const PerceivedSoil &)>;
@@ -123,15 +119,13 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			PerceptionView(const std::vector<Karkinolution::Terrain::Soil::SoilPieceId>    soils,
 						   const std::vector<Karkinolution::Organisms::Entities::EntityId> entities,
 						   const std::vector<Karkinolution::Organisms::Nature::NatureId>   natures,
-						   const Perception           &perception,
-						   std::optional<EntityFilter> entity_filter = std::nullopt,
-						   std::optional<SoilFilter>   soil_filter   = std::nullopt,
+						   const Perception                                               &perception,
+						   std::optional<EntityFilter>                                     entity_filter = std::nullopt,
+						   std::optional<SoilFilter>                                       soil_filter   = std::nullopt,
 						   std::optional<NatureFilter> nature_filter = std::nullopt) {
 
-				if (!entity_filter.has_value() && !soil_filter.has_value()
-					&& !nature_filter.has_value()) {
-					throw Karkinolution::Errors::SimulationError(
-						"At least one filter should have value");
+				if (!entity_filter.has_value() && !soil_filter.has_value() && !nature_filter.has_value()) {
+					throw Karkinolution::Errors::SimulationError("At least one filter should have value");
 				}
 
 				soils_    = soils;
@@ -282,8 +276,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			}
 
 			[[nodiscard]] Karkinolution::Terrain::Trees::RTree::Box2D radius_box() const {
-				return Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(radius_,
-																				   position_);
+				return Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(radius_, position_);
 			}
 	};
 
@@ -294,78 +287,69 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 							  std::optional<SoilFilter>   soil_filter   = std::nullopt,
 							  std::optional<NatureFilter> nature_filter = std::nullopt);
 
-		PerceptionView
-		filter(const Perception                                                &perception,
-			   const std::vector<Karkinolution::Organisms::Entities::EntityId> &entities,
-			   const std::vector<Karkinolution::Terrain::Soil::SoilPieceId>    &soils,
-			   std::optional<EntityFilter> entity_filter = std::nullopt,
-			   std::optional<SoilFilter>   soil_filter   = std::nullopt,
-			   std::optional<NatureFilter> nature_filter = std::nullopt);
+		PerceptionView filter(const Perception                                                &perception,
+							  const std::vector<Karkinolution::Organisms::Entities::EntityId> &entities,
+							  const std::vector<Karkinolution::Terrain::Soil::SoilPieceId>    &soils,
+							  std::optional<EntityFilter> entity_filter = std::nullopt,
+							  std::optional<SoilFilter>   soil_filter   = std::nullopt,
+							  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 		PerceptionView filter(const PerceptionView       &view,
 							  std::optional<EntityFilter> entity_filter = std::nullopt,
 							  std::optional<SoilFilter>   soil_filter   = std::nullopt,
 							  std::optional<NatureFilter> nature_filter = std::nullopt);
 
-		PerceptionView
-		filter(const PerceptionView                                            &view,
-			   const std::vector<Karkinolution::Organisms::Entities::EntityId> &entities,
-			   const std::vector<Karkinolution::Terrain::Soil::SoilPieceId>    &soils,
-			   std::optional<EntityFilter> entity_filter = std::nullopt,
-			   std::optional<SoilFilter>   soil_filter   = std::nullopt,
-			   std::optional<NatureFilter> nature_filter = std::nullopt);
+		PerceptionView filter(const PerceptionView                                            &view,
+							  const std::vector<Karkinolution::Organisms::Entities::EntityId> &entities,
+							  const std::vector<Karkinolution::Terrain::Soil::SoilPieceId>    &soils,
+							  std::optional<EntityFilter> entity_filter = std::nullopt,
+							  std::optional<SoilFilter>   soil_filter   = std::nullopt,
+							  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 		PerceptionView filter_only_entities(const Perception &perception, EntityFilter filter);
 		PerceptionView filter_only_entities(const PerceptionView &view, EntityFilter filter);
 
-		PerceptionView filter_only_entities(const Perception            &perception,
-											EntityFilter                 filter,
-											const std::vector<EntityId> &entities);
+		PerceptionView
+		filter_only_entities(const Perception &perception, EntityFilter filter, const std::vector<EntityId> &entities);
 
-		PerceptionView filter_only_entities(const PerceptionView        &view,
-											EntityFilter                 filter,
-											const std::vector<EntityId> &entities);
+		PerceptionView
+		filter_only_entities(const PerceptionView &view, EntityFilter filter, const std::vector<EntityId> &entities);
 
 		PerceptionView filter_only_soils(const Perception &perception, SoilFilter filter);
 		PerceptionView filter_only_soils(const PerceptionView &view, SoilFilter filter);
 
-		PerceptionView
-		filter_only_soils(const Perception                                             &perception,
-						  SoilFilter                                                    filter,
-						  const std::vector<Karkinolution::Terrain::Soil::SoilPieceId> &soils);
+		PerceptionView filter_only_soils(const Perception                                             &perception,
+										 SoilFilter                                                    filter,
+										 const std::vector<Karkinolution::Terrain::Soil::SoilPieceId> &soils);
 
-		PerceptionView
-		filter_only_soils(const PerceptionView                                         &view,
-						  SoilFilter                                                    filter,
-						  const std::vector<Karkinolution::Terrain::Soil::SoilPieceId> &soils);
+		PerceptionView filter_only_soils(const PerceptionView                                         &view,
+										 SoilFilter                                                    filter,
+										 const std::vector<Karkinolution::Terrain::Soil::SoilPieceId> &soils);
 
 		PerceptionView filter_only_natures(const Perception &perception, NatureFilter filter);
 		PerceptionView filter_only_natures(const PerceptionView &view, NatureFilter filter);
 
-		PerceptionView
-		filter_only_natures(const Perception &perception,
-							NatureFilter      filter,
-							const std::vector<Karkinolution::Organisms::Nature::NatureId> &natures);
-		PerceptionView
-		filter_only_natures(const PerceptionView                                          &view,
-							NatureFilter                                                   filter,
-							const std::vector<Karkinolution::Organisms::Nature::NatureId> &natures);
+		PerceptionView filter_only_natures(const Perception                                              &perception,
+										   NatureFilter                                                   filter,
+										   const std::vector<Karkinolution::Organisms::Nature::NatureId> &natures);
+		PerceptionView filter_only_natures(const PerceptionView                                          &view,
+										   NatureFilter                                                   filter,
+										   const std::vector<Karkinolution::Organisms::Nature::NatureId> &natures);
 
 		// Utils
 		PerceptionView reduce(const Perception                            &perception,
 							  const Karkinolution::Math::Geometry::Radius &radius,
-							  std::optional<EntityFilter> entity_filter = std::nullopt,
-							  std::optional<SoilFilter>   soil_filter   = std::nullopt,
-							  std::optional<NatureFilter> nature_filter = std::nullopt);
+							  std::optional<EntityFilter>                  entity_filter = std::nullopt,
+							  std::optional<SoilFilter>                    soil_filter   = std::nullopt,
+							  std::optional<NatureFilter>                  nature_filter = std::nullopt);
 
 		PerceptionView reduce(const PerceptionView                        &view,
 							  const Karkinolution::Math::Geometry::Radius &radius,
-							  std::optional<EntityFilter> entity_filter = std::nullopt,
-							  std::optional<SoilFilter>   soil_filter   = std::nullopt,
-							  std::optional<NatureFilter> nature_filter = std::nullopt);
+							  std::optional<EntityFilter>                  entity_filter = std::nullopt,
+							  std::optional<SoilFilter>                    soil_filter   = std::nullopt,
+							  std::optional<NatureFilter>                  nature_filter = std::nullopt);
 
-		NormalizedValue<double> normalize_distance(const Perception &perception,
-												   const Vec2       &position);
+		NormalizedValue<double> normalize_distance(const Perception &perception, const Vec2 &position);
 		NormalizedValue<double> normalize_distance(const PerceptionView &view, const Vec2 &poition);
 	} // namespace PerceptionAnalyzer
 } // namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception

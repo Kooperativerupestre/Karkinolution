@@ -13,13 +13,11 @@ namespace Karkinolution::Networking {
 	}
 
 	void ProtocolSession::on_overflow_error(std::span<const std::byte> bytes) const {
-		std::cerr << "Overflow error: " << bytes.size() << " (discarded bytes) + "
-				  << request_buffer.view().size() << " (request buffer size) > "
-				  << MAX_RAW_FRAME_BUFFER_SIZE << "\n";
+		std::cerr << "Overflow error: " << bytes.size() << " (discarded bytes) + " << request_buffer.view().size()
+				  << " (request buffer size) > " << MAX_RAW_FRAME_BUFFER_SIZE << "\n";
 
 		for (const auto byte : bytes) {
-			std::cerr << std::hex << std::setw(2) << std::setfill('0')
-					  << std::to_integer<unsigned int>(byte) << ' ';
+			std::cerr << std::hex << std::setw(2) << std::setfill('0') << std::to_integer<unsigned int>(byte) << ' ';
 		}
 
 		std::cerr << std::dec << '\n';
@@ -47,8 +45,7 @@ namespace Karkinolution::Networking {
 				request_buffer.pop_front();
 			}
 
-			auto request =
-				Karkinolution::Binary::Frames::Parser::parse_request_frame(frame.value());
+			auto request = Karkinolution::Binary::Frames::Parser::parse_request_frame(frame.value());
 
 			auto response = Karkinolution::Binary::Frames::Processor::process(request, world);
 

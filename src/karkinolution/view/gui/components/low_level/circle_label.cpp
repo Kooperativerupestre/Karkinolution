@@ -12,8 +12,7 @@ namespace KarkinolutionView {
 					Geometry::Rectangle make_text_max_bound(const Geometry::Circle &circle) {
 						const auto radius = circle.radius.value();
 						if (radius <= 0.0f) {
-							throw std::invalid_argument(
-								"A circle label requires a positive circle radius");
+							throw std::invalid_argument("A circle label requires a positive circle radius");
 						}
 
 						const double side = static_cast<double>(radius) * std::sqrt(2.0);

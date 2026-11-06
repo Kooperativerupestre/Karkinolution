@@ -17,8 +17,7 @@ namespace KarkinolutionSDK {
 	namespace Interpreters {
 		namespace Territory {
 			template <HasRequest T>
-			std::optional<Karkinolution::Binary::Interpreters::Models::Territory::Territory>
-			see_territory(T &client) {
+			std::optional<Karkinolution::Binary::Interpreters::Models::Territory::Territory> see_territory(T &client) {
 				const auto payload = TerritorySRI::Request::make_see_territory();
 				const auto built   = Karkinolution::Binary::Frames::Motor::make_request(
                     RequestSubTypes::SEE,

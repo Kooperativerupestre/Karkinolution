@@ -17,14 +17,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 	// from the species canonical genome (global_creature_genomes).
 	struct CreatureBlueprint {
 			std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie =
-				std::nullopt; // random if absent
-			std::optional<Karkinolution::Core::Id::BaseIdType> id =
-				std::nullopt;                               // random if absent
-			std::optional<std::string> name = std::nullopt; // random if absent
+				std::nullopt;                                                                        // random if absent
+			std::optional<Karkinolution::Core::Id::BaseIdType>                  id   = std::nullopt; // random if absent
+			std::optional<std::string>                                          name = std::nullopt; // random if absent
 			std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender =
-				std::nullopt; // random if absent
-			std::optional<Karkinolution::Math::Vec::Vec2> position =
-				std::nullopt; // zero-vector if absent
+				std::nullopt;                                                      // random if absent
+			std::optional<Karkinolution::Math::Vec::Vec2> position = std::nullopt; // zero-vector if absent
 	};
 
 	namespace CreatureConstructor {

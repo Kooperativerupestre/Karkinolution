@@ -11,8 +11,7 @@ namespace Karkinolution {
 			namespace Reproduction {
 				namespace Uterus {
 					namespace Physiology {
-						NormalizedValue<float>  embryotrophy_energy(const Uterus         &uterus,
-																	const Embryo::Embryo &embryo);
+						NormalizedValue<float>  embryotrophy_energy(const Uterus &uterus, const Embryo::Embryo &embryo);
 						Embryo::EmbryonicEnergy embryotrophy(const Uterus                 &uterus,
 															 const Embryo::Embryo         &embryo,
 															 const NormalizedValue<float> &ratio);

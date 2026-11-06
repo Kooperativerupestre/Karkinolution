@@ -16,9 +16,7 @@ namespace Karkinolution::Terrain {
 	class EntityMap {
 		private:
 
-			Karkinolution::Functional::Quadtree::Quadtree<
-				Karkinolution::Organisms::Entities::EntityId>
-				quadtree;
+			Karkinolution::Functional::Quadtree::Quadtree<Karkinolution::Organisms::Entities::EntityId> quadtree;
 
 
 		public:
@@ -36,8 +34,7 @@ namespace Karkinolution::Terrain {
 			bool remove(Karkinolution::Organisms::Entities::EntityId id);
 
 			std::vector<Karkinolution::Organisms::Entities::EntityId>
-			find(const Karkinolution::Math::Units::Size &size,
-				 const Karkinolution::Math::Vec::Vec2   &position) const;
+			find(const Karkinolution::Math::Units::Size &size, const Karkinolution::Math::Vec::Vec2 &position) const;
 
 			bool has_entity(Karkinolution::Organisms::Entities::EntityId id) const;
 

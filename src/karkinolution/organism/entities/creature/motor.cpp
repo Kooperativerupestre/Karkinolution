@@ -14,14 +14,12 @@
 #include <variant>
 
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Motor {
-	void BrainMotor::run(Karkinolution::Organisms::Entities::Creature::Brain::Brain &brain,
-						 const Creature                                             &creature) {
+	void BrainMotor::run(Karkinolution::Organisms::Entities::Creature::Brain::Brain &brain, const Creature &creature) {
 		const auto stop = Physiology::BrainPhysiology::should_stop_intent(brain);
 
 		if (stop) {
 			brain.switch_intent(
-				Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Instincts::take(
-					creature));
+				Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Instincts::take(creature));
 		}
 
 		brain.pass_intent();
@@ -33,9 +31,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 		world.update(creature.build_id(), creature.position);
 	}
 
-	void
-	CreatureMotor::grow(Creature                                                   &creature,
-						const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
+	void CreatureMotor::grow(Creature                                                   &creature,
+							 const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
 		auto &body        = creature.body;
 		auto  width_grow  = Physiology::Growing::get_new_width_increment(creature, organisms);
 		auto  height_grow = Physiology::Growing::get_new_height_increment(creature, organisms);
@@ -43,26 +40,21 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 		body.morphology.size.height.value += height_grow;
 		body.morphology.size.width.value += width_grow;
 
-		auto max_energy_grow =
-			Physiology::Growing::get_new_max_energy_increment(creature, organisms);
+		auto max_energy_grow = Physiology::Growing::get_new_max_energy_increment(creature, organisms);
 		body.metabolism.energy.max_ref() += max_energy_grow.gain;
 		body.metabolism.reserved -= max_energy_grow.cost.reserved_energy;
 
-		auto max_reserved_grow =
-			Physiology::Growing::get_new_max_energy_reserved_increment(creature, organisms);
+		auto max_reserved_grow = Physiology::Growing::get_new_max_energy_reserved_increment(creature, organisms);
 		body.metabolism.reserved.max_ref() += max_reserved_grow.gain;
 		body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 	}
 
 	std::optional<Actions::AllPresets> CreatureMotor::resolve_presets(
-		Creature &creature,
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-									&perception,
-		Karkinolution::World::World &world) {
+		Creature                                                                          &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception,
+		Karkinolution::World::World                                                       &world) {
 		const auto preset_ =
-			Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Planner::plan(
-				creature,
-				perception);
+			Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Planner::plan(creature, perception);
 
 		if (!preset_.has_value()) {
 			return std::nullopt;
@@ -78,9 +70,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 			Karkinolution::Organisms::Entities::Creature::Metabolism::Motor::MetabolismMotor::eat(
 				creature,
 				std::get<std::reference_wrapper<RawMeat>>(
-					Karkinolution::Organisms::Entities::Creature::Metabolism::Resolver::
-						MetabolismResolver::resolve_preset(std::get<Actions::EatPreset>(preset),
-														   world))
+					Karkinolution::Organisms::Entities::Creature::Metabolism::Resolver::MetabolismResolver::
+						resolve_preset(std::get<Actions::EatPreset>(preset), world))
 					.get());
 		}
 		return preset_;
@@ -102,11 +93,9 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 			Reproduction::State::Motor::run(creature);
 		}
 
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-			perception = Karkinolution::Organisms::Entities::Creature::Brain::Perception::
-				Perceiver::perceive(creature, world);
-		Karkinolution::Organisms::Entities::Creature::Brain::Motor::BrainMotor::run(creature.brain,
-																					creature);
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception perception =
+			Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perceiver::perceive(creature, world);
+		Karkinolution::Organisms::Entities::Creature::Brain::Motor::BrainMotor::run(creature.brain, creature);
 
 		const auto preset = resolve_presets(creature, perception, world);
 	}

@@ -44,8 +44,7 @@ namespace Karkinolution::Networking {
 										return;
 									}
 
-									protocol_session.receive(
-										std::span(temporary_requests).first(bytes_received));
+									protocol_session.receive(std::span(temporary_requests).first(bytes_received));
 
 									send_next();
 
@@ -69,12 +68,11 @@ namespace Karkinolution::Networking {
 		sending_state.is_sending = true;
 
 
-		sending_state.bytes = Karkinolution::Binary::Frames::Motor::make_response_raw_bytes(
-			BinaryTypes::Response,
-			response.get_sub_type(),
-			response.get_request_id(),
-			response.get_payload(),
-			response.get_cardinality());
+		sending_state.bytes = Karkinolution::Binary::Frames::Motor::make_response_raw_bytes(BinaryTypes::Response,
+																							response.get_sub_type(),
+																							response.get_request_id(),
+																							response.get_payload(),
+																							response.get_cardinality());
 
 		asio::async_write(socket_,
 						  asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),

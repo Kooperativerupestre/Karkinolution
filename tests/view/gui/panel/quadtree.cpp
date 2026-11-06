@@ -124,12 +124,8 @@ TEST(Quadtree, CircleBoundsAreIndexedForSpatialQueries) {
 	EXPECT_EQ(tree.size(), 1);
 	EXPECT_TRUE(tree.exists(id));
 	EXPECT_EQ(tree.find_in_area(rectangle(120, 100, 2, 2)).size(), 1);
-	EXPECT_EQ(tree.find_in_area(Geometry::Circle{Geometry::Position{120, 100}, Geometry::Radius{5}})
-				  .size(),
-			  1);
-	EXPECT_TRUE(
-		tree.find_in_area(Geometry::Circle{Geometry::Position{150, 100}, Geometry::Radius{5}})
-			.empty());
+	EXPECT_EQ(tree.find_in_area(Geometry::Circle{Geometry::Position{120, 100}, Geometry::Radius{5}}).size(), 1);
+	EXPECT_TRUE(tree.find_in_area(Geometry::Circle{Geometry::Position{150, 100}, Geometry::Radius{5}}).empty());
 }
 
 TEST(Quadtree, AddAndUpdatePreserveStructuralInvariants) {

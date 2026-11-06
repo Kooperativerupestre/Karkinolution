@@ -35,8 +35,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 	struct FindFoodPresets {
 			std::variant<Actions::MovePreset, Actions::EatPreset, std::monostate> value;
 
-			FindFoodPresets(
-				std::variant<Actions::MovePreset, Actions::EatPreset, std::monostate> value)
+			FindFoodPresets(std::variant<Actions::MovePreset, Actions::EatPreset, std::monostate> value)
 				: value(value) {}
 	};
 
@@ -52,8 +51,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 	namespace PlannerFindFood {
 		inline constexpr Karkinolution::Math::Geometry::Radius FIND_FOOD_RADIUS{5};
 		inline constexpr double                                MIN_DISTANCE_TO_EAT = 0.5;
-		inline constexpr double                                MIN_SQUARED_DISTANCE_TO_EAT =
-			MIN_DISTANCE_TO_EAT * MIN_DISTANCE_TO_EAT;
+		inline constexpr double MIN_SQUARED_DISTANCE_TO_EAT = MIN_DISTANCE_TO_EAT * MIN_DISTANCE_TO_EAT;
 
 		struct Goal {
 				Vec2                                                               position;
@@ -64,33 +62,28 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 				// hint == RAW_MEAT -> id = Id
 		};
 
-		std::optional<Goal> choose_goal(
-			const Creature &creature,
-			const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-				&perception);
+		std::optional<Goal>
+		choose_goal(const Creature                                                                    &creature,
+					const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception);
 		FindFoodPresets
-		plan(const Creature &creature,
-			 const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-				 &perception);
+		plan(const Creature                                                                    &creature,
+			 const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception);
 	} // namespace PlannerFindFood
 
 	namespace PlannerNothing {
 		NothingPresets
-		plan(const Creature &creature,
-			 const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-				 &perception);
+		plan(const Creature                                                                    &creature,
+			 const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception);
 	} // namespace PlannerNothing
 
 	using AllIntentPresets = std::variant<FindFoodPresets, NothingPresets>;
 
 	namespace Planner {
-		AllIntentPresets resolve_intent(
-			const Creature &creature,
-			const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-				&perception);
+		AllIntentPresets
+		resolve_intent(const Creature                                                                    &creature,
+					   const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception);
 		std::optional<Actions::AllPresets>
-		plan(const Creature &creature,
-			 const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-				 &perception);
+		plan(const Creature                                                                    &creature,
+			 const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception);
 	} // namespace Planner
 } // namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts

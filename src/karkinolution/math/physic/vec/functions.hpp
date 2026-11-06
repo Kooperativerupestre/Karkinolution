@@ -39,26 +39,22 @@ namespace Karkinolution {
 				return delta.normalized() * (G * mass1 * mass2 / dist_sq);
 			}
 
-			[[nodiscard]] constexpr Vec2 spring_force(const Vec2 &displacement,
-													  double      spring_constant) noexcept {
+			[[nodiscard]] constexpr Vec2 spring_force(const Vec2 &displacement, double spring_constant) noexcept {
 				return displacement * (-spring_constant);
 			}
 
-			[[nodiscard]] constexpr Vec2 damping_force(const Vec2 &velocity,
-													   double      damping_coefficient) noexcept {
+			[[nodiscard]] constexpr Vec2 damping_force(const Vec2 &velocity, double damping_coefficient) noexcept {
 				return velocity * (-damping_coefficient);
 			}
 
-			[[nodiscard]] constexpr Vec2
-			friction_force(const Vec2 &velocity, double mu, double normal_force) noexcept {
+			[[nodiscard]] constexpr Vec2 friction_force(const Vec2 &velocity, double mu, double normal_force) noexcept {
 				if (velocity.is_zero()) {
 					return Vec2(0.0, 0.0);
 				}
 				return velocity.normalized() * (-(mu * normal_force));
 			}
 
-			[[nodiscard]] constexpr Vec2 centripetal_acceleration(const Vec2 &velocity,
-																  const Vec2 &position) noexcept {
+			[[nodiscard]] constexpr Vec2 centripetal_acceleration(const Vec2 &velocity, const Vec2 &position) noexcept {
 				const double radius = position.length();
 				if (radius <= 0.0) {
 					return Vec2(0.0, 0.0);
@@ -66,28 +62,24 @@ namespace Karkinolution {
 				return position.normalized() * (-velocity.length_squared() / radius);
 			}
 
-			[[nodiscard]] constexpr Vec2
-			projectile_position(const Vec2 &initial_pos,
-								const Vec2 &initial_vel,
-								double      time,
-								const Vec2 &gravity = Vec2(0.0, -9.80665)) noexcept {
+			[[nodiscard]] constexpr Vec2 projectile_position(const Vec2 &initial_pos,
+															 const Vec2 &initial_vel,
+															 double      time,
+															 const Vec2 &gravity = Vec2(0.0, -9.80665)) noexcept {
 				return initial_pos + initial_vel * time + gravity * (0.5 * time * time);
 			}
 
-			[[nodiscard]] constexpr Vec2
-			projectile_velocity(const Vec2 &initial_vel,
-								double      time,
-								const Vec2 &gravity = Vec2(0.0, -9.80665)) noexcept {
+			[[nodiscard]] constexpr Vec2 projectile_velocity(const Vec2 &initial_vel,
+															 double      time,
+															 const Vec2 &gravity = Vec2(0.0, -9.80665)) noexcept {
 				return initial_vel + gravity * time;
 			}
 
-			[[nodiscard]] constexpr double kinetic_energy(double      mass,
-														  const Vec2 &velocity) noexcept {
+			[[nodiscard]] constexpr double kinetic_energy(double mass, const Vec2 &velocity) noexcept {
 				return 0.5 * mass * velocity.length_squared();
 			}
 
-			[[nodiscard]] constexpr Vec2 linear_momentum(double      mass,
-														 const Vec2 &velocity) noexcept {
+			[[nodiscard]] constexpr Vec2 linear_momentum(double mass, const Vec2 &velocity) noexcept {
 				return velocity * mass;
 			}
 
@@ -95,8 +87,7 @@ namespace Karkinolution {
 				return force * delta_time;
 			}
 
-			[[nodiscard]] constexpr double work(const Vec2 &force,
-												const Vec2 &displacement) noexcept {
+			[[nodiscard]] constexpr double work(const Vec2 &force, const Vec2 &displacement) noexcept {
 				return force.dot(displacement);
 			}
 

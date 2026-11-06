@@ -13,8 +13,7 @@ namespace Karkinolution::Networking {
 		VERIFY_BYTE_PER_BYTE
 	};
 
-	inline constexpr ReceiveOverflowMode GLOBAL_RECEIVE_OVERFLOW_MODE =
-		ReceiveOverflowMode::VERIFY_ALL_BYTES;
+	inline constexpr ReceiveOverflowMode GLOBAL_RECEIVE_OVERFLOW_MODE = ReceiveOverflowMode::VERIFY_ALL_BYTES;
 
 	class ProtocolSession {
 		public:

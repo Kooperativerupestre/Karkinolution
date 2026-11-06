@@ -73,8 +73,7 @@ namespace Karkinolution {
 						}
 
 						template <typename OtherDerived, typename U, U other_max, U other_min>
-						Derived operator+(const LimitedValue<OtherDerived, U, other_max, other_min>
-											  &other) const {
+						Derived operator+(const LimitedValue<OtherDerived, U, other_max, other_min> &other) const {
 							Derived result = derived();
 							result += other.value();
 
@@ -95,8 +94,7 @@ namespace Karkinolution {
 						}
 
 						template <typename OtherDerived, typename U, U other_max, U other_min>
-						Derived operator-(const LimitedValue<OtherDerived, U, other_max, other_min>
-											  &other) const {
+						Derived operator-(const LimitedValue<OtherDerived, U, other_max, other_min> &other) const {
 							Derived result = derived();
 							result -= other.value();
 
@@ -185,9 +183,7 @@ namespace Karkinolution {
 						}
 
 						void zero() {
-							static_assert(
-								min <= T(0),
-								"Min should accept zero to zero the value on LimitedValue");
+							static_assert(min <= T(0), "Min should accept zero to zero the value on LimitedValue");
 
 							_value = T(0);
 							clamp();
@@ -203,13 +199,11 @@ namespace Karkinolution {
 						}
 
 						template <typename D = Derived>
-							requires(!std::same_as<D, NormalizedValue<T>>
-									 && !std::same_as<D, SignedNormalizedValue<T>>)
+							requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 						NormalizedValue<T> ratio() const;
 
 						template <typename D = Derived>
-							requires(!std::same_as<D, NormalizedValue<T>>
-									 && !std::same_as<D, SignedNormalizedValue<T>>)
+							requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 						SignedNormalizedValue<T> ratio_min() const;
 
 						bool is_full() const {
@@ -229,8 +223,7 @@ namespace Karkinolution {
 						}
 				};
 
-				template <typename T>
-				class NormalizedValue : public LimitedValue<NormalizedValue<T>, T, T(1), T(0)> {
+				template <typename T> class NormalizedValue : public LimitedValue<NormalizedValue<T>, T, T(1), T(0)> {
 					public:
 
 						constexpr NormalizedValue(T value = T(0))
@@ -238,8 +231,7 @@ namespace Karkinolution {
 				};
 
 				template <typename T>
-				class SignedNormalizedValue
-					: public LimitedValue<SignedNormalizedValue<T>, T, T(1), T(-1)> {
+				class SignedNormalizedValue : public LimitedValue<SignedNormalizedValue<T>, T, T(1), T(-1)> {
 					public:
 
 						constexpr SignedNormalizedValue(T value = T(0))
@@ -248,25 +240,21 @@ namespace Karkinolution {
 
 				template <typename Derived, typename T, T max, T min>
 				template <typename D>
-					requires(!std::same_as<D, NormalizedValue<T>>
-							 && !std::same_as<D, SignedNormalizedValue<T>>)
+					requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 				NormalizedValue<T> LimitedValue<Derived, T, max, min>::ratio() const {
-					return NormalizedValue<T>(static_cast<T>(_value - min)
-											  / static_cast<T>(max - min));
+					return NormalizedValue<T>(static_cast<T>(_value - min) / static_cast<T>(max - min));
 				}
 
 				template <typename Derived, typename T, T max, T min>
 				template <typename D>
-					requires(!std::same_as<D, NormalizedValue<T>>
-							 && !std::same_as<D, SignedNormalizedValue<T>>)
+					requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 				SignedNormalizedValue<T> LimitedValue<Derived, T, max, min>::ratio_min() const {
-					return SignedNormalizedValue<T>(
-						static_cast<T>(_value - min) / static_cast<T>(max - min) * T(2) - T(1));
+					return SignedNormalizedValue<T>(static_cast<T>(_value - min) / static_cast<T>(max - min) * T(2)
+													- T(1));
 				}
 
 				template <typename T, T max, T min>
-				class GenericLimitedValue
-					: public LimitedValue<GenericLimitedValue<T, max, min>, T, max, min> {
+				class GenericLimitedValue : public LimitedValue<GenericLimitedValue<T, max, min>, T, max, min> {
 
 						using Base = LimitedValue<GenericLimitedValue<T, max, min>, T, max, min>;
 
@@ -276,26 +264,20 @@ namespace Karkinolution {
 				};
 
 				template <typename T>
-				class NonNegativeValue : public LimitedValue<NonNegativeValue<T>,
-															 T,
-															 std::numeric_limits<T>::max(),
-															 T{0}> {
+				class NonNegativeValue
+					: public LimitedValue<NonNegativeValue<T>, T, std::numeric_limits<T>::max(), T{0}> {
 
 					public:
 
 						constexpr NonNegativeValue(T value)
-							: LimitedValue<NonNegativeValue<T>,
-										   T,
-										   std::numeric_limits<T>::max(),
-										   T{0}>{value} {}
+							: LimitedValue<NonNegativeValue<T>, T, std::numeric_limits<T>::max(), T{0}>{value} {}
 				};
 
 				template <typename T>
-				class GreaterThanZeroValue
-					: public LimitedValue<GreaterThanZeroValue<T>,
-										  T,
-										  std::numeric_limits<T>::max(),
-										  T{0 + std::numeric_limits<T>::epsilon() * 10}> {
+				class GreaterThanZeroValue : public LimitedValue<GreaterThanZeroValue<T>,
+																 T,
+																 std::numeric_limits<T>::max(),
+																 T{0 + std::numeric_limits<T>::epsilon() * 10}> {
 
 					public:
 

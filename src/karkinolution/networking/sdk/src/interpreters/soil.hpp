@@ -30,10 +30,10 @@ namespace KarkinolutionSDK {
 					std::vector<std::byte>(payload.begin(), payload.end()),
 					SeeExtra{.target = SeeTarget::ONE});
 
-				const KarkinolutionSDK::Client::RequestData data{.sub_type = built.get_sub_type(),
-																 .resource = built.get_resource(),
-																 .payload  = built.get_payload(),
-																 .extra    = built.get_extra()};
+				const KarkinolutionSDK::Client::RequestData    data{.sub_type = built.get_sub_type(),
+																	.resource = built.get_resource(),
+																	.payload  = built.get_payload(),
+																	.extra    = built.get_extra()};
 				const KarkinolutionSDK::Client::ResponseResult result = client.request(data);
 
 				if (!result || !result.value().has_value()) {
@@ -49,8 +49,7 @@ namespace KarkinolutionSDK {
 			}
 
 			template <HasRequest T>
-			std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
-			see_all_soils(T &client) {
+			std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil> see_all_soils(T &client) {
 				const auto payload = SoilSRI::Request::make_see_all_soils();
 
 				const auto built = Karkinolution::Binary::Frames::Motor::make_request(
@@ -75,9 +74,7 @@ namespace KarkinolutionSDK {
 					return {};
 				}
 
-				return ListTDSI::deserialize<SoilSRI::Layout::TOTAL_SIZE>(frame.get_payload(),
-																		  SoilDSI::get_soil,
-																		  0);
+				return ListTDSI::deserialize<SoilSRI::Layout::TOTAL_SIZE>(frame.get_payload(), SoilDSI::get_soil, 0);
 			}
 		} // namespace Soil
 	} // namespace Interpreters

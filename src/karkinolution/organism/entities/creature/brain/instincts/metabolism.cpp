@@ -7,8 +7,7 @@
 #include <karkinolution/organism/foods/foods.hpp>
 
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
-	NormalizedValue<float> MetabolismInstincts::get_diet_preference(const Diet &diet,
-																	FoodHint    hint) {
+	NormalizedValue<float> MetabolismInstincts::get_diet_preference(const Diet &diet, FoodHint hint) {
 		if (hint == FoodHint::GRASS_MATTER) {
 			return diet.grass_matter_score();
 		} else if (hint == FoodHint::RAW_MEAT) {
@@ -21,30 +20,27 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 		return 1.0f - creature.body.hungry().value();
 	}
 
-	NormalizedValue<float> MetabolismInstincts::get_normalized_energy(float           energy,
-																	  const Creature &creature) {
-		return energy
-			/ (creature.body.metabolism.energy.max() * 0.8
-			   + creature.body.metabolism.reserved.max() * 1.3);
+	NormalizedValue<float> MetabolismInstincts::get_normalized_energy(float energy, const Creature &creature) {
+		return energy / (creature.body.metabolism.energy.max() * 0.8 + creature.body.metabolism.reserved.max() * 1.3);
 	}
 
 	NormalizedValue<float> MetabolismInstincts::preference(
-		const FoodCandidate &food_candidate,
-		const Creature      &creature,
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception
-			&perception) {
+		const FoodCandidate                                                               &food_candidate,
+		const Creature                                                                    &creature,
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception) {
 		const auto &diet             = creature.body.metabolism.diet;
 		const float diet_prefference = get_diet_preference(diet, food_candidate.hint).value();
 
 		auto diet_weight = get_diet_weight(creature);
 
-		auto distance = Karkinolution::Organisms::Entities::Creature::Brain::Perception::
-			PerceptionAnalyzer::normalize_distance(perception, food_candidate.position);
+		auto distance =
+			Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceptionAnalyzer::normalize_distance(
+				perception,
+				food_candidate.position);
 
-		const NormalizedValue<float> distance_normalized{static_cast<float>(distance.value())
-														 * 0.75f};
-		const auto                   diet_force = diet_weight * diet_prefference * 0.25f;
-		const auto energy_normalized = get_normalized_energy(food_candidate.energy, creature);
+		const NormalizedValue<float> distance_normalized{static_cast<float>(distance.value()) * 0.75f};
+		const auto                   diet_force        = diet_weight * diet_prefference * 0.25f;
+		const auto                   energy_normalized = get_normalized_energy(food_candidate.energy, creature);
 
 		// 0.75 + 0.25 + 1 = 2
 
@@ -53,16 +49,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 	}
 
 	FoodCandidate MetabolismInstincts::make_corpse_canditate(
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedCorpse
-			&corpse) {
-		return FoodCandidate{.hint     = FoodHint::RAW_MEAT,
-							 .position = corpse.position,
-							 .energy   = corpse.meat.value};
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedCorpse &corpse) {
+		return FoodCandidate{.hint = FoodHint::RAW_MEAT, .position = corpse.position, .energy = corpse.meat.value};
 	}
 
 	FoodCandidate MetabolismInstincts::make_grass_candidate(
-		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedGrass
-			&grass) {
+		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::PerceivedGrass &grass) {
 		return FoodCandidate{.hint     = FoodHint::GRASS_MATTER,
 							 .position = grass.position,
 							 .energy   = grass.matter.value()};

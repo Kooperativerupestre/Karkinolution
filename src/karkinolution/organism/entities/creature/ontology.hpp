@@ -46,8 +46,7 @@ namespace Karkinolution {
 
 						const NormalizedValue<float> &operator[](FoodHint food_hint) const;
 
-						Diet(NormalizedValue<float> grass_score,
-							 NormalizedValue<float> raw_meat_score) {
+						Diet(NormalizedValue<float> grass_score, NormalizedValue<float> raw_meat_score) {
 							if ((grass_score + raw_meat_score).value() > 1.0f) {
 								throw std::invalid_argument("Sum of scores > 1.0");
 							}

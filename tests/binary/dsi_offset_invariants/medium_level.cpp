@@ -26,6 +26,5 @@ TEST(DSIOffsetInvariantsMidLevel, UnitsSizeMidLevelAuxiliaryGettersAutoAddOffset
 	Karkinolution::Binary::Utils::append_bytes(payload, size_bytes);
 
 	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_width(payload, base_offset).value, original.width.value);
-	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_height(payload, base_offset).value,
-					 original.height.value);
+	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_height(payload, base_offset).value, original.height.value);
 }

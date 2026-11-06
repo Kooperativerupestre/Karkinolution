@@ -38,8 +38,7 @@ namespace Karkinolution::Terrain::Trees::RTree::BoxConversion {
 
 	Box2D to_box(const Math::Geometry::Radius &radius, const Vec2 &center) {
 		Vec2 extent{radius.value, radius.value};
-		return Karkinolution::Terrain::Trees::RTree::Box2D{.max = center + extent,
-														   .min = center - extent};
+		return Karkinolution::Terrain::Trees::RTree::Box2D{.max = center + extent, .min = center - extent};
 	}
 
 } // namespace Karkinolution::Terrain::Trees::RTree::BoxConversion

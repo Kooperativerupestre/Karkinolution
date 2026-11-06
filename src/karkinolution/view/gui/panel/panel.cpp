@@ -16,8 +16,7 @@ namespace KarkinolutionView {
 					return false;
 				}
 
-				std::unordered_map<Components::ComponentId, std::shared_ptr<Components::Component>>
-					staged_component;
+				std::unordered_map<Components::ComponentId, std::shared_ptr<Components::Component>> staged_component;
 				staged_component.emplace(id, std::move(component));
 				components_.reserve(components_.size() + 1);
 
@@ -66,18 +65,15 @@ namespace KarkinolutionView {
 				return component->second;
 			}
 
-			std::vector<Components::ComponentId>
-			Panel::find_in_area(const Geometry::Rectangle &area) const {
+			std::vector<Components::ComponentId> Panel::find_in_area(const Geometry::Rectangle &area) const {
 				return quadtree_.find_in_area(area);
 			}
 
-			std::vector<Components::ComponentId>
-			Panel::find_in_area(const Geometry::Circle &area) const {
+			std::vector<Components::ComponentId> Panel::find_in_area(const Geometry::Circle &area) const {
 				return quadtree_.find_in_area(area);
 			}
 
-			template <typename Area>
-			bool Panel::intersects(Components::ComponentId id, const Area &area) const {
+			template <typename Area> bool Panel::intersects(Components::ComponentId id, const Area &area) const {
 				const auto component = get(id);
 				if (!component) {
 					return false;
@@ -101,19 +97,16 @@ namespace KarkinolutionView {
 				return collisions;
 			}
 
-			std::vector<Components::ComponentId>
-			Panel::collides(const Geometry::Rectangle &area) const {
+			std::vector<Components::ComponentId> Panel::collides(const Geometry::Rectangle &area) const {
 				return collides_in_area(area);
 			}
 
-			std::vector<Components::ComponentId>
-			Panel::collides(const Geometry::Circle &area) const {
+			std::vector<Components::ComponentId> Panel::collides(const Geometry::Circle &area) const {
 				return collides_in_area(area);
 			}
 
 			template <typename Area>
-			std::optional<Components::ComponentId>
-			Panel::find_one_collision_in_area_impl(const Area &area) const {
+			std::optional<Components::ComponentId> Panel::find_one_collision_in_area_impl(const Area &area) const {
 				for (const auto id : find_in_area(area)) {
 					if (intersects(id, area)) {
 						return id;

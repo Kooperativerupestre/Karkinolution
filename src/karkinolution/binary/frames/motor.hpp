@@ -22,8 +22,7 @@ namespace Karkinolution {
 	namespace Binary {
 		namespace Frames {
 			namespace Motor {
-				template <ByteRange Payload>
-				std::vector<std::byte> copy_payload(const Payload &payload) {
+				template <ByteRange Payload> std::vector<std::byte> copy_payload(const Payload &payload) {
 					std::vector<std::byte> copied_payload;
 					copied_payload.reserve(payload.size());
 					for (std::size_t index = 0; index < payload.size(); ++index) {
@@ -32,13 +31,12 @@ namespace Karkinolution {
 					return copied_payload;
 				}
 
-				void constexpr append_declared_size(
-					std::vector<std::byte>              &frame,
-					Protocol::Aliases::FrameDeclaredSize declared_size) {
+				void constexpr append_declared_size(std::vector<std::byte>              &frame,
+													Protocol::Aliases::FrameDeclaredSize declared_size) {
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<
-							Protocol::Aliases::FrameDeclaredSize>(declared_size));
+						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::FrameDeclaredSize>(
+							declared_size));
 				}
 
 				void constexpr append_type(std::vector<std::byte> &frame, BinaryTypes type) {
@@ -46,36 +44,33 @@ namespace Karkinolution {
 						frame,
 						Karkinolution::Binary::Serializer::serialize<
 							Karkinolution::Binary::Protocol::Aliases::FrameType>(
-							static_cast<Karkinolution::Binary::Protocol::Aliases::FrameType>(
-								type)));
+							static_cast<Karkinolution::Binary::Protocol::Aliases::FrameType>(type)));
 				}
 
 				ResponseFrame make_none_response(RequestId request_id);
 
 				template <ByteRange Payload>
-				ResponseFrame
-				make_response(Karkinolution::Binary::Protocol::Response::Code sub_type,
-							  RequestId                                       request_id,
-							  const Payload                                  &payload,
-							  ResponseCardinality                             cardinality) {
-					return ResponseFrame{Frames::Parser::calculate_declared_size(
-											 payload.size(),
-											 BinaryTypes::Response,
-											 Protocol::Detail::CodeVariant{sub_type}),
-										 request_id,
-										 sub_type,
-										 copy_payload(payload),
-										 cardinality};
+				ResponseFrame make_response(Karkinolution::Binary::Protocol::Response::Code sub_type,
+											RequestId                                       request_id,
+											const Payload                                  &payload,
+											ResponseCardinality                             cardinality) {
+					return ResponseFrame{
+						Frames::Parser::calculate_declared_size(payload.size(),
+																BinaryTypes::Response,
+																Protocol::Detail::CodeVariant{sub_type}),
+						request_id,
+						sub_type,
+						copy_payload(payload),
+						cardinality};
 				}
 
 				template <ByteRange T>
 				ErrorFrame make_error(Karkinolution::Binary::Protocol::Error::Code sub_type,
 									  RequestId                                    request_id,
 									  const T                                     &payload) {
-					return ErrorFrame{Frames::Parser::calculate_declared_size(
-										  payload.size(),
-										  BinaryTypes::Error,
-										  Protocol::Detail::CodeVariant{sub_type}),
+					return ErrorFrame{Frames::Parser::calculate_declared_size(payload.size(),
+																			  BinaryTypes::Error,
+																			  Protocol::Detail::CodeVariant{sub_type}),
 									  request_id,
 									  sub_type,
 									  copy_payload(payload)};
@@ -88,44 +83,42 @@ namespace Karkinolution {
 										  const Payload                       &payload,
 										  const Models::Request::RequestExtra &extra) {
 
-					return RequestFrame{Frames::Parser::calculate_declared_size(
-											payload.size(),
-											BinaryTypes::Request,
-											Protocol::Detail::CodeVariant{sub_type}),
-										id,
-										sub_type,
-										copy_payload(payload),
-										resource,
-										extra};
+					return RequestFrame{
+						Frames::Parser::calculate_declared_size(payload.size(),
+																BinaryTypes::Request,
+																Protocol::Detail::CodeVariant{sub_type}),
+						id,
+						sub_type,
+						copy_payload(payload),
+						resource,
+						extra};
 				}
 
 				template <ByteRange Payload>
-				std::vector<std::byte> make_response_raw_bytes(
-					BinaryTypes                                   type,
-					std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
-					RequestId                                     request_id,
-					const Payload                                &payload,
-					ResponseCardinality cardinality = ResponseCardinality::ONE) {
-					if (type == BinaryTypes::Response
-						&& !std::holds_alternative<ResponseSubTypes>(sub_type)) {
-						throw FrameInvariantError(std::format(
-							"Sub type of a frame with type Response should be Response sub type"));
-					} else if (type == BinaryTypes::Error
-							   && !std::holds_alternative<ErrorSubTypes>(sub_type)) {
-						throw FrameInvariantError(std::format(
-							"Sub type of a frame with type Error should be Error sub type"));
+				std::vector<std::byte>
+				make_response_raw_bytes(BinaryTypes                                   type,
+										std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
+										RequestId                                     request_id,
+										const Payload                                &payload,
+										ResponseCardinality cardinality = ResponseCardinality::ONE) {
+					if (type == BinaryTypes::Response && !std::holds_alternative<ResponseSubTypes>(sub_type)) {
+						throw FrameInvariantError(
+							std::format("Sub type of a frame with type Response should be Response sub type"));
+					} else if (type == BinaryTypes::Error && !std::holds_alternative<ErrorSubTypes>(sub_type)) {
+						throw FrameInvariantError(
+							std::format("Sub type of a frame with type Error should be Error sub type"));
 					}
 
 					std::vector<std::byte> frame;
 
-					const auto declared_size = Frames::Parser::calculate_declared_size(
-						payload.size(),
-						type,
-						std::visit(
-							[](auto code) -> Protocol::Detail::CodeVariant {
-								return code;
-							},
-							sub_type));
+					const auto declared_size =
+						Frames::Parser::calculate_declared_size(payload.size(),
+																type,
+																std::visit(
+																	[](auto code) -> Protocol::Detail::CodeVariant {
+																		return code;
+																	},
+																	sub_type));
 
 					if (type == BinaryTypes::Response) {
 						Models::Response::Response{declared_size,
@@ -150,16 +143,13 @@ namespace Karkinolution {
 					Protocol::Aliases::FrameSubType v_sub_type{};
 
 					if (std::holds_alternative<ResponseSubTypes>(sub_type)) {
-						v_sub_type = static_cast<Protocol::Aliases::FrameSubType>(
-							std::get<ResponseSubTypes>(sub_type));
+						v_sub_type = static_cast<Protocol::Aliases::FrameSubType>(std::get<ResponseSubTypes>(sub_type));
 					} else if (std::holds_alternative<ErrorSubTypes>(sub_type)) {
-						v_sub_type = static_cast<Protocol::Aliases::FrameSubType>(
-							std::get<ErrorSubTypes>(sub_type));
+						v_sub_type = static_cast<Protocol::Aliases::FrameSubType>(std::get<ErrorSubTypes>(sub_type));
 					}
 
 
-					Karkinolution::Binary::Utils::append_bytes(frame,
-															   static_cast<std::byte>(v_sub_type));
+					Karkinolution::Binary::Utils::append_bytes(frame, static_cast<std::byte>(v_sub_type));
 
 					// request id
 
@@ -170,10 +160,8 @@ namespace Karkinolution {
 					if (type == BinaryTypes::Response) {
 						Karkinolution::Binary::Utils::append_bytes(
 							frame,
-							Karkinolution::Binary::Serializer::serialize<
-								Protocol::Aliases::Response::Cardinality>(
-								static_cast<Protocol::Aliases::Response::Cardinality>(
-									cardinality)));
+							Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Response::Cardinality>(
+								static_cast<Protocol::Aliases::Response::Cardinality>(cardinality)));
 					}
 					// payload
 					frame.insert(frame.end(), payload.begin(), payload.end());
@@ -181,12 +169,11 @@ namespace Karkinolution {
 				}
 
 				template <ByteRange Payload>
-				std::vector<std::byte>
-				make_request_raw_bytes(RequestSubTypes                      sub_type,
-									   RequestId                            id,
-									   Resource                             resource,
-									   const Payload                       &payload,
-									   const Models::Request::RequestExtra &extra) {
+				std::vector<std::byte> make_request_raw_bytes(RequestSubTypes                      sub_type,
+															  RequestId                            id,
+															  Resource                             resource,
+															  const Payload                       &payload,
+															  const Models::Request::RequestExtra &extra) {
 					const FrameDeclaredSize declared_size =
 						Parser::calculate_declared_size(payload.size(),
 														BinaryTypes::Request,
@@ -212,8 +199,7 @@ namespace Karkinolution {
 
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<
-							Protocol::Aliases::FrameSubType>(
+						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::FrameSubType>(
 							static_cast<Protocol::Aliases::FrameSubType>(request.get_sub_type())));
 
 
@@ -226,18 +212,14 @@ namespace Karkinolution {
 					// resource
 					Karkinolution::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<
-							Protocol::Aliases::Request::FrameResource>(
-							static_cast<Protocol::Aliases::Request::FrameResource>(
-								request.get_resource())));
+						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameResource>(
+							static_cast<Protocol::Aliases::Request::FrameResource>(request.get_resource())));
 
 					if (request.get_sub_type() == RequestSubTypes::SEE) {
-						const auto target =
-							std::get<Models::Request::SeeExtra>(request.get_extra()).target;
+						const auto target = std::get<Models::Request::SeeExtra>(request.get_extra()).target;
 						Karkinolution::Binary::Utils::append_bytes(
 							frame,
-							Karkinolution::Binary::Serializer::serialize<
-								Protocol::Aliases::Request::FrameSeeTarget>(
+							Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameSeeTarget>(
 								static_cast<Protocol::Aliases::Request::FrameSeeTarget>(target)));
 					}
 

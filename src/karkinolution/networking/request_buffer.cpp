@@ -6,8 +6,7 @@ namespace Karkinolution::Networking {
 		return Karkinolution::Binary::Frames::Parser::has_frame(buffer.view());
 	}
 
-	std::optional<std::vector<std::byte>>
-	FrameBufferAnalyzer::get_frame(const RawFrameBuffer &buffer) {
+	std::optional<std::vector<std::byte>> FrameBufferAnalyzer::get_frame(const RawFrameBuffer &buffer) {
 		if (has_frame(buffer) != BufferExistence::YES) {
 			return std::nullopt;
 		}

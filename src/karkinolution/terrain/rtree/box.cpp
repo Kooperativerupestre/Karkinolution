@@ -36,10 +36,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	Box2D Box2DMotor::intersection(const Box2D &a, const Box2D &b) {
-		return Box2D{.max = Karkinolution::Math::Vec::Vec2{std::min(a.max.x, b.max.x),
-														   std::min(a.max.y, b.max.y)},
-					 .min = Karkinolution::Math::Vec::Vec2{std::max(a.min.x, b.min.x),
-														   std::max(a.min.y, b.min.y)}};
+		return Box2D{.max = Karkinolution::Math::Vec::Vec2{std::min(a.max.x, b.max.x), std::min(a.max.y, b.max.y)},
+					 .min = Karkinolution::Math::Vec::Vec2{std::max(a.min.x, b.min.x), std::max(a.min.y, b.min.y)}};
 	}
 
 	double Box2DMotor::overlap_area(const Box2D &a, const Box2D &b) {

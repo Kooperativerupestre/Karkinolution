@@ -6,10 +6,9 @@
 TEST(ListSerialize, WritesHeaderAndElementsInOrder) {
 	const std::vector<std::uint32_t> values = {0x01020304, 0xA1B2C3D4, 0x00FF00EE};
 
-	const auto serialized =
-		ListTSRI::serialize<sizeof(std::uint32_t)>(values, [](std::uint32_t value) {
-			return Karkinolution::Binary::Serializer::convert_uint32_t(value);
-		});
+	const auto serialized = ListTSRI::serialize<sizeof(std::uint32_t)>(values, [](std::uint32_t value) {
+		return Karkinolution::Binary::Serializer::convert_uint32_t(value);
+	});
 
 	const std::vector<std::byte> expected = {
 		std::byte{0x00},

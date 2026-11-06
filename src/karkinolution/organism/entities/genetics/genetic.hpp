@@ -78,32 +78,28 @@ namespace Karkinolution {
 
 						struct OviparousOrganismGenome {};
 
-						inline Karkinolution::Organisms::Entities::Reproduction::State::Ontology::
-							ReproductiveWays
-							get_reproductive_way(
-								const std::variant<ViviparousOrganismGenome,
-												   OviparousOrganismGenome> &genome) {
+						inline Karkinolution::Organisms::Entities::Reproduction::State::Ontology::ReproductiveWays
+						get_reproductive_way(
+							const std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> &genome) {
 							if (std::holds_alternative<ViviparousOrganismGenome>(genome)) {
-								return Karkinolution::Organisms::Entities::Reproduction::State::
-									Ontology::ReproductiveWays::VIVIPAROUS;
+								return Karkinolution::Organisms::Entities::Reproduction::State::Ontology::
+									ReproductiveWays::VIVIPAROUS;
 							} else if (std::holds_alternative<OviparousOrganismGenome>(genome)) {
-								return Karkinolution::Organisms::Entities::Reproduction::State::
-									Ontology::ReproductiveWays::OVIPAROUS;
+								return Karkinolution::Organisms::Entities::Reproduction::State::Ontology::
+									ReproductiveWays::OVIPAROUS;
 							}
 							std::unreachable();
 						}
 
 						struct ReproductiveGenome {
-								std::variant<ViviparousOrganismGenome, OviparousOrganismGenome>
-													   reproductive_way_genome;
-								int                    average_children_count;
-								int                    average_gestation_limit;
-								int                    fertility_limit;
-								NormalizedValue<float> reproduction_cost;
+								std::variant<ViviparousOrganismGenome, OviparousOrganismGenome> reproductive_way_genome;
+								int                                                             average_children_count;
+								int                                                             average_gestation_limit;
+								int                                                             fertility_limit;
+								NormalizedValue<float>                                          reproduction_cost;
 
-								Karkinolution::Organisms::Entities::Reproduction::State::Ontology::
-									ReproductiveWays
-									reproductive_way() const noexcept {
+								Karkinolution::Organisms::Entities::Reproduction::State::Ontology::ReproductiveWays
+								reproductive_way() const noexcept {
 									return get_reproductive_way(reproductive_way_genome);
 								}
 						};
@@ -150,8 +146,7 @@ namespace Karkinolution {
 				};
 
 				struct BrainGenome {
-						NormalizedValue<float>
-							average_sociability; // create now, preparing for the future
+						NormalizedValue<float> average_sociability; // create now, preparing for the future
 				};
 
 				struct Genome {
@@ -173,8 +168,7 @@ namespace Karkinolution {
 						}
 
 						[[nodiscard]] constexpr float calculate_embryo_average_life() const {
-							return embryo_genome.body.average_max_life.value()
-								* creature_genome.vital.max_life;
+							return embryo_genome.body.average_max_life.value() * creature_genome.vital.max_life;
 						}
 				};
 

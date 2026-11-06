@@ -9,7 +9,6 @@ void KarkinolutionView::Gui::Components::Panel::draw_bounds(
 	form_.draw_bounds(thickness);
 }
 
-void KarkinolutionView::Gui::Components::Panel::fill_background(
-	const Karkinolution::Colors::Color &color) const {
+void KarkinolutionView::Gui::Components::Panel::fill_background(const Karkinolution::Colors::Color &color) const {
 	KarkinolutionView::Gui::Components::LowLevel::Rectangle{form_.get_bounds(), color}.draw();
 }

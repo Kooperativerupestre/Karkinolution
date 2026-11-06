@@ -9,8 +9,7 @@
 
 namespace {
 
-	template <typename Payload>
-	RequestFrame make_see_request(Resource resource, const Payload &payload) {
+	template <typename Payload> RequestFrame make_see_request(Resource resource, const Payload &payload) {
 		return Karkinolution::Binary::Frames::Motor::make_request(
 			RequestSubTypes::SEE,
 			RequestId{1},

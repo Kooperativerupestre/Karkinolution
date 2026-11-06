@@ -112,10 +112,9 @@ namespace Karkinolution::Networking {
 			}
 	};
 
-	inline constexpr std::size_t MAX_PAYLOAD_BYTES = std::min(
-		static_cast<std::size_t>(UINT32_MAX)
-			- Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE,
-		MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE);
+	inline constexpr std::size_t MAX_PAYLOAD_BYTES =
+		std::min(static_cast<std::size_t>(UINT32_MAX) - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE,
+				 MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE);
 
 	namespace FrameBufferAnalyzer {
 

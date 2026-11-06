@@ -56,8 +56,7 @@ namespace Karkinolution::Organisms::Entities::Creature {
 	}
 
 	[[nodiscard]] float Creature::specie_relative_max_reserved_energy() const noexcept {
-		return body.metabolism.reserved.max()
-			/ genome.creature_genome.metabolism.max_reserved_energy;
+		return body.metabolism.reserved.max() / genome.creature_genome.metabolism.max_reserved_energy;
 	}
 
 	[[nodiscard]] float Creature::specie_relative_mass() const noexcept {

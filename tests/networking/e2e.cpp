@@ -137,9 +137,8 @@ TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 	std::size_t soil_count = 0;
 	bool        succeeded  = false;
 	{
-		KarkinolutionSDK::Client::Client client{
-			io,
-			KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
+		KarkinolutionSDK::Client::Client client{io,
+												KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
 
 		try {
 			client.connect();

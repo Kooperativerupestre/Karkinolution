@@ -3,8 +3,7 @@
 #include <karkinolution/organism/entities/physic/analyzer.hpp>
 #include <karkinolution/world/world.hpp>
 
-PhysicAnalyzer::CanBeOutput PhysicAnalyzer::can_be(const Entity                      &entity,
-												   const Karkinolution::World::World &world) {
+PhysicAnalyzer::CanBeOutput PhysicAnalyzer::can_be(const Entity &entity, const Karkinolution::World::World &world) {
 
 	auto size     = EntityGetters::get_size(entity);
 	auto position = EntityGetters::get_position(entity);

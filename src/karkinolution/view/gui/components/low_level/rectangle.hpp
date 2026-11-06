@@ -18,8 +18,7 @@ namespace KarkinolutionView {
 
 						const Karkinolution::Colors::Color color;
 
-						Rectangle(const Geometry::Rectangle          &bounds,
-								  const Karkinolution::Colors::Color &color);
+						Rectangle(const Geometry::Rectangle &bounds, const Karkinolution::Colors::Color &color);
 
 						[[nodiscard]]
 						Geometry::Rectangle get_bounds() const {

@@ -23,8 +23,8 @@ namespace KarkinolutionSDK {
 			}
 
 			const auto &error = std::get<ErrorFrame>(frame);
-			throw ClientError(std::format("Server returned error code {}",
-										  static_cast<std::uint8_t>(error.get_sub_type())));
+			throw ClientError(
+				std::format("Server returned error code {}", static_cast<std::uint8_t>(error.get_sub_type())));
 		}
 	} // namespace Interpreters
 } // namespace KarkinolutionSDK

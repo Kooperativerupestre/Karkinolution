@@ -18,8 +18,7 @@ namespace KarkinolutionView {
 
 						const Karkinolution::Colors::Color color;
 
-						Circle(const Geometry::Circle             &bounds,
-							   const Karkinolution::Colors::Color &color);
+						Circle(const Geometry::Circle &bounds, const Karkinolution::Colors::Color &color);
 
 						[[nodiscard]]
 						Geometry::Circle get_bounds() const {

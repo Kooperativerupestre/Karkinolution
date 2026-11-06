@@ -28,8 +28,7 @@ namespace Karkinolution {
 							}
 						}
 
-						ReproductiveState(ReproductiveOrgan               &&state,
-										  State::Ontology::ReproductiveWays way)
+						ReproductiveState(ReproductiveOrgan &&state, State::Ontology::ReproductiveWays way)
 							: state(state)
 							, reproductive_way(way) {}
 
@@ -43,9 +42,7 @@ namespace Karkinolution {
 									break;
 
 								case Creature::Gender::FEMALE:
-									state = Uterus::Uterus{Uterus::EmptyUterus{},
-														   initial_health,
-														   initial_energy};
+									state = Uterus::Uterus{Uterus::EmptyUterus{}, initial_health, initial_energy};
 									break;
 
 								default:

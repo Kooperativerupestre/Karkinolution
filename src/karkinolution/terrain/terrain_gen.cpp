@@ -55,15 +55,12 @@ namespace Karkinolution::Terrain::TerrainFactory {
 
 				const Vec2 coord{width, height};
 
-				const auto noise_value = terrain_noise->GenSingle2D(static_cast<float>(coord.x),
-																	static_cast<float>(coord.y),
-																	seed);
+				const auto noise_value =
+					terrain_noise->GenSingle2D(static_cast<float>(coord.x), static_cast<float>(coord.y), seed);
 
 				const auto soil_type = TerrainFactory::get_soil_type(noise_value);
 
-				const auto radius =
-					Functional::KRandom::RandomGenerators::generate(min_radius.value,
-																	max_radius.value);
+				const auto radius = Functional::KRandom::RandomGenerators::generate(min_radius.value, max_radius.value);
 
 				auto soil = Soil::SoilF::gen_soil_piece(soil_type, radius, coord);
 

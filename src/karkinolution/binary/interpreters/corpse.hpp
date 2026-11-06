@@ -54,34 +54,31 @@ namespace Karkinolution {
 
 					IdBytes serialize_id(Karkinolution::Core::Id::BaseIdType id);
 					Karkinolution::Binary::Serializer::Core::FourBytes
-					serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat);
-					VecSRI::BytesArrays::Vec
-					serialize_position(const Karkinolution::Math::Vec::Vec2 &position);
-					Units::BytesArrays::Size
-					serialize_size(const Karkinolution::Math::Units::Size &size);
+											 serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat);
+					VecSRI::BytesArrays::Vec serialize_position(const Karkinolution::Math::Vec::Vec2 &position);
+					Units::BytesArrays::Size serialize_size(const Karkinolution::Math::Units::Size &size);
 
-					BytesArrays::Corpse serialize_corpse(
-						const Karkinolution::Organisms::Entities::Corpse::Corpse &corpse);
+					BytesArrays::Corpse
+					serialize_corpse(const Karkinolution::Organisms::Entities::Corpse::Corpse &corpse);
 
 					namespace Request {
-						std::array<std::byte, 8>
-						make_see_corpse(Karkinolution::Core::Id::BaseIdType id);
+						std::array<std::byte, 8> make_see_corpse(Karkinolution::Core::Id::BaseIdType id);
 					} // namespace Request
 				} // namespace Corpse
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Corpse {
-					Karkinolution::Core::Id::BaseIdType
-					get_id(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Organisms::RawMeat
-					get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec2
-					get_position(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Units::Size get_size(const std::vector<std::byte> &payload,
-															  std::size_t                   offset);
-					Interpreters::Models::Corpse::Corpse
-					get_corpse(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Core::Id::BaseIdType  get_id(const std::vector<std::byte> &payload,
+																std::size_t                   offset);
+					Karkinolution::Organisms::RawMeat    get_raw_meat(const std::vector<std::byte> &payload,
+																	  std::size_t                   offset);
+					Karkinolution::Math::Vec::Vec2       get_position(const std::vector<std::byte> &payload,
+																	  std::size_t                   offset);
+					Karkinolution::Math::Units::Size     get_size(const std::vector<std::byte> &payload,
+																  std::size_t                   offset);
+					Interpreters::Models::Corpse::Corpse get_corpse(const std::vector<std::byte> &payload,
+																	std::size_t                   offset);
 
 					namespace Request {
 						Karkinolution::Core::Id::BaseIdType

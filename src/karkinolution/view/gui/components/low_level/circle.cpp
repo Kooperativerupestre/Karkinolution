@@ -3,9 +3,8 @@
 #include "karkinolution/view/gui/colors.hpp"
 #include "raylib.h"
 
-KarkinolutionView::Gui::Components::LowLevel::Circle::Circle(
-	const KarkinolutionView::Gui::Geometry::Circle &bounds,
-	const Karkinolution::Colors::Color             &color)
+KarkinolutionView::Gui::Components::LowLevel::Circle::Circle(const KarkinolutionView::Gui::Geometry::Circle &bounds,
+															 const Karkinolution::Colors::Color             &color)
 	: bounds_(bounds)
 	, color(color) {}
 

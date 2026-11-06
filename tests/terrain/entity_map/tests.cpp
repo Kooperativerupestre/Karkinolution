@@ -39,10 +39,7 @@ TEST(EntityMapTest, AddStoresEntityAndIndexAtomically) {
 	Territory  territory{map_size};
 	EntityMap  entity_map{map_size};
 
-	Corpse corpse{Size{.width = 10.0, .height = 10.0},
-				  Vec2{0.0, 0.0},
-				  Karkinolution::Organisms::RawMeat{3.0f},
-				  1};
+	Corpse corpse{Size{.width = 10.0, .height = 10.0}, Vec2{0.0, 0.0}, Karkinolution::Organisms::RawMeat{3.0f}, 1};
 
 	ASSERT_TRUE(entity_map.add(corpse.build_id(), corpse.position, corpse.size, territory));
 	EXPECT_TRUE(entity_map.has_entity(corpse.build_id()));
@@ -57,10 +54,7 @@ TEST(EntityMapTest, AddRejectsEntityOutsideTerritory) {
 	Territory  territory{map_size};
 	EntityMap  entity_map{map_size};
 
-	Corpse corpse{Size{.width = 1035.0, .height = 10.0},
-				  Vec2{0.0, 530.0},
-				  Karkinolution::Organisms::RawMeat{3.0f},
-				  1};
+	Corpse corpse{Size{.width = 1035.0, .height = 10.0}, Vec2{0.0, 530.0}, Karkinolution::Organisms::RawMeat{3.0f}, 1};
 
 	EXPECT_FALSE(entity_map.add(corpse.build_id(), corpse.position, corpse.size, territory));
 	EXPECT_FALSE(entity_map.has_entity(corpse.build_id()));
@@ -109,8 +103,7 @@ TEST(EntityMapTest, UpdateCoordMovesEntityAndIndex) {
 	const Vec2 new_position     = {20.0, 0.0};
 
 	ASSERT_TRUE(entity_map.add(id, initial_position, entity_size(), territory));
-	ASSERT_TRUE(
-		entity_map.update_coord(id, entity_size(), initial_position, new_position, territory));
+	ASSERT_TRUE(entity_map.update_coord(id, entity_size(), initial_position, new_position, territory));
 
 	EXPECT_TRUE(contains_id(entity_map.find(Size{12.0, 12.0}, new_position), id));
 	EXPECT_FALSE(contains_id(entity_map.find(Size{12.0, 12.0}, Vec2{-20.0, 0.0}), id));
@@ -124,8 +117,7 @@ TEST(EntityMapTest, UpdateCoordOutsideTerritoryIsAtomic) {
 	const Vec2 old_position = {0.0, 0.0};
 
 	ASSERT_TRUE(entity_map.add(id, old_position, entity_size(), territory));
-	EXPECT_FALSE(
-		entity_map.update_coord(id, entity_size(), old_position, Vec2{500.0, 0.0}, territory));
+	EXPECT_FALSE(entity_map.update_coord(id, entity_size(), old_position, Vec2{500.0, 0.0}, territory));
 
 	EXPECT_TRUE(contains_id(entity_map.find(Size{12.0, 12.0}, old_position), id));
 }

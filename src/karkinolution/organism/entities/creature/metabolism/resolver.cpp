@@ -7,8 +7,7 @@
 namespace Karkinolution::Organisms::Entities::Creature::Metabolism::Resolver {
 	std::variant<std::reference_wrapper<Karkinolution::Organisms::RawMeat>,
 				 std::reference_wrapper<Karkinolution::Organisms::Nature::Grass::GrassMatter>>
-	MetabolismResolver::resolve_preset(const Actions::EatPreset    &preset,
-									   Karkinolution::World::World &world) {
+	MetabolismResolver::resolve_preset(const Actions::EatPreset &preset, Karkinolution::World::World &world) {
 		if (preset.hint == FoodHint::GRASS_MATTER) {
 			std::cout << "Grass does not exist currently" << "\n";
 		}

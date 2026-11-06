@@ -9,8 +9,7 @@ namespace KarkinolutionView {
 		namespace Queriers {
 			namespace Corpse {
 				std::optional<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse>
-				see_corpse(Karkinolution::Core::Id::BaseIdType id,
-						   KarkinolutionView::Client::Client  &client);
+				see_corpse(Karkinolution::Core::Id::BaseIdType id, KarkinolutionView::Client::Client &client);
 			} // namespace Corpse
 		} // namespace Queriers
 	} // namespace World

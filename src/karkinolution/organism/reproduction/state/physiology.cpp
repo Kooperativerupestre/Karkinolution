@@ -23,17 +23,16 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State {
 		// mean.
 	}
 
-	float Physiology::needed_energy_of_all_embryos(
-		const ReproductiveState                          &organ,
-		const Karkinolution::Organisms::OrganismRegistry &organisms) {
+	float Physiology::needed_energy_of_all_embryos(const ReproductiveState                          &organ,
+												   const Karkinolution::Organisms::OrganismRegistry &organisms) {
 		Validator::is_pregnant(organ);
 
 		float       total_energy = 0.0f;
 		const auto &uterus       = std::get<Uterus::Uterus>(organ.state);
 
 		for (auto id : uterus.get_pregnant_uterus().embryos) {
-			const auto &embryo = organisms.entities_registry.at_embryo(
-				Karkinolution::Organisms::Entities::create_embryo_id(id));
+			const auto &embryo =
+				organisms.entities_registry.at_embryo(Karkinolution::Organisms::Entities::create_embryo_id(id));
 			total_energy += (embryo.energy.max() - embryo.energy.value());
 		}
 		return total_energy;
@@ -43,8 +42,7 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State {
 														 const Entities::Creature::Creature &male) {
 		Karkinolution::Organisms::Entities::Creature::Validator::is_same_specie(female, male);
 
-		Entities::Genetic::Genome new_genome =
-			Entities::Genetic::Motor::crossover(female.genome, male.genome);
+		Entities::Genetic::Genome new_genome = Entities::Genetic::Motor::crossover(female.genome, male.genome);
 
 		auto average_max_energy = new_genome.calculate_embryo_average_max_energy();
 		auto average_area       = new_genome.calculate_embryo_average_area();

@@ -11,9 +11,7 @@ namespace Karkinolution {
 			// respects the invariant: 1 < id < max(type)
 
 			inline BaseIdType gen_id() {
-				std::uniform_int_distribution<BaseIdType> dist(
-					1,
-					std::numeric_limits<BaseIdType>::max());
+				std::uniform_int_distribution<BaseIdType> dist(1, std::numeric_limits<BaseIdType>::max());
 				return dist(Karkinolution::Functional::KRandom::gen);
 			}
 		} // namespace Id

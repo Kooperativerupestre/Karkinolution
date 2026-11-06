@@ -14,8 +14,7 @@ namespace KarkinolutionSDK::Protocol {
 		, fut_response(promise.value().get_future()) {}
 
 	bool FutureRequest::is_ready_unlocked() const {
-		return fut_response.valid()
-			&& fut_response.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+		return fut_response.valid() && fut_response.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
 	}
 
 	bool FutureRequest::set_response(const ResponseFrameVariant &response) {
@@ -108,8 +107,7 @@ namespace KarkinolutionSDK::Protocol {
 		return std::optional<ResponseFrameVariant>{fut_response.get()};
 	}
 
-	bool PendingRequests::erase_request(RequestId                            id,
-										const std::shared_ptr<FutureRequest> expected) {
+	bool PendingRequests::erase_request(RequestId id, const std::shared_ptr<FutureRequest> expected) {
 		std::lock_guard lock{mtx};
 		auto            it = pendings.find(id);
 
@@ -139,9 +137,8 @@ namespace KarkinolutionSDK::Protocol {
 				response);
 			auto it = pendings.find(request_id);
 			if (it == pendings.end()) {
-				throw CPPSdkError(std::format(
-					"Invalid try to add a response to an inexistent request with id = {}",
-					request_id));
+				throw CPPSdkError(
+					std::format("Invalid try to add a response to an inexistent request with id = {}", request_id));
 			}
 			request = it->second;
 		}
@@ -155,8 +152,7 @@ namespace KarkinolutionSDK::Protocol {
 			std::lock_guard lock{mtx};
 			auto            it = pendings.find(id);
 			if (it == pendings.end()) {
-				throw CPPSdkError(
-					std::format("Invalid pop response of an inexistent request with id = {}", id));
+				throw CPPSdkError(std::format("Invalid pop response of an inexistent request with id = {}", id));
 			}
 			request = it->second;
 		}
@@ -179,16 +175,13 @@ namespace KarkinolutionSDK::Protocol {
 			auto it = pendings.find(id);
 
 			if (it == pendings.end()) {
-				throw CPPSdkError(
-					std::format("Invalid await response of a nonexistent request with id = {}",
-								id));
+				throw CPPSdkError(std::format("Invalid await response of a nonexistent request with id = {}", id));
 			}
 
 			request = it->second;
 		}
 
-		auto result =
-			request->await_response(std::chrono::seconds(RESPONSE_WAITING_TIME_OUT_SECONDS));
+		auto result = request->await_response(std::chrono::seconds(RESPONSE_WAITING_TIME_OUT_SECONDS));
 
 		erase_request(id, request);
 

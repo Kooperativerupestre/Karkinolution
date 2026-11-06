@@ -8,8 +8,7 @@ namespace Karkinolution {
 	namespace Binary {
 		namespace Frames {
 			namespace Processor {
-				ResponseFrame process(const RequestFrame          &frame,
-									  Karkinolution::World::World &world);
+				ResponseFrame process(const RequestFrame &frame, Karkinolution::World::World &world);
 			} // namespace Processor
 
 		} // namespace Frames

@@ -32,16 +32,13 @@ namespace Karkinolution {
 							, _min(min)
 							, _max(max) {
 							if (_min > _max) {
-								throw std::invalid_argument(std::format(
-									"Invalid RuntimeLimitedValue range. Min > Max: {} > {}",
-									_min,
-									_max));
+								throw std::invalid_argument(
+									std::format("Invalid RuntimeLimitedValue range. Min > Max: {} > {}", _min, _max));
 							}
 
 							if (_min > T(0)) {
-								throw std::invalid_argument(std::format(
-									"Invalid RuntimeLimitedValue range. Min must accept zero: {}",
-									_min));
+								throw std::invalid_argument(
+									std::format("Invalid RuntimeLimitedValue range. Min must accept zero: {}", _min));
 							}
 
 							clamp();
@@ -234,8 +231,7 @@ namespace Karkinolution {
 								return CT::NormalizedValue<float>(0.0f);
 							}
 
-							return CT::NormalizedValue<float>(static_cast<float>(_value)
-															  / static_cast<float>(_max));
+							return CT::NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
 						}
 				};
 
@@ -320,8 +316,7 @@ namespace Karkinolution {
 								return CT::NormalizedValue<float>(0.0f);
 							}
 
-							return CT::NormalizedValue<float>(static_cast<float>(_value)
-															  / static_cast<float>(_max));
+							return CT::NormalizedValue<float>(static_cast<float>(_value) / static_cast<float>(_max));
 						}
 				};
 

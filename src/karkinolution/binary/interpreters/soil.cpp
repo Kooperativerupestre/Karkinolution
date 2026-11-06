@@ -30,8 +30,8 @@ std::byte SoilSRI::serialize_property(Karkinolution::Terrain::Soil::SoilProperti
 	throw Karkinolution::Binary::ByteError("Unknown property of soil");
 }
 
-SoilSRI::BytesArray::Properties SoilSRI::serialize_properties(
-	const std::vector<Karkinolution::Terrain::Soil::SoilProperties> &properties) {
+SoilSRI::BytesArray::Properties
+SoilSRI::serialize_properties(const std::vector<Karkinolution::Terrain::Soil::SoilProperties> &properties) {
 	if (properties.size() > SoilSRI::Layout::MAX_PROPERTIES_SIZE) {
 		throw Karkinolution::Binary::ByteError(
 			std::format("The size of the properties of the soil is bigger than allowed ({})",
@@ -57,26 +57,21 @@ SoilSRI::BytesArray::RequiredCapabilities SoilSRI::serialize_required_capabiliti
 	bytes[0] = Karkinolution::Binary::Serializer::convert_uint8_t(capabilities.size());
 	for (size_t i = 1; i < capabilities.size() + 1; ++i) {
 		const auto seria_pr = PropertiesSRI::serialize(capabilities[i - 1]);
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   seria_pr,
-												   i * PropertiesSRI::Layout::TOTAL_SIZE - 1);
+		Karkinolution::Binary::Utils::append_bytes(bytes, seria_pr, i * PropertiesSRI::Layout::TOTAL_SIZE - 1);
 	}
 	return bytes;
 }
 
-SoilSRI::BytesArray::DamageComponent
-SoilSRI::serialize_damage(const Karkinolution::Terrain::Soil::SoilPiece &soil) {
+SoilSRI::BytesArray::DamageComponent SoilSRI::serialize_damage(const Karkinolution::Terrain::Soil::SoilPiece &soil) {
 	SoilSRI::BytesArray::DamageComponent array{};
 
 	if (soil.components.exists<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage>()) {
-		array[0] = static_cast<std::byte>(0x01);
-		const auto &damage =
-			soil.components.try_get<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage>();
+		array[0]           = static_cast<std::byte>(0x01);
+		const auto &damage = soil.components.try_get<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage>();
 
-		Karkinolution::Binary::Utils::append_bytes(
-			array,
-			Karkinolution::Binary::Serializer::convert_float(damage->damage),
-			1);
+		Karkinolution::Binary::Utils::append_bytes(array,
+												   Karkinolution::Binary::Serializer::convert_float(damage->damage),
+												   1);
 	}
 
 	return array;
@@ -89,8 +84,7 @@ SoilSRI::serialize_movement_cost(const Karkinolution::Terrain::Soil::SoilPiece &
 	if (soil.components.exists<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost>()) {
 		array[0] = static_cast<std::byte>(0x01);
 		const auto &movement_cost =
-			soil.components
-				.try_get<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost>();
+			soil.components.try_get<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost>();
 
 		Karkinolution::Binary::Utils::append_bytes(
 			array,
@@ -104,43 +98,33 @@ IdBytes SoilSRI::serialize_id(const Karkinolution::Terrain::Soil::SoilPiece &soi
 	return Karkinolution::Binary::Serializer::convert_uint64_t(soil.id);
 }
 
-SoilSRI::BytesArray::Soil
-SoilSRI::serialize_soil(const Karkinolution::Terrain::Soil::SoilPiece &soil) {
+SoilSRI::BytesArray::Soil SoilSRI::serialize_soil(const Karkinolution::Terrain::Soil::SoilPiece &soil) {
 	SoilSRI::BytesArray::Soil array{};
 
 	array[SoilSRI::Layout::Type::OFFSET] = serialize_type(soil.type);
 
 	const auto serialized_properties = serialize_properties(soil.properties);
 
-	Karkinolution::Binary::Utils::append_bytes(array,
-											   serialized_properties,
-											   SoilSRI::Layout::PropertiesCount::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(array, serialized_properties, SoilSRI::Layout::PropertiesCount::OFFSET);
 
-	const auto serialized_required_capabilities =
-		serialize_required_capabilities(soil.required_capabilities);
+	const auto serialized_required_capabilities = serialize_required_capabilities(soil.required_capabilities);
 
 	Karkinolution::Binary::Utils::append_bytes(array,
 											   serialized_required_capabilities,
 											   SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET);
 
 	const auto serialized_damage_c = serialize_damage(soil);
-	Karkinolution::Binary::Utils::append_bytes(array,
-											   serialized_damage_c,
-											   SoilSRI::Layout::HasDamage::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(array, serialized_damage_c, SoilSRI::Layout::HasDamage::OFFSET);
 	const auto serialized_movement_cost = serialize_movement_cost(soil);
 	Karkinolution::Binary::Utils::append_bytes(array,
 											   serialized_movement_cost,
 											   SoilSRI::Layout::HasMovementCost::OFFSET);
 
 	const auto serialized_radius = GeometrySRI::serialize_radius(soil.radius);
-	Karkinolution::Binary::Utils::append_bytes(array,
-											   serialized_radius,
-											   SoilSRI::Layout::Radius::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(array, serialized_radius, SoilSRI::Layout::Radius::OFFSET);
 
 	const auto serialized_position = VecSRI::serialize_vec((soil.position));
-	Karkinolution::Binary::Utils::append_bytes(array,
-											   serialized_position,
-											   SoilSRI::Layout::Position::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(array, serialized_position, SoilSRI::Layout::Position::OFFSET);
 
 	const auto serialized_id = serialize_id(soil);
 	Karkinolution::Binary::Utils::append_bytes(array, serialized_id, SoilSRI::Layout::Id::OFFSET);
@@ -166,9 +150,7 @@ SoilDSI::get_damage(const std::vector<std::byte> &payload, std::size_t offset) {
 		return std::nullopt;
 	}
 	return Karkinolution::Binary::Interpreters::Models::Soil::DamageComponent{
-		.value = Karkinolution::Binary::Deserializer::read_float(
-			payload,
-			offset + SoilSRI::Layout::HasDamage::SIZE)};
+		.value = Karkinolution::Binary::Deserializer::read_float(payload, offset + SoilSRI::Layout::HasDamage::SIZE)};
 }
 
 std::optional<Karkinolution::Binary::Interpreters::Models::Soil::MovementCostComponent>
@@ -180,25 +162,19 @@ SoilDSI::get_movement_cost(const std::vector<std::byte> &payload, std::size_t of
 	}
 
 	return Karkinolution::Binary::Interpreters::Models::Soil::MovementCostComponent{
-		.cost = Karkinolution::Binary::Deserializer::read_float(
-			payload,
-			offset + SoilSRI::Layout::HasMovementCost::SIZE)};
+		.cost =
+			Karkinolution::Binary::Deserializer::read_float(payload, offset + SoilSRI::Layout::HasMovementCost::SIZE)};
 }
 
-Karkinolution::Core::Id::BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload,
-													std::size_t                   offset) {
-	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(
-		payload,
-		offset);
+Karkinolution::Core::Id::BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, offset);
 }
 
-Karkinolution::Math::Vec::Vec2 SoilDSI::get_position(const std::vector<std::byte> &payload,
-													 std::size_t                   offset) {
+Karkinolution::Math::Vec::Vec2 SoilDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
 	return VecDSI::get_vec(payload, offset);
 }
 
-Karkinolution::Terrain::Soil::SoilTypes SoilDSI::get_type(const std::vector<std::byte> &payload,
-														  std::size_t                   offset) {
+Karkinolution::Terrain::Soil::SoilTypes SoilDSI::get_type(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto raw_type = Karkinolution::Binary::Deserializer::read_uint8_t(payload, offset);
 	const auto type     = Karkinolution::Terrain::Soil::SoilTypes(raw_type);
 	if (!magic_enum::enum_contains(type)) {
@@ -207,8 +183,7 @@ Karkinolution::Terrain::Soil::SoilTypes SoilDSI::get_type(const std::vector<std:
 	return type;
 }
 
-Karkinolution::Math::Geometry::Radius SoilDSI::get_radius(const std::vector<std::byte> &payload,
-														  std::size_t                   offset) {
+Karkinolution::Math::Geometry::Radius SoilDSI::get_radius(const std::vector<std::byte> &payload, std::size_t offset) {
 	return GeometryDSI::deserialize_radius(payload, offset);
 }
 
@@ -225,8 +200,8 @@ SoilDSI::get_soil_properties(const std::vector<std::byte> &payload, std::size_t 
 						SoilSRI::Layout::MAX_PROPERTIES_SIZE));
 	}
 	for (std::size_t i = 0; i < count; ++i) {
-		properties.push_back(Karkinolution::Terrain::Soil::SoilProperties(
-			payload[offset + SoilSRI::Layout::PropertiesCount::SIZE + i]));
+		properties.push_back(
+			Karkinolution::Terrain::Soil::SoilProperties(payload[offset + SoilSRI::Layout::PropertiesCount::SIZE + i]));
 	}
 	return properties;
 }
@@ -241,8 +216,8 @@ SoilDSI::get_required_properties(const std::vector<std::byte> &payload, std::siz
 	required_capabilities.reserve(count);
 
 	for (std::size_t i = 0; i < count; ++i) {
-		const auto property_offset = offset + SoilSRI::Layout::RequiredCapabilitiesCount::SIZE
-			+ i * PropertiesSRI::Layout::TOTAL_SIZE;
+		const auto property_offset =
+			offset + SoilSRI::Layout::RequiredCapabilitiesCount::SIZE + i * PropertiesSRI::Layout::TOTAL_SIZE;
 
 		required_capabilities.push_back(PropertiesDSI::deserialize(payload, property_offset));
 	}
@@ -250,8 +225,8 @@ SoilDSI::get_required_properties(const std::vector<std::byte> &payload, std::siz
 	return required_capabilities;
 }
 
-Karkinolution::Binary::Interpreters::Models::Soil::Soil
-SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
+Karkinolution::Binary::Interpreters::Models::Soil::Soil SoilDSI::get_soil(const std::vector<std::byte> &payload,
+																		  std::size_t                   offset) {
 	return Karkinolution::Binary::Interpreters::Models::Soil::Soil{
 		get_damage(payload, offset + SoilSRI::Layout::HasDamage::OFFSET),
 		get_movement_cost(payload, offset + SoilSRI::Layout::HasMovementCost::OFFSET),
@@ -260,15 +235,11 @@ SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
 		get_position(payload, offset + SoilSRI::Layout::Position::OFFSET),
 		get_type(payload, offset + SoilSRI::Layout::Type::OFFSET),
 		get_soil_properties(payload, offset + SoilSRI::Layout::PropertiesCount::OFFSET),
-		get_required_properties(payload,
-								offset + SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET)};
+		get_required_properties(payload, offset + SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET)};
 }
 
 // Request implementations
 
-Karkinolution::Core::Id::BaseIdType
-SoilDSI::Request::interpret_like_get_soil(const std::vector<std::byte> &payload) {
-	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(
-		payload,
-		0);
+Karkinolution::Core::Id::BaseIdType SoilDSI::Request::interpret_like_get_soil(const std::vector<std::byte> &payload) {
+	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, 0);
 }

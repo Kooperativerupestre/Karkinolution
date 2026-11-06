@@ -34,9 +34,7 @@ namespace Karkinolution {
 
 							UterusState state = EmptyUterus{};
 
-							Uterus(const UterusState &state,
-								   const Health      &health,
-								   const Energy      &energy)
+							Uterus(const UterusState &state, const Health &health, const Energy &energy)
 								: state(state)
 								, health(health)
 								, energy(energy) {}

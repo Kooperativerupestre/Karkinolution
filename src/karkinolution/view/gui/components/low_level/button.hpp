@@ -38,8 +38,7 @@ namespace KarkinolutionView {
 								, hovered(hovered)
 								, pressed(pressed) {}
 
-							const Karkinolution::Colors::Color &
-							operator[](ButtonStates state) const {
+							const Karkinolution::Colors::Color &operator[](ButtonStates state) const {
 								switch (state) {
 									case ButtonStates::IDLE:
 										return idle;

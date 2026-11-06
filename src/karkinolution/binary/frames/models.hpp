@@ -31,12 +31,8 @@ namespace Karkinolution {
 
 					struct CycleExtra {};
 
-					using RequestExtra = std::variant<SeeExtra,
-													  WantExtra,
-													  EraseExtra,
-													  CreateExtra,
-													  CycleExtra,
-													  std::monostate>;
+					using RequestExtra =
+						std::variant<SeeExtra, WantExtra, EraseExtra, CreateExtra, CycleExtra, std::monostate>;
 
 					void constexpr validate_sub_type_and_target(RequestSubTypes     sub_type,
 																Resource            resource,
@@ -50,8 +46,7 @@ namespace Karkinolution {
 								&& target != Protocol::Request::SeeTarget::ALL) {
 								throw FrameError("Invalid request target");
 							}
-							if (resource == Resource::TERRITORY
-								&& target != Protocol::Request::SeeTarget::ONE) {
+							if (resource == Resource::TERRITORY && target != Protocol::Request::SeeTarget::ONE) {
 								throw FrameError("Territory requests must have target One");
 							}
 						} else if (sub_type == RequestSubTypes::WANT) {
@@ -60,18 +55,15 @@ namespace Karkinolution {
 							}
 						} else if (sub_type == RequestSubTypes::CREATE) {
 							if (!std::holds_alternative<CreateExtra>(extra)) {
-								throw FrameError(
-									"Request with sub type Create must have CreateExtra");
+								throw FrameError("Request with sub type Create must have CreateExtra");
 							}
 						} else if (sub_type == RequestSubTypes::CYCLE) {
 							if (!std::holds_alternative<CycleExtra>(extra)) {
-								throw FrameError(
-									"Request with sub type Cycle must have CycleExtra");
+								throw FrameError("Request with sub type Cycle must have CycleExtra");
 							}
 						} else if (sub_type == RequestSubTypes::ERASE) {
 							if (!std::holds_alternative<EraseExtra>(extra)) {
-								throw FrameError(
-									"Request with sub type Erase must have EraseExtra");
+								throw FrameError("Request with sub type Erase must have EraseExtra");
 							}
 						} else {
 							Karkinolution::Functional::unreachable_or_throw();
@@ -138,26 +130,22 @@ namespace Karkinolution {
 				} // namespace Request
 
 				namespace Response {
-					void constexpr validate_sub_type_and_cardinality(
-						ResponseSubTypes    sub_type,
-						ResponseCardinality cardinality) {
+					void constexpr validate_sub_type_and_cardinality(ResponseSubTypes    sub_type,
+																	 ResponseCardinality cardinality) {
 						if (sub_type == ResponseSubTypes::NONE) {
 							if (cardinality != ResponseCardinality::ONE) {
-								throw FrameError(
-									"Response with sub type None must have cardinality One");
+								throw FrameError("Response with sub type None must have cardinality One");
 							}
 						} else if (sub_type == ResponseSubTypes::TERRITORY) {
 							if (cardinality != ResponseCardinality::ONE) {
 								throw FrameError("Territory responses must have cardinality One");
 							}
-						} else if (sub_type != ResponseSubTypes::CREATURE
-								   && sub_type != ResponseSubTypes::CORPSE
+						} else if (sub_type != ResponseSubTypes::CREATURE && sub_type != ResponseSubTypes::CORPSE
 								   && sub_type != ResponseSubTypes::SOIL) {
 							throw FrameError("Invalid response subtype");
 						}
 
-						if (cardinality != ResponseCardinality::ONE
-							&& cardinality != ResponseCardinality::ALL) {
+						if (cardinality != ResponseCardinality::ONE && cardinality != ResponseCardinality::ALL) {
 							throw FrameError("Invalid response cardinality");
 						}
 					}
@@ -263,9 +251,7 @@ namespace Karkinolution {
 
 					public:
 
-						GenericFrame(
-							const std::variant<Request::Request, Response::Response, Error::Error>
-								&data)
+						GenericFrame(const std::variant<Request::Request, Response::Response, Error::Error> &data)
 							: data_(data) {}
 
 						BinaryTypes constexpr get_type() const {

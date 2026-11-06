@@ -8,8 +8,7 @@
 
 namespace Karkinolution::Organisms::Entities::Corpse::Motor {
 
-	void run(Karkinolution::Organisms::Entities::Corpse::Corpse &corpse,
-			 Karkinolution::World::World                        &world) {
+	void run(Karkinolution::Organisms::Entities::Corpse::Corpse &corpse, Karkinolution::World::World &world) {
 		corpse.raw_meat.value *= 0.1;
 
 		if (corpse.ready_to_disapear()) {

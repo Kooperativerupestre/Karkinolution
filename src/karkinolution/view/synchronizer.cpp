@@ -27,8 +27,8 @@ bool KarkinolutionView::Synchronizer::disconnect() {
 	return true;
 }
 
-KarkinolutionSDK::Client::ResponseResult KarkinolutionView::Synchronizer::request_and_sync(
-	const KarkinolutionSDK::Client::RequestData &data) {
+KarkinolutionSDK::Client::ResponseResult
+KarkinolutionView::Synchronizer::request_and_sync(const KarkinolutionSDK::Client::RequestData &data) {
 	if (!world) {
 		throw std::logic_error("Cannot synchronize before the world is initialized");
 	}

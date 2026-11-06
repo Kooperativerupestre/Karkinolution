@@ -8,8 +8,7 @@ namespace KarkinolutionView {
 		namespace Queriers {
 			namespace Soil {
 				std::optional<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
-				see_soil(Karkinolution::Core::Id::BaseIdType id,
-						 KarkinolutionView::Client::Client  &client);
+				see_soil(Karkinolution::Core::Id::BaseIdType id, KarkinolutionView::Client::Client &client);
 				std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
 				see_all_soils(KarkinolutionView::Client::Client &client);
 			} // namespace Soil

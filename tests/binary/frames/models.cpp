@@ -16,8 +16,7 @@ TEST(FrameModelConstructors, RequestStoresValidatedFields) {
 		RequestSubTypes::SEE,
 		payload,
 		Resource::CREATURE,
-		Models::Request::SeeExtra{.target =
-									  Karkinolution::Binary::Protocol::Request::SeeTarget::ONE}};
+		Models::Request::SeeExtra{.target = Karkinolution::Binary::Protocol::Request::SeeTarget::ONE}};
 
 	EXPECT_EQ(request.get_declared_size(), 12);
 	EXPECT_EQ(request.get_id(), 34);
@@ -40,18 +39,9 @@ TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
 	using Request   = Models::Request::Request;
 	using SeeExtra  = Models::Request::SeeExtra;
 
-	EXPECT_NO_THROW((Request{12,
-							 34,
-							 RequestSubTypes::SEE,
-							 {},
-							 Resource::TERRITORY,
-							 SeeExtra{.target = SeeTarget::ONE}}));
-	EXPECT_THROW((Request{12,
-						  34,
-						  RequestSubTypes::SEE,
-						  {},
-						  Resource::TERRITORY,
-						  SeeExtra{.target = SeeTarget::ALL}}),
+	EXPECT_NO_THROW(
+		(Request{12, 34, RequestSubTypes::SEE, {}, Resource::TERRITORY, SeeExtra{.target = SeeTarget::ONE}}));
+	EXPECT_THROW((Request{12, 34, RequestSubTypes::SEE, {}, Resource::TERRITORY, SeeExtra{.target = SeeTarget::ALL}}),
 				 Karkinolution::Binary::Frames::FrameError);
 
 	constexpr Resource other_resources[] = {Resource::CREATURE,
@@ -60,36 +50,18 @@ TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
 											Resource::CORPSE,
 											Resource::EGG};
 	for (const auto resource : other_resources) {
-		EXPECT_NO_THROW((Request{12,
-								 34,
-								 RequestSubTypes::SEE,
-								 {},
-								 resource,
-								 SeeExtra{.target = SeeTarget::ONE}}));
-		EXPECT_NO_THROW((Request{12,
-								 34,
-								 RequestSubTypes::SEE,
-								 {},
-								 resource,
-								 SeeExtra{.target = SeeTarget::ALL}}));
+		EXPECT_NO_THROW((Request{12, 34, RequestSubTypes::SEE, {}, resource, SeeExtra{.target = SeeTarget::ONE}}));
+		EXPECT_NO_THROW((Request{12, 34, RequestSubTypes::SEE, {}, resource, SeeExtra{.target = SeeTarget::ALL}}));
 	}
 
-	EXPECT_THROW((Request{12,
-						  34,
-						  RequestSubTypes::SEE,
-						  {},
-						  Resource::TERRITORY,
-						  SeeExtra{.target = static_cast<SeeTarget>(0)}}),
-				 Karkinolution::Binary::Frames::FrameError);
+	EXPECT_THROW(
+		(Request{12, 34, RequestSubTypes::SEE, {}, Resource::TERRITORY, SeeExtra{.target = static_cast<SeeTarget>(0)}}),
+		Karkinolution::Binary::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
 	const std::vector<std::byte>     payload{std::byte{0x2A}};
-	const Models::Response::Response response{12,
-											  34,
-											  ResponseSubTypes::SOIL,
-											  payload,
-											  ResponseCardinality::ALL};
+	const Models::Response::Response response{12, 34, ResponseSubTypes::SOIL, payload, ResponseCardinality::ALL};
 
 	EXPECT_EQ(response.get_declared_size(), 12);
 	EXPECT_EQ(response.get_request_id(), 34);
@@ -97,16 +69,8 @@ TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
 	EXPECT_EQ(response.get_payload(), payload);
 	EXPECT_EQ(response.get_cardinality(), ResponseCardinality::ALL);
 
-	EXPECT_NO_THROW((Models::Response::Response{12,
-												34,
-												ResponseSubTypes::NONE,
-												payload,
-												ResponseCardinality::ONE}));
-	EXPECT_THROW((Models::Response::Response{12,
-											 34,
-											 ResponseSubTypes::NONE,
-											 payload,
-											 ResponseCardinality::ALL}),
+	EXPECT_NO_THROW((Models::Response::Response{12, 34, ResponseSubTypes::NONE, payload, ResponseCardinality::ONE}));
+	EXPECT_THROW((Models::Response::Response{12, 34, ResponseSubTypes::NONE, payload, ResponseCardinality::ALL}),
 				 Karkinolution::Binary::Frames::FrameError);
 }
 

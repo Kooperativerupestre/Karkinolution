@@ -52,9 +52,7 @@ namespace Karkinolution {
 					bool add(ID id, V &&value) {
 						const auto value_box = RTree::BoxConversion::to_box(value);
 
-						if (!Karkinolution::Terrain::Trees::RTree::Box2DMotor::contains(
-								box(),
-								value_box)) {
+						if (!Karkinolution::Terrain::Trees::RTree::Box2DMotor::contains(box(), value_box)) {
 							return false;
 						}
 
@@ -84,14 +82,12 @@ namespace Karkinolution {
 						return Functional::try_remove(registry_, id);
 					}
 
-					std::vector<ID> find(const Math::Geometry::Radius &radius,
-										 const Vec2                   &position) const {
+					std::vector<ID> find(const Math::Geometry::Radius &radius, const Vec2 &position) const {
 						auto box = RTree::BoxConversion::to_box(radius, position);
 						return tree_.find(box);
 					}
 
-					std::vector<ID> find(const Math::Units::Size &size,
-										 const Vec2              &position) const {
+					std::vector<ID> find(const Math::Units::Size &size, const Vec2 &position) const {
 						auto box = RTree::BoxConversion::to_box(size, position);
 						return tree_.find(box);
 					}

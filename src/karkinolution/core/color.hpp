@@ -42,8 +42,7 @@ namespace Karkinolution {
 				constexpr bool operator==(const Color &) const noexcept = default;
 
 				// Multiplication by a normalized scalar.
-				constexpr Color
-				operator*(Math::LV::CT::NormalizedValue<float> factor) const noexcept {
+				constexpr Color operator*(Math::LV::CT::NormalizedValue<float> factor) const noexcept {
 					return {.r = Components::Red{r.value * factor},
 							.g = Components::Green{g.value * factor},
 							.b = Components::Blue{b.value * factor},
@@ -80,23 +79,20 @@ namespace Karkinolution {
 				}
 
 				// Multiplies RGB without changing alpha.
-				constexpr Color
-				multiply_without_alpha(Math::LV::CT::NormalizedValue<float> factor) const noexcept {
+				constexpr Color multiply_without_alpha(Math::LV::CT::NormalizedValue<float> factor) const noexcept {
 					return multiply(factor, 1.0f);
 				}
 
-				constexpr Color
-				multiply(Math::LV::CT::NormalizedValue<float> rgb_factor,
-						 Math::LV::CT::NormalizedValue<float> alpha_factor) const noexcept {
+				constexpr Color multiply(Math::LV::CT::NormalizedValue<float> rgb_factor,
+										 Math::LV::CT::NormalizedValue<float> alpha_factor) const noexcept {
 					return Color{.r = Components::Red{r.value * rgb_factor},
 								 .g = Components::Green{g.value * rgb_factor},
 								 .b = Components::Blue{b.value * rgb_factor},
 								 .a = Components::Alpha{a.value * alpha_factor}};
 				}
 
-				constexpr Color
-				divide(Math::LV::CT::NormalizedValue<float> rgb_factor,
-					   Math::LV::CT::NormalizedValue<float> alpha_factor) const noexcept {
+				constexpr Color divide(Math::LV::CT::NormalizedValue<float> rgb_factor,
+									   Math::LV::CT::NormalizedValue<float> alpha_factor) const noexcept {
 					return Color{.r = Components::Red{r.value / rgb_factor},
 								 .g = Components::Green{g.value / rgb_factor},
 								 .b = Components::Blue{b.value / rgb_factor},
@@ -104,13 +100,11 @@ namespace Karkinolution {
 				}
 
 				// Moves RGB components toward white.
-				constexpr Color
-				lighten(Math::LV::CT::NormalizedValue<float> factor) const noexcept {
-					return {
-						.r = Components::Red{r.value + (1.0f - r.value.value()) * factor.value()},
-						.g = Components::Green{g.value + (1.0f - g.value.value()) * factor.value()},
-						.b = Components::Blue{b.value + (1.0f - b.value.value()) * factor.value()},
-						.a = a};
+				constexpr Color lighten(Math::LV::CT::NormalizedValue<float> factor) const noexcept {
+					return {.r = Components::Red{r.value + (1.0f - r.value.value()) * factor.value()},
+							.g = Components::Green{g.value + (1.0f - g.value.value()) * factor.value()},
+							.b = Components::Blue{b.value + (1.0f - b.value.value()) * factor.value()},
+							.a = a};
 				}
 
 				// Inverts RGB without changing alpha.
@@ -122,9 +116,8 @@ namespace Karkinolution {
 				}
 
 				// Linear interpolation between two colors.
-				static constexpr Color lerp(const Color                         &from,
-											const Color                         &to,
-											Math::LV::CT::NormalizedValue<float> t) noexcept {
+				static constexpr Color
+				lerp(const Color &from, const Color &to, Math::LV::CT::NormalizedValue<float> t) noexcept {
 
 
 					return {.r = Components::Red{from.r.value + (to.r.value - from.r.value) * t},
@@ -141,13 +134,12 @@ namespace Karkinolution {
 					std::array<Color, N> gradient;
 
 					for (size_t i = 0; i < N; i++) {
-						gradient[i] = Color{
-							// i + 1 -> The "+1" satisfies the criterium that the first element
-							// of the array will not be equal the original color
-							.r = Components::Red{this->r.value - rgb_factor.value() * (i + 1)},
-							.g = Components::Green{this->g.value - rgb_factor.value() * (i + 1)},
-							.b = Components::Blue{this->b.value - rgb_factor.value() * (i + 1)},
-							.a = Components::Alpha{this->a.value - alpha_factor.value() * (i + 1)}};
+						gradient[i] = Color{// i + 1 -> The "+1" satisfies the criterium that the first element
+											// of the array will not be equal the original color
+											.r = Components::Red{this->r.value - rgb_factor.value() * (i + 1)},
+											.g = Components::Green{this->g.value - rgb_factor.value() * (i + 1)},
+											.b = Components::Blue{this->b.value - rgb_factor.value() * (i + 1)},
+											.a = Components::Alpha{this->a.value - alpha_factor.value() * (i + 1)}};
 					}
 					return gradient;
 				}
@@ -159,23 +151,19 @@ namespace Karkinolution {
 					std::array<Color, N> gradient;
 
 					for (size_t i = 0; i < N; i++) {
-						gradient[i] = Color{
-							// N - i + 1 -> The "+1" satisfies the criterium that the first element
-							// of the array will not be equal the original color
-							.r = Components::Red{this->r.value - rgb_factor.value() * (N - i + 1)},
-							.g =
-								Components::Green{this->g.value - rgb_factor.value() * (N - i + 1)},
-							.b = Components::Blue{this->b.value - rgb_factor.value() * (N - i + 1)},
-							.a = Components::Alpha{this->a.value
-												   - alpha_factor.value() * (N - i + 1)}};
+						gradient[i] = Color{// N - i + 1 -> The "+1" satisfies the criterium that the first element
+											// of the array will not be equal the original color
+											.r = Components::Red{this->r.value - rgb_factor.value() * (N - i + 1)},
+											.g = Components::Green{this->g.value - rgb_factor.value() * (N - i + 1)},
+											.b = Components::Blue{this->b.value - rgb_factor.value() * (N - i + 1)},
+											.a = Components::Alpha{this->a.value - alpha_factor.value() * (N - i + 1)}};
 					}
 					return gradient;
 				}
 		};
 
 		// Allows scalar * color as well as color * scalar.
-		constexpr Color operator*(Math::LV::CT::NormalizedValue<float> factor,
-								  const Color                         &color) noexcept {
+		constexpr Color operator*(Math::LV::CT::NormalizedValue<float> factor, const Color &color) noexcept {
 			return color * factor;
 		}
 

@@ -11,8 +11,7 @@
 namespace Karkinolution {
 	namespace Organisms {
 		namespace Entities {
-			using Entity =
-				std::variant<Creature::Creature, Corpse::Corpse, Embryo::Embryo, Egg::Egg>;
+			using Entity = std::variant<Creature::Creature, Corpse::Corpse, Embryo::Embryo, Egg::Egg>;
 
 			class EntitiesRegistry {
 				private:

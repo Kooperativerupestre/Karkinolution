@@ -77,8 +77,8 @@ namespace KarkinolutionSDK {
 				}
 		};
 
-		using ResponseResult = std::expected<std::optional<ResponseFrameVariant>,
-											 KarkinolutionSDK::Protocol::CancelledError>;
+		using ResponseResult =
+			std::expected<std::optional<ResponseFrameVariant>, KarkinolutionSDK::Protocol::CancelledError>;
 
 		class Client {
 			public:

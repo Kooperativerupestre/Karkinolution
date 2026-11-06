@@ -44,8 +44,7 @@ class Pool {
 
 		static std::string interpret(std::string_view command);
 
-		static std::string
-		weight_pick(const std::vector<std::pair<std::string, double>> &commands_weights);
+		static std::string weight_pick(const std::vector<std::pair<std::string, double>> &commands_weights);
 };
 
 std::string gen_name();

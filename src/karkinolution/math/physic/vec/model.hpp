@@ -114,8 +114,7 @@ namespace Karkinolution {
 						return (*this - other).length();
 					}
 
-					[[nodiscard]] constexpr double
-					distance_squared_to(const Vec2 &other) const noexcept {
+					[[nodiscard]] constexpr double distance_squared_to(const Vec2 &other) const noexcept {
 						return (*this - other).length_squared();
 					}
 
@@ -136,8 +135,8 @@ namespace Karkinolution {
 						return *this - normal * (2.0 * dot(normal));
 					}
 
-					[[nodiscard]] constexpr bool
-					approx_equal(const Vec2 &other, double epsilon = 1e-10) const noexcept {
+					[[nodiscard]] constexpr bool approx_equal(const Vec2 &other,
+															  double      epsilon = 1e-10) const noexcept {
 						return std::abs(x - other.x) <= epsilon && std::abs(y - other.y) <= epsilon;
 					}
 
@@ -149,8 +148,8 @@ namespace Karkinolution {
 						return std::abs(length_squared() - 1.0) <= epsilon;
 					}
 
-					[[nodiscard]] constexpr bool
-					is_perpendicular(const Vec2 &other, double epsilon = 1e-10) const noexcept {
+					[[nodiscard]] constexpr bool is_perpendicular(const Vec2 &other,
+																  double      epsilon = 1e-10) const noexcept {
 						return std::abs(dot(other)) <= epsilon;
 					}
 

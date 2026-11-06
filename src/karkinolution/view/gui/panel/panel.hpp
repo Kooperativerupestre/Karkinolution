@@ -15,26 +15,20 @@ namespace KarkinolutionView {
 			class Panel {
 				private:
 
-					Quadtree::Quadtree quadtree_;
-					std::unordered_map<Components::ComponentId,
-									   std::shared_ptr<Components::Component>>
-						components_;
+					Quadtree::Quadtree                                                                  quadtree_;
+					std::unordered_map<Components::ComponentId, std::shared_ptr<Components::Component>> components_;
 
-					std::vector<Components::ComponentId>
-					find_in_area(const Geometry::Rectangle &area) const;
+					std::vector<Components::ComponentId> find_in_area(const Geometry::Rectangle &area) const;
 
-					std::vector<Components::ComponentId>
-					find_in_area(const Geometry::Circle &area) const;
+					std::vector<Components::ComponentId> find_in_area(const Geometry::Circle &area) const;
 
-					template <typename Area>
-					bool intersects(Components::ComponentId id, const Area &area) const;
+					template <typename Area> bool intersects(Components::ComponentId id, const Area &area) const;
 
 					template <typename Area>
 					std::vector<Components::ComponentId> collides_in_area(const Area &area) const;
 
 					template <typename Area>
-					std::optional<Components::ComponentId>
-					find_one_collision_in_area_impl(const Area &area) const;
+					std::optional<Components::ComponentId> find_one_collision_in_area_impl(const Area &area) const;
 
 				public:
 
@@ -48,12 +42,10 @@ namespace KarkinolutionView {
 					std::shared_ptr<Components::Component> get(Components::ComponentId id) const;
 
 					[[nodiscard]]
-					std::vector<Components::ComponentId>
-					collides(const Geometry::Rectangle &area) const;
+					std::vector<Components::ComponentId> collides(const Geometry::Rectangle &area) const;
 
 					[[nodiscard]]
-					std::vector<Components::ComponentId>
-					collides(const Geometry::Circle &area) const;
+					std::vector<Components::ComponentId> collides(const Geometry::Circle &area) const;
 
 					[[nodiscard]]
 					std::optional<Components::ComponentId>

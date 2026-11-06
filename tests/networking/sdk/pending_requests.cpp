@@ -8,11 +8,11 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/sdk/src/error.hpp>
 
+using KarkinolutionSDK::CPPSdkError;
 using KarkinolutionSDK::Protocol::FutureRequest;
 using KarkinolutionSDK::Protocol::PendingRequests;
 using KarkinolutionSDK::Protocol::RequestFailure;
 using KarkinolutionSDK::Protocol::ResponseResult;
-using KarkinolutionSDK::CPPSdkError;
 
 namespace {
 
@@ -65,11 +65,7 @@ TEST(PendingRequests, AddResponseConcurrentlyAcceptsOnlyOne) {
 	std::vector<std::byte> payload;
 	payload.push_back(static_cast<std::byte>(0x032));
 
-	ResponseFrame response{123,
-						   req_id,
-						   ResponseSubTypes::CORPSE,
-						   payload,
-						   ResponseCardinality::ONE};
+	ResponseFrame response{123, req_id, ResponseSubTypes::CORPSE, payload, ResponseCardinality::ONE};
 
 	for (int i = 0; i < 10000; i++) {
 		KarkinolutionSDK::Protocol::PendingRequests pending_requests;
@@ -141,10 +137,7 @@ TEST(PendingRequests, PopResponseReturnsAvailableErrorFrame) {
 	PendingRequests requests;
 
 	constexpr RequestId id = 42;
-	const ErrorFrame    error{123,
-                           id,
-                           ErrorSubTypes::CREATURE_WAS_NOT_FOUND,
-                           std::vector<std::byte>{}};
+	const ErrorFrame    error{123, id, ErrorSubTypes::CREATURE_WAS_NOT_FOUND, std::vector<std::byte>{}};
 
 	ASSERT_TRUE(requests.add_request(id));
 	ASSERT_TRUE(requests.add_response(ResponseFrameVariant{error}));
@@ -154,8 +147,7 @@ TEST(PendingRequests, PopResponseReturnsAvailableErrorFrame) {
 	ASSERT_TRUE(result);
 	ASSERT_TRUE(result->has_value());
 	ASSERT_TRUE(std::holds_alternative<ErrorFrame>(result->value()));
-	EXPECT_EQ(std::get<ErrorFrame>(result->value()).get_sub_type(),
-			  ErrorSubTypes::CREATURE_WAS_NOT_FOUND);
+	EXPECT_EQ(std::get<ErrorFrame>(result->value()).get_sub_type(), ErrorSubTypes::CREATURE_WAS_NOT_FOUND);
 }
 
 TEST(PendingRequests, PopResponseRemovesRequestAfterRetrievingResponse) {

@@ -22,8 +22,7 @@ namespace Karkinolution {
 			}
 
 			template <std::ranges::forward_range Range>
-				requires(!std::ranges::random_access_range<Range>
-						 && std::ranges::sized_range<Range>)
+				requires(!std::ranges::random_access_range<Range> && std::ranges::sized_range<Range>)
 			decltype(auto) choice(Range &&range) {
 				std::uniform_int_distribution<size_t> dist(0, std::ranges::size(range) - 1);
 
@@ -34,14 +33,11 @@ namespace Karkinolution {
 			}
 
 			template <std::ranges::forward_range Range>
-				requires(!std::ranges::random_access_range<Range>
-						 && !std::ranges::sized_range<Range>)
+				requires(!std::ranges::random_access_range<Range> && !std::ranges::sized_range<Range>)
 			decltype(auto) choice(Range &&range) {
 				auto size = std::ranges::distance(range);
 
-				std::uniform_int_distribution<std::ranges::range_difference_t<Range>> dist(0,
-																						   size
-																							   - 1);
+				std::uniform_int_distribution<std::ranges::range_difference_t<Range>> dist(0, size - 1);
 
 				auto it = std::ranges::begin(range);
 				std::ranges::advance(it, dist(gen));
@@ -99,9 +95,7 @@ namespace Karkinolution {
 			}
 
 			template <typename T> bool choice_bool(T true_weight) {
-				return choices(std::array<bool, 2>{true, false},
-							   std::array<T, 2>{true_weight, 1 - true_weight},
-							   1)[0];
+				return choices(std::array<bool, 2>{true, false}, std::array<T, 2>{true_weight, 1 - true_weight}, 1)[0];
 			}
 
 			template <typename T>
@@ -112,10 +106,9 @@ namespace Karkinolution {
 			}
 
 			template <typename T> bool choice_bool(const NormalizedValue<float> &true_weight) {
-				return choices(
-					std::array<bool, 2>{true, false},
-					std::array<float, 2>{true_weight.value(), 1.0f - true_weight.value()},
-					1)[0];
+				return choices(std::array<bool, 2>{true, false},
+							   std::array<float, 2>{true_weight.value(), 1.0f - true_weight.value()},
+							   1)[0];
 			}
 
 			struct SuppressContext {

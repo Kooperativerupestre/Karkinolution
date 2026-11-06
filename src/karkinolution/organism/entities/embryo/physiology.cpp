@@ -15,9 +15,8 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 		return EMBRYO_BASAL_METABOLISM;
 	}
 
-	NormalizedValue<float>
-	EmbryoGrowingPhysiology::get_increment(const NormalizedValue<float> &ratio,
-										   const NormalizedValue<float> &factor) {
+	NormalizedValue<float> EmbryoGrowingPhysiology::get_increment(const NormalizedValue<float> &ratio,
+																  const NormalizedValue<float> &factor) {
 		if (ratio.value() < Math::Approx<float>(0.5)) {
 			float x = (0.5f - ratio.value()) / 0.5f;
 			return 1.0f + x * x;
@@ -34,30 +33,26 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 	}
 
 	ResourceTrade EmbryoGrowingPhysiology::get_new_max_life_increment(const Embryo &embryo) {
-		const NormalizedValue<float> cost =
-			std::min(BASE_VALUE_LIFE_INCREMENT.value(), embryo.specie_relative_life());
-		const float gain = cost.value();
+		const NormalizedValue<float> cost = std::min(BASE_VALUE_LIFE_INCREMENT.value(), embryo.specie_relative_life());
+		const float                  gain = cost.value();
 		return ResourceTrade{.cost = cost, .gain = gain};
 	}
 
 	ResourceTrade EmbryoGrowingPhysiology::get_new_life_increment(const Embryo &embryo) {
-		NormalizedValue<float> cost =
-			get_increment(embryo.life.ratio(), BASE_VALUE_LIFE_INCREMENT.value());
-		float gain = cost.value();
+		NormalizedValue<float> cost = get_increment(embryo.life.ratio(), BASE_VALUE_LIFE_INCREMENT.value());
+		float                  gain = cost.value();
 		return ResourceTrade{.cost = cost, .gain = gain};
 	}
 
 	ResourceTrade EmbryoGrowingPhysiology::get_new_energy_increment(const Embryo &embryo) {
-		NormalizedValue<float> cost =
-			get_increment(embryo.energy.ratio(), BASE_VALUE_ENERGY_INCREMENT.value());
-		float gain = cost.value();
+		NormalizedValue<float> cost = get_increment(embryo.energy.ratio(), BASE_VALUE_ENERGY_INCREMENT.value());
+		float                  gain = cost.value();
 		return ResourceTrade{.cost = cost, .gain = gain};
 	}
 
 	ResourceTrade EmbryoGrowingPhysiology::get_new_health_increment(const Embryo &embryo) {
 		NormalizedValue<float> cost =
-			EmbryoGrowingPhysiology::get_increment(embryo.health.value(),
-												   BASE_VALUE_HEALTH_INCREMENT.value());
+			EmbryoGrowingPhysiology::get_increment(embryo.health.value(), BASE_VALUE_HEALTH_INCREMENT.value());
 		float gain = cost.value();
 		return ResourceTrade{.cost = cost, .gain = gain};
 	}

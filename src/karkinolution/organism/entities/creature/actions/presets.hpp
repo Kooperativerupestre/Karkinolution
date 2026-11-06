@@ -13,10 +13,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Actions {
 	};
 
 	struct EatPreset {
-			Karkinolution::Organisms::FoodHint hint;
-			std::variant<Karkinolution::Organisms::Entities::EntityId,
-						 Karkinolution::Organisms::Nature::NatureId>
-				id;
+			Karkinolution::Organisms::FoodHint                                                                     hint;
+			std::variant<Karkinolution::Organisms::Entities::EntityId, Karkinolution::Organisms::Nature::NatureId> id;
 	};
 
 	using AllPresets = std::variant<MovePreset, EatPreset>;

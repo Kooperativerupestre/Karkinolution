@@ -42,8 +42,7 @@ namespace Karkinolution {
 					return entity_map;
 				}
 
-				const Karkinolution::Organisms::Entities::EntitiesRegistry &
-				see_entities_registry() const {
+				const Karkinolution::Organisms::Entities::EntitiesRegistry &see_entities_registry() const {
 					return entities_registry;
 				}
 
@@ -74,8 +73,7 @@ namespace Karkinolution {
 					return entities_registry.exists(id) && entity_map.has_entity(id);
 				}
 
-				Karkinolution::Organisms::Entities::Entity &
-				at_entity(Karkinolution::Organisms::Entities::EntityId id) {
+				Karkinolution::Organisms::Entities::Entity &at_entity(Karkinolution::Organisms::Entities::EntityId id) {
 					return entities_registry.at(id);
 				}
 

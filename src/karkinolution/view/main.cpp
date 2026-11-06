@@ -34,10 +34,10 @@ int main() {
 
 	KarkinolutionView::Window::init_before_loop(screen_preset);
 
-	Synchronizer                 synchronizer;
-	const GuiGeometry::Rectangle connection_button_bounds{GuiGeometry::Position{100, 40},
-														  GuiGeometry::Width{160},
-														  GuiGeometry::Height{40}};
+	Synchronizer                                  synchronizer;
+	const GuiGeometry::Rectangle                  connection_button_bounds{GuiGeometry::Position{100, 40},
+                                                          GuiGeometry::Width{160},
+                                                          GuiGeometry::Height{40}};
 	Components::LowLevel::Button::RectangleButton connection_button{
 		connection_button_bounds,
 		[&synchronizer] {
@@ -50,28 +50,21 @@ int main() {
 		Components::LowLevel::Button::ButtonStyles{Colors::Presets::DarkGray,
 												   Colors::Presets::Gray,
 												   Colors::Presets::Black},
-		Components::LowLevel::Text{connection_button_bounds,
-								   "Connect",
-								   Colors::Presets::White,
-								   20}};
+		Components::LowLevel::Text{connection_button_bounds, "Connect", Colors::Presets::White, 20}};
 	std::string  connection_button_label{"Connect"};
-	Panel::Panel panel{GuiGeometry::Rectangle{GuiGeometry::Position{400, 225},
-											  GuiGeometry::Width{800},
-											  GuiGeometry::Height{450}}};
-	auto         grid_component = std::make_shared<Components::Component>(
-        Components::AllComponents{KarkinolutionView::Gui::Components::MediumLevel::Grid{
-            GuiGeometry::Rectangle{GuiGeometry::Position{400, 260},
-                                   GuiGeometry::Width{400},
-                                   GuiGeometry::Height{240}},
-            GuiGeometry::Thickness{5},
-            GuiGeometry::Width{50},
-            GuiGeometry::Height{40},
-            Colors::Presets::DarkGray}});
+	Panel::Panel panel{
+		GuiGeometry::Rectangle{GuiGeometry::Position{400, 225}, GuiGeometry::Width{800}, GuiGeometry::Height{450}}};
+	auto grid_component = std::make_shared<Components::Component>(
+		Components::AllComponents{KarkinolutionView::Gui::Components::MediumLevel::Grid{
+			GuiGeometry::Rectangle{GuiGeometry::Position{400, 260}, GuiGeometry::Width{400}, GuiGeometry::Height{240}},
+			GuiGeometry::Thickness{5},
+			GuiGeometry::Width{50},
+			GuiGeometry::Height{40},
+			Colors::Presets::DarkGray}});
 	if (!panel.add(grid_component)) {
 		throw std::runtime_error("Failed to add the demo grid to its panel");
 	}
-	const auto &grid =
-		std::get<KarkinolutionView::Gui::Components::MediumLevel::Grid>(grid_component->get_data());
+	const auto &grid = std::get<KarkinolutionView::Gui::Components::MediumLevel::Grid>(grid_component->get_data());
 
 	const std::array<Karkinolution::Colors::Color, 8> cell_colors{Colors::Presets::Red,
 																  Colors::Presets::Orange,
@@ -98,8 +91,7 @@ int main() {
 
 		synchronizer.draw();
 
-		const std::string_view connection_label =
-			synchronizer.is_connected() ? "Disconnect" : "Connect";
+		const std::string_view connection_label = synchronizer.is_connected() ? "Disconnect" : "Connect";
 		if (connection_label != connection_button_label) {
 			connection_button.set_text(std::string{connection_label});
 			connection_button_label = std::string{connection_label};
@@ -121,13 +113,11 @@ int main() {
 						visible_component.draw();
 					}
 
-					if constexpr (std::is_same_v<
-									  VisibleComponent,
-									  KarkinolutionView::Gui::Components::MediumLevel::Grid>) {
+					if constexpr (std::is_same_v<VisibleComponent,
+												 KarkinolutionView::Gui::Components::MediumLevel::Grid>) {
 						std::size_t color_index = 0;
 						for (int row = 0; row < visible_component.rows().value(); ++row) {
-							for (int column = 0; column < visible_component.columns().value();
-								 ++column) {
+							for (int column = 0; column < visible_component.columns().value(); ++column) {
 								visible_component.draw_cell(GuiGeometry::Column{column},
 															GuiGeometry::Row{row},
 															grid_colors[color_index++]);

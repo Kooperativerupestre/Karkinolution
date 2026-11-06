@@ -39,8 +39,7 @@ namespace Karkinolution {
 
 					StandardPhysicBytes serialize_area(Karkinolution::Math::Area area);
 					StandardPhysicBytes serialize_mass(Karkinolution::Math::Units::Mass mass);
-					StandardPhysicBytes
-					serialize_density(Karkinolution::Math::Units::Density density);
+					StandardPhysicBytes serialize_density(Karkinolution::Math::Units::Density density);
 					StandardPhysicBytes serialize_meter(Karkinolution::Math::Units::Meter meter);
 
 					StandardPhysicBytes serialize_width(Karkinolution::Math::Units::Width width);
@@ -50,41 +49,37 @@ namespace Karkinolution {
 
 					StatsSRI::BytesArray::Stat
 					serialize_shared_area(const Karkinolution::Math::SharedArea &shared_area);
-					StatsSRI::BytesArray::Stat
-					serialize_efficiency(const Karkinolution::Math::Efficiency &efficiency);
-					StatsSRI::BytesArray::Stat
-					serialize_quality(const Karkinolution::Math::Quality &quality);
+					StatsSRI::BytesArray::Stat serialize_efficiency(const Karkinolution::Math::Efficiency &efficiency);
+					StatsSRI::BytesArray::Stat serialize_quality(const Karkinolution::Math::Quality &quality);
 
 				} // namespace Units
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Units {
-					Karkinolution::Math::Area
-					deserialize_area(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Units::Mass
-					deserialize_mass(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Units::Density
-					deserialize_density(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Units::Meter
-					deserialize_meter(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Area           deserialize_area(const std::vector<std::byte> &payload,
+																		 std::size_t                   offset);
+					Karkinolution::Math::Units::Mass    deserialize_mass(const std::vector<std::byte> &payload,
+																		 std::size_t                   offset);
+					Karkinolution::Math::Units::Density deserialize_density(const std::vector<std::byte> &payload,
+																			std::size_t                   offset);
+					Karkinolution::Math::Units::Meter   deserialize_meter(const std::vector<std::byte> &payload,
+																		  std::size_t                   offset);
 
-					Karkinolution::Math::Units::Width
-					deserialize_width(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Units::Height
-					deserialize_height(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Units::Width  deserialize_width(const std::vector<std::byte> &payload,
+																		 std::size_t                   offset);
+					Karkinolution::Math::Units::Height deserialize_height(const std::vector<std::byte> &payload,
+																		  std::size_t                   offset);
 
-					Karkinolution::Math::Units::Size
-					deserialize_size(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Units::Size deserialize_size(const std::vector<std::byte> &payload,
+																	  std::size_t                   offset);
 
-					Karkinolution::Math::SharedArea
-					deserialize_shared_area(const std::vector<std::byte> &payload,
-											std::size_t                   offset);
-					Karkinolution::Math::Efficiency
-					deserialize_efficiency(const std::vector<std::byte> &payload,
-										   std::size_t                   offset);
-					Karkinolution::Math::Quality
-					deserialize_quality(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::SharedArea deserialize_shared_area(const std::vector<std::byte> &payload,
+																			std::size_t                   offset);
+					Karkinolution::Math::Efficiency deserialize_efficiency(const std::vector<std::byte> &payload,
+																		   std::size_t                   offset);
+					Karkinolution::Math::Quality    deserialize_quality(const std::vector<std::byte> &payload,
+																		std::size_t                   offset);
 				} // namespace Units
 			} // namespace DSI
 		} // namespace Interpreters

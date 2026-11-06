@@ -82,19 +82,17 @@ TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
 		repeats_count++;
 
 		for (size_t i = 0; i < 5; i++) {
-			const auto kind = static_cast<std::byte>(
-				Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>());
-			const auto type = static_cast<std::byte>(
-				Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>());
+			const auto kind =
+				static_cast<std::byte>(Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>());
+			const auto type =
+				static_cast<std::byte>(Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>());
 
 			const auto kind_offset = bytes.size();
 
 			std::optional<Karkinolution::Organisms::Entities::GenericProperty> is_valid =
 				Karkinolution::Organisms::Entities::GenericProperty::fromRaw(
-					Karkinolution::Organisms::Entities::Properties::Kind(
-						static_cast<uint8_t>(kind)),
-					Karkinolution::Organisms::Entities::Properties::Type(
-						static_cast<uint8_t>(type)));
+					Karkinolution::Organisms::Entities::Properties::Kind(static_cast<uint8_t>(kind)),
+					Karkinolution::Organisms::Entities::Properties::Type(static_cast<uint8_t>(type)));
 
 			if (is_valid) {
 				continue;
@@ -104,8 +102,7 @@ TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
 			bytes.push_back(kind);
 			bytes.push_back(type);
 
-			EXPECT_THROW(PropertiesDSI::deserialize(bytes, kind_offset),
-						 Karkinolution::Binary::ByteError);
+			EXPECT_THROW(PropertiesDSI::deserialize(bytes, kind_offset), Karkinolution::Binary::ByteError);
 		}
 	}
 
@@ -131,8 +128,7 @@ TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
 		Karkinolution::Organisms::Entities::GenericProperty(
 			Karkinolution::Organisms::Entities::Properties::Capabilities::Move::WALK)};
 
-	Karkinolution::Terrain::Soil::SoilPiece soil{.type =
-													 Karkinolution::Terrain::Soil::SoilTypes::DIRT,
+	Karkinolution::Terrain::Soil::SoilPiece soil{.type                  = Karkinolution::Terrain::Soil::SoilTypes::DIRT,
 												 .properties            = properties,
 												 .required_capabilities = required_properties,
 												 .components            = {},
@@ -141,14 +137,12 @@ TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
 												 .id                    = id};
 
 	soil.components.add(Karkinolution::Terrain::Soil::SoilPieceComponents::Damage{damage_value});
-	soil.components.add(
-		Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost{movement_cost});
+	soil.components.add(Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost{movement_cost});
 
 	const auto                   serialized = SoilSRI::serialize_soil(soil);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());
 
-	const Karkinolution::Binary::Interpreters::Models::Soil::Soil copy =
-		SoilDSI::get_soil(bytes, 0);
+	const Karkinolution::Binary::Interpreters::Models::Soil::Soil copy = SoilDSI::get_soil(bytes, 0);
 
 	EXPECT_EQ(copy.id, id);
 	EXPECT_EQ(copy.type, soil.type);
@@ -197,9 +191,7 @@ TEST(CorpseSerializeDeserializeRoundtrip, FullCorpseSerialization) {
 TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
 	constexpr Karkinolution::Core::Id::BaseIdType corpse_id = 248539453;
 
-	const auto bytes =
-		Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(
-			corpse_id);
+	const auto bytes = Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(corpse_id);
 	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 	const auto interpreted_id = CorpseDSI::Request::interpret_like_see_corpse(buffer);
@@ -249,13 +241,12 @@ TEST(CreatureSerializeDeserializeRoundtrip, FullCreatureSerialization) {
 
 	const std::string name = "Karkinolution";
 
-	const auto creature = Karkinolution::Organisms::Entities::Creature::Constructor::
-		CreatureConstructor::from_blueprint(
-			Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint{
-				.specie   = specie,
-				.name     = name,
-				.gender   = gender,
-				.position = position});
+	const auto creature =
+		Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor::from_blueprint(
+			Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint{.specie   = specie,
+																						 .name     = name,
+																						 .gender   = gender,
+																						 .position = position});
 
 	const auto                   serialized = CreatureSRI::serialize_creature(creature);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());

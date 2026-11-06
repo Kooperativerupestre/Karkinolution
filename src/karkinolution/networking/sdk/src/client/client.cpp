@@ -51,10 +51,7 @@ namespace KarkinolutionSDK::Client {
 		const auto endpoints = resolver.resolve(config.host, std::to_string(config.port), error);
 
 		if (error) {
-			throw ClientError(std::format("Failed to resolve {}:{}: {}",
-										  config.host,
-										  config.port,
-										  error.message()));
+			throw ClientError(std::format("Failed to resolve {}:{}: {}", config.host, config.port, error.message()));
 		}
 
 		error.clear();
@@ -62,10 +59,7 @@ namespace KarkinolutionSDK::Client {
 		asio::connect(socket_, endpoints, error);
 
 		if (error) {
-			throw ClientError(std::format("Failed to connect to {}:{}: {}",
-										  config.host,
-										  config.port,
-										  error.message()));
+			throw ClientError(std::format("Failed to connect to {}:{}: {}", config.host, config.port, error.message()));
 		}
 		connected = true;
 		asio::post(strand_, [this] {
@@ -79,11 +73,11 @@ namespace KarkinolutionSDK::Client {
 		KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
 
 		const auto request_id = next_request_id.fetch_add(1);
-		auto raw_frame = Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
-																					  request_id,
-																					  data.resource,
-																					  data.payload,
-																					  data.extra);
+		auto       raw_frame  = Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
+                                                                                      request_id,
+                                                                                      data.resource,
+                                                                                      data.payload,
+                                                                                      data.extra);
 
 
 		protocol_session.register_request(request_id);
@@ -118,24 +112,23 @@ namespace KarkinolutionSDK::Client {
 				socket_,
 				asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
 
-				asio::bind_executor(
-					strand_,
-					[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t) {
-						if (error) {
-							if (error == asio::error::operation_aborted) {
-								current_async_operations_running.decrement();
-								return;
-							}
-							on_error(error.message());
-							current_async_operations_running.decrement();
-							return;
-						}
-						clear_sending_state();
+				asio::bind_executor(strand_,
+									[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t) {
+										if (error) {
+											if (error == asio::error::operation_aborted) {
+												current_async_operations_running.decrement();
+												return;
+											}
+											on_error(error.message());
+											current_async_operations_running.decrement();
+											return;
+										}
+										clear_sending_state();
 
-						std::cout << "Request sent 🦀\n";
-						send();
-						current_async_operations_running.decrement();
-					}));
+										std::cout << "Request sent 🦀\n";
+										send();
+										current_async_operations_running.decrement();
+									}));
 		} catch (...) {
 			current_async_operations_running.decrement();
 			throw;
@@ -150,30 +143,29 @@ namespace KarkinolutionSDK::Client {
 		try {
 			socket_.async_read_some(
 				asio::buffer(temporary_responses),
-				asio::bind_executor(strand_,
-									[this](const Karkinolution::Networking::AsioErrorCode &error,
-										   std::size_t bytes_received) {
-										if (error) {
-											if (error == asio::error::eof) {
-												on_closed();
-												current_async_operations_running.decrement();
-												return;
-											} else if (error == asio::error::operation_aborted) {
-												current_async_operations_running.decrement();
-												return;
-											}
+				asio::bind_executor(
+					strand_,
+					[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t bytes_received) {
+						if (error) {
+							if (error == asio::error::eof) {
+								on_closed();
+								current_async_operations_running.decrement();
+								return;
+							} else if (error == asio::error::operation_aborted) {
+								current_async_operations_running.decrement();
+								return;
+							}
 
-											on_error(error.message());
-											current_async_operations_running.decrement();
-											return;
-										}
+							on_error(error.message());
+							current_async_operations_running.decrement();
+							return;
+						}
 
-										protocol_session.receive(
-											std::span<const std::byte>{temporary_responses.data(),
-																	   bytes_received});
-										receive();
-										current_async_operations_running.decrement();
-									}));
+						protocol_session.receive(
+							std::span<const std::byte>{temporary_responses.data(), bytes_received});
+						receive();
+						current_async_operations_running.decrement();
+					}));
 		} catch (...) {
 			current_async_operations_running.decrement();
 			throw;

@@ -53,8 +53,7 @@ namespace KarkinolutionView {
 					Bound get_bounds() const {
 						return std::visit(
 							[](const auto &component) -> Bound {
-								using Bounds =
-									std::remove_cvref_t<decltype(component.get_bounds())>;
+								using Bounds = std::remove_cvref_t<decltype(component.get_bounds())>;
 								return Bound{std::in_place_type<Bounds>, component.get_bounds()};
 							},
 							data_);
@@ -65,15 +64,11 @@ namespace KarkinolutionView {
 						return std::visit(
 							[](const auto &component) -> Bound {
 								if constexpr (requires { component.get_current_bounds(); }) {
-									using Bounds = std::remove_cvref_t<
-										decltype(component.get_current_bounds())>;
-									return Bound{std::in_place_type<Bounds>,
-												 component.get_current_bounds()};
+									using Bounds = std::remove_cvref_t<decltype(component.get_current_bounds())>;
+									return Bound{std::in_place_type<Bounds>, component.get_current_bounds()};
 								} else {
-									using Bounds =
-										std::remove_cvref_t<decltype(component.get_bounds())>;
-									return Bound{std::in_place_type<Bounds>,
-												 component.get_bounds()};
+									using Bounds = std::remove_cvref_t<decltype(component.get_bounds())>;
+									return Bound{std::in_place_type<Bounds>, component.get_bounds()};
 								}
 							},
 							data_);
@@ -83,8 +78,7 @@ namespace KarkinolutionView {
 					std::type_index get_bound_type() const {
 						return std::visit(
 							[](const auto &component) {
-								return std::type_index(
-									typeid(std::remove_cvref_t<decltype(component.get_bounds())>));
+								return std::type_index(typeid(std::remove_cvref_t<decltype(component.get_bounds())>));
 							},
 							data_);
 					}

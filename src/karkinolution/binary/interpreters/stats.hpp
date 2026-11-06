@@ -51,64 +51,43 @@ namespace Karkinolution {
 
 						using ValueType = typename T::value_type;
 
-						Karkinolution::Binary::Protocol::Validator::NumericType::
-							validate_dynamic_type_exists<ValueType>();
+						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<
+							ValueType>();
 
 
-						constexpr auto NTL_Type =
-							Karkinolution::Binary::Utils::NumericTypes::get<ValueType>();
+						constexpr auto NTL_Type = Karkinolution::Binary::Utils::NumericTypes::get<ValueType>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NTL_Type);
 
 						const auto stat = Karkinolution::Math::LV::get(limited_value);
 
-						const auto serialized_value =
-							Karkinolution::Binary::Serializer::serialize(stat.value);
-						const auto serialized_max =
-							Karkinolution::Binary::Serializer::serialize(stat.max);
-						const auto serialized_min =
-							Karkinolution::Binary::Serializer::serialize(stat.min);
+						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(stat.value);
+						const auto serialized_max   = Karkinolution::Binary::Serializer::serialize(stat.max);
+						const auto serialized_min   = Karkinolution::Binary::Serializer::serialize(stat.min);
 
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_value,
-																   Layout::Value::OFFSET);
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_max,
-																   Layout::Max::OFFSET);
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_min,
-																   Layout::Min::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_max, Layout::Max::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
 
 						return bytes;
 					}
 
 					template <typename T>
-					BytesArray::Stat serialize_normalized_value(
-						const Karkinolution::Math::LV::CT::NormalizedValue<T> value) {
+					BytesArray::Stat
+					serialize_normalized_value(const Karkinolution::Math::LV::CT::NormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
-						Karkinolution::Binary::Protocol::Validator::NumericType::
-							validate_dynamic_type_exists<T>();
-						constexpr auto NLT_Type =
-							Karkinolution::Binary::Utils::NumericTypes::get<T>();
+						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<T>();
+						constexpr auto NLT_Type = Karkinolution::Binary::Utils::NumericTypes::get<T>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NLT_Type);
-						const auto serialized_value =
-							Karkinolution::Binary::Serializer::serialize(value.value());
-						const auto serialize_max =
-							Karkinolution::Binary::Serializer::serialize(T(1));
-						const auto serialized_min =
-							Karkinolution::Binary::Serializer::serialize(T(0));
+						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(value.value());
+						const auto serialize_max    = Karkinolution::Binary::Serializer::serialize(T(1));
+						const auto serialized_min   = Karkinolution::Binary::Serializer::serialize(T(0));
 
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_value,
-																   Layout::Value::OFFSET);
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialize_max,
-																   Layout::Max::OFFSET);
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_min,
-																   Layout::Min::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
 
 						return bytes;
 					}
@@ -118,28 +97,17 @@ namespace Karkinolution {
 						const Karkinolution::Math::LV::CT::SignedNormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
-						Karkinolution::Binary::Protocol::Validator::NumericType::
-							validate_dynamic_type_exists<T>();
-						constexpr auto NLT_Type =
-							Karkinolution::Binary::Utils::NumericTypes::get<T>();
+						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<T>();
+						constexpr auto NLT_Type = Karkinolution::Binary::Utils::NumericTypes::get<T>();
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NLT_Type);
-						const auto serialized_value =
-							Karkinolution::Binary::Serializer::serialize(value.value());
-						const auto serialize_max =
-							Karkinolution::Binary::Serializer::serialize(T(1));
-						const auto serialized_min =
-							Karkinolution::Binary::Serializer::serialize(T(-1));
+						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(value.value());
+						const auto serialize_max    = Karkinolution::Binary::Serializer::serialize(T(1));
+						const auto serialized_min   = Karkinolution::Binary::Serializer::serialize(T(-1));
 
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_value,
-																   Layout::Value::OFFSET);
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialize_max,
-																   Layout::Max::OFFSET);
-						Karkinolution::Binary::Utils::append_bytes(bytes,
-																   serialized_min,
-																   Layout::Min::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_value, Layout::Value::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialize_max, Layout::Max::OFFSET);
+						Karkinolution::Binary::Utils::append_bytes(bytes, serialized_min, Layout::Min::OFFSET);
 						return bytes;
 					}
 				} // namespace Stats
@@ -148,38 +116,33 @@ namespace Karkinolution {
 			namespace DSI {
 				namespace Stats {
 
-					inline Protocol::NumericType get_type(const std::vector<std::byte> &payload,
-														  std::size_t                   offset) {
-						return static_cast<Protocol::NumericType>(
-							Karkinolution::Binary::Deserializer::read_uint8_t(
-								payload,
-								offset + SRI::Stats::Layout::Type::OFFSET));
+					inline Protocol::NumericType get_type(const std::vector<std::byte> &payload, std::size_t offset) {
+						return static_cast<Protocol::NumericType>(Karkinolution::Binary::Deserializer::read_uint8_t(
+							payload,
+							offset + SRI::Stats::Layout::Type::OFFSET));
 					}
 
-					template <typename T>
-					T get_value(const std::vector<std::byte> &payload, std::size_t offset) {
+					template <typename T> T get_value(const std::vector<std::byte> &payload, std::size_t offset) {
 						return Karkinolution::Binary::Deserializer::deserialize<T>(
 							payload,
 							offset + SRI::Stats::Layout::Value::OFFSET);
 					}
 
-					template <typename T>
-					T get_max(const std::vector<std::byte> &payload, std::size_t offset) {
+					template <typename T> T get_max(const std::vector<std::byte> &payload, std::size_t offset) {
 						return Karkinolution::Binary::Deserializer::deserialize<T>(
 							payload,
 							offset + SRI::Stats::Layout::Max::OFFSET);
 					}
 
-					template <typename T>
-					T get_min(const std::vector<std::byte> &payload, std::size_t offset) {
+					template <typename T> T get_min(const std::vector<std::byte> &payload, std::size_t offset) {
 						return Karkinolution::Binary::Deserializer::deserialize<T>(
 							payload,
 							offset + SRI::Stats::Layout::Min::OFFSET);
 					}
 
 					template <typename T>
-					Interpreters::Models::Stats::StatValue<T>
-					get_stats(const std::vector<std::byte> &payload, std::size_t offset) {
+					Interpreters::Models::Stats::StatValue<T> get_stats(const std::vector<std::byte> &payload,
+																		std::size_t                   offset) {
 						return {.value = get_value<T>(payload, offset),
 								.min   = get_min<T>(payload, offset),
 								.max   = get_max<T>(payload, offset)};

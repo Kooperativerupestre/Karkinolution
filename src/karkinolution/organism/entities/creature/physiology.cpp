@@ -20,9 +20,9 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 	// CreatureGrowingPhysiology
 	// ============================================================================
 
-	PhysiologyGrowTrade Growing::get_new_max_energy_increment(
-		const Creature                                             &creature,
-		const Karkinolution::Organisms::Entities::EntitiesRegistry &organism) {
+	PhysiologyGrowTrade
+	Growing::get_new_max_energy_increment(const Creature                                             &creature,
+										  const Karkinolution::Organisms::Entities::EntitiesRegistry &organism) {
 		const auto &metabolism_genome = creature.genome.creature_genome.metabolism;
 		const auto &metabolism        = creature.body.metabolism;
 
@@ -36,8 +36,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 
 		const float reserved_energy_cost = gain;
 
-		return PhysiologyGrowTrade{.gain = gain,
-								   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
+		return PhysiologyGrowTrade{.gain = gain, .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 	}
 
 	PhysiologyGrowTrade Growing::get_new_max_energy_reserved_increment(
@@ -48,8 +47,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 
 		const float max_reserved_energy = metabolism_genome.max_reserved_energy;
 
-		const NormalizedValue<float> remaining =
-			1.0f - metabolism.reserved.max() / max_reserved_energy;
+		const NormalizedValue<float> remaining = 1.0f - metabolism.reserved.max() / max_reserved_energy;
 
 		const GrowthRate growth = metabolism_genome.growth_rates.max_reserved_energy;
 
@@ -57,13 +55,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 
 		const float reserved_energy_cost = gain;
 
-		return PhysiologyGrowTrade{.gain = gain,
-								   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
+		return PhysiologyGrowTrade{.gain = gain, .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 	}
 
-	PhysiologyGrowTrade Growing::get_new_max_life_increment(
-		const Creature                                             &creature,
-		const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
+	PhysiologyGrowTrade
+	Growing::get_new_max_life_increment(const Creature                                             &creature,
+										const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
 		const auto &vital_genome = creature.genome.creature_genome.vital;
 		const auto &body         = creature.body;
 
@@ -79,13 +76,11 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 
 		const float reserved_energy_cost = gain;
 
-		return PhysiologyGrowTrade{.gain = gain,
-								   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
+		return PhysiologyGrowTrade{.gain = gain, .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 	}
 
-	float Growing::get_new_width_increment(
-		const Creature                                             &creature,
-		const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
+	float Growing::get_new_width_increment(const Creature                                             &creature,
+										   const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
 		const auto &vital_genome      = creature.genome.creature_genome.vital;
 		const auto &morphology_genome = creature.genome.creature_genome.morphology;
 		const auto &body              = creature.body;
@@ -97,9 +92,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 		return remaining.value() * muscle_factor;
 	}
 
-	float Growing::get_new_height_increment(
-		const Creature                                             &creature,
-		const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
+	float Growing::get_new_height_increment(const Creature                                             &creature,
+											const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
 		const auto &vital_genome      = creature.genome.creature_genome.vital;
 		const auto &morphology_genome = creature.genome.creature_genome.morphology;
 		const auto &body              = creature.body;
@@ -111,8 +105,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 		return remaining.value() * muscle_factor;
 	}
 
-	CreatureFunction get_diseases_effect(const Creature         &creature,
-										 const EntitiesRegistry &entities) {
+	CreatureFunction get_diseases_effect(const Creature &creature, const EntitiesRegistry &entities) {
 		return {};
 	}
 
@@ -165,8 +158,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 			.size = embryo.size(),
 			.mass = Mass{cg.morphology.average_mass.value
 						 * (embryo.area.value
-							/ Size::area(cg.morphology.average_width, cg.morphology.average_height)
-								  .value)},
+							/ Size::area(cg.morphology.average_width, cg.morphology.average_height).value)},
 		};
 
 		Karkinolution::Organisms::Entities::Reproduction::ReproductiveState rep_state{
@@ -198,11 +190,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 			.id     = embryo.id,
 		};
 
-		return Creature{genome,
-						std::move(brain),
-						std::move(ontology),
-						std::move(body),
-						embryo.position};
+		return Creature{genome, std::move(brain), std::move(ontology), std::move(body), embryo.position};
 	}
 
 } // namespace Karkinolution::Organisms::Entities::Creature::Physiology

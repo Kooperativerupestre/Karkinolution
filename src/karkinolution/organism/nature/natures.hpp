@@ -44,9 +44,7 @@ namespace Karkinolution {
 					}
 
 					bool add(NatureEntity &&n_e) {
-						return Functional::try_add(data_,
-												   NatureGetters::get_id(n_e),
-												   std::move(n_e));
+						return Functional::try_add(data_, NatureGetters::get_id(n_e), std::move(n_e));
 					}
 			};
 

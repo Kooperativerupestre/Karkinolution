@@ -24,10 +24,9 @@ namespace Karkinolution {
 
 			template <ByteRange T> constexpr void zero_padding(T &payload, std::size_t offset) {
 				if (offset > payload.size()) {
-					throw ByteError(std::format(
-						"Failed to apply zero padding on array that has {} size with offset {}",
-						payload.size(),
-						offset));
+					throw ByteError(std::format("Failed to apply zero padding on array that has {} size with offset {}",
+												payload.size(),
+												offset));
 				}
 
 				for (std::size_t i = offset; i < payload.size(); ++i) {
@@ -43,8 +42,7 @@ namespace Karkinolution {
 				return static_cast<uint8_t>(type);
 			}
 
-			uint8_t constexpr cast_numeric(
-				Karkinolution::Binary::Protocol::Detail::CodeVariant sub_type) {
+			uint8_t constexpr cast_numeric(Karkinolution::Binary::Protocol::Detail::CodeVariant sub_type) {
 				if (std::holds_alternative<RequestSubTypes>(sub_type)) {
 					return static_cast<uint8_t>(std::get<RequestSubTypes>(sub_type));
 				} else if (std::holds_alternative<ErrorSubTypes>(sub_type)) {
@@ -55,8 +53,7 @@ namespace Karkinolution {
 				throw ByteError("Invalid sub type");
 			}
 
-			template <ByteRange T>
-			void append_bytes(std::vector<std::byte> &bytes, const T &value) {
+			template <ByteRange T> void append_bytes(std::vector<std::byte> &bytes, const T &value) {
 				for (const auto &byte : value) {
 					bytes.push_back(byte);
 				}
@@ -91,8 +88,7 @@ namespace Karkinolution {
 			}
 
 			template <std::size_t Size>
-			void
-			append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
+			void append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
 				bytes[offset] = value;
 			}
 
@@ -113,9 +109,8 @@ namespace Karkinolution {
 						return Karkinolution::Binary::Protocol::NumericType::INT;
 					}
 
-					throw ByteError(
-						"Type doesn't exists as dynamic numeric language (binary) type of "
-						"karkinolution");
+					throw ByteError("Type doesn't exists as dynamic numeric language (binary) type of "
+									"karkinolution");
 				}
 			} // namespace NumericTypes
 		} // namespace Utils

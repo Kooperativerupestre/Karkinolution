@@ -27,8 +27,7 @@ namespace Karkinolution {
 } // namespace Karkinolution
 
 template <> struct std::hash<Karkinolution::Organisms::Nature::NatureId> {
-		std::size_t
-		operator()(const Karkinolution::Organisms::Nature::NatureId &id) const noexcept {
+		std::size_t operator()(const Karkinolution::Organisms::Nature::NatureId &id) const noexcept {
 			std::size_t h1 = std::hash<Karkinolution::Core::Id::BaseIdType>{}(id.value);
 			std::size_t h2 = std::hash<Karkinolution::Organisms::Nature::NatureTypes>{}(id.type);
 

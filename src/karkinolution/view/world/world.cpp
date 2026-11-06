@@ -23,12 +23,11 @@ bool KarkinolutionView::World::Terrain::has_soil(BaseIdType id) const {
 }
 
 bool KarkinolutionView::World::Terrain::remove_soil(BaseIdType id) {
-	const auto it =
-		std::find_if(soils.begin(),
-					 soils.end(),
-					 [id](const Karkinolution::Binary::Interpreters::Models::Soil::Soil &soil) {
-						 return soil.id == id;
-					 });
+	const auto it = std::find_if(soils.begin(),
+								 soils.end(),
+								 [id](const Karkinolution::Binary::Interpreters::Models::Soil::Soil &soil) {
+									 return soil.id == id;
+								 });
 
 	const bool removed = it == soils.end();
 
@@ -39,8 +38,7 @@ bool KarkinolutionView::World::Terrain::remove_soil(BaseIdType id) {
 	return false;
 }
 
-bool KarkinolutionView::World::Terrain::add(
-	const Karkinolution::Binary::Interpreters::Models::Soil::Soil &soil) {
+bool KarkinolutionView::World::Terrain::add(const Karkinolution::Binary::Interpreters::Models::Soil::Soil &soil) {
 	if (has_soil(soil.id)) {
 		return false;
 	}
@@ -59,8 +57,7 @@ bool KarkinolutionView::World::Terrain::update(
 }
 
 KarkinolutionView::World::EntitySyncOutput
-KarkinolutionView::World::Terrain::sync_soil(BaseIdType                         id,
-											 KarkinolutionView::Client::Client &client) {
+KarkinolutionView::World::Terrain::sync_soil(BaseIdType id, KarkinolutionView::Client::Client &client) {
 	if (!has_soil(id)) {
 		return EntitySyncOutput::DOES_NOT_EXIST;
 	}
@@ -147,8 +144,7 @@ bool KarkinolutionView::World::World::add(
 	return true;
 }
 
-bool KarkinolutionView::World::World::add(
-	const Karkinolution::Binary::Interpreters::Models::Corpse::Corpse &corpse) {
+bool KarkinolutionView::World::World::add(const Karkinolution::Binary::Interpreters::Models::Corpse::Corpse &corpse) {
 	if (has_corpse(corpse.id)) {
 		return false;
 	}
@@ -157,12 +153,11 @@ bool KarkinolutionView::World::World::add(
 }
 
 bool KarkinolutionView::World::World::remove_creature(BaseIdType id) {
-	const auto it = std::find_if(
-		creatures.begin(),
-		creatures.end(),
-		[id](const Karkinolution::Binary::Interpreters::Models::Creature::Creature &creature) {
-			return creature.id == id;
-		});
+	const auto it = std::find_if(creatures.begin(),
+								 creatures.end(),
+								 [id](const Karkinolution::Binary::Interpreters::Models::Creature::Creature &creature) {
+									 return creature.id == id;
+								 });
 
 	const bool removed = it != creatures.end();
 
@@ -174,12 +169,11 @@ bool KarkinolutionView::World::World::remove_creature(BaseIdType id) {
 }
 
 bool KarkinolutionView::World::World::remove_corpse(BaseIdType id) {
-	const auto it = std::find_if(
-		corpses.begin(),
-		corpses.end(),
-		[id](const Karkinolution::Binary::Interpreters::Models::Corpse::Corpse &corpse) {
-			return corpse.id == id;
-		});
+	const auto it = std::find_if(corpses.begin(),
+								 corpses.end(),
+								 [id](const Karkinolution::Binary::Interpreters::Models::Corpse::Corpse &corpse) {
+									 return corpse.id == id;
+								 });
 
 	const bool removed = it != corpses.end();
 	if (removed) {
@@ -212,8 +206,7 @@ bool KarkinolutionView::World::World::update(
 }
 
 KarkinolutionView::World::EntitySyncOutput
-KarkinolutionView::World::World::sync_creature(BaseIdType                         id,
-											   KarkinolutionView::Client::Client &client) {
+KarkinolutionView::World::World::sync_creature(BaseIdType id, KarkinolutionView::Client::Client &client) {
 	if (!has_creature(id)) {
 		return EntitySyncOutput::DOES_NOT_EXIST;
 	}
@@ -227,8 +220,7 @@ KarkinolutionView::World::World::sync_creature(BaseIdType                       
 }
 
 KarkinolutionView::World::EntitySyncOutput
-KarkinolutionView::World::World::sync_corpse(BaseIdType                         id,
-											 KarkinolutionView::Client::Client &client) {
+KarkinolutionView::World::World::sync_corpse(BaseIdType id, KarkinolutionView::Client::Client &client) {
 	if (!has_corpse(id)) {
 		return EntitySyncOutput::DOES_NOT_EXIST;
 	}

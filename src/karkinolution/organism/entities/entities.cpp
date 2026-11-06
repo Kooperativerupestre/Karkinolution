@@ -37,8 +37,7 @@ namespace Karkinolution::Organisms::Entities {
 		return std::get<Corpse::Corpse>(this->at(id));
 	}
 
-	const Corpse::Corpse &
-	EntitiesRegistry::at_corpse(Karkinolution::Organisms::Entities::EntityId id) const {
+	const Corpse::Corpse &EntitiesRegistry::at_corpse(Karkinolution::Organisms::Entities::EntityId id) const {
 		return std::get<Corpse::Corpse>(this->at(id));
 	}
 
@@ -46,8 +45,7 @@ namespace Karkinolution::Organisms::Entities {
 		return std::get<Embryo::Embryo>(this->at(id));
 	}
 
-	const Embryo::Embryo &
-	EntitiesRegistry::at_embryo(Karkinolution::Organisms::Entities::EntityId id) const {
+	const Embryo::Embryo &EntitiesRegistry::at_embryo(Karkinolution::Organisms::Entities::EntityId id) const {
 		return std::get<Embryo::Embryo>(this->at(id));
 	}
 
@@ -55,8 +53,7 @@ namespace Karkinolution::Organisms::Entities {
 		return std::get<Egg::Egg>(this->at(id));
 	}
 
-	const Egg::Egg &
-	EntitiesRegistry::at_egg(Karkinolution::Organisms::Entities::EntityId id) const {
+	const Egg::Egg &EntitiesRegistry::at_egg(Karkinolution::Organisms::Entities::EntityId id) const {
 		return std::get<Egg::Egg>(this->at(id));
 	}
 
@@ -72,18 +69,15 @@ namespace Karkinolution::Organisms::Entities {
 			entity);
 	}
 
-	Karkinolution::Organisms::Entities::EntityId
-	EntityGetters::get_id(const Corpse::Corpse &corpse) {
+	Karkinolution::Organisms::Entities::EntityId EntityGetters::get_id(const Corpse::Corpse &corpse) {
 		return Karkinolution::Organisms::Entities::create_corpse_id(corpse.id);
 	}
 
-	Karkinolution::Organisms::Entities::EntityId
-	EntityGetters::get_id(const Creature::Creature &creature) {
+	Karkinolution::Organisms::Entities::EntityId EntityGetters::get_id(const Creature::Creature &creature) {
 		return Karkinolution::Organisms::Entities::create_creature_id(creature.ontology.id);
 	}
 
-	Karkinolution::Organisms::Entities::EntityId
-	EntityGetters::get_id(const Embryo::Embryo &embryo) {
+	Karkinolution::Organisms::Entities::EntityId EntityGetters::get_id(const Embryo::Embryo &embryo) {
 		return Karkinolution::Organisms::Entities::create_embryo_id(embryo.id);
 	}
 

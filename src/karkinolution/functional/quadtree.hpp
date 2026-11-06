@@ -31,8 +31,7 @@ namespace Karkinolution::Functional::Quadtree {
 			}
 
 			[[nodiscard]] constexpr bool intersects(const AABB &other) const noexcept {
-				return min.x <= other.max.x && max.x >= other.min.x && min.y <= other.max.y
-					&& max.y >= other.min.y;
+				return min.x <= other.max.x && max.x >= other.min.x && min.y <= other.max.y && max.y >= other.min.y;
 			}
 
 			[[nodiscard]] constexpr double area() const noexcept {
@@ -199,8 +198,7 @@ namespace Karkinolution::Functional::Quadtree {
 
 			[[nodiscard]] std::size_t children_size() const noexcept {
 				return static_cast<std::size_t>(upper_left != nullptr)
-					+ static_cast<std::size_t>(upper_right != nullptr)
-					+ static_cast<std::size_t>(lower_left != nullptr)
+					+ static_cast<std::size_t>(upper_right != nullptr) + static_cast<std::size_t>(lower_left != nullptr)
 					+ static_cast<std::size_t>(lower_right != nullptr);
 			}
 
@@ -209,8 +207,7 @@ namespace Karkinolution::Functional::Quadtree {
 					return false;
 				}
 				for (const auto quadrant : ALL_QUADRANTS) {
-					child(quadrant) =
-						std::make_unique<Node>(quadrant_boundary(quadrant), depth + 1);
+					child(quadrant) = std::make_unique<Node>(quadrant_boundary(quadrant), depth + 1);
 				}
 				return true;
 			}
@@ -306,14 +303,12 @@ namespace Karkinolution::Functional::Quadtree {
 				return result;
 			}
 
-			[[nodiscard]] bool invariants_hold(std::unordered_set<IdType> &ids,
-											   std::size_t                &entry_count) const {
+			[[nodiscard]] bool invariants_hold(std::unordered_set<IdType> &ids, std::size_t &entry_count) const {
 				if (depth > MAX_DEPTH) {
 					return false;
 				}
 				for (const auto &entry : entries) {
-					if (!boundary.contains(entry.bounds)
-						|| !ids.insert(entry.component_id).second) {
+					if (!boundary.contains(entry.bounds) || !ids.insert(entry.component_id).second) {
 						return false;
 					}
 					++entry_count;

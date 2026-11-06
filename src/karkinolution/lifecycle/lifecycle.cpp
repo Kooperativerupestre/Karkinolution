@@ -5,19 +5,16 @@
 
 namespace Karkinolution::Lifecycle {
 
-	void run(Karkinolution::Organisms::Entities::Entity &entity,
-			 Karkinolution::World::World                &world) {
+	void run(Karkinolution::Organisms::Entities::Entity &entity, Karkinolution::World::World &world) {
 		if (std::holds_alternative<Karkinolution::Organisms::Entities::Embryo::Embryo>(entity)) {
 			Karkinolution::Organisms::Entities::Embryo::Motor::EmbryoMotor::run(
 				std::get<Karkinolution::Organisms::Entities::Embryo::Embryo>(entity),
 				world);
-		} else if (std::holds_alternative<Karkinolution::Organisms::Entities::Creature::Creature>(
-					   entity)) {
+		} else if (std::holds_alternative<Karkinolution::Organisms::Entities::Creature::Creature>(entity)) {
 			Karkinolution::Organisms::Entities::Creature::Motor::CreatureMotor::run(
 				std::get<Karkinolution::Organisms::Entities::Creature::Creature>(entity),
 				world);
-		} else if (std::holds_alternative<Karkinolution::Organisms::Entities::Corpse::Corpse>(
-					   entity)) {
+		} else if (std::holds_alternative<Karkinolution::Organisms::Entities::Corpse::Corpse>(entity)) {
 			Karkinolution::Organisms::Entities::Corpse::Motor::run(
 				std::get<Karkinolution::Organisms::Entities::Corpse::Corpse>(entity),
 				world);

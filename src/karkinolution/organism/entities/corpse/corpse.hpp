@@ -22,10 +22,7 @@ namespace Karkinolution {
 							return create_corpse_id(id);
 						}
 
-						Corpse(const Size    &size,
-							   const Vec2    &position,
-							   const RawMeat &raw_meat,
-							   BaseIdType     id)
+						Corpse(const Size &size, const Vec2 &position, const RawMeat &raw_meat, BaseIdType id)
 							: size(size)
 							, position(position)
 							, raw_meat(raw_meat)

@@ -24,8 +24,7 @@ namespace Karkinolution::Binary::Deserializer {
 		using Generic2BytesType = std::uint16_t;
 		using Generic1BytesType = std::byte;
 
-		template <ByteRange T>
-		constexpr Generic8BytesType deserialize_8_bytes(const T &bytes, std::size_t offset) {
+		template <ByteRange T> constexpr Generic8BytesType deserialize_8_bytes(const T &bytes, std::size_t offset) {
 			if (offset > bytes.size() || bytes.size() - offset < 8) {
 				throw ByteError(BinaryErrorFactory::failed_conversion(
 					std::format("the size of bytes ({}) is insufficient for 8 bytes at offset {}",
@@ -44,8 +43,7 @@ namespace Karkinolution::Binary::Deserializer {
 				| std::to_integer<std::uint64_t>(bytes[offset + 7]);
 		}
 
-		template <ByteRange T>
-		constexpr Generic4BytesType deserialize_4_bytes(const T &bytes, std::size_t offset) {
+		template <ByteRange T> constexpr Generic4BytesType deserialize_4_bytes(const T &bytes, std::size_t offset) {
 			if (offset > bytes.size() || bytes.size() - offset < 4) {
 				throw ByteError(BinaryErrorFactory::failed_conversion(
 					std::format("the size of bytes ({}) is insufficient for 4 bytes at offset {}",
@@ -60,8 +58,7 @@ namespace Karkinolution::Binary::Deserializer {
 				| std::to_integer<std::uint32_t>(bytes[offset + 3]);
 		}
 
-		template <ByteRange T>
-		constexpr Generic2BytesType deserialize_2_bytes(const T &bytes, std::size_t offset) {
+		template <ByteRange T> constexpr Generic2BytesType deserialize_2_bytes(const T &bytes, std::size_t offset) {
 			if (offset > bytes.size() || bytes.size() - offset < 2) {
 				throw ByteError(BinaryErrorFactory::failed_conversion(
 					std::format("the size of bytes ({}) is insufficient for 2 bytes at offset {}",
@@ -74,13 +71,10 @@ namespace Karkinolution::Binary::Deserializer {
 				| std::to_integer<std::uint16_t>(bytes[offset + 1]);
 		}
 
-		template <ByteRange T>
-		constexpr Generic1BytesType deserialize_1_byte(const T &bytes, std::size_t offset) {
+		template <ByteRange T> constexpr Generic1BytesType deserialize_1_byte(const T &bytes, std::size_t offset) {
 			if (offset >= bytes.size()) {
 				throw ByteError(BinaryErrorFactory::failed_conversion(
-					std::format("the size of bytes ({}) is insufficient for 1 byte at offset {}",
-								bytes.size(),
-								offset),
+					std::format("the size of bytes ({}) is insufficient for 1 byte at offset {}", bytes.size(), offset),
 					std::format("{} (generic type for one byte)", nameof<Generic1BytesType>())));
 			}
 
@@ -189,8 +183,7 @@ namespace Karkinolution::Binary::Deserializer {
 
 	} // namespace Types
 
-	template <ByteRange T>
-	constexpr std::uint64_t read_uint64_t(const T &bytes, std::size_t offset) {
+	template <ByteRange T> constexpr std::uint64_t read_uint64_t(const T &bytes, std::size_t offset) {
 		return Types::Bytes8Deserialized(bytes, offset).as_uint64_t();
 	}
 
@@ -202,8 +195,7 @@ namespace Karkinolution::Binary::Deserializer {
 		return Types::Bytes8Deserialized(bytes, offset).as_double();
 	}
 
-	template <ByteRange T>
-	constexpr std::uint32_t read_uint32_t(const T &bytes, std::size_t offset) {
+	template <ByteRange T> constexpr std::uint32_t read_uint32_t(const T &bytes, std::size_t offset) {
 		return Types::Bytes4Deserialized(bytes, offset).as_uint32_t();
 	}
 
@@ -215,8 +207,7 @@ namespace Karkinolution::Binary::Deserializer {
 		return Types::Bytes4Deserialized(bytes, offset).as_float();
 	}
 
-	template <ByteRange T>
-	constexpr std::uint16_t read_uint16_t(const T &bytes, std::size_t offset) {
+	template <ByteRange T> constexpr std::uint16_t read_uint16_t(const T &bytes, std::size_t offset) {
 		return Types::Bytes2Deserialized(bytes, offset).as_uint16_t();
 	}
 
@@ -236,15 +227,13 @@ namespace Karkinolution::Binary::Deserializer {
 		return Types::Bytes4Deserialized(bytes, offset).as_int();
 	}
 
-	template <ByteRange T>
-	constexpr std::string read_string(const T &bytes, std::size_t offset, std::size_t length) {
+	template <ByteRange T> constexpr std::string read_string(const T &bytes, std::size_t offset, std::size_t length) {
 		if (offset > bytes.size() || bytes.size() - offset < length) {
 			throw ByteError(BinaryErrorFactory::failed_conversion(
-				std::format(
-					"the size of bytes ({}) is insufficient for string of length {} at offset {}",
-					bytes.size(),
-					length,
-					offset),
+				std::format("the size of bytes ({}) is insufficient for string of length {} at offset {}",
+							bytes.size(),
+							length,
+							offset),
 				"string"));
 		}
 
@@ -264,8 +253,8 @@ namespace Karkinolution::Binary::Deserializer {
 		} else if (bytes[offset] == static_cast<std::byte>(0x00)) {
 			return false;
 		} else {
-			throw ByteError(std::format("Invalid bool value: {}",
-										Karkinolution::Binary::Utils::byte_to_int(bytes[offset])));
+			throw ByteError(
+				std::format("Invalid bool value: {}", Karkinolution::Binary::Utils::byte_to_int(bytes[offset])));
 		}
 	}
 
@@ -275,13 +264,11 @@ namespace Karkinolution::Binary::Deserializer {
 		} else if (byte == static_cast<std::byte>(0x00)) {
 			return false;
 		} else {
-			throw ByteError(std::format("Invalid bool value: {}",
-										Karkinolution::Binary::Utils::byte_to_int(byte)));
+			throw ByteError(std::format("Invalid bool value: {}", Karkinolution::Binary::Utils::byte_to_int(byte)));
 		}
 	}
 
-	template <BinarySupportedType T, ByteRange U>
-	constexpr T deserialize(const U &bytes, std::size_t offset) {
+	template <BinarySupportedType T, ByteRange U> constexpr T deserialize(const U &bytes, std::size_t offset) {
 		if constexpr (std::same_as<T, double>) {
 			return read_double(bytes, offset);
 		} else if constexpr (std::same_as<T, float>) {

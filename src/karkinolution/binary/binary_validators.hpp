@@ -30,8 +30,7 @@ namespace Karkinolution {
 				namespace Request {
 					constexpr void validate_sub_type(uint8_t value) {
 						if (!magic_enum::enum_contains<RequestSubTypes>(value)) {
-							throw ByteError(
-								std::format("Invalid frame request sub type: {}", value));
+							throw ByteError(std::format("Invalid frame request sub type: {}", value));
 						}
 					}
 
@@ -63,19 +62,17 @@ namespace Karkinolution {
 							Error::validate_sub_type(value);
 							break;
 						default:
-							throw ByteError(
-								std::format("Invalid type: {}", static_cast<uint8_t>(type)));
+							throw ByteError(std::format("Invalid type: {}", static_cast<uint8_t>(type)));
 					}
 				}
 
 				namespace NumericType {
 					template <typename T> constexpr void validate_dynamic_type_exists() {
-						if (!(std::is_same_v<T, float> || std::is_same_v<T, double>
-							  || std::is_same_v<T, uint8_t> || std::is_same_v<T, uint32_t>
-							  || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint64_t>)) {
-							throw ByteError(
-								"Type doesn't exist as dynamic numeric language (binary) type of "
-								"karkinolution");
+						if (!(std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, uint8_t>
+							  || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint16_t>
+							  || std::is_same_v<T, uint64_t>)) {
+							throw ByteError("Type doesn't exist as dynamic numeric language (binary) type of "
+											"karkinolution");
 						}
 					}
 				} // namespace NumericType

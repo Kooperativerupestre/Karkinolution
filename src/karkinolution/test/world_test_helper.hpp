@@ -25,8 +25,7 @@ namespace Karkinolution::World {
 				return world.territory;
 			}
 
-			static Karkinolution::Organisms::Entities::EntitiesRegistry &
-			get_entities_registry(World &world) {
+			static Karkinolution::Organisms::Entities::EntitiesRegistry &get_entities_registry(World &world) {
 				return world.entities_registry;
 			}
 

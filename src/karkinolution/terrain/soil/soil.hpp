@@ -38,8 +38,7 @@ namespace Karkinolution {
 							return false;
 						}
 
-						data[std::type_index(typeid(T))] =
-							std::make_unique<T>(std::move(component));
+						data[std::type_index(typeid(T))] = std::make_unique<T>(std::move(component));
 
 						return true;
 					}
@@ -121,12 +120,11 @@ namespace Karkinolution {
 
 			inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
 				{SoilTypes::DIRT,
-				 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-							   return std::make_unique<SoilPieceComponents::MovementCost>(1);
-						   }},
-						   .properties         = {},
-						   .required_properties =
-							   {Organisms::Entities::Properties::Capabilities::Move::WALK}
+				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
+                               return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                           }},
+						   .properties          = {},
+						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::WALK}
 
 				 }},
 
@@ -137,20 +135,18 @@ namespace Karkinolution {
 						   .properties         = {}}},
 
 				{SoilTypes::ROCK,
-				 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-							   return std::make_unique<SoilPieceComponents::MovementCost>(1);
-						   }},
-						   .properties         = {SoilProperties::DANGEROUS},
-						   .required_properties =
-							   {Organisms::Entities::Properties::Capabilities::Move::WALK}}},
+				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
+                               return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                           }},
+						   .properties          = {SoilProperties::DANGEROUS},
+						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::WALK}}},
 
 				{SoilTypes::WATER,
 				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
                                return std::make_unique<SoilPieceComponents::MovementCost>(1);
                            }},
 						   .properties          = {},
-						   .required_properties = {
-							   Organisms::Entities::Properties::Capabilities::Move::SWIMM}}}};
+						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::SWIMM}}}};
 
 			using SoilPieceId = Core::Id::BaseIdType;
 
@@ -166,9 +162,7 @@ namespace Karkinolution {
 			};
 
 			namespace SoilF {
-				SoilPiece gen_soil_piece(SoilTypes                     s_t,
-										 const Math::Geometry::Radius &radius,
-										 const Vec2                   &position);
+				SoilPiece gen_soil_piece(SoilTypes s_t, const Math::Geometry::Radius &radius, const Vec2 &position);
 			} // namespace SoilF
 
 

@@ -16,8 +16,7 @@ namespace Karkinolution {
 						OK          = 3
 					};
 
-					CanBeOutput can_be(const Entity                      &entity,
-									   const Karkinolution::World::World &world);
+					CanBeOutput can_be(const Entity &entity, const Karkinolution::World::World &world);
 				} // namespace Analyzer
 			} // namespace Physic
 		} // namespace Entities

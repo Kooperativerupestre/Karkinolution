@@ -11,16 +11,14 @@
 
 Karkinolution::World::World TestUtils::make_small_world() {
 	Karkinolution::World::WorldPreset preset{
-		.seed = 1,
-		.size =
-			Karkinolution::Math::Units::Size{.width  = Karkinolution::Math::Units::Width{100.0},
-											 .height = Karkinolution::Math::Units::Height{100.0}},
+		.seed    = 1,
+		.size    = Karkinolution::Math::Units::Size{.width  = Karkinolution::Math::Units::Width{100.0},
+													.height = Karkinolution::Math::Units::Height{100.0}},
 		.epsilon = 5.0f};
 	return {preset};
 }
 
-std::vector<std::byte>
-TestUtils::make_see_creature_frame(RequestId id, Karkinolution::Core::Id::BaseIdType creature_id)
+std::vector<std::byte> TestUtils::make_see_creature_frame(RequestId id, Karkinolution::Core::Id::BaseIdType creature_id)
 
 {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);

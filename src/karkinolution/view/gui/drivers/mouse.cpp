@@ -76,8 +76,7 @@ namespace KarkinolutionView {
 					} else if (is_not_pressed(button)) {
 						return ButtonEvents::IS_NOT_PRESSED;
 					}
-					Karkinolution::Functional::unreachable_or_throw(
-						"Invalid state of a button event");
+					Karkinolution::Functional::unreachable_or_throw("Invalid state of a button event");
 				}
 
 			} // namespace Drivers

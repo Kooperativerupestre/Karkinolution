@@ -14,9 +14,7 @@ namespace Karkinolution {
 				namespace Uterus {
 					namespace Motor {
 						void transfer_energy_to_uterus(Creature::Creature &creature);
-						void transfer_energy_to_uterus(Creature::Creature &creature,
-													   float               energy,
-													   float               reserved);
+						void transfer_energy_to_uterus(Creature::Creature &creature, float energy, float reserved);
 						void transfer_energy_to_uterus(Creature::Creature    &creature,
 													   NormalizedValue<float> energy_ratio,
 													   NormalizedValue<float> reserved_ratio);

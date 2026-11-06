@@ -11,8 +11,7 @@
 
 namespace TestUtils {
 	inline std::string random_string() {
-		static constexpr char CHARSET[] =
-			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		static constexpr char CHARSET[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 		std::uniform_int_distribution<size_t> length_dist(1, 64);
 		std::uniform_int_distribution<size_t> char_dist(0, sizeof(CHARSET) - 2);
@@ -28,8 +27,7 @@ namespace TestUtils {
 		return result;
 	}
 
-	template <typename Container>
-	void append_to_buffer(std::vector<std::byte> &buffer, const Container &bytes) {
+	template <typename Container> void append_to_buffer(std::vector<std::byte> &buffer, const Container &bytes) {
 		for (const auto &byte : bytes) {
 			buffer.push_back(static_cast<std::byte>(byte));
 		}
@@ -45,15 +43,14 @@ namespace TestUtils {
 		}
 
 		for (size_t i = 0; i < 7; i++) {
-			bytes.push_back(static_cast<std::byte>(
-				Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>()));
+			bytes.push_back(
+				static_cast<std::byte>(Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>()));
 		}
 	}
 
 	Karkinolution::World::World make_small_world();
 
-	std::vector<std::byte> make_see_creature_frame(RequestId                           id,
-												   Karkinolution::Core::Id::BaseIdType creature_id);
+	std::vector<std::byte> make_see_creature_frame(RequestId id, Karkinolution::Core::Id::BaseIdType creature_id);
 	KarkinolutionSDK::Client::RequestData
 	make_see_creature_request_data(Karkinolution::Core::Id::BaseIdType creature_id);
 } // namespace TestUtils

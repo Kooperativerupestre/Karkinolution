@@ -18,8 +18,7 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor {
 		auto &uterus = std::get<Karkinolution::Organisms::Entities::Reproduction::Uterus::Uterus>(
 			creature.body.reproduction.state.state);
 		if (uterus.is_pregnant()) {
-			Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor::
-				transfer_energy_to_uterus(creature);
+			Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor::transfer_energy_to_uterus(creature);
 			uterus.get_pregnant_uterus().gestation.pass();
 		}
 	}
@@ -42,11 +41,8 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor {
 			.gestation =
 				Karkinolution::Organisms::Entities::Reproduction::Uterus::Gestation{
 					0,
-					static_cast<uint16_t>(
-						creature.genome.creature_genome.reproductive.average_gestation_limit)},
-			.born_count =
-				Karkinolution::Organisms::Entities::Reproduction::Uterus::BornCount{
-					number_of_children},
+					static_cast<uint16_t>(creature.genome.creature_genome.reproductive.average_gestation_limit)},
+			.born_count = Karkinolution::Organisms::Entities::Reproduction::Uterus::BornCount{number_of_children},
 		};
 	}
 

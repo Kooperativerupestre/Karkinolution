@@ -9,9 +9,7 @@
 using KarkinolutionSDK::ClientError;
 
 TEST_F(ClientTest, PendingRequestFailsWhenServerDrops) {
-	KarkinolutionClient client{
-		io,
-		KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = server.port()}};
+	KarkinolutionClient client{io, KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = server.port()}};
 	client.connect();
 	server.accept_peer();
 

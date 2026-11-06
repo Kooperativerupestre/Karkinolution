@@ -6,8 +6,7 @@
 namespace Karkinolution {
 	namespace Functional {
 
-		template <typename K, typename V>
-		[[nodiscard]] V* try_at(std::unordered_map<K, V> &map, const K &key) {
+		template <typename K, typename V> [[nodiscard]] V* try_at(std::unordered_map<K, V> &map, const K &key) {
 			auto it = map.find(key);
 			return it != map.end() ? &it->second : nullptr;
 		}
@@ -38,8 +37,7 @@ namespace Karkinolution {
 			return map.emplace(std::move(key), value).second;
 		}
 
-		template <typename K, typename V>
-		[[nodiscard]] bool try_remove(std::unordered_map<K, V> &map, const K &key) {
+		template <typename K, typename V> [[nodiscard]] bool try_remove(std::unordered_map<K, V> &map, const K &key) {
 			return map.erase(key) > 0;
 		}
 	} // namespace Functional
