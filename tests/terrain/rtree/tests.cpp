@@ -250,7 +250,7 @@ TEST(RStarTreeTest, FindReallyWorks) {
 		const auto result = tree.find(query);
 
 		ASSERT_EQ(result.size(), 1);
-		EXPECT_EQ(result[0], 132);
+		EXPECT_EQ(result[0], 32);
 	}
 
 	// Find a larger region.

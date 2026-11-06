@@ -18,7 +18,7 @@ namespace Karkinolution::Terrain {
 		}
 
 		AABB territory_aabb(const Size &size) {
-			return to_aabb(size, Vec2{size.width.value / 2.0, size.height.value / 2.0});
+			return to_aabb(size, Vec2{0.0, 0.0});
 		}
 	} // namespace
 
@@ -26,25 +26,29 @@ namespace Karkinolution::Terrain {
 		: quadtree(territory_aabb(size)) {}
 
 	bool EntityMap::add(EntityId id, const Vec2 &position, const Size &size, const Territory &territory) {
-		if (quadtree.exists(id))
+		if (quadtree.exists(id)) {
 			return false;
+		}
 		const auto entity_aabb = to_aabb(size, position);
-		if (!territory_aabb(territory.size()).contains(entity_aabb))
+		if (!territory_aabb(territory.size()).contains(entity_aabb)) {
 			return false;
+		}
 		return quadtree.add(id, entity_aabb);
 	}
 
 	bool EntityMap::remove(EntityId id, const Size &old_size, const Vec2 &old_position) {
-		if (!quadtree.exists(id))
+		if (!quadtree.exists(id)) {
 			return false;
+		}
 		const bool removed = quadtree.remove(id, to_aabb(old_size, old_position));
 		assert(removed);
 		return removed;
 	}
 
 	bool EntityMap::remove(EntityId id) {
-		if (!quadtree.exists(id))
+		if (!quadtree.exists(id)) {
 			return false;
+		}
 		const bool removed = quadtree.remove(id);
 		assert(removed);
 		return removed;
@@ -67,12 +71,14 @@ namespace Karkinolution::Terrain {
 								 const Vec2      &current_position,
 								 const Vec2      &new_position,
 								 const Territory &territory) {
-		if (!quadtree.exists(id))
+		if (!quadtree.exists(id)) {
 			return false;
+		}
 		const auto old_bound = to_aabb(current_size, current_position);
 		const auto new_bound = to_aabb(current_size, new_position);
-		if (!territory_aabb(territory.size()).contains(new_bound))
+		if (!territory_aabb(territory.size()).contains(new_bound)) {
 			return false;
+		}
 		return quadtree.update(id, new_bound, old_bound) == Functional::Quadtree::UpdateOutput::UPDATED;
 	}
 
