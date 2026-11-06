@@ -15,7 +15,7 @@ namespace Karkinolution {
 
 			namespace NatureGetters {
 				const Math::Geometry::Radius &get_radius(const NatureEntity &nature);
-				const Vec3                   &get_position(const NatureEntity &nature);
+				const Vec2                   &get_position(const NatureEntity &nature);
 				NatureId                      get_id(const NatureEntity &nature);
 			} // namespace NatureGetters
 

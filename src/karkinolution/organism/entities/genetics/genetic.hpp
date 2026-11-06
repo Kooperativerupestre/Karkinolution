@@ -65,10 +65,9 @@ namespace Karkinolution {
 
 
 						struct MorphologyGenome {
-								Math::Units::Lateral average_lateral;
-								Math::Units::Depth   average_back;
-								Math::Units::Height  average_height;
-								Mass                 average_mass;
+								Math::Units::Width  average_width;
+								Math::Units::Height average_height;
+								Mass                average_mass;
 						};
 
 					} // namespace Morphology
@@ -123,8 +122,8 @@ namespace Karkinolution {
 					};
 
 					struct Morphology {
-							float                  volume_growth;
-							NormalizedValue<float> average_volume;
+							float                  area_growth;
+							NormalizedValue<float> average_area;
 					};
 
 				} // namespace EmbryoGenomes
@@ -166,12 +165,11 @@ namespace Karkinolution {
 								* creature_genome.metabolism.max_energy;
 						}
 
-						[[nodiscard]] constexpr Volume calculate_embryo_average_volume() const {
-							return embryo_genome.morphology.average_volume.value()
-								* Size::volume(creature_genome.morphology.average_lateral,
-											   creature_genome.morphology.average_height,
-											   creature_genome.morphology.average_back)
-									  .value;
+						[[nodiscard]] constexpr Area calculate_embryo_average_area() const {
+							return Area{embryo_genome.morphology.average_area.value()
+										* Size::area(creature_genome.morphology.average_width,
+													 creature_genome.morphology.average_height)
+											  .value};
 						}
 
 						[[nodiscard]] constexpr float calculate_embryo_average_life() const {

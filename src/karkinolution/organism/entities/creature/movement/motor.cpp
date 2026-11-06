@@ -8,7 +8,7 @@
 namespace Karkinolution::Organisms::Entities::Creature::Movement::Motor {
 	MoveOutput MovementMotor::move(Creature                    &creature,
 								   Karkinolution::World::World &world,
-								   const Vec3                  &new_position) {
+								   const Vec2                  &new_position) {
 		if (creature.position == new_position) {
 			std::cerr << "Moving a creature to the same position" << "\n";
 			return MoveOutput::SAME_POSITION;

@@ -100,7 +100,7 @@ std::array<std::byte, CreatureSRI::Request::Layout::CreateCreature::TOTAL_SIZE>
 CreatureSRI::Request::make_create_creature(
 	std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 	std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-	const std::optional<Karkinolution::Math::Vec::Vec3>                         &position,
+	const std::optional<Karkinolution::Math::Vec::Vec2>                         &position,
 	const std::optional<std::string>                                            &name) {
 	if (name) {
 		if (name->size() > CreatureSRI::Layout::MAX_NAME_SIZE) {
@@ -250,7 +250,7 @@ CreatureDSI::Request::interpret_like_create_creature(const std::vector<std::byte
 	std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender = std::nullopt;
 	std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> species =
 		std::nullopt;
-	std::optional<Karkinolution::Math::Vec::Vec3> position = std::nullopt;
+	std::optional<Karkinolution::Math::Vec::Vec2> position = std::nullopt;
 	std::optional<std::string>                    name     = std::nullopt;
 
 	const auto has_gender = Karkinolution::Binary::Deserializer::deserialize<bool>(

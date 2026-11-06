@@ -36,14 +36,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 	void
 	CreatureMotor::grow(Creature                                                   &creature,
 						const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
-		auto &body         = creature.body;
-		auto  lateral_grow = Physiology::Growing::get_new_lateral_increment(creature, organisms);
-		auto  depth_grow   = Physiology::Growing::get_new_depth_increment(creature, organisms);
-		auto  height_grow  = Physiology::Growing::get_new_height_increment(creature, organisms);
+		auto &body        = creature.body;
+		auto  width_grow  = Physiology::Growing::get_new_width_increment(creature, organisms);
+		auto  height_grow = Physiology::Growing::get_new_height_increment(creature, organisms);
 
 		body.morphology.size.height.value += height_grow;
-		body.morphology.size.depth.value += depth_grow;
-		body.morphology.size.lateral.value += lateral_grow;
+		body.morphology.size.width.value += width_grow;
 
 		auto max_energy_grow =
 			Physiology::Growing::get_new_max_energy_increment(creature, organisms);

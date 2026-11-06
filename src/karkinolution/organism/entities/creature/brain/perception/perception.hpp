@@ -20,7 +20,7 @@
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	struct PerceivedSoil {
 			Karkinolution::Terrain::Soil::SoilPieceId id;
-			Vec3                                      position;
+			Vec2                                      position;
 			Karkinolution::Math::Geometry::Radius     radius;
 
 			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage> damage;
@@ -41,21 +41,21 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			Energy   energy;
 			Life     life;
 			Gender   gender;
-			Vec3     position;
+			Vec2     position;
 			Size     size;
 	};
 
 	struct PerceivedCorpse {
 			EntityId                          id;
 			Karkinolution::Organisms::RawMeat meat;
-			Vec3                              position;
+			Vec2                              position;
 			Size                              size;
 	};
 
 	struct PerceivedGrass {
 			Karkinolution::Organisms::Nature::NatureId           id;
 			Karkinolution::Organisms::Nature::Grass::GrassMatter matter;
-			Vec3                                                 position;
+			Vec2                                                 position;
 			Karkinolution::Math::Geometry::Radius                radius;
 	};
 
@@ -80,9 +80,9 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	class Perception;
 
 	namespace PerceivedEntityGetters {
-		inline constexpr const Vec3 &get_position(const PerceivedEntity &entity) {
+		inline constexpr const Vec2 &get_position(const PerceivedEntity &entity) {
 			return std::visit(
-				[](const auto &ent) -> const Vec3 & {
+				[](const auto &ent) -> const Vec2 & {
 					return ent.position;
 				},
 				entity);
@@ -199,8 +199,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			PerceptionNatureRegistry natures_;
 
 			size_t entities_size_, soils_size_, natures_size_;
-			Vec3   position_;
-			Vec3   farthest_;
+			Vec2   position_;
+			Vec2   farthest_;
 
 			double farthest_distance_;
 
@@ -211,8 +211,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 					   const PerceptionEntityRegistry              &entities,
 					   const PerceptionSoilRegistry                &soils,
 					   const PerceptionNatureRegistry              &natures,
-					   const Vec3                                   position,
-					   const Vec3                                   farthest)
+					   const Vec2                                   position,
+					   const Vec2                                   farthest)
 				: data_(std::move(data))
 				, radius_(radius)
 				, entities_(entities)
@@ -257,7 +257,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 				return natures_size_;
 			}
 
-			[[nodiscard]] const Vec3 &farthest() const {
+			[[nodiscard]] const Vec2 &farthest() const {
 				return farthest_;
 			}
 
@@ -265,7 +265,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 				return farthest_distance_;
 			}
 
-			[[nodiscard]] const Vec3 &position() const {
+			[[nodiscard]] const Vec2 &position() const {
 				return position_;
 			}
 
@@ -281,7 +281,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 				return natures_.contains(id);
 			}
 
-			[[nodiscard]] Karkinolution::Terrain::Trees::RTree::Box3D radius_box() const {
+			[[nodiscard]] Karkinolution::Terrain::Trees::RTree::Box2D radius_box() const {
 				return Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(radius_,
 																				   position_);
 			}
@@ -365,7 +365,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 							  std::optional<NatureFilter> nature_filter = std::nullopt);
 
 		NormalizedValue<double> normalize_distance(const Perception &perception,
-												   const Vec3       &position);
-		NormalizedValue<double> normalize_distance(const PerceptionView &view, const Vec3 &poition);
+												   const Vec2       &position);
+		NormalizedValue<double> normalize_distance(const PerceptionView &view, const Vec2 &poition);
 	} // namespace PerceptionAnalyzer
 } // namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception

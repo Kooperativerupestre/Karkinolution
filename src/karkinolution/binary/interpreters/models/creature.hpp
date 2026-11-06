@@ -15,7 +15,7 @@ namespace Karkinolution {
 					struct Creature {
 							Karkinolution::Organisms::Entities::Creature::Gender          gender;
 							Karkinolution::Organisms::Entities::Creature::CreatureSpecies specie;
-							Karkinolution::Math::Vec::Vec3                                position;
+							Karkinolution::Math::Vec::Vec2                                position;
 							std::string                                                   name;
 							Karkinolution::Core::Id::BaseIdType                           id;
 					};

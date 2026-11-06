@@ -2,6 +2,7 @@
 #include "karkinolution/core/id.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 
+#include <cmath>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/math/units.hpp>
@@ -34,15 +35,15 @@ namespace Karkinolution {
 						Energy          energy;
 						Life            life;
 						Health          health;
-						Volume          volume;
+						Area            area;
 						Genetic::Genome genome;
 						int             age;
-						Vec3            position;
+						Vec2            position;
 
 						[[nodiscard]] Size size() const noexcept {
-							return Size{.lateral = volume.value * 0.8,
-										.height  = volume.value * 0.5,
-										.depth   = volume.value};
+							const double width = std::sqrt(area.value * 1.6);
+							return Size{.width  = Width{width},
+										.height = Height{area.value / width}};
 						}
 
 						[[nodiscard]] EntityId build_id() const noexcept {
@@ -51,7 +52,7 @@ namespace Karkinolution {
 
 						[[nodiscard]] EmbryoHungry hungry() const;
 
-						[[nodiscard]] double specie_relative_volume() const;
+						[[nodiscard]] double specie_relative_area() const;
 						[[nodiscard]] float  specie_relative_energy_max() const;
 						[[nodiscard]] float  specie_relative_life() const;
 				};

@@ -23,7 +23,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 			std::optional<std::string> name = std::nullopt; // random if absent
 			std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender =
 				std::nullopt; // random if absent
-			std::optional<Karkinolution::Math::Vec::Vec3> position =
+			std::optional<Karkinolution::Math::Vec::Vec2> position =
 				std::nullopt; // zero-vector if absent
 	};
 

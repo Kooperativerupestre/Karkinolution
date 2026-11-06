@@ -6,50 +6,49 @@
 #include <karkinolution/binary/interpreters/stats.hpp>
 #include <karkinolution/binary/interpreters/unit.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
+#include <karkinolution/functional/k_random.hpp>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/math/stats/compile_values.hpp>
 #include <karkinolution/math/stats/runtime_values.hpp>
 #include <karkinolution/math/units.hpp>
 #include <karkinolution/test/utils.hpp>
-#include <karkinolution/functional/k_random.hpp>
 
 namespace RandomGenerators = Karkinolution::Functional::KRandom::RandomGenerators;
-using Karkinolution::Math::Vec::Vec3;
-using Karkinolution::Math::Volume;
-using Karkinolution::Math::SharedVolume;
+using Karkinolution::Math::Area;
 using Karkinolution::Math::Efficiency;
 using Karkinolution::Math::Quality;
-using Karkinolution::Math::Units::Mass;
-using Karkinolution::Math::Units::Density;
-using Karkinolution::Math::Units::Meter;
-using Karkinolution::Math::Units::Lateral;
-using Karkinolution::Math::Units::Height;
-using Karkinolution::Math::Units::Depth;
-using Karkinolution::Math::Units::Size;
+using Karkinolution::Math::SharedArea;
 using Karkinolution::Math::LV::CT::NormalizedValue;
 using Karkinolution::Math::LV::CT::SignedNormalizedValue;
 using Karkinolution::Math::LV::RT::GenericRuntimeValue;
+using Karkinolution::Math::Units::Density;
+using Karkinolution::Math::Units::Height;
+using Karkinolution::Math::Units::Mass;
+using Karkinolution::Math::Units::Meter;
+using Karkinolution::Math::Units::Size;
+using Karkinolution::Math::Units::Width;
+using Karkinolution::Math::Vec::Vec2;
 
 namespace PhysicsStats {
-	using Karkinolution::Math::Units::Mass;
+	using Karkinolution::Math::SharedArea;
 	using Karkinolution::Math::Units::Density;
-	using Karkinolution::Math::SharedVolume;
-}
+	using Karkinolution::Math::Units::Mass;
+} // namespace PhysicsStats
 
 namespace GeometryForms = Karkinolution::Math::Geometry;
 
 // Math: Vec
 
-TEST(MathSerializeDeserializeRoundtrip, Vec3) {
+TEST(MathSerializeDeserializeRoundtrip, Vec2) {
 	for (int iteration = 0; iteration < 10; iteration++) {
 		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
 
-		const Vec3 original = RandomGenerators::generate<Vec3>();
+		const Vec2 original = RandomGenerators::generate<Vec2>();
 
 		const auto                   vec_bytes = VecSRI::serialize_vec(original);
 		const std::vector<std::byte> buffer(vec_bytes.begin(), vec_bytes.end());
 
-		const Vec3 result = VecDSI::get_vec(buffer, 0);
+		const Vec2 result = VecDSI::get_vec(buffer, 0);
 
 		EXPECT_EQ(result, original);
 	}
@@ -162,14 +161,14 @@ TEST(MathSerializeDeserializeRoundtrip, Stats_AllAccessorsAndType) {
 // Math: PhysicsUnits Roundtrip
 
 TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits) {
-	// Volume
+	// Area
 	{
-		constexpr Volume original{42.5};
+		constexpr Area original{42.5};
 
-		const auto                   bytes = UnitsSRI::serialize_volume(original);
+		const auto                   bytes = UnitsSRI::serialize_area(original);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		const auto result = UnitsDSI::deserialize_volume(buffer, 0);
+		const auto result = UnitsDSI::deserialize_area(buffer, 0);
 
 		EXPECT_DOUBLE_EQ(result.value, original.value);
 	}
@@ -210,45 +209,39 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits) {
 		EXPECT_DOUBLE_EQ(result.value, original.value);
 	}
 
-	// Lateral, Height, Depth
+	// Width and Height
 	{
-		constexpr Size original{.lateral = Lateral{1.2},
-								.height  = Height{3.4},
-								.depth   = Depth{5.6}};
+		constexpr Size original{.width = Width{1.2}, .height = Height{3.4}};
 
 		const auto                   bytes = UnitsSRI::serialize_size(original);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 		const auto result = UnitsDSI::deserialize_size(buffer, 0);
 
-		EXPECT_DOUBLE_EQ(result.lateral.value, original.lateral.value);
+		EXPECT_DOUBLE_EQ(result.width.value, original.width.value);
 		EXPECT_DOUBLE_EQ(result.height.value, original.height.value);
-		EXPECT_DOUBLE_EQ(result.depth.value, original.depth.value);
 	}
 	// Size
 	{
-		constexpr Size original{.lateral = Lateral{2.5},
-								.height  = Height{4.0},
-								.depth   = Depth{1.5}};
+		constexpr Size original{.width = Width{2.5}, .height = Height{4.0}};
 
 		const auto                   bytes = UnitsSRI::serialize_size(original);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 		const auto result = UnitsDSI::deserialize_size(buffer, 0);
 
-		EXPECT_DOUBLE_EQ(result.lateral.value, original.lateral.value);
+		EXPECT_DOUBLE_EQ(result.width.value, original.width.value);
 		EXPECT_DOUBLE_EQ(result.height.value, original.height.value);
-		EXPECT_DOUBLE_EQ(result.depth.value, original.depth.value);
 	}
 
-	// SharedVolume
+	// SharedArea
 	{
-		const PhysicsStats::SharedVolume original{0.75};
+		const PhysicsStats::SharedArea original{0.75};
 
-		const auto                   bytes = UnitsSRI::serialize_shared_volume(original);
+		const auto                   bytes = UnitsSRI::serialize_shared_area(original);
 		const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-		const auto result = UnitsDSI::deserialize_shared_volume(buffer, 0);
+		const auto result = UnitsDSI::deserialize_shared_area(buffer, 0);
 
 		EXPECT_DOUBLE_EQ(result.value(), original.value());
 	}
@@ -395,14 +388,14 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_RandomizedRoundtrip) {
 		const double rand_val3 = RandomGenerators::generate<double>();
 		const double rand_val4 = RandomGenerators::generate<double>();
 
-		// Volume
+		// Area
 		{
-			const Volume original{rand_val1};
+			const Area original{rand_val1};
 
-			const auto                   bytes = UnitsSRI::serialize_volume(original);
+			const auto                   bytes = UnitsSRI::serialize_area(original);
 			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-			EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_volume(buffer, 0).value, original.value);
+			EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_area(buffer, 0).value, original.value);
 		}
 
 		// Mass
@@ -424,7 +417,7 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_RandomizedRoundtrip) {
 
 			EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_density(buffer, 0).value, original.value);
 		}
-		// Meter, Lateral, Height, Depth
+		// Meter
 		{
 			const Meter orig_meter{rand_val4};
 
@@ -436,18 +429,15 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_RandomizedRoundtrip) {
 
 		// Size
 		{
-			const Size original{.lateral = Lateral{rand_val1},
-								.height  = Height{rand_val2},
-								.depth   = Depth{rand_val3}};
+			const Size original{.width = Width{rand_val1}, .height = Height{rand_val2}};
 
 			const auto                   bytes = UnitsSRI::serialize_size(original);
 			const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 			const auto result = UnitsDSI::deserialize_size(buffer, 0);
 
-			EXPECT_DOUBLE_EQ(result.lateral.value, original.lateral.value);
+			EXPECT_DOUBLE_EQ(result.width.value, original.width.value);
 			EXPECT_DOUBLE_EQ(result.height.value, original.height.value);
-			EXPECT_DOUBLE_EQ(result.depth.value, original.depth.value);
 		}
 	}
 }
@@ -455,21 +445,21 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_RandomizedRoundtrip) {
 // Math: PhysicsUnits - Stream With Offsets
 
 TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
-	const Volume                orig_vol{10.5};
+	const Area                  orig_vol{10.5};
 	const PhysicsStats::Mass    orig_mass{200.0};
 	const PhysicsStats::Density orig_dens{1.25};
 	const Meter                 orig_meter{55.0};
 
-	const Size orig_size{.lateral = Lateral{2.0}, .height = Height{3.0}, .depth = Depth{4.0}};
+	const Size orig_size{.width = Width{2.0}, .height = Height{3.0}};
 
-	const PhysicsStats::SharedVolume orig_shared{0.6};
-	const Efficiency                 orig_eff{0.8f};
-	const Quality                    orig_qual{0.9f};
+	const PhysicsStats::SharedArea orig_shared{0.6};
+	const Efficiency               orig_eff{0.8f};
+	const Quality                  orig_qual{0.9f};
 
 	std::vector<std::byte> stream = {std::byte{0xDE}, std::byte{0xAD}};
 
 	const size_t off_vol = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_volume(orig_vol));
+	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_area(orig_vol));
 
 	const size_t off_mass = stream.size();
 	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_mass(orig_mass));
@@ -484,7 +474,7 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
 	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_size(orig_size));
 
 	const size_t off_shared = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_shared_volume(orig_shared));
+	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_shared_area(orig_shared));
 
 	const size_t off_eff = stream.size();
 	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_efficiency(orig_eff));
@@ -495,7 +485,7 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
 	stream.push_back(std::byte{0xBE});
 	stream.push_back(std::byte{0xEF});
 
-	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_volume(stream, off_vol).value, orig_vol.value);
+	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_area(stream, off_vol).value, orig_vol.value);
 
 	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_mass(stream, off_mass).value, orig_mass.value);
 
@@ -505,11 +495,10 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
 
 	const auto deserialized_size = UnitsDSI::deserialize_size(stream, off_size);
 
-	EXPECT_DOUBLE_EQ(deserialized_size.lateral.value, orig_size.lateral.value);
+	EXPECT_DOUBLE_EQ(deserialized_size.width.value, orig_size.width.value);
 	EXPECT_DOUBLE_EQ(deserialized_size.height.value, orig_size.height.value);
-	EXPECT_DOUBLE_EQ(deserialized_size.depth.value, orig_size.depth.value);
 
-	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_shared_volume(stream, off_shared).value(),
+	EXPECT_DOUBLE_EQ(UnitsDSI::deserialize_shared_area(stream, off_shared).value(),
 					 orig_shared.value());
 
 	EXPECT_FLOAT_EQ(UnitsDSI::deserialize_efficiency(stream, off_eff).value(), orig_eff.value());
@@ -517,38 +506,36 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
 	EXPECT_FLOAT_EQ(UnitsDSI::deserialize_quality(stream, off_qual).value(), orig_qual.value());
 }
 
-// Math: PhysicsUnits - Size Operations and Volume Calculation
+// Math: PhysicsUnits - Size Operations and Area Calculation
 
 TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_SizeOperations) {
-	const Size size{.lateral = Lateral{2.0}, .height = Height{3.0}, .depth = Depth{4.0}};
+	const Size size{.width = Width{2.0}, .height = Height{3.0}};
 
 	const auto                   bytes = UnitsSRI::serialize_size(size);
 	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 	const auto deserialized = UnitsDSI::deserialize_size(buffer, 0);
 
-	EXPECT_DOUBLE_EQ(deserialized.volume().value, 24.0);
-	EXPECT_DOUBLE_EQ(deserialized.volume().value, size.volume().value);
+	EXPECT_DOUBLE_EQ(deserialized.area().value, 6.0);
+	EXPECT_DOUBLE_EQ(deserialized.area().value, size.area().value);
 
-	const auto static_vol =
-		Size::volume(deserialized.lateral, deserialized.height, deserialized.depth);
+	const auto static_area = Size::area(deserialized.width, deserialized.height);
 
-	EXPECT_DOUBLE_EQ(static_vol.value, 24.0);
+	EXPECT_DOUBLE_EQ(static_area.value, 6.0);
 
 	Size modified = deserialized;
 	modified.modify(NormalizedValue<float>(0.5f));
 
-	EXPECT_DOUBLE_EQ(modified.lateral.value, 1.0);
+	EXPECT_DOUBLE_EQ(modified.width.value, 1.0);
 	EXPECT_DOUBLE_EQ(modified.height.value, 1.5);
-	EXPECT_DOUBLE_EQ(modified.depth.value, 2.0);
-	EXPECT_DOUBLE_EQ(modified.volume().value, 3.0);
+	EXPECT_DOUBLE_EQ(modified.area().value, 1.5);
 
 	const auto                   mod_bytes = UnitsSRI::serialize_size(modified);
 	const std::vector<std::byte> mod_buffer(mod_bytes.begin(), mod_bytes.end());
 
 	const auto mod_deserialized = UnitsDSI::deserialize_size(mod_buffer, 0);
 
-	EXPECT_DOUBLE_EQ(mod_deserialized.volume().value, 3.0);
+	EXPECT_DOUBLE_EQ(mod_deserialized.area().value, 1.5);
 }
 
 // Math: PhysicsUnits - Insufficient Buffer Size Throws Error
@@ -557,28 +544,30 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_InsufficientBufferSizeThrow
 	const std::vector<std::byte> empty_buffer;
 	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}, std::byte{0x03}};
 
-	EXPECT_THROW(UnitsDSI::deserialize_volume(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_volume(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_area(empty_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_area(short_buffer, 0), Karkinolution::Binary::ByteError);
 	EXPECT_THROW(UnitsDSI::deserialize_mass(short_buffer, 0), Karkinolution::Binary::ByteError);
 	EXPECT_THROW(UnitsDSI::deserialize_density(short_buffer, 0), Karkinolution::Binary::ByteError);
 	EXPECT_THROW(UnitsDSI::deserialize_meter(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_lateral(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_width(short_buffer, 0), Karkinolution::Binary::ByteError);
 	EXPECT_THROW(UnitsDSI::deserialize_height(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_depth(short_buffer, 0), Karkinolution::Binary::ByteError);
+	const std::vector<std::byte> size_short_buffer(15, std::byte{0x01});
+	EXPECT_THROW(UnitsDSI::deserialize_size(size_short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
-	const std::vector<std::byte> size_short_buffer(16, std::byte{0x01});
-	EXPECT_THROW(UnitsDSI::deserialize_size(size_short_buffer, 0), Karkinolution::Binary::ByteError);
-
-	// SharedVolume reads a double at offset 1, requiring at least 9 bytes.
+	// SharedArea reads a double at offset 1, requiring at least 9 bytes.
 	const std::vector<std::byte> shared_vol_short_buffer(8, std::byte{0x01});
-	EXPECT_THROW(UnitsDSI::deserialize_shared_volume(shared_vol_short_buffer, 5), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_shared_area(shared_vol_short_buffer, 5),
+				 Karkinolution::Binary::ByteError);
 
 	// Efficiency and Quality read a float at offset 1, requiring at least 5 bytes.
 	const std::vector<std::byte> stat_float_short_buffer(4, std::byte{0x01});
 
-	EXPECT_THROW(UnitsDSI::deserialize_efficiency(stat_float_short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_efficiency(stat_float_short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
-	EXPECT_THROW(UnitsDSI::deserialize_quality(stat_float_short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_quality(stat_float_short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 }
 
 // Math: Geometry Roundtrip
@@ -727,22 +716,32 @@ TEST(MathSerializeDeserializeRoundtrip, Geometry_InsufficientBufferSizeThrowsErr
 	const std::vector<std::byte> empty_buffer;
 	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}, std::byte{0x03}};
 
-	EXPECT_THROW(GeometryDSI::deserialize_radius(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_radius(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_radius(empty_buffer, 0),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_radius(short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
-	EXPECT_THROW(GeometryDSI::deserialize_circumference(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_circumference(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_circumference(empty_buffer, 0),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_circumference(short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
-	EXPECT_THROW(GeometryDSI::deserialize_diameter(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_diameter(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_diameter(empty_buffer, 0),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_diameter(short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
 	EXPECT_THROW(GeometryDSI::deserialize_area(empty_buffer, 0), Karkinolution::Binary::ByteError);
 	EXPECT_THROW(GeometryDSI::deserialize_area(short_buffer, 0), Karkinolution::Binary::ByteError);
 
 	const std::vector<std::byte> valid_size_buffer(sizeof(double), std::byte{0x01});
 
-	EXPECT_THROW(GeometryDSI::deserialize_radius(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_circumference(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_diameter(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_area(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_radius(valid_size_buffer, 1),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_circumference(valid_size_buffer, 1),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_diameter(valid_size_buffer, 1),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_area(valid_size_buffer, 1),
+				 Karkinolution::Binary::ByteError);
 }

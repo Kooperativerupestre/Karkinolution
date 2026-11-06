@@ -22,7 +22,7 @@ CorpseSRI::serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat)
 }
 
 VecSRI::BytesArrays::Vec
-CorpseSRI::serialize_position(const Karkinolution::Math::Vec::Vec3 &position) {
+CorpseSRI::serialize_position(const Karkinolution::Math::Vec::Vec2 &position) {
 	return VecSRI::serialize_vec(position);
 }
 
@@ -49,9 +49,7 @@ CorpseSRI::serialize_corpse(const Karkinolution::Organisms::Entities::Corpse::Co
 											   CorpseSRI::Layout::PositionX::OFFSET);
 
 	const auto size_bytes = serialize_size(corpse.size);
-	Karkinolution::Binary::Utils::append_bytes(bytes,
-											   size_bytes,
-											   CorpseSRI::Layout::Lateral::OFFSET);
+	Karkinolution::Binary::Utils::append_bytes(bytes, size_bytes, CorpseSRI::Layout::Width::OFFSET);
 
 	return bytes;
 }
@@ -75,7 +73,7 @@ Karkinolution::Organisms::RawMeat CorpseDSI::get_raw_meat(const std::vector<std:
 		Karkinolution::Binary::Deserializer::read_float(payload, offset));
 }
 
-Karkinolution::Math::Vec::Vec3 CorpseDSI::get_position(const std::vector<std::byte> &payload,
+Karkinolution::Math::Vec::Vec2 CorpseDSI::get_position(const std::vector<std::byte> &payload,
 													   std::size_t                   offset) {
 	return VecDSI::get_vec(payload, offset);
 }
@@ -91,7 +89,7 @@ CorpseDSI::get_corpse(const std::vector<std::byte> &payload, std::size_t offset)
 		.id       = get_id(payload, offset + CorpseSRI::Layout::Id::OFFSET),
 		.raw_meat = get_raw_meat(payload, offset + CorpseSRI::Layout::RawMeat::OFFSET),
 		.position = get_position(payload, offset + CorpseSRI::Layout::PositionX::OFFSET),
-		.size     = get_size(payload, offset + CorpseSRI::Layout::Lateral::OFFSET),
+		.size     = get_size(payload, offset + CorpseSRI::Layout::Width::OFFSET),
 	};
 }
 

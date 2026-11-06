@@ -1,129 +1,88 @@
 #include "karkinolution/terrain/entity_map.hpp"
 
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/geometry/models.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
-#include "karkinolution/organism/entities/identity.hpp"
 
 #include <cassert>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/units.hpp>
-#include <karkinolution/organism/entities/corpse/corpse.hpp>
-#include <karkinolution/organism/entities/creature/creature.hpp>
-#include <karkinolution/organism/entities/egg/egg.hpp>
-#include <karkinolution/organism/registry.hpp>
-#include <karkinolution/terrain/octree/aabb.hpp>
-#include <karkinolution/terrain/octree/octree.hpp>
-#include <karkinolution/terrain/terrain.hpp>
 
 namespace Karkinolution::Terrain {
 
-	bool EntityMap::add(Karkinolution::Organisms::Entities::EntityId id,
-						const Karkinolution::Math::Vec::Vec3        &position,
-						const Karkinolution::Math::Units::Size      &size,
-						const Karkinolution::Terrain::Territory     &territory) {
-		if (octree.root().exists(id)) {
-			return false;
+	namespace {
+		using AABB     = Karkinolution::Functional::Quadtree::AABB;
+		using EntityId = Karkinolution::Organisms::Entities::EntityId;
+		using Size     = Karkinolution::Math::Units::Size;
+		using Vec2     = Karkinolution::Math::Vec::Vec2;
+
+		AABB to_aabb(const Size &size, const Vec2 &position) {
+			const Vec2 half_size{size.width.value / 2.0, size.height.value / 2.0};
+			return {.min = position - half_size, .max = position + half_size};
 		}
 
-		const auto entity_aabb =
-			Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(size, position);
-
-		if (!Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(
-				 territory.size(),
-				 Karkinolution::Math::Vec::Vec3{0.0, 0.0, 0.0})
-				 .contains(entity_aabb)) {
-			return false;
+		AABB territory_aabb(const Size &size) {
+			return to_aabb(size, Vec2{size.width.value / 2.0, size.height.value / 2.0});
 		}
+	} // namespace
 
-		octree.root().insert(
-			Karkinolution::Terrain::Trees::Octree::OctreeEntry{.entity_id = id,
-															   .bound     = entity_aabb});
-		return true;
-	}
+	EntityMap::EntityMap(const Size &size)
+		: quadtree(territory_aabb(size)) {}
 
-	bool EntityMap::remove(Karkinolution::Organisms::Entities::EntityId id,
-						   const Karkinolution::Math::Units::Size      &old_size,
-						   const Karkinolution::Math::Vec::Vec3        &old_position) {
-		bool exists = octree.root().exists(id);
-
-		if (!exists) {
+	bool EntityMap::add(EntityId         id,
+						const Vec2      &position,
+						const Size      &size,
+						const Territory &territory) {
+		if (quadtree.exists(id))
 			return false;
-		}
-
-		const auto old_aabb =
-			Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(old_size, old_position);
-		auto was_removed = octree.root().remove(id, old_aabb);
-		assert(was_removed);
-		return true;
-	}
-
-	bool EntityMap::remove(Karkinolution::Organisms::Entities::EntityId id) {
-		bool exists = octree.root().exists(id);
-
-		if (!exists) {
+		const auto entity_aabb = to_aabb(size, position);
+		if (!territory_aabb(territory.size()).contains(entity_aabb))
 			return false;
-		}
-
-		auto was_removed = octree.root().remove(id);
-		assert(was_removed);
-		return true;
+		return quadtree.add(id, entity_aabb);
 	}
 
-	std::vector<Karkinolution::Organisms::Entities::EntityId>
-	EntityMap::find(const Karkinolution::Math::Units::Size &size,
-					const Karkinolution::Math::Vec::Vec3   &position) const {
-		auto aabb = Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(size, position);
-		return octree.root().find_ids(aabb);
-	}
-
-	bool EntityMap::has_entity(Karkinolution::Organisms::Entities::EntityId id) const {
-
-		return octree.root().exists(id);
-	}
-
-	std::optional<Karkinolution::Organisms::Entities::EntityId>
-	EntityMap::if_find_one_stop(const Karkinolution::Math::Units::Size &size,
-								const Karkinolution::Math::Vec::Vec3   &position) const {
-		return octree.root().if_find_one_stop(
-			Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(size, position));
-	}
-
-	bool EntityMap::update_coord(Karkinolution::Organisms::Entities::EntityId id,
-								 const Karkinolution::Math::Units::Size      &current_size,
-								 const Karkinolution::Math::Vec::Vec3        &current_coord,
-								 const Karkinolution::Math::Vec::Vec3        &new_coord,
-								 const Karkinolution::Terrain::Territory     &territory) {
-		if (!octree.root().exists(id)) {
+	bool EntityMap::remove(EntityId id, const Size &old_size, const Vec2 &old_position) {
+		if (!quadtree.exists(id))
 			return false;
-		}
-
-
-		const Karkinolution::Terrain::Trees::Octree::AABB old_bound =
-			Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(current_size,
-																		   current_coord);
-		const Karkinolution::Terrain::Trees::Octree::AABB new_bound =
-			Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(current_size, new_coord);
-
-		if (!Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(
-				 territory.size(),
-				 Karkinolution::Math::Vec::Vec3{0.0, 0.0, 0.0})
-				 .contains(new_bound)) {
-			return false;
-		}
-		const auto was_updated = octree.root().update(id, old_bound, new_bound);
-		if (!was_updated) {
-			return false;
-		}
-
-		assert(was_updated);
-		return true;
+		const bool removed = quadtree.remove(id, to_aabb(old_size, old_position));
+		assert(removed);
+		return removed;
 	}
 
-	bool EntityMap::can_contain(const Karkinolution::Math::Units::Size &size,
-								const Karkinolution::Math::Vec::Vec3   &position) const {
-		return octree.root().can_contain(
-			Karkinolution::Terrain::Trees::Octree::AABBConversion::to_aabb(size, position));
+	bool EntityMap::remove(EntityId id) {
+		if (!quadtree.exists(id))
+			return false;
+		const bool removed = quadtree.remove(id);
+		assert(removed);
+		return removed;
+	}
+
+	std::vector<EntityId> EntityMap::find(const Size &size, const Vec2 &position) const {
+		return quadtree.find(to_aabb(size, position));
+	}
+
+	bool EntityMap::has_entity(EntityId id) const {
+		return quadtree.exists(id);
+	}
+
+	std::optional<EntityId> EntityMap::if_find_one_stop(const Size &size,
+														const Vec2 &position) const {
+		return quadtree.if_find_one_stop(to_aabb(size, position));
+	}
+
+	bool EntityMap::update_coord(EntityId         id,
+								 const Size      &current_size,
+								 const Vec2      &current_position,
+								 const Vec2      &new_position,
+								 const Territory &territory) {
+		if (!quadtree.exists(id))
+			return false;
+		const auto old_bound = to_aabb(current_size, current_position);
+		const auto new_bound = to_aabb(current_size, new_position);
+		if (!territory_aabb(territory.size()).contains(new_bound))
+			return false;
+		return quadtree.update(id, new_bound, old_bound)
+			== Functional::Quadtree::UpdateOutput::UPDATED;
+	}
+
+	bool EntityMap::can_contain(const Size &size, const Vec2 &position) const {
+		return quadtree.root().bounds().contains(to_aabb(size, position));
 	}
 
 } // namespace Karkinolution::Terrain

@@ -302,3 +302,77 @@ class over without reconsidering the key question: was this abstraction still ne
 It was not. Keeping `BaseStorage` in C++ added indirection on top of `std::unordered_map` without providing enough
 value to justify it. The `try_add`, `try_at`, and `try_remove` operations remain useful, so they now live as
 `Karkinolution::Functional` helpers that operate directly on `std::unordered_map`.
+
+# 1.8 - Moving the simulation from 3D to 2D
+
+## Why did I remove the simulation's third dimension?
+
+The visual engine being developed for Karkinolution is currently a 2D engine. A simulation that models height and
+three-dimensional spatial relationships introduced disproportionate complexity without providing an emergent behavior
+or gameplay advantage that the project currently needs. The simulation therefore keeps only two spatial coordinates,
+while the visualization can evolve independently when it needs richer presentation.
+
+The goal of this migration was to remove the simulation's 3D behavior without changing unrelated creature, terrain,
+protocol, or lifecycle behavior.
+
+## Migration plan
+
+The work was intentionally staged so each architectural layer could be validated before the next one was changed:
+
+1. Move the former 3D mathematical types and 3D spatial tests to `misc/3d/`. This directory is a historical archive and
+   is not included in the build.
+2. Recreate the active mathematical layer as 2D equivalents.
+3. Migrate organism positions, sizes, embryo area, and related genetic/core data.
+4. Replace the active Octree path with the existing Quadtree implementation under
+   `src/karkinolution/functional/quadtree.hpp`, and archive the former Octree implementation and tests.
+5. Migrate the R*-tree and its terrain service from three-dimensional boxes to two-dimensional boxes.
+6. Migrate the binary protocol and its tests after the simulation core was migrated.
+
+The implementation was compiled with a maximum build parallelism of three jobs during the migration. Each stage was
+stopped for review before proceeding to the next stage.
+
+## Mathematical decisions
+
+The active vector type is now `Vec2` with `x` and `y` coordinates. Three-dimensional-only operations, including the
+third coordinate and the active fixed-Z helper, were removed. The old implementation remains available only in the
+3D archive for historical reference.
+
+`Size` now contains `Width width` and `Height height`. `Height` is the second planar extent of a rectangle; it does not
+represent a restored world-elevation coordinate. The former `Lateral` name was replaced with `Width` to make the 2D
+meaning explicit. `Volume` and `SharedVolume` became `Area` and `SharedArea`, and area is calculated as width times
+height.
+
+Embryos preserve their area while deriving a two-dimensional `Size`. This keeps the existing area-based growth model
+while removing the third extent.
+
+## Spatial structure decisions
+
+The active spatial index is now a generic functional Quadtree. The view's existing quadtree implementation was moved
+to `src/karkinolution/functional/quadtree.hpp`, and the view panel now uses that shared implementation. The former
+Octree implementation and its tests were moved to `misc/3d/` and are not compiled.
+
+The R*-tree now uses `Box2D` and `Box2DMotor`. Its ordering, intersection, enlargement, margin, and area calculations
+operate only on X/Y bounds. The R*-tree service, soil conversion, terrain generation, perception queries, and related
+tests were migrated to the same two-dimensional representation. Tree `depth` values remain because they describe
+hierarchical tree levels, not a spatial coordinate.
+
+## Binary protocol decisions
+
+The binary protocol follows the active 2D model instead of retaining unused padding for the removed dimension:
+
+* `Vec2` serializes X and Y only, using 16 bytes.
+* `Size` serializes width and height only, using 16 bytes.
+* `Area` and `SharedArea` replace volume-based names and serializers.
+* Creature, corpse, soil, and territory layouts were shortened to remove Z/depth fields.
+* DSI offset responsibility remains unchanged: high-level getters receive absolute field offsets, while mid-level
+  composite getters add their own relative offsets.
+
+Roundtrip and offset-invariant tests were updated to assert the new layouts. The binary protocol remains big-endian and
+keeps its existing frame and request semantics; only spatial payload fields changed.
+
+### Protocol compatibility
+
+This migration is a breaking protocol change for spatial payloads. Clients and servers built against the former 3D
+protocol are not wire-compatible with the 2D protocol because `Vec2` and `Size` have fewer serialized fields and the
+domain layouts have different offsets and total sizes. No compatibility aliases, padding fields, or dual 3D/2D
+decoders were retained in the active code. Deployments must update both ends of the connection together.

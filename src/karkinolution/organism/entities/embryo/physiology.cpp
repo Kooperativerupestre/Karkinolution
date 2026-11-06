@@ -62,14 +62,13 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 		return ResourceTrade{.cost = cost, .gain = gain};
 	}
 
-	ResourceTrade EmbryoGrowingPhysiology::get_new_volume_increment(const Embryo &embryo) {
+	ResourceTrade EmbryoGrowingPhysiology::get_new_area_increment(const Embryo &embryo) {
 		NormalizedValue<float> cost = EmbryoGrowingPhysiology::get_increment(
-			embryo.volume.value / embryo.genome.embryo_genome.morphology.average_volume.value()
-				* Size::volume(embryo.genome.creature_genome.morphology.average_lateral,
-							   embryo.genome.creature_genome.morphology.average_height,
-							   embryo.genome.creature_genome.morphology.average_back)
+			embryo.area.value / embryo.genome.embryo_genome.morphology.average_area.value()
+				* Size::area(embryo.genome.creature_genome.morphology.average_width,
+							 embryo.genome.creature_genome.morphology.average_height)
 					  .value,
-			BASE_VALUE_VOLUME_INCREMENT);
+			BASE_VALUE_AREA_INCREMENT);
 
 		float gain = cost.value();
 		return ResourceTrade{.cost = cost, .gain = gain};

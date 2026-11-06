@@ -13,6 +13,6 @@ namespace Karkinolution::API::Creature {
 		Karkinolution::World::World                                                 &world,
 		std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 		std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-		const std::optional<Karkinolution::Math::Vec::Vec3>                         &position,
+		const std::optional<Karkinolution::Math::Vec::Vec2>                         &position,
 		const std::optional<std::string>                                            &name);
 } // namespace Karkinolution::API::Creature

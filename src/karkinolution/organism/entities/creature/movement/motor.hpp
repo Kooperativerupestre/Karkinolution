@@ -16,6 +16,6 @@ namespace Karkinolution::Organisms::Entities::Creature::Movement::Motor {
 	namespace MovementMotor {
 		MoveOutput move(Creature                    &creature,
 						Karkinolution::World::World &world,
-						const Vec3                  &new_position); // atomic operation
+						const Vec2                  &new_position); // atomic operation
 	} // namespace MovementMotor
 } // namespace Karkinolution::Organisms::Entities::Creature::Movement::Motor

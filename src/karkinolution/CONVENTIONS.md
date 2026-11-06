@@ -20,7 +20,7 @@ This size was chosen based on:
 
 double.
 
-# Why the underlying type of Vec3 in the client is float instead of double?
+# Why the underlying type of Vec2 in the client is float instead of double?
 
 Because there is no loss based on the biggest size of the territory and things. And the client in my simulator only exists to display the stuff -- it doesn't have to calculate or modify anything.
 

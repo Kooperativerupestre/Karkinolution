@@ -72,7 +72,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		const auto soils_id    = world.see_territory().find(radius, perceiver.position);
 		const auto entities_id = world.see_entity_map().find(
-			Karkinolution::Math::Units::Size{radius.value, radius.value, radius.value},
+			Karkinolution::Math::Units::Size{radius.value, radius.value},
 			perceiver.position);
 		const auto natures_id = world.see_natures().find(radius, perceiver.position);
 
@@ -131,13 +131,12 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 							Karkinolution::Organisms::Nature::NatureGetters::get_position(nature)));
 		}
 
-		Vec3 farthest;
+		Vec2 farthest;
 
-		farthest.z = world.see_territory().size().height.value;
-		farthest.x = std::min(radius.value + perceiver.position.x,
-							  world.see_territory().size().lateral.value);
-		farthest.y =
-			std::min(radius.value + perceiver.position.y, world.see_territory().size().depth.value);
+		farthest.x =
+			std::min(radius.value + perceiver.position.x, world.see_territory().size().width.value);
+		farthest.y = std::min(radius.value + perceiver.position.y,
+							  world.see_territory().size().height.value);
 		return Perception{data,
 						  radius,
 						  p_entities,

@@ -127,7 +127,7 @@ namespace Karkinolution {
 					get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Core::Id::BaseIdType
 					get_id(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec3
+					Karkinolution::Math::Vec::Vec2
 					get_position(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Terrain::Soil::SoilTypes
 					get_type(const std::vector<std::byte> &payload, std::size_t offset);

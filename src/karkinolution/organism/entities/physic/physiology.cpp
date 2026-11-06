@@ -4,6 +4,6 @@
 #include <karkinolution/organism/internal_aliases.hpp>
 
 Karkinolution::Math::LV::CT::GreaterThanZeroValue<float>
-PhysicPhysiology::get_move_cost(const Entities::Entity &entity, const Vec3 &new_position) {
+PhysicPhysiology::get_move_cost(const Entities::Entity &entity, const Vec2 &new_position) {
 	return 1.0f;
 }

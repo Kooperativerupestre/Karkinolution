@@ -45,14 +45,14 @@ namespace Karkinolution {
 						return size_;
 					}
 
-					Karkinolution::Terrain::Trees::RTree::Box3D box() const {
-						return RTree::BoxConversion::to_box(size_, Vec3{0.0, 0.0, 0.0});
+					Karkinolution::Terrain::Trees::RTree::Box2D box() const {
+						return RTree::BoxConversion::to_box(size_, Vec2{0.0, 0.0});
 					}
 
 					bool add(ID id, V &&value) {
 						const auto value_box = RTree::BoxConversion::to_box(value);
 
-						if (!Karkinolution::Terrain::Trees::RTree::Box3DMotor::contains(
+						if (!Karkinolution::Terrain::Trees::RTree::Box2DMotor::contains(
 								box(),
 								value_box)) {
 							return false;
@@ -85,13 +85,13 @@ namespace Karkinolution {
 					}
 
 					std::vector<ID> find(const Math::Geometry::Radius &radius,
-										 const Vec3                   &position) const {
+										 const Vec2                   &position) const {
 						auto box = RTree::BoxConversion::to_box(radius, position);
 						return tree_.find(box);
 					}
 
 					std::vector<ID> find(const Math::Units::Size &size,
-										 const Vec3              &position) const {
+										 const Vec2              &position) const {
 						auto box = RTree::BoxConversion::to_box(size, position);
 						return tree_.find(box);
 					}

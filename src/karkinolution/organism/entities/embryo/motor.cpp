@@ -6,11 +6,11 @@
 
 namespace Karkinolution::Organisms::Entities::Embryo::Motor {
 	void EmbryoMotor::grow(Embryo &embryo) {
-		const auto volume_trade = Karkinolution::Organisms::Entities::Embryo::Physiology::
-			EmbryoGrowingPhysiology::get_new_volume_increment(embryo);
+		const auto area_trade = Karkinolution::Organisms::Entities::Embryo::Physiology::
+			EmbryoGrowingPhysiology::get_new_area_increment(embryo);
 
-		embryo.energy -= volume_trade.cost;
-		embryo.volume.value += volume_trade.gain;
+		embryo.energy -= area_trade.cost;
+		embryo.area.value += area_trade.gain;
 
 		const auto life_trade = Karkinolution::Organisms::Entities::Embryo::Physiology::
 			EmbryoGrowingPhysiology::get_new_life_increment(embryo);

@@ -11,7 +11,6 @@ file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
 
 add_executable(karkinolution_tests
     ${TEST_SOURCES}
-    "${CMAKE_SOURCE_DIR}/src/karkinolution/view/gui/panel/quadtree/node.cpp"
 )
 
 target_include_directories(karkinolution_tests PRIVATE

@@ -24,14 +24,14 @@ namespace Karkinolution::Organisms::Entities::Creature {
 	}
 
 	[[nodiscard]] Karkinolution::Math::Units::Mass MorphologyPart::density() const noexcept {
-		if (volume().value == Math::Approx<float>(0.0f)) {
+		if (area().value == Math::Approx<float>(0.0f)) {
 			return 0.0f;
 		}
-		return mass.value / volume().value;
+		return mass.value / area().value;
 	}
 
-	[[nodiscard]] Volume MorphologyPart::volume() const noexcept {
-		return size.volume();
+	[[nodiscard]] Area MorphologyPart::area() const noexcept {
+		return size.area();
 	}
 
 	[[nodiscard]] Strength Creature::strength() const noexcept {
@@ -64,11 +64,10 @@ namespace Karkinolution::Organisms::Entities::Creature {
 		return body.morphology.mass.value / genome.creature_genome.morphology.average_mass.value;
 	}
 
-	[[nodiscard]] float Creature::specie_relative_volume() const noexcept {
-		return body.morphology.volume().value
-			/ Size::volume(genome.creature_genome.morphology.average_lateral,
-						   genome.creature_genome.morphology.average_height,
-						   genome.creature_genome.morphology.average_back)
+	[[nodiscard]] float Creature::specie_relative_area() const noexcept {
+		return body.morphology.area().value
+			/ Size::area(genome.creature_genome.morphology.average_width,
+						 genome.creature_genome.morphology.average_height)
 				  .value;
 	}
 

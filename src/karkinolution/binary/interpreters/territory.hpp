@@ -17,10 +17,9 @@ namespace Karkinolution {
 					/*
 					 * Territory protocol
 					 *
-					 * # begin size (24 bytes)
-					 * [0 -> 7 - size.lateral]
+					 * # begin size (16 bytes)
+					 * [0 -> 7 - size.width]
 					 * [8 -> 15 - size.height]
-					 * [16 -> 23 - size.depth]
 					 * # end size
 					 */
 

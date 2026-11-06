@@ -11,13 +11,13 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	template <typename IdType> struct RtreeNode;
 
 	template <typename IdType> struct RtreeEntry {
-			Box3D                                                    box;
+			Box2D                                                    box;
 			std::variant<IdType, std::unique_ptr<RtreeNode<IdType>>> content;
 	};
 
 	template <typename IdType> struct RtreeNode {
 			NodeType                        type;
-			std::optional<Box3D>            box;
+			std::optional<Box2D>            box;
 			std::vector<RtreeEntry<IdType>> entries;
 	};
 } // namespace Karkinolution::Terrain::Trees::RTree

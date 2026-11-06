@@ -49,7 +49,7 @@ namespace Karkinolution {
 						Mass density() const noexcept;
 
 						[[nodiscard]]
-						Volume volume() const noexcept;
+						Area area() const noexcept;
 				};
 
 				struct ReproductivePart {
@@ -119,7 +119,7 @@ namespace Karkinolution {
 						Ontology     ontology;
 						Body         body;
 
-						Vec3 position;
+						Vec2 position;
 
 						[[nodiscard]]
 						Strength strength() const noexcept;
@@ -128,7 +128,7 @@ namespace Karkinolution {
 								 Brain::Brain    &&brain,
 								 Ontology        &&ontology,
 								 Body            &&body,
-								 Vec3              position)
+								 Vec2              position)
 							: genome(std::move(genome))
 							, brain(brain)
 							, ontology(std::move(ontology))
@@ -139,7 +139,7 @@ namespace Karkinolution {
 								 Brain::Brain         &&brain,
 								 Ontology             &&ontology,
 								 Body                 &&body,
-								 Vec3                   position)
+								 Vec2                   position)
 							: genome(genome)
 							, brain(brain)
 							, ontology(std::move(ontology))
@@ -166,7 +166,7 @@ namespace Karkinolution {
 						float specie_relative_mass() const noexcept;
 
 						[[nodiscard]]
-						float specie_relative_volume() const noexcept;
+						float specie_relative_area() const noexcept;
 
 						[[nodiscard]]
 						float specie_relative_age() const noexcept;

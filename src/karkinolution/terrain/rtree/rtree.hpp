@@ -67,10 +67,10 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		};
 
 		template <typename IdType>
-		Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>> &, size_t begin, size_t end);
+		Box2D calculate_mbr(const std::vector<RtreeEntry<IdType>> &, size_t begin, size_t end);
 
 		template <typename IdType>
-		Box3D calculate_mbr(const std::vector<RtreeEntry<IdType>*> &, size_t begin, size_t end);
+		Box2D calculate_mbr(const std::vector<RtreeEntry<IdType>*> &, size_t begin, size_t end);
 
 		template <typename IdType>
 		GetBestOrdenationOutput<IdType> get_best_ordenation(std::vector<RtreeEntry<IdType>> &,
@@ -94,24 +94,24 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		// namespace RStarTreeMotor
 
 		template <typename IdType>
-		Box3D
+		Box2D
 		calculate_mbr(const std::vector<RtreeEntry<IdType>> &entries, size_t begin, size_t end) {
-			Box3D mbr = entries[begin].box;
+			Box2D mbr = entries[begin].box;
 
 			for (size_t i = begin + 1; i < end; i++) {
-				mbr = Box3DMotor::combine(mbr, entries[i].box);
+				mbr = Box2DMotor::combine(mbr, entries[i].box);
 			}
 
 			return mbr;
 		}
 
 		template <typename IdType>
-		Box3D
+		Box2D
 		calculate_mbr(const std::vector<RtreeEntry<IdType>*> &entries, size_t begin, size_t end) {
-			Box3D mbr = entries[begin]->box;
+			Box2D mbr = entries[begin]->box;
 
 			for (size_t i = begin + 1; i < end; i++) {
-				mbr = Box3DMotor::combine(mbr, entries[i]->box);
+				mbr = Box2DMotor::combine(mbr, entries[i]->box);
 			}
 
 			return mbr;
@@ -120,7 +120,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		template <typename IdType>
 		GetBestOrdenationOutput<IdType>
 		get_best_ordenation(std::vector<RtreeEntry<IdType>> &entries, size_t min_entries) {
-			std::array<std::array<std::vector<RtreeEntry<IdType>*>, 2>, 3> ordenations;
+			std::array<std::array<std::vector<RtreeEntry<IdType>*>, 2>, 2> ordenations;
 
 			for (auto &entry : entries) {
 				ordenations[index(Karkinolution::Math::Vec::Axis::X)][index(Bound::MAX)].push_back(
@@ -131,11 +131,6 @@ namespace Karkinolution::Terrain::Trees::RTree {
 				ordenations[index(Karkinolution::Math::Vec::Axis::Y)][index(Bound::MAX)].push_back(
 					&entry);
 				ordenations[index(Karkinolution::Math::Vec::Axis::Y)][index(Bound::MIN)].push_back(
-					&entry);
-
-				ordenations[index(Karkinolution::Math::Vec::Axis::Z)][index(Bound::MAX)].push_back(
-					&entry);
-				ordenations[index(Karkinolution::Math::Vec::Axis::Z)][index(Bound::MIN)].push_back(
 					&entry);
 			}
 
@@ -167,20 +162,6 @@ namespace Karkinolution::Terrain::Trees::RTree {
 					< std::pair{B->box.min.y, B->box.max.y};
 				});
 
-			std::ranges::sort(
-				ordenations[index(Karkinolution::Math::Vec::Axis::Z)][index(Bound::MAX)],
-				[](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-					return std::pair{A->box.max.z, A->box.min.z}
-					< std::pair{B->box.max.z, B->box.min.z};
-				});
-
-			std::ranges::sort(
-				ordenations[index(Karkinolution::Math::Vec::Axis::Z)][index(Bound::MIN)],
-				[](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
-					return std::pair{A->box.min.z, A->box.max.z}
-					< std::pair{B->box.min.z, B->box.max.z};
-				});
-
 			double                            best_score = std::numeric_limits<double>::infinity();
 			std::vector<RtreeEntry<IdType>*>* ptr        = nullptr;
 
@@ -205,8 +186,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 											   size_t                            min_entries) {
 			size_t size = entries.size();
 
-			std::vector<Box3D> prefix;
-			std::vector<Box3D> suffix;
+			std::vector<Box2D> prefix;
+			std::vector<Box2D> suffix;
 
 			prefix.reserve(size);
 			suffix.reserve(size);
@@ -218,11 +199,11 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			suffix[size - 1] = entries[size - 1]->box;
 
 			for (size_t i = size - 1; i > 0; i--) {
-				suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
+				suffix[i - 1] = Box2DMotor::combine(suffix[i], entries[i - 1]->box);
 			}
 
 			for (size_t i = 1; i < size; i++) {
-				prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
+				prefix[i] = Box2DMotor::combine(prefix[i - 1], entries[i]->box);
 			}
 
 			size_t best_index = min_entries;
@@ -231,22 +212,22 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 			double total_score = best_score;
 
-			double best_volume_sum = prefix[best_index - 1].volume() + suffix[best_index].volume();
+			double best_area_sum = prefix[best_index - 1].area() + suffix[best_index].area();
 
 			for (size_t i = min_entries + 1; i <= size - min_entries; i++) {
 
 				const double current_score = prefix[i - 1].margin() + suffix[i].margin();
 
-				const double current_volume = prefix[i - 1].volume() + suffix[i].volume();
+				const double current_area = prefix[i - 1].area() + suffix[i].area();
 
 				total_score += current_score;
 
 				if (current_score < best_score
-					|| (current_score == best_score && current_volume < best_volume_sum)) {
+					|| (current_score == best_score && current_area < best_area_sum)) {
 
-					best_score      = current_score;
-					best_index      = i;
-					best_volume_sum = current_volume;
+					best_score    = current_score;
+					best_index    = i;
+					best_area_sum = current_area;
 				}
 			}
 
@@ -259,8 +240,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 			size_t size = entries.size();
 
-			std::vector<Box3D> prefix;
-			std::vector<Box3D> suffix;
+			std::vector<Box2D> prefix;
+			std::vector<Box2D> suffix;
 
 			prefix.reserve(size);
 			suffix.reserve(size);
@@ -272,39 +253,39 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			suffix[size - 1] = entries[size - 1]->box;
 
 			for (size_t i = size - 1; i > 0; i--) {
-				suffix[i - 1] = Box3DMotor::combine(suffix[i], entries[i - 1]->box);
+				suffix[i - 1] = Box2DMotor::combine(suffix[i], entries[i - 1]->box);
 			}
 
 			for (size_t i = 1; i < size; i++) {
-				prefix[i] = Box3DMotor::combine(prefix[i - 1], entries[i]->box);
+				prefix[i] = Box2DMotor::combine(prefix[i - 1], entries[i]->box);
 			}
 
 			size_t best_index = min_entries;
 
 			double best_score =
-				Box3DMotor::overlap_volume(prefix[best_index - 1], suffix[best_index]);
+				Box2DMotor::overlap_area(prefix[best_index - 1], suffix[best_index]);
 
 			double total_score = best_score;
 
-			double best_volume_sum = prefix[best_index - 1].volume() + suffix[best_index].volume();
+			double best_area_sum = prefix[best_index - 1].area() + suffix[best_index].area();
 
 			double current_score;
-			double current_volume;
+			double current_area;
 
 			for (size_t i = min_entries + 1; i <= size - min_entries; i++) {
 
-				current_score = Box3DMotor::overlap_volume(prefix[i - 1], suffix[i]);
+				current_score = Box2DMotor::overlap_area(prefix[i - 1], suffix[i]);
 
-				current_volume = prefix[i - 1].volume() + suffix[i].volume();
+				current_area = prefix[i - 1].area() + suffix[i].area();
 
 				total_score += current_score;
 
 				if (current_score < best_score
-					|| (current_score == best_score && current_volume < best_volume_sum)) {
+					|| (current_score == best_score && current_area < best_area_sum)) {
 
-					best_score      = current_score;
-					best_index      = i;
-					best_volume_sum = current_volume;
+					best_score    = current_score;
+					best_index    = i;
+					best_area_sum = current_area;
 				}
 			}
 
@@ -365,9 +346,9 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 			RStarTree();
 
-			void insert(IdType id, const Box3D &box, bool already_reinserted = false);
+			void insert(IdType id, const Box2D &box, bool already_reinserted = false);
 
-			std::vector<IdType> find(const Box3D &box) const;
+			std::vector<IdType> find(const Box2D &box) const;
 
 			bool remove(IdType id);
 			bool exists(IdType id) const;
@@ -394,7 +375,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			split_root(RtreeNode<IdType>                &old_root,
 					   std::optional<RtreeNode<IdType>*> target = std::nullopt);
 
-			std::vector<IdType> find(const Box3D                           &box,
+			std::vector<IdType> find(const Box2D                           &box,
 									 const std::vector<RtreeEntry<IdType>> &entries,
 									 std::vector<IdType>                   &ids) const;
 
@@ -405,16 +386,16 @@ namespace Karkinolution::Terrain::Trees::RTree {
 							  std::vector<RtreeNode<IdType>*> path,
 							  bool                            already_reinserted);
 
-			size_t choose_by_enlargement(RtreeNode<IdType> &node, const Box3D &box);
+			size_t choose_by_enlargement(RtreeNode<IdType> &node, const Box2D &box);
 
-			size_t choose_by_overlap(RtreeNode<IdType> &node, const Box3D &box);
+			size_t choose_by_overlap(RtreeNode<IdType> &node, const Box2D &box);
 
-			void choose_leaf(std::vector<RtreeNode<IdType>*> &nodes, const Box3D &box);
+			void choose_leaf(std::vector<RtreeNode<IdType>*> &nodes, const Box2D &box);
 
 			void reinsert_orphan(RtreeEntry<IdType> entry, size_t depth);
 
 			void choose_node_at_depth(std::vector<RtreeNode<IdType>*> &nodes,
-									  const Box3D                     &box,
+									  const Box2D                     &box,
 									  size_t                           depth);
 
 			void refresh_mbrs(RtreeNode<IdType> &node);
@@ -435,26 +416,26 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			  RtreeNode<IdType>{.type = NodeType::LEAF, .box = std::nullopt, .entries = {}})) {}
 
 	template <typename IdType>
-	size_t RStarTree<IdType>::choose_by_enlargement(RtreeNode<IdType> &node, const Box3D &box) {
+	size_t RStarTree<IdType>::choose_by_enlargement(RtreeNode<IdType> &node, const Box2D &box) {
 
 		size_t best_index = 0;
 
-		double best_enlargement = Box3DMotor::enlargement(node.entries[0].box, box);
+		double best_enlargement = Box2DMotor::enlargement(node.entries[0].box, box);
 
-		double best_volume = node.entries[0].box.volume();
+		double best_area = node.entries[0].box.area();
 
 		for (size_t i = 1; i < node.entries.size(); i++) {
-			const Box3D &entry_box = node.entries[i].box;
+			const Box2D &entry_box = node.entries[i].box;
 
-			const double current_enlargement = Box3DMotor::enlargement(entry_box, box);
+			const double current_enlargement = Box2DMotor::enlargement(entry_box, box);
 
-			const double current_volume = entry_box.volume();
+			const double current_area = entry_box.area();
 
 			if (current_enlargement < best_enlargement
-				|| (current_enlargement == best_enlargement && current_volume < best_volume)) {
+				|| (current_enlargement == best_enlargement && current_area < best_area)) {
 
 				best_enlargement = current_enlargement;
-				best_volume      = current_volume;
+				best_area        = current_area;
 				best_index       = i;
 			}
 		}
@@ -463,7 +444,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename IdType>
-	size_t RStarTree<IdType>::choose_by_overlap(RtreeNode<IdType> &node, const Box3D &box) {
+	size_t RStarTree<IdType>::choose_by_overlap(RtreeNode<IdType> &node, const Box2D &box) {
 
 		auto &node_children      = node.entries;
 		auto  node_children_size = node_children.size();
@@ -476,7 +457,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 		for (auto &entry : node_children) {
 			entries.push_back(&entry);
-			enlargement_list.push_back(Box3DMotor::enlargement(entry.box, box));
+			enlargement_list.push_back(Box2DMotor::enlargement(entry.box, box));
 		}
 
 		std::vector<size_t> indices(entries.size());
@@ -494,7 +475,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 			size_t j = indices[k];
 
-			const auto box_expanded = Box3DMotor::combine(node_children[j].box, box);
+			const auto box_expanded = Box2DMotor::combine(node_children[j].box, box);
 
 			double current_overlap = 0;
 			double new_overlap     = 0;
@@ -505,10 +486,9 @@ namespace Karkinolution::Terrain::Trees::RTree {
 					continue;
 				}
 
-				current_overlap +=
-					Box3DMotor::overlap_volume(entries[j]->box, node_children[i].box);
+				current_overlap += Box2DMotor::overlap_area(entries[j]->box, node_children[i].box);
 
-				new_overlap += Box3DMotor::overlap_volume(box_expanded, node_children[i].box);
+				new_overlap += Box2DMotor::overlap_area(box_expanded, node_children[i].box);
 			}
 
 			const double delta_overlap = new_overlap - current_overlap;
@@ -523,7 +503,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename IdType>
-	void RStarTree<IdType>::choose_leaf(std::vector<RtreeNode<IdType>*> &nodes, const Box3D &box) {
+	void RStarTree<IdType>::choose_leaf(std::vector<RtreeNode<IdType>*> &nodes, const Box2D &box) {
 
 		auto &last_node = nodes.back();
 
@@ -777,7 +757,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename IdType>
-	void RStarTree<IdType>::insert(IdType id, const Box3D &box, bool already_reinserted) {
+	void RStarTree<IdType>::insert(IdType id, const Box2D &box, bool already_reinserted) {
 
 		std::vector<RtreeNode<IdType>*> path{root_.get()};
 
@@ -800,7 +780,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 	template <typename IdType>
 	void RStarTree<IdType>::choose_node_at_depth(std::vector<RtreeNode<IdType>*> &nodes,
-												 const Box3D                     &box,
+												 const Box2D                     &box,
 												 size_t                           depth) {
 
 		while (nodes.size() - 1 < depth) {
@@ -866,12 +846,12 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		}
 	}
 
-	template <typename IdType> std::vector<IdType> RStarTree<IdType>::find(const Box3D &box) const {
+	template <typename IdType> std::vector<IdType> RStarTree<IdType>::find(const Box2D &box) const {
 
 		std::vector<IdType> ids;
 
 		for (const auto &entry : root_->entries) {
-			if (Box3DMotor::intersect(box, entry.box)) {
+			if (Box2DMotor::intersect(box, entry.box)) {
 
 				if (std::holds_alternative<IdType>(entry.content)) {
 
@@ -889,12 +869,12 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename IdType>
-	std::vector<IdType> RStarTree<IdType>::find(const Box3D                           &box,
+	std::vector<IdType> RStarTree<IdType>::find(const Box2D                           &box,
 												const std::vector<RtreeEntry<IdType>> &entries,
 												std::vector<IdType>                   &ids) const {
 
 		for (const auto &entry : entries) {
-			if (Box3DMotor::intersect(box, entry.box)) {
+			if (Box2DMotor::intersect(box, entry.box)) {
 
 				if (std::holds_alternative<IdType>(entry.content)) {
 
@@ -1079,7 +1059,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename IdType> void RStarTree<IdType>::clear() {
-		root_->box = Box3D{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 0.0}};
+		root_->box = Box2D{Vec2{0.0, 0.0}, Vec2{0.0, 0.0}};
 		root_->entries.clear();
 		root_->type = NodeType::LEAF;
 	}

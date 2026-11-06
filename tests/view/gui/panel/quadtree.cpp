@@ -1,9 +1,7 @@
 #include "karkinolution/view/gui/panel/quadtree/quadtree.hpp"
 
 #include <algorithm>
-#include <array>
 #include <gtest/gtest.h>
-#include <unordered_set>
 
 namespace {
 	namespace Geometry = KarkinolutionView::Gui::Geometry;
@@ -15,54 +13,6 @@ namespace {
 		return {Geometry::Position{x, y}, Geometry::Width{width}, Geometry::Height{height}};
 	}
 } // namespace
-
-namespace KarkinolutionView::Gui::Panel::Quadtree {
-	class QuadtreeTestAccess {
-		public:
-
-			static bool invariants_hold(const Quadtree &tree) {
-				std::unordered_set<ComponentId> ids;
-				std::size_t                     entries = 0;
-				return inspect(*tree.root, ids, entries) && entries == tree.size_;
-			}
-
-		private:
-
-			static bool
-			inspect(const Node &node, std::unordered_set<ComponentId> &ids, std::size_t &entries) {
-				if (node.depth > MAX_DEPTH) {
-					return false;
-				}
-
-				for (const auto &entry : node.entries) {
-					if (!node.boundary.contains(entry.bounds)
-						|| !ids.insert(entry.component_id).second) {
-						return false;
-					}
-					++entries;
-				}
-
-				const std::array<const std::unique_ptr<Node>*, 4> children{&node.upper_left,
-																		   &node.upper_right,
-																		   &node.lower_left,
-																		   &node.lower_right};
-				std::size_t                                       child_count = 0;
-				for (const auto* child : children) {
-					if (!*child) {
-						continue;
-					}
-					++child_count;
-					if ((*child)->depth != node.depth + 1
-						|| !node.boundary.contains((*child)->boundary)
-						|| !inspect(**child, ids, entries)) {
-						return false;
-					}
-				}
-
-				return child_count <= all_quadrants.size();
-			}
-	};
-} // namespace KarkinolutionView::Gui::Panel::Quadtree
 
 TEST(Quadtree, AddAndRemoveMaintainExistenceAndSize) {
 	Quadtree::Quadtree tree{rectangle(0, 0, 1000, 1000)};
@@ -137,7 +87,7 @@ TEST(Quadtree, UpdateMovesEntryAndKeepsSizeConsistent) {
 	EXPECT_EQ(tree.update(id, outside), Quadtree::UpdateOutput::DOES_NOT_EXIST);
 	EXPECT_TRUE(tree.exists(id, new_form));
 	EXPECT_EQ(tree.size(), 10);
-	EXPECT_TRUE(Quadtree::QuadtreeTestAccess::invariants_hold(tree));
+	EXPECT_TRUE(tree.invariants_hold());
 }
 
 TEST(Quadtree, FindReturnsIntersectingBoundsAndOneMatchingCandidate) {
@@ -192,7 +142,7 @@ TEST(Quadtree, AddAndUpdatePreserveStructuralInvariants) {
 		}
 	}
 	EXPECT_EQ(tree.size(), 100);
-	EXPECT_TRUE(Quadtree::QuadtreeTestAccess::invariants_hold(tree));
+	EXPECT_TRUE(tree.invariants_hold());
 
 	const auto id       = gen_id(ComponentType::GRID);
 	const auto old_form = rectangle(-475, -475, 8, 8);
@@ -200,5 +150,5 @@ TEST(Quadtree, AddAndUpdatePreserveStructuralInvariants) {
 	ASSERT_TRUE(tree.add(id, old_form));
 	ASSERT_EQ(tree.update(id, new_form, old_form), Quadtree::UpdateOutput::UPDATED);
 	EXPECT_EQ(tree.size(), 101);
-	EXPECT_TRUE(Quadtree::QuadtreeTestAccess::invariants_hold(tree));
+	EXPECT_TRUE(tree.invariants_hold());
 }

@@ -28,7 +28,7 @@ namespace Karkinolution {
 
 							Karkinolution::Core::Id::BaseIdType                       id;
 							Karkinolution::Math::Geometry::Radius                     radius;
-							Karkinolution::Math::Vec::Vec3                            position;
+							Karkinolution::Math::Vec::Vec2                            position;
 							Karkinolution::Terrain::Soil::SoilTypes                   type;
 							std::vector<Karkinolution::Terrain::Soil::SoilProperties> properties;
 							std::vector<Karkinolution::Organisms::Entities::GenericProperty>

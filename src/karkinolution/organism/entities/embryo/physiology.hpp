@@ -22,7 +22,7 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 	inline constexpr NormalizedValue<float> BASE_VALUE_HEALTH_INCREMENT{0.1f};
 	inline constexpr NormalizedValue<float> BASE_VALUE_MAX_LIFE_INCREMENT{0.1f};
 	inline constexpr NormalizedValue<float> BASE_VALUE_MAX_ENERGY_INCREMENT{0.2f};
-	inline constexpr NormalizedValue<float> BASE_VALUE_VOLUME_INCREMENT{0.1f};
+	inline constexpr NormalizedValue<float> BASE_VALUE_AREA_INCREMENT{0.1f};
 
 	inline constexpr float EMBRYO_BASAL_METABOLISM = 10.0f;
 
@@ -45,7 +45,7 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 
 		ResourceTrade get_new_health_increment(const Embryo &embryo);
 
-		ResourceTrade get_new_volume_increment(const Embryo &embryo);
+		ResourceTrade get_new_area_increment(const Embryo &embryo);
 	} // namespace EmbryoGrowingPhysiology
 
 	namespace EmbryoPhysiology {

@@ -47,12 +47,12 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State {
 			Entities::Genetic::Motor::crossover(female.genome, male.genome);
 
 		auto average_max_energy = new_genome.calculate_embryo_average_max_energy();
-		auto average_volume     = new_genome.calculate_embryo_average_volume();
+		auto average_area       = new_genome.calculate_embryo_average_area();
 		auto average_max_life   = new_genome.calculate_embryo_average_life();
 
-		auto   init_average_max_energy = average_max_energy / 7.0f;
-		Volume init_average_volume     = average_volume.value / 5.0f;
-		auto   init_average_max_life   = average_max_life / 5.0f;
+		auto init_average_max_energy = average_max_energy / 7.0f;
+		Area init_average_area       = average_area.value / 5.0f;
+		auto init_average_max_life   = average_max_life / 5.0f;
 
 		Energy energy(init_average_max_energy / 2.0f, init_average_max_energy);
 		Life   life(init_average_max_life / 2.0f, init_average_max_life);
@@ -62,7 +62,7 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State {
 			.energy = energy,
 			.life   = life,
 			.health = new_genome.embryo_genome.body.average_health.value(),
-			.volume = Volume{init_average_volume},
+			.area   = Area{init_average_area},
 			.genome = std::move(new_genome),
 			.age    = 0,
 		};

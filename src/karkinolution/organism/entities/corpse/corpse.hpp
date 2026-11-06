@@ -15,7 +15,7 @@ namespace Karkinolution {
 						BaseIdType id;
 						RawMeat    raw_meat;
 
-						Vec3 position;
+						Vec2 position;
 						Size size;
 
 						[[nodiscard]] EntityId build_id() const noexcept {
@@ -23,7 +23,7 @@ namespace Karkinolution {
 						}
 
 						Corpse(const Size    &size,
-							   const Vec3    &position,
+							   const Vec2    &position,
 							   const RawMeat &raw_meat,
 							   BaseIdType     id)
 							: size(size)

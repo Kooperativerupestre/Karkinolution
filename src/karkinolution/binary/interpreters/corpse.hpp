@@ -29,13 +29,11 @@ namespace Karkinolution {
 					 * # begin position (24 bytes)
 					 * [12 -> 19 - position.x]
 					 * [20 -> 27 - position.y]
-					 * [28 -> 35 - position.z]
 					 * # end position
 					 *
 					 * # begin size (24 bytes)
-					 * [36 -> 43 - size.lateral]
+					 * [36 -> 43 - size.width]
 					 * [44 -> 51 - size.height]
-					 * [52 -> 59 - size.depth]
 					 * # end size
 					 */
 
@@ -44,12 +42,10 @@ namespace Karkinolution {
 						using RawMeat   = Next<Id, 4>;
 						using PositionX = Next<RawMeat, VecSRI::Layout::AXIS_SIZE>;
 						using PositionY = Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
-						using PositionZ = Next<PositionY, VecSRI::Layout::AXIS_SIZE>;
-						using Lateral   = Next<PositionZ, UnitsSRI::Layout::Lateral::SIZE>;
-						using Height    = Next<Lateral, Units::Layout::Height::SIZE>;
-						using Depth     = Next<Height, Units::Layout::Depth::SIZE>;
+						using Width     = Next<PositionY, UnitsSRI::Layout::Width::SIZE>;
+						using Height    = Next<Width, Units::Layout::Height::SIZE>;
 
-						inline constexpr std::size_t TOTAL_SIZE = Depth::END;
+						inline constexpr std::size_t TOTAL_SIZE = Height::END;
 					} // namespace Layout
 
 					namespace BytesArrays {
@@ -60,7 +56,7 @@ namespace Karkinolution {
 					Karkinolution::Binary::Serializer::Core::FourBytes
 					serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat);
 					VecSRI::BytesArrays::Vec
-					serialize_position(const Karkinolution::Math::Vec::Vec3 &position);
+					serialize_position(const Karkinolution::Math::Vec::Vec2 &position);
 					Units::BytesArrays::Size
 					serialize_size(const Karkinolution::Math::Units::Size &size);
 
@@ -80,7 +76,7 @@ namespace Karkinolution {
 					get_id(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Organisms::RawMeat
 					get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec3
+					Karkinolution::Math::Vec::Vec2
 					get_position(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Math::Units::Size get_size(const std::vector<std::byte> &payload,
 															  std::size_t                   offset);

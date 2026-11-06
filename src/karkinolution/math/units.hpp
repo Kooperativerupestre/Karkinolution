@@ -3,7 +3,6 @@
 #include <karkinolution/math/stats/compile_values.hpp>
 
 namespace Karkinolution {
-
 	namespace Math {
 		class FloatValue {
 			public:
@@ -29,18 +28,17 @@ namespace Karkinolution {
 				T value;
 
 				template <typename U>
-
 				IntegerValue(U value)
 					: value(static_cast<T>(value)) {}
 		};
 
-		class Volume : public DoubleValue {
+		class Area : public DoubleValue {
 			public:
 
 				using DoubleValue::DoubleValue;
 		};
 
-		class SharedVolume : public LV::CT::NormalizedValue<double> {
+		class SharedArea : public LV::CT::NormalizedValue<double> {
 			public:
 
 				using NormalizedValue::NormalizedValue;
@@ -77,7 +75,7 @@ namespace Karkinolution {
 					using DoubleValue::DoubleValue;
 			};
 
-			struct Lateral : public Meter {
+			struct Width : public Meter {
 					using Meter::Meter;
 			};
 
@@ -85,33 +83,25 @@ namespace Karkinolution {
 					using Meter::Meter;
 			};
 
-			struct Depth : public Meter {
-					using Meter::Meter;
-			};
-
 			class Size {
 				public:
 
-					Lateral lateral;
-					Height  height;
-					Depth   depth;
+					Width  width;
+					Height height;
 
-					static Volume volume(Lateral lateral, Height height, Depth back) {
-						return Volume{lateral.value * height.value * back.value};
+					static Area area(Width width, Height height) {
+						return Area{width.value * height.value};
 					}
 
 					void modify(const LV::CT::NormalizedValue<float> &ratio) {
-						lateral.value *= ratio.value();
+						width.value *= ratio.value();
 						height.value *= ratio.value();
-						depth.value *= ratio.value();
 					}
 
-					Volume volume() const {
-						return Size::volume(lateral, height, depth);
+					Area area() const {
+						return Size::area(width, height);
 					}
 			};
 		} // namespace Units
-
-
 	} // namespace Math
 } // namespace Karkinolution

@@ -161,14 +161,14 @@ namespace Karkinolution {
 					Components                                        components;
 
 					Math::Geometry::Radius radius;
-					Vec3                   position;
+					Vec2                   position;
 					SoilPieceId            id;
 			};
 
 			namespace SoilF {
 				SoilPiece gen_soil_piece(SoilTypes                     s_t,
 										 const Math::Geometry::Radius &radius,
-										 const Vec3                   &position);
+										 const Vec2                   &position);
 			} // namespace SoilF
 
 

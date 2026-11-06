@@ -9,7 +9,7 @@
 namespace Karkinolution::Organisms::Entities::Creature::Actions {
 
 	struct MovePreset {
-			Karkinolution::Math::Vec::Vec3 new_coord;
+			Karkinolution::Math::Vec::Vec2 new_coord;
 	};
 
 	struct EatPreset {

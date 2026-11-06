@@ -91,17 +91,17 @@ namespace Karkinolution::Organisms::Entities {
 		return egg.build_id();
 	}
 
-	Karkinolution::Math::Vec::Vec3 &EntityGetters::get_position(Entity &entity) {
+	Karkinolution::Math::Vec::Vec2 &EntityGetters::get_position(Entity &entity) {
 		return std::visit(
-			[](auto &entity) -> Karkinolution::Math::Vec::Vec3 & {
+			[](auto &entity) -> Karkinolution::Math::Vec::Vec2 & {
 				return entity.position;
 			},
 			entity);
 	}
 
-	const Karkinolution::Math::Vec::Vec3 &EntityGetters::get_position(const Entity &entity) {
+	const Karkinolution::Math::Vec::Vec2 &EntityGetters::get_position(const Entity &entity) {
 		return std::visit(
-			[](const auto &entity) -> const Karkinolution::Math::Vec::Vec3 & {
+			[](const auto &entity) -> const Karkinolution::Math::Vec::Vec2 & {
 				return entity.position;
 			},
 			entity);

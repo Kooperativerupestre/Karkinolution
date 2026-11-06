@@ -17,9 +17,8 @@ namespace Karkinolution {
 
 						using X = Field<0, AXIS_SIZE>;
 						using Y = Next<X, AXIS_SIZE>;
-						using Z = Next<Y, AXIS_SIZE>;
 
-						inline constexpr std::size_t TOTAL_SIZE = Z::END;
+						inline constexpr std::size_t TOTAL_SIZE = Y::END;
 					} // namespace Layout
 
 					namespace BytesArrays {
@@ -27,11 +26,11 @@ namespace Karkinolution {
 					} // namespace BytesArrays
 
 					/*
-					 * Always, a Karkinolution::Math::Vec::Vec3 must be like this
-					 * [x](8 bytes)[y](8 bytes)[z](8 bytes)
+					 * Always, a Karkinolution::Math::Vec::Vec2 must be like this
+					 * [x](8 bytes)[y](8 bytes)
 					 */
 
-					BytesArrays::Vec serialize_vec(const Karkinolution::Math::Vec::Vec3 &vec);
+					BytesArrays::Vec serialize_vec(const Karkinolution::Math::Vec::Vec2 &vec);
 				} // namespace Vec
 			} // namespace SRI
 
@@ -39,8 +38,7 @@ namespace Karkinolution {
 				namespace Vec {
 					double get_x(const std::vector<std::byte> &payload, std::size_t offset);
 					double get_y(const std::vector<std::byte> &payload, std::size_t offset);
-					double get_z(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec3 get_vec(const std::vector<std::byte> &payload,
+					Karkinolution::Math::Vec::Vec2 get_vec(const std::vector<std::byte> &payload,
 														   std::size_t                   offset);
 				} // namespace Vec
 			} // namespace DSI

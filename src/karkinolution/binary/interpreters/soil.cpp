@@ -192,7 +192,7 @@ Karkinolution::Core::Id::BaseIdType SoilDSI::get_id(const std::vector<std::byte>
 		offset);
 }
 
-Karkinolution::Math::Vec::Vec3 SoilDSI::get_position(const std::vector<std::byte> &payload,
+Karkinolution::Math::Vec::Vec2 SoilDSI::get_position(const std::vector<std::byte> &payload,
 													 std::size_t                   offset) {
 	return VecDSI::get_vec(payload, offset);
 }

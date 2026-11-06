@@ -20,12 +20,12 @@ namespace Karkinolution {
 
 		using Karkinolution::Core::Id::BaseIdType;
 		using Karkinolution::Errors::SimulationError;
+		using Karkinolution::Math::Area;
 		using Karkinolution::Math::DoubleValue;
 		using Karkinolution::Math::Efficiency;
 		using Karkinolution::Math::FloatValue;
 		using Karkinolution::Math::Quality;
-		using Karkinolution::Math::SharedVolume;
-		using Karkinolution::Math::Volume;
+		using Karkinolution::Math::SharedArea;
 		using Karkinolution::Math::LV::RT::IntegerLimited;
 		using Karkinolution::Math::LV::RT::IntegerWithMax;
 		using Karkinolution::Math::LV::RT::RuntimeLimitedValue;
@@ -34,8 +34,7 @@ namespace Karkinolution {
 		using Karkinolution::Math::Units::Size;
 		namespace KRandom = Karkinolution::Functional::KRandom;
 		using Karkinolution::Math::LV::CT::GreaterThanZeroValue;
-		using Karkinolution::Math::Units::Depth;
 		using Karkinolution::Math::Units::Height;
-		using Karkinolution::Math::Units::Lateral;
+		using Karkinolution::Math::Units::Width;
 	} // namespace Organisms
 } // namespace Karkinolution

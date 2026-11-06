@@ -31,7 +31,7 @@ An SRI defines binary layout protocols and converts domain types into byte seque
 
 ### Conventions:
 1. **Namespace**: `<Domain>SRI` (e.g., `VecSRI`, `PhysicsUnitsSRI`, `StatsSRI`).
-2. **Offsets**: Define field offsets as `inline constexpr std::size_t TO_GET_<FIELD>_OFFSET` **only when representing compound or aggregator types** (e.g., `Size`, `Vec3`, `Stat`). Isolated primitive values or standalone wrappers (e.g., `Radius`, `Meter`, `Circumference`) must **not** define offset constants.
+2. **Offsets**: Define field offsets as `inline constexpr std::size_t TO_GET_<FIELD>_OFFSET` **only when representing compound or aggregator types** (e.g., `Size`, `Vec2`, `Stat`). Isolated primitive values or standalone wrappers (e.g., `Radius`, `Meter`, `Circumference`) must **not** define offset constants.
 3. **Fixed Buffer Types**: Define `using <Type>Bytes = std::array<std::byte, N>` for compound layouts.
 4. **Protocol Documentation**: Document the exact byte layout protocol in the SRI header.
 5. **Functions**: `serialize_<entity>(<DomainType>)` returning `Serializer::Types::*Bytes` or fixed array.
@@ -101,7 +101,7 @@ BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t of
 
 These represent shared mathematical/geometric types that do not belong to a single high-level domain and are composed internally (i.e., their fields have a fixed relative layout).
 
-- **Auxiliary getters** (`get_x`, `get_y`, `get_z`, etc.) **DO** add the field's layout offset internally. This is correct because these types are always read as a self-contained block; the caller provides only the base offset of the block.
+- **Auxiliary getters** (`get_x`, `get_y`, etc.) **DO** add the field's layout offset internally. This is correct because these types are always read as a self-contained block; the caller provides only the base offset of the block.
 - **The principal getter** (`get_vec`, `deserialize_size`, etc.) passes its `offset` directly to each auxiliary — the auxiliary handles its own relative position.
 
 **Correct pattern (mid-level):**
@@ -112,8 +112,8 @@ double VecDSI::get_x(const std::vector<std::byte> &payload, std::size_t offset) 
 }
 
 // Principal — passes offset as-is; each auxiliary knows its relative position
-Vec3 VecDSI::get_vec(const std::vector<std::byte> &payload, std::size_t offset) {
-    return Vec3(get_x(payload, offset), get_y(payload, offset), get_z(payload, offset));
+Vec2 VecDSI::get_vec(const std::vector<std::byte> &payload, std::size_t offset) {
+    return Vec2(get_x(payload, offset), get_y(payload, offset));
 }
 ```
 
@@ -131,7 +131,7 @@ For **high-level domain DSIs**, tests must prove that auxiliary getters do **not
 
 For **mid-level composite DSIs**, tests must prove that auxiliary getters **do** add their field offset internally when given the base offset of the composite block:
 
-1. Construct a payload that serializes the full composite (e.g., a `Vec3`).
+1. Construct a payload that serializes the full composite (e.g., a `Vec2`).
 2. Call each auxiliary getter with the base offset of the block (not the field's absolute position).
 3. Assert the result matches the expected field value.
 

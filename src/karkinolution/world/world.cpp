@@ -48,7 +48,7 @@ namespace Karkinolution::World {
 	}
 
 	bool Karkinolution::World::World::update(Karkinolution::Organisms::Entities::EntityId id,
-											 const Karkinolution::Math::Vec::Vec3 &new_position) {
+											 const Karkinolution::Math::Vec::Vec2 &new_position) {
 		if (!exists_entity(id)) {
 			return false;
 		}

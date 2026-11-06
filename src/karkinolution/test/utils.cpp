@@ -13,9 +13,8 @@ Karkinolution::World::World TestUtils::make_small_world() {
 	Karkinolution::World::WorldPreset preset{
 		.seed = 1,
 		.size =
-			Karkinolution::Math::Units::Size{.lateral = Karkinolution::Math::Units::Lateral{100.0},
-											 .height  = Karkinolution::Math::Units::Height{100.0},
-											 .depth   = Karkinolution::Math::Units::Depth{100.0}},
+			Karkinolution::Math::Units::Size{.width  = Karkinolution::Math::Units::Width{100.0},
+											 .height = Karkinolution::Math::Units::Height{100.0}},
 		.epsilon = 5.0f};
 	return {preset};
 }

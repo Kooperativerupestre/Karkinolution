@@ -1,17 +1,17 @@
+#include "karkinolution/core/id.hpp"
+#include "karkinolution/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/corpse/physiology.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/creature/physiology.hpp"
 #include "karkinolution/organism/entities/embryo/physiology.hpp"
 #include "karkinolution/organism/registry.hpp"
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
 
 #include <gtest/gtest.h>
 
 using Karkinolution::Core::Id::gen_id;
-using Karkinolution::Math::Vec::Vec3;
-using Karkinolution::Math::Volume;
+using Karkinolution::Math::Area;
 using Karkinolution::Math::LV::CT::NormalizedValue;
+using Karkinolution::Math::Vec::Vec2;
 using Karkinolution::Organisms::Energy;
 using Karkinolution::Organisms::Health;
 using Karkinolution::Organisms::Life;
@@ -21,15 +21,19 @@ using CreatureEntity = Karkinolution::Organisms::Entities::Creature::Creature;
 using Karkinolution::Organisms::Entities::Creature::CreatureSpecies;
 using Karkinolution::Organisms::Entities::Creature::Gender;
 using Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint;
-namespace CreatureConstructor = Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor;
+namespace CreatureConstructor =
+	Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor;
 using Karkinolution::Organisms::Entities::Embryo::Embryo;
 
-namespace EntityIDF = Karkinolution::Organisms::Entities;
+namespace EntityIDF          = Karkinolution::Organisms::Entities;
 namespace CreaturePhysiology = Karkinolution::Organisms::Entities::Creature::Physiology;
-namespace CreatureGrowingPhysiology = Karkinolution::Organisms::Entities::Creature::Physiology::Growing;
+namespace CreatureGrowingPhysiology =
+	Karkinolution::Organisms::Entities::Creature::Physiology::Growing;
 namespace CorpsePhysiology = Karkinolution::Organisms::Entities::Corpse::Physiology;
-namespace EmbryoPhysiology = Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoPhysiology;
-namespace EmbryoGrowingPhysiology = Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoGrowingPhysiology;
+namespace EmbryoPhysiology =
+	Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoPhysiology;
+namespace EmbryoGrowingPhysiology =
+	Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoGrowingPhysiology;
 
 using Karkinolution::Organisms::Entities::Embryo::Physiology::BASE_VALUE_LIFE_INCREMENT;
 
@@ -42,7 +46,7 @@ TEST(CreaturePhysiology, IsDeadIdempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	OrganismRegistry registry;
 	registry.entities_registry.add(std::move(creat));
@@ -74,21 +78,21 @@ TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	const Embryo embryo{.id       = 42,
 						.energy   = Energy{50.0f, 100.0f},
 						.life     = Life{80.0f, 100.0f},
 						.health   = Health{0.9f},
-						.volume   = Volume{0.5f},
+						.area     = Area{0.5f},
 						.genome   = creat.genome,
 						.age      = 5,
-						.position = Vec3{1.0f, 2.0f, 3.0f}};
+						.position = Vec2{1.0f, 2.0f}};
 
 	const float initial_energy = embryo.energy.value();
 	const float initial_life   = embryo.life.value();
 	const float initial_health = embryo.health.value();
-	const float initial_volume = embryo.volume.value;
+	const float initial_volume = embryo.area.value;
 
 	CreatureEntity neonate_1 = CreaturePhysiology::hatch_embryo(embryo);
 	CreatureEntity neonate_2 = CreaturePhysiology::hatch_embryo(embryo);
@@ -96,7 +100,7 @@ TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 	ASSERT_FLOAT_EQ(embryo.energy.value(), initial_energy);
 	ASSERT_FLOAT_EQ(embryo.life.value(), initial_life);
 	ASSERT_FLOAT_EQ(embryo.health.value(), initial_health);
-	ASSERT_FLOAT_EQ(embryo.volume.value, initial_volume);
+	ASSERT_FLOAT_EQ(embryo.area.value, initial_volume);
 
 	ASSERT_FLOAT_EQ(neonate_1.body.metabolism.energy.value(),
 					neonate_2.body.metabolism.energy.value());
@@ -104,7 +108,6 @@ TEST(CreaturePhysiology, HatchEmbryoIdempotency) {
 	ASSERT_FLOAT_EQ(neonate_1.body.vital.health.value(), neonate_2.body.vital.health.value());
 	ASSERT_FLOAT_EQ(neonate_1.position.x, neonate_2.position.x);
 	ASSERT_FLOAT_EQ(neonate_1.position.y, neonate_2.position.y);
-	ASSERT_FLOAT_EQ(neonate_1.position.z, neonate_2.position.z);
 	ASSERT_EQ(neonate_1.ontology.id, neonate_2.ontology.id);
 }
 
@@ -117,23 +120,18 @@ TEST(CreatureGrowingPhysiology, Idempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	OrganismRegistry registry;
 	registry.entities_registry.add(std::move(creat));
-	const auto &creature = registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
+	const auto &creature =
+		registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
 
 	const auto lateral_increment_1 =
-		CreatureGrowingPhysiology::get_new_lateral_increment(creature, registry.entities_registry);
+		CreatureGrowingPhysiology::get_new_width_increment(creature, registry.entities_registry);
 	const auto lateral_increment_2 =
-		CreatureGrowingPhysiology::get_new_lateral_increment(creature, registry.entities_registry);
+		CreatureGrowingPhysiology::get_new_width_increment(creature, registry.entities_registry);
 	ASSERT_FLOAT_EQ(lateral_increment_1, lateral_increment_2);
-
-	const auto depth_increment_1 =
-		CreatureGrowingPhysiology::get_new_depth_increment(creature, registry.entities_registry);
-	const auto depth_increment_2 =
-		CreatureGrowingPhysiology::get_new_depth_increment(creature, registry.entities_registry);
-	ASSERT_FLOAT_EQ(depth_increment_1, depth_increment_2);
 
 	const auto height_increment_1 =
 		CreatureGrowingPhysiology::get_new_height_increment(creature, registry.entities_registry);
@@ -142,16 +140,20 @@ TEST(CreatureGrowingPhysiology, Idempotency) {
 	ASSERT_FLOAT_EQ(height_increment_1, height_increment_2);
 
 	const auto max_energy_1 =
-		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, registry.entities_registry);
+		CreatureGrowingPhysiology::get_new_max_energy_increment(creature,
+																registry.entities_registry);
 	const auto max_energy_2 =
-		CreatureGrowingPhysiology::get_new_max_energy_increment(creature, registry.entities_registry);
+		CreatureGrowingPhysiology::get_new_max_energy_increment(creature,
+																registry.entities_registry);
 	ASSERT_FLOAT_EQ(max_energy_1.gain, max_energy_2.gain);
 	ASSERT_FLOAT_EQ(max_energy_1.cost.reserved_energy, max_energy_2.cost.reserved_energy);
 
-	const auto max_reserved_1 =
-		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, registry.entities_registry);
-	const auto max_reserved_2 =
-		CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(creature, registry.entities_registry);
+	const auto max_reserved_1 = CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(
+		creature,
+		registry.entities_registry);
+	const auto max_reserved_2 = CreatureGrowingPhysiology::get_new_max_energy_reserved_increment(
+		creature,
+		registry.entities_registry);
 	ASSERT_FLOAT_EQ(max_reserved_1.gain, max_reserved_2.gain);
 	ASSERT_FLOAT_EQ(max_reserved_1.cost.reserved_energy, max_reserved_2.cost.reserved_energy);
 
@@ -172,11 +174,12 @@ TEST(CorpsePhysiology, GenerateCorpseFromCreatureIdempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{1.0f, 2.0f, 3.0f}});
+															  .position = Vec2{1.0f, 2.0f}});
 
 	OrganismRegistry registry;
 	registry.entities_registry.add(std::move(creat));
-	const auto &creature = registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
+	const auto &creature =
+		registry.entities_registry.at_creature(EntityIDF::create_creature_id(id));
 
 	const float initial_energy = creature.body.metabolism.energy.value();
 	const float initial_life   = creature.body.vital.life.value();
@@ -190,10 +193,8 @@ TEST(CorpsePhysiology, GenerateCorpseFromCreatureIdempotency) {
 	ASSERT_FLOAT_EQ(corpse_1.raw_meat.value, corpse_2.raw_meat.value);
 	ASSERT_FLOAT_EQ(corpse_1.position.x, corpse_2.position.x);
 	ASSERT_FLOAT_EQ(corpse_1.position.y, corpse_2.position.y);
-	ASSERT_FLOAT_EQ(corpse_1.position.z, corpse_2.position.z);
-	ASSERT_FLOAT_EQ(corpse_1.size.lateral.value, corpse_2.size.lateral.value);
+	ASSERT_FLOAT_EQ(corpse_1.size.width.value, corpse_2.size.width.value);
 	ASSERT_FLOAT_EQ(corpse_1.size.height.value, corpse_2.size.height.value);
-	ASSERT_FLOAT_EQ(corpse_1.size.depth.value, corpse_2.size.depth.value);
 }
 
 TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
@@ -203,16 +204,16 @@ TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	const Embryo embryo{.id       = 42,
 						.energy   = Energy{50.0f, 100.0f},
 						.life     = Life{80.0f, 100.0f},
 						.health   = Health{0.9f},
-						.volume   = Volume{0.5f},
+						.area     = Area{0.5f},
 						.genome   = creat.genome,
 						.age      = 5,
-						.position = Vec3{4.0f, 5.0f, 6.0f}};
+						.position = Vec2{4.0f, 5.0f}};
 
 	const float initial_energy = embryo.energy.value();
 	const float initial_life   = embryo.life.value();
@@ -226,10 +227,8 @@ TEST(CorpsePhysiology, GenerateCorpseFromEmbryoIdempotency) {
 	ASSERT_FLOAT_EQ(corpse_1.raw_meat.value, corpse_2.raw_meat.value);
 	ASSERT_FLOAT_EQ(corpse_1.position.x, corpse_2.position.x);
 	ASSERT_FLOAT_EQ(corpse_1.position.y, corpse_2.position.y);
-	ASSERT_FLOAT_EQ(corpse_1.position.z, corpse_2.position.z);
-	ASSERT_FLOAT_EQ(corpse_1.size.lateral.value, corpse_2.size.lateral.value);
+	ASSERT_FLOAT_EQ(corpse_1.size.width.value, corpse_2.size.width.value);
 	ASSERT_FLOAT_EQ(corpse_1.size.height.value, corpse_2.size.height.value);
-	ASSERT_FLOAT_EQ(corpse_1.size.depth.value, corpse_2.size.depth.value);
 }
 
 // --- EmbryoPhysiology ---
@@ -241,16 +240,16 @@ TEST(EmbryoPhysiology, IsDeadIdempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	Embryo embryo{.id       = 42,
 				  .energy   = Energy{50.0f, 100.0f},
 				  .life     = Life{80.0f, 100.0f},
 				  .health   = Health{0.9f},
-				  .volume   = Volume{0.5f},
+				  .area     = Area{0.5f},
 				  .genome   = creat.genome,
 				  .age      = 5,
-				  .position = Vec3{1.0f, 2.0f, 3.0f}};
+				  .position = Vec2{1.0f, 2.0f}};
 
 	const bool dead_1 = EmbryoPhysiology::is_dead(embryo);
 	const bool dead_2 = EmbryoPhysiology::is_dead(embryo);
@@ -278,16 +277,16 @@ TEST(EmbryoPhysiology, BasalMetabolismIdempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	const Embryo embryo{.id       = 42,
 						.energy   = Energy{50.0f, 100.0f},
 						.life     = Life{80.0f, 100.0f},
 						.health   = Health{0.9f},
-						.volume   = Volume{0.5f},
+						.area     = Area{0.5f},
 						.genome   = creat.genome,
 						.age      = 5,
-						.position = Vec3{1.0f, 2.0f, 3.0f}};
+						.position = Vec2{1.0f, 2.0f}};
 
 	const float meta_1 = EmbryoPhysiology::basal_metabolism(embryo);
 	const float meta_2 = EmbryoPhysiology::basal_metabolism(embryo);
@@ -303,16 +302,16 @@ TEST(EmbryoGrowingPhysiology, Idempotency) {
 															  .id       = id,
 															  .name     = "A3",
 															  .gender   = Gender::FEMALE,
-															  .position = Vec3{0.0, 0.0, 0.0}});
+															  .position = Vec2{0.0, 0.0}});
 
 	const Embryo embryo{.id       = 42,
 						.energy   = Energy{50.0f, 100.0f},
 						.life     = Life{80.0f, 100.0f},
 						.health   = Health{0.9f},
-						.volume   = Volume{0.5f},
+						.area     = Area{0.5f},
 						.genome   = creat.genome,
 						.age      = 5,
-						.position = Vec3{1.0f, 2.0f, 3.0f}};
+						.position = Vec2{1.0f, 2.0f}};
 
 	const auto inc_1 = EmbryoGrowingPhysiology::get_increment(NormalizedValue<float>{0.4f},
 															  BASE_VALUE_LIFE_INCREMENT);
@@ -345,8 +344,8 @@ TEST(EmbryoGrowingPhysiology, Idempotency) {
 	ASSERT_FLOAT_EQ(health_1.cost.value(), health_2.cost.value());
 	ASSERT_FLOAT_EQ(health_1.gain, health_2.gain);
 
-	const auto volume_1 = EmbryoGrowingPhysiology::get_new_volume_increment(embryo);
-	const auto volume_2 = EmbryoGrowingPhysiology::get_new_volume_increment(embryo);
+	const auto volume_1 = EmbryoGrowingPhysiology::get_new_area_increment(embryo);
+	const auto volume_2 = EmbryoGrowingPhysiology::get_new_area_increment(embryo);
 	ASSERT_FLOAT_EQ(volume_1.cost.value(), volume_2.cost.value());
 	ASSERT_FLOAT_EQ(volume_1.gain, volume_2.gain);
 }

@@ -15,7 +15,7 @@ namespace Karkinolution::Organisms::Nature {
 		std::unreachable();
 	}
 
-	const Vec3 &NatureGetters::get_position(const NatureEntity &nature) {
+	const Vec2 &NatureGetters::get_position(const NatureEntity &nature) {
 		if (std::holds_alternative<Grass::Grass>(nature)) {
 			return std::get<Grass::Grass>(nature).position;
 		}

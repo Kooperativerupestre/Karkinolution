@@ -24,7 +24,6 @@ namespace Karkinolution {
 					 * # begin position
 					 * [2 -> 9 - x]
 					 * [10 -> 17 - y]
-					 * [18 -> 25 - z]
 					 * # end position
 					 * [26 - name size]
 					 * [27 -> 90 - name]
@@ -39,8 +38,7 @@ namespace Karkinolution {
 						using Specie    = Next<Gender, 1>;
 						using PositionX = Next<Specie, VecSRI::Layout::AXIS_SIZE>;
 						using PositionY = Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
-						using PositionZ = Next<PositionY, VecSRI::Layout::AXIS_SIZE>;
-						using NameSize  = Next<PositionZ, 1>;
+						using NameSize  = Next<PositionY, 1>;
 						using Name      = Next<NameSize, MAX_NAME_SIZE>;
 						using Id        = Next<Name, 8>;
 						inline constexpr std::size_t TOTAL_SIZE = Id::END;
@@ -68,7 +66,7 @@ namespace Karkinolution {
 								using HasSpecies  = Next<Gender, 1>;
 								using Species     = Next<HasSpecies, 1>;
 								using HasPosition = Next<Species, 1>;
-								using Position    = Next<HasPosition, 24>;
+								using Position    = Next<HasPosition, VecSRI::Layout::TOTAL_SIZE>;
 								using HasName     = Next<Position, 1>;
 								using NameSize    = Next<HasName, 1>;
 								using Name        = Next<HasName, Creature::Layout::MAX_NAME_SIZE>;
@@ -86,7 +84,7 @@ namespace Karkinolution {
 							std::optional<
 								Karkinolution::Organisms::Entities::Creature::CreatureSpecies>
 																				 specie,
-							const std::optional<Karkinolution::Math::Vec::Vec3> &position,
+							const std::optional<Karkinolution::Math::Vec::Vec2> &position,
 							const std::optional<std::string>                    &name);
 					} // namespace Request
 				} // namespace Creature

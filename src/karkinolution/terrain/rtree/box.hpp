@@ -7,20 +7,19 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		MIN
 	};
 
-	struct Box3D {
-			Karkinolution::Math::Vec::Vec3 max, min;
+	struct Box2D {
+			Karkinolution::Math::Vec::Vec2 max, min;
 
-			const Karkinolution::Math::Vec::Vec3 &operator[](Bound) const noexcept;
-			Karkinolution::Math::Vec::Vec3 &operator[](Bound) noexcept;
+			const Karkinolution::Math::Vec::Vec2 &operator[](Bound) const noexcept;
+			Karkinolution::Math::Vec::Vec2 &operator[](Bound) noexcept;
 
 			[[nodiscard]] double                         width() const noexcept;
 			[[nodiscard]] double                         height() const noexcept;
-			[[nodiscard]] double                         depth() const noexcept;
-			[[nodiscard]] double                         volume() const noexcept;
+			[[nodiscard]] double                         area() const noexcept;
 			[[nodiscard]] double                         margin() const noexcept;
-			[[nodiscard]] Karkinolution::Math::Vec::Vec3 center() const noexcept;
+			[[nodiscard]] Karkinolution::Math::Vec::Vec2 center() const noexcept;
 
-			[[nodiscard]] Box3D operator+(const Box3D &other) const;
+			[[nodiscard]] Box2D operator+(const Box2D &other) const;
 	};
 
 	constexpr size_t index(Karkinolution::Math::Vec::Axis axis) {
@@ -31,12 +30,12 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		return static_cast<size_t>(bound);
 	}
 
-	namespace Box3DMotor {
-		[[nodiscard]] bool   intersect(const Box3D &A, const Box3D &B);
-		[[nodiscard]] double overlap_volume(const Box3D &A, const Box3D &B);
-		[[nodiscard]] Box3D  intersection(const Box3D &A, const Box3D &B);
-		[[nodiscard]] Box3D  combine(const Box3D &A, const Box3D &B);
-		[[nodiscard]] double enlargement(const Box3D &current, const Box3D &canditate);
-		[[nodiscard]] bool   contains(const Box3D &container, const Box3D &contained);
-	} // namespace Box3DMotor
+	namespace Box2DMotor {
+		[[nodiscard]] bool   intersect(const Box2D &A, const Box2D &B);
+		[[nodiscard]] double overlap_area(const Box2D &A, const Box2D &B);
+		[[nodiscard]] Box2D  intersection(const Box2D &A, const Box2D &B);
+		[[nodiscard]] Box2D  combine(const Box2D &A, const Box2D &B);
+		[[nodiscard]] double enlargement(const Box2D &current, const Box2D &canditate);
+		[[nodiscard]] bool   contains(const Box2D &container, const Box2D &contained);
+	} // namespace Box2DMotor
 } // namespace Karkinolution::Terrain::Trees::RTree

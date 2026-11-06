@@ -6,7 +6,7 @@
 #include <karkinolution/organism/entities/physic/motor.hpp>
 
 PhysicAnalyzer::CanBeOutput
-PhysicMotor::move(EntityId id, const Vec3 &new_position, Karkinolution::World::World &world) {
+PhysicMotor::move(EntityId id, const Vec2 &new_position, Karkinolution::World::World &world) {
 	auto &entity = world.at_entity(id);
 
 	const auto can_be = Analyzer::can_be(entity, world);

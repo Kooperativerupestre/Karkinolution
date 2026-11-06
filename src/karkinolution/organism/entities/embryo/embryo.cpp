@@ -11,8 +11,8 @@ namespace Karkinolution::Organisms::Entities::Embryo {
 		return energy.max() / genome.calculate_embryo_average_max_energy();
 	}
 
-	[[nodiscard]] double Embryo::specie_relative_volume() const {
-		return volume.value / genome.calculate_embryo_average_volume().value;
+	[[nodiscard]] double Embryo::specie_relative_area() const {
+		return area.value / genome.calculate_embryo_average_area().value;
 	}
 
 	[[nodiscard]] float Embryo::specie_relative_life() const {

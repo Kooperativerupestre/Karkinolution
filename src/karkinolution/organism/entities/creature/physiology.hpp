@@ -37,10 +37,7 @@ namespace Karkinolution {
 						get_new_max_life_increment(const Creature         &creature,
 												   const EntitiesRegistry &organisms);
 
-						float get_new_lateral_increment(const Creature         &creature,
-														const EntitiesRegistry &organisms);
-
-						float get_new_depth_increment(const Creature         &creature,
+						float get_new_width_increment(const Creature         &creature,
 													  const EntitiesRegistry &organisms);
 
 						float get_new_height_increment(const Creature         &creature,
@@ -53,7 +50,7 @@ namespace Karkinolution {
 					bool             is_dead(const Creature &creature);
 
 					// Hatches a mature embryo into a fully-initialised Creature.
-					// Maps the embryo's current energy, life, health, volume, genome and
+					// Maps the embryo's current energy, life, health, area, genome and
 					// position directly onto the newborn. Gender is randomly assigned here.
 					[[nodiscard]] Creature hatch_embryo(const Embryo::Embryo &embryo);
 

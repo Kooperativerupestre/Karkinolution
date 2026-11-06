@@ -9,7 +9,7 @@ namespace Karkinolution {
 			namespace Physic {
 				namespace Physiology {
 					GreaterThanZeroValue<float> get_move_cost(const Entities::Entity &entity,
-															  const Vec3             &new_position);
+															  const Vec2             &new_position);
 				} // namespace Physiology
 			} // namespace Physic
 		} // namespace Entities

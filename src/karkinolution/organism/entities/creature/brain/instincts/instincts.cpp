@@ -193,7 +193,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 		bool const want_to_move = Karkinolution::Functional::KRandom::choice_bool(0.5, 0.5);
 
 		if (want_to_move) {
-			const Vec3 new_coord = creature.position + Vec3{1.0, 0.0, 0.0};
+			const Vec2 new_coord = creature.position + Vec2{1.0, 0.0};
 			return NothingPresets{Actions::MovePreset{.new_coord = new_coord}};
 		}
 		return NothingPresets{std::monostate()};

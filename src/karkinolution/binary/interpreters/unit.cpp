@@ -7,8 +7,8 @@
 #include <karkinolution/binary/interpreters/stats.hpp>
 
 // SRI implementations
-UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_volume(Karkinolution::Math::Volume volume) {
-	return Karkinolution::Binary::Serializer::convert_double(volume.value);
+UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_area(Karkinolution::Math::Area area) {
+	return Karkinolution::Binary::Serializer::convert_double(area.value);
 }
 
 UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_mass(Karkinolution::Math::Units::Mass mass) {
@@ -24,9 +24,8 @@ UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_meter(Karkinolution::Math::Uni
 	return Karkinolution::Binary::Serializer::convert_double(meter.value);
 }
 
-UnitsSRI::StandardPhysicBytes
-UnitsSRI::serialize_lateral(Karkinolution::Math::Units::Lateral lateral) {
-	return Karkinolution::Binary::Serializer::convert_double(lateral.value);
+UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_width(Karkinolution::Math::Units::Width width) {
+	return Karkinolution::Binary::Serializer::convert_double(width.value);
 }
 
 UnitsSRI::StandardPhysicBytes
@@ -34,28 +33,21 @@ UnitsSRI::serialize_height(Karkinolution::Math::Units::Height height) {
 	return Karkinolution::Binary::Serializer::convert_double(height.value);
 }
 
-UnitsSRI::StandardPhysicBytes UnitsSRI::serialize_depth(Karkinolution::Math::Units::Depth depth) {
-	return Karkinolution::Binary::Serializer::convert_double(depth.value);
-}
-
 UnitsSRI::BytesArrays::Size UnitsSRI::serialize_size(const Karkinolution::Math::Units::Size &size) {
 	UnitsSRI::BytesArrays::Size bytes;
 
-	const auto lateral_serialized = UnitsSRI::serialize_lateral(size.lateral);
-	Karkinolution::Binary::Utils::append_bytes(bytes, lateral_serialized, Layout::Lateral::OFFSET);
+	const auto width_serialized = UnitsSRI::serialize_width(size.width);
+	Karkinolution::Binary::Utils::append_bytes(bytes, width_serialized, Layout::Width::OFFSET);
 
 	const auto height_serialized = UnitsSRI::serialize_height(size.height);
 	Karkinolution::Binary::Utils::append_bytes(bytes, height_serialized, Layout::Height::OFFSET);
-
-	const auto depth_serialized = UnitsSRI::serialize_depth(size.depth);
-	Karkinolution::Binary::Utils::append_bytes(bytes, depth_serialized, Layout::Depth::OFFSET);
 
 	return bytes;
 }
 
 StatsSRI::BytesArray::Stat
-UnitsSRI::serialize_shared_volume(const Karkinolution::Math::SharedVolume &shared_volume) {
-	return StatsSRI::serialize_normalized_value(shared_volume);
+UnitsSRI::serialize_shared_area(const Karkinolution::Math::SharedArea &shared_area) {
+	return StatsSRI::serialize_normalized_value(shared_area);
 }
 
 StatsSRI::BytesArray::Stat
@@ -69,9 +61,9 @@ UnitsSRI::serialize_quality(const Karkinolution::Math::Quality &quality) {
 }
 
 // DSI implementations
-Karkinolution::Math::Volume UnitsDSI::deserialize_volume(const std::vector<std::byte> &payload,
-														 std::size_t                   offset) {
-	return Karkinolution::Math::Volume(
+Karkinolution::Math::Area UnitsDSI::deserialize_area(const std::vector<std::byte> &payload,
+													 std::size_t                   offset) {
+	return Karkinolution::Math::Area(
 		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
@@ -93,11 +85,11 @@ Karkinolution::Math::Units::Meter UnitsDSI::deserialize_meter(const std::vector<
 		Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-Karkinolution::Math::Units::Lateral
-UnitsDSI::deserialize_lateral(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Units::Lateral(Karkinolution::Binary::Deserializer::read_double(
-		payload,
-		offset + UnitsSRI::Layout::Lateral::OFFSET));
+Karkinolution::Math::Units::Width UnitsDSI::deserialize_width(const std::vector<std::byte> &payload,
+															  std::size_t offset) {
+	return Karkinolution::Math::Units::Width(
+		Karkinolution::Binary::Deserializer::read_double(payload,
+														 offset + UnitsSRI::Layout::Width::OFFSET));
 }
 
 Karkinolution::Math::Units::Height
@@ -107,25 +99,17 @@ UnitsDSI::deserialize_height(const std::vector<std::byte> &payload, std::size_t 
 		offset + UnitsSRI::Layout::Height::OFFSET));
 }
 
-Karkinolution::Math::Units::Depth UnitsDSI::deserialize_depth(const std::vector<std::byte> &payload,
-															  std::size_t offset) {
-	return Karkinolution::Math::Units::Depth(
-		Karkinolution::Binary::Deserializer::read_double(payload,
-														 offset + UnitsSRI::Layout::Depth::OFFSET));
-}
-
 Karkinolution::Math::Units::Size UnitsDSI::deserialize_size(const std::vector<std::byte> &payload,
 															std::size_t                   offset) {
-	const auto lateral = deserialize_lateral(payload, offset);
-	const auto height  = deserialize_height(payload, offset);
-	const auto depth   = deserialize_depth(payload, offset);
+	const auto width  = deserialize_width(payload, offset);
+	const auto height = deserialize_height(payload, offset);
 
-	return Karkinolution::Math::Units::Size{.lateral = lateral, .height = height, .depth = depth};
+	return Karkinolution::Math::Units::Size{.width = width, .height = height};
 }
 
-Karkinolution::Math::SharedVolume
-UnitsDSI::deserialize_shared_volume(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::SharedVolume(StatsDSI::get_value<double>(payload, offset));
+Karkinolution::Math::SharedArea
+UnitsDSI::deserialize_shared_area(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Math::SharedArea(StatsDSI::get_value<double>(payload, offset));
 }
 
 Karkinolution::Math::Efficiency

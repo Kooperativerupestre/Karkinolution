@@ -66,8 +66,8 @@ namespace Karkinolution {
 				EntityId get_id(const Embryo::Embryo &embryo);
 				EntityId get_id(const Egg::Egg &egg);
 
-				Vec3       &get_position(Entity &entity);
-				const Vec3 &get_position(const Entity &entity);
+				Vec2       &get_position(Entity &entity);
+				const Vec2 &get_position(const Entity &entity);
 
 				Size get_size(const Entity &entity);
 

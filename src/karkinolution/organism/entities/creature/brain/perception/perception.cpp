@@ -355,17 +355,17 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		return filter(
 			perception,
 			[&radius_box](const PerceivedEntity &entity) {
-				Vec3       position = PerceivedEntityGetters::get_position(entity);
+				Vec2       position = PerceivedEntityGetters::get_position(entity);
 				Size       size     = PerceivedEntityGetters::get_size(entity);
 				const auto box =
 					Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(size, position);
-				return Karkinolution::Terrain::Trees::RTree::Box3DMotor::intersect(radius_box, box);
+				return Karkinolution::Terrain::Trees::RTree::Box2DMotor::intersect(radius_box, box);
 			},
 			[&radius_box](const PerceivedSoil &soil) {
 				const auto box =
 					Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(soil.radius,
 																				soil.position);
-				return Karkinolution::Terrain::Trees::RTree::Box3DMotor::intersect(radius_box, box);
+				return Karkinolution::Terrain::Trees::RTree::Box2DMotor::intersect(radius_box, box);
 			},
 			std::move(nature_filter));
 	}
@@ -380,28 +380,28 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		return filter(
 			view,
 			[&radius_box](const PerceivedEntity &entity) {
-				Vec3       position = PerceivedEntityGetters::get_position(entity);
+				Vec2       position = PerceivedEntityGetters::get_position(entity);
 				Size       size     = PerceivedEntityGetters::get_size(entity);
 				const auto box =
 					Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(size, position);
-				return Karkinolution::Terrain::Trees::RTree::Box3DMotor::intersect(radius_box, box);
+				return Karkinolution::Terrain::Trees::RTree::Box2DMotor::intersect(radius_box, box);
 			},
 			[&radius_box](const PerceivedSoil &soil) {
 				const auto box =
 					Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(soil.radius,
 																				soil.position);
-				return Karkinolution::Terrain::Trees::RTree::Box3DMotor::intersect(radius_box, box);
+				return Karkinolution::Terrain::Trees::RTree::Box2DMotor::intersect(radius_box, box);
 			},
 			std::move(nature_filter));
 	}
 
 	NormalizedValue<double> PerceptionAnalyzer::normalize_distance(const Perception &perception,
-																   const Vec3       &position) {
+																   const Vec2       &position) {
 		return position.distance_to(perception.farthest()) / perception.farthest_distance();
 	}
 
 	NormalizedValue<double> PerceptionAnalyzer::normalize_distance(const PerceptionView &view,
-																   const Vec3           &position) {
+																   const Vec2           &position) {
 		return position.distance_to(view.perception().farthest())
 			/ view.perception().farthest_distance();
 	}

@@ -13,7 +13,7 @@ namespace Karkinolution {
 					struct Corpse {
 							Karkinolution::Core::Id::BaseIdType id;
 							Karkinolution::Organisms::RawMeat   raw_meat;
-							Karkinolution::Math::Vec::Vec3      position;
+							Karkinolution::Math::Vec::Vec2      position;
 							Karkinolution::Math::Units::Size    size;
 					};
 				} // namespace Corpse

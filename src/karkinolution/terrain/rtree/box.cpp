@@ -1,104 +1,68 @@
 #include <algorithm>
 #include <karkinolution/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/rtree/box.hpp>
-#include <utility>
 
 namespace Karkinolution::Terrain::Trees::RTree {
-	const Karkinolution::Math::Vec::Vec3 &Box3D::operator[](Bound bound) const noexcept {
-		if (bound == Bound::MAX) {
-			return max;
-		} else if (bound == Bound::MIN) {
-			return min;
-		}
-
-		std::unreachable();
+	const Karkinolution::Math::Vec::Vec2 &Box2D::operator[](Bound bound) const noexcept {
+		return bound == Bound::MAX ? max : min;
 	}
 
-	Karkinolution::Math::Vec::Vec3 &Box3D::operator[](Bound bound) noexcept {
-		if (bound == Bound::MAX) {
-			return max;
-		} else if (bound == Bound::MIN) {
-			return min;
-		}
-
-		std::unreachable();
+	Karkinolution::Math::Vec::Vec2 &Box2D::operator[](Bound bound) noexcept {
+		return bound == Bound::MAX ? max : min;
 	}
 
-	[[nodiscard]] double Box3D::width() const noexcept {
+	double Box2D::width() const noexcept {
 		return max.x - min.x;
 	}
 
-	[[nodiscard]] double Box3D::height() const noexcept {
+	double Box2D::height() const noexcept {
 		return max.y - min.y;
 	}
 
-	[[nodiscard]] double Box3D::depth() const noexcept {
-		return max.z - min.z;
+	double Box2D::area() const noexcept {
+		return width() * height();
 	}
 
-	[[nodiscard]] double Box3D::volume() const noexcept {
-		return width() * height() * depth();
+	double Box2D::margin() const noexcept {
+		return 2.0 * (width() + height());
 	}
 
-	[[nodiscard]] double Box3D::margin() const noexcept {
-		return 2.0 * (width() + depth() + height());
+	Box2D Box2D::operator+(const Box2D &other) const {
+		return Box2D{.max = max + other.max, .min = min + other.min};
 	}
 
-	[[nodiscard]] Box3D Box3D::operator+(const Box3D &other) const {
-		return Box3D{.max = max + other.max, .min = min + other.min};
+	bool Box2DMotor::intersect(const Box2D &a, const Box2D &b) {
+		return a.min.x <= b.max.x && a.max.x >= b.min.x && a.min.y <= b.max.y && a.max.y >= b.min.y;
 	}
 
-	[[nodiscard]] bool Box3DMotor::intersect(const Box3D &A, const Box3D &B) {
-		return A.min.x <= B.max.x && A.max.x >= B.min.x &&
-
-			A.min.y <= B.max.y && A.max.y >= B.min.y &&
-
-			A.min.z <= B.max.z && A.max.z >= B.min.z;
+	Box2D Box2DMotor::intersection(const Box2D &a, const Box2D &b) {
+		return Box2D{.max = Karkinolution::Math::Vec::Vec2{std::min(a.max.x, b.max.x),
+														   std::min(a.max.y, b.max.y)},
+					 .min = Karkinolution::Math::Vec::Vec2{std::max(a.min.x, b.min.x),
+														   std::max(a.min.y, b.min.y)}};
 	}
 
-	[[nodiscard]] Box3D Box3DMotor::intersection(const Box3D &A, const Box3D &B) {
-		return Box3D{.max = Karkinolution::Math::Vec::Vec3{std::min(A.max.x, B.max.x),
-														   std::min(A.max.y, B.max.y),
-														   std::min(A.max.z, B.max.z)},
-					 .min = Karkinolution::Math::Vec::Vec3{std::max(A.min.x, B.min.x),
-														   std::max(A.min.y, B.min.y),
-														   std::max(A.min.z, B.min.z)}};
+	double Box2DMotor::overlap_area(const Box2D &a, const Box2D &b) {
+		const double width  = std::min(a.max.x, b.max.x) - std::max(a.min.x, b.min.x);
+		const double height = std::min(a.max.y, b.max.y) - std::max(a.min.y, b.min.y);
+		return width <= 0.0 || height <= 0.0 ? 0.0 : width * height;
 	}
 
-	[[nodiscard]] double Box3DMotor::overlap_volume(const Box3D &A, const Box3D &B) {
-		const double dx = std::min(A.max.x, B.max.x) - std::max(A.min.x, B.min.x);
-		const double dy = std::min(A.max.y, B.max.y) - std::max(A.min.y, B.min.y);
-		const double dz = std::min(A.max.z, B.max.z) - std::max(A.min.z, B.min.z);
-
-		if (dx <= 0.0 || dy <= 0.0 || dz <= 0.0) {
-			return 0.0;
-		}
-
-		return dx * dy * dz;
+	Karkinolution::Math::Vec::Vec2 Box2D::center() const noexcept {
+		return {(min.x + max.x) / 2.0, (min.y + max.y) / 2.0};
 	}
 
-	[[nodiscard]] Karkinolution::Math::Vec::Vec3 Box3D::center() const noexcept {
-		return Karkinolution::Math::Vec::Vec3{(min.x + max.x) / 2,
-											  (min.y + max.y) / 2,
-											  (min.z + max.z) / 2};
+	Box2D Box2DMotor::combine(const Box2D &a, const Box2D &b) {
+		return Box2D{.max = {std::max(a.max.x, b.max.x), std::max(a.max.y, b.max.y)},
+					 .min = {std::min(a.min.x, b.min.x), std::min(a.min.y, b.min.y)}};
 	}
 
-	[[nodiscard]] Box3D Box3DMotor::combine(const Box3D &A, const Box3D &B) {
-		return Box3D{.max = Karkinolution::Math::Vec::Vec3{std::max(A.max.x, B.max.x),
-														   std::max(A.max.y, B.max.y),
-														   std::max(A.max.z, B.max.z)},
-					 .min = Karkinolution::Math::Vec::Vec3{std::min(A.min.x, B.min.x),
-														   std::min(A.min.y, B.min.y),
-														   std::min(A.min.z, B.min.z)}};
+	double Box2DMotor::enlargement(const Box2D &current, const Box2D &candidate) {
+		return combine(current, candidate).area() - current.area();
 	}
 
-	[[nodiscard]] double Box3DMotor::enlargement(const Box3D &current, const Box3D &canditate) {
-		return combine(current, canditate).volume() - current.volume();
-	}
-
-	[[nodiscard]] bool Box3DMotor::contains(const Box3D &container, const Box3D &contained) {
+	bool Box2DMotor::contains(const Box2D &container, const Box2D &contained) {
 		return container.min.x <= contained.min.x && container.min.y <= contained.min.y
-			&& container.min.z <= contained.min.z && container.max.x >= contained.max.x
-			&& container.max.y >= contained.max.y && container.max.z >= contained.max.z;
+			&& container.max.x >= contained.max.x && container.max.y >= contained.max.y;
 	}
 } // namespace Karkinolution::Terrain::Trees::RTree

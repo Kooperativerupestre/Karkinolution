@@ -61,10 +61,9 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 											.average_age      = Age{50.0f},
 											.growth_rates     = Vital::GrowthRates{.life = 0.30f}},
 
-				.morphology   = Morphology::MorphologyGenome{.average_lateral = Lateral{2.20f},
-															 .average_back    = Depth{1.10f},
-															 .average_height  = Height{0.80f},
-															 .average_mass    = Mass{1.25f}},
+				.morphology   = Morphology::MorphologyGenome{.average_width  = Width{2.20f},
+															 .average_height = Height{0.80f},
+															 .average_mass   = Mass{1.25f}},
 				.reproductive = Reproduction::ReproductiveGenome{
 					.reproductive_way_genome = Reproduction::OviparousOrganismGenome{},
 					.average_children_count  = 40,
@@ -77,8 +76,8 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 			EmbryoGenome{.body       = EmbryoGenomes::BodyGenome{.average_max_energy = 0.55f,
 																 .average_max_life   = 0.45f,
 																 .average_health     = 0.60f},
-						 .morphology = EmbryoGenomes::Morphology{.volume_growth  = 0.18f,
-																 .average_volume = 0.30f}});
+						 .morphology = EmbryoGenomes::Morphology{.area_growth  = 0.18f,
+																 .average_area = 0.30f}});
 
 		Properties::PropertiesContainer properties;
 
@@ -117,10 +116,9 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 											.growth_rates     = Vital::GrowthRates{.life = 0.50f}},
 				.morphology =
 					Morphology::MorphologyGenome{
-						.average_lateral = Lateral{1.20f},
-						.average_back    = Depth{0.50f},
-						.average_height  = Height{0.45f},
-						.average_mass    = Mass{1.0f},
+						.average_width  = Width{1.20f},
+						.average_height = Height{0.45f},
+						.average_mass   = Mass{1.0f},
 					},
 				.reproductive = Reproduction::ReproductiveGenome{
 					.reproductive_way_genome = Reproduction::OviparousOrganismGenome{},
@@ -134,9 +132,8 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 			EmbryoGenome{.body = Genetic::EmbryoGenomes::BodyGenome{.average_max_energy = 0.35f,
 																	.average_max_life   = 0.30f,
 																	.average_health     = 0.40f},
-						 .morphology =
-							 Genetic::EmbryoGenomes::Morphology{.volume_growth  = 0.25f,
-																.average_volume = 0.20f}});
+						 .morphology = Genetic::EmbryoGenomes::Morphology{.area_growth  = 0.25f,
+																		  .average_area = 0.20f}});
 		Properties::PropertiesContainer properties;
 
 		properties.add(GenericProperty{Properties::Capabilities::Move::SWIMM});
@@ -172,10 +169,9 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 
 
 												   .growth_rates = Vital::GrowthRates{.life = 0.40f}},
-				.morphology   = Morphology::MorphologyGenome{.average_lateral = Lateral{1.40f},
-															 .average_back    = Depth{1.00f},
-															 .average_height  = Height{0.55f},
-															 .average_mass    = Mass{1.10f}},
+				.morphology   = Morphology::MorphologyGenome{.average_width  = Width{1.40f},
+															 .average_height = Height{0.55f},
+															 .average_mass   = Mass{1.10f}},
 				.reproductive = Reproduction::ReproductiveGenome{
 					.reproductive_way_genome = Reproduction::OviparousOrganismGenome{},
 					.average_children_count  = 1000000,
@@ -188,9 +184,8 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 			EmbryoGenome{.body = Genetic::EmbryoGenomes::BodyGenome{.average_max_energy = 0.45f,
 																	.average_max_life   = 0.35f,
 																	.average_health     = 0.50f},
-						 .morphology =
-							 Genetic::EmbryoGenomes::Morphology{.volume_growth  = 0.22f,
-																.average_volume = 0.25f}});
+						 .morphology = Genetic::EmbryoGenomes::Morphology{.area_growth  = 0.22f,
+																		  .average_area = 0.25f}});
 
 		Properties::PropertiesContainer properties;
 		properties.add(GenericProperty{Properties::Capabilities::Move::WALK});
@@ -226,10 +221,9 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 											.growth_rates     = Vital::GrowthRates{.life = 0.25f}},
 				.morphology =
 					Morphology::MorphologyGenome{
-						.average_lateral = Lateral{1.80f},
-						.average_back    = Depth{1.40f},
-						.average_height  = Height{1.30f},
-						.average_mass    = Mass{1.60f},
+						.average_width  = Width{1.80f},
+						.average_height = Height{1.30f},
+						.average_mass   = Mass{1.60f},
 					},
 				.reproductive = Reproduction::ReproductiveGenome{
 					.reproductive_way_genome = Reproduction::ViviparousOrganismGenome{},
@@ -243,9 +237,8 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 			EmbryoGenome{.body = Genetic::EmbryoGenomes::BodyGenome{.average_max_energy = 0.65f,
 																	.average_max_life   = 0.50f,
 																	.average_health     = 0.70f},
-						 .morphology =
-							 Genetic::EmbryoGenomes::Morphology{.volume_growth  = 0.15f,
-																.average_volume = 0.35f}});
+						 .morphology = Genetic::EmbryoGenomes::Morphology{.area_growth  = 0.15f,
+																		  .average_area = 0.35f}});
 
 		Properties::PropertiesContainer properties;
 

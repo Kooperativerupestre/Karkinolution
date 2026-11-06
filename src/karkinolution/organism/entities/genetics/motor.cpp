@@ -32,13 +32,10 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 
 
 			return CreatureGenomes::Morphology::MorphologyGenome{
-				.average_lateral =
-					Disturbs::scramble(g1.average_lateral.value,
-									   g2.average_lateral.value,
+				.average_width =
+					Disturbs::scramble(g1.average_width.value,
+									   g2.average_width.value,
 									   Disturbs::StandardContexts::morphology_scramble),
-				.average_back   = Disturbs::scramble(g1.average_back.value,
-                                                   g2.average_back.value,
-                                                   Disturbs::StandardContexts::morphology_scramble),
 				.average_height = Disturbs::scramble(
 					g1.average_height.value,
 					g2.average_height.value,
@@ -299,12 +296,12 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 		EmbryoGenomes::Morphology scramble(const EmbryoGenomes::Morphology &g1,
 										   const EmbryoGenomes::Morphology &g2) {
 			// Growth rate is more plastic during embryogenesis than the final size;
-			// final volume therefore uses the same restrained morphology context used
+			// final area therefore uses the same restrained morphology context used
 			// by the adult genome.
 			return EmbryoMorphologyGenome{
-				.volume_growth = Disturbs::scramble(
-					g1.volume_growth,
-					g2.volume_growth,
+				.area_growth = Disturbs::scramble(
+					g1.area_growth,
+					g2.area_growth,
 					Disturbs::ScrambleContext{
 						.max_base            = 1.15f,
 						.min_base            = 0.85f,
@@ -314,9 +311,9 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 							Disturbs::SuppressContext{.chance_of_v1_being_suppressed = 0.18f,
 													  .chance_of_v2_being_suppressed = 0.18f,
 													  .suppressed_multiplier         = 0.50f}}),
-				.average_volume =
-					Disturbs::scramble(g1.average_volume.value(),
-									   g2.average_volume.value(),
+				.average_area =
+					Disturbs::scramble(g1.average_area.value(),
+									   g2.average_area.value(),
 									   Disturbs::StandardContexts::morphology_scramble)};
 		}
 

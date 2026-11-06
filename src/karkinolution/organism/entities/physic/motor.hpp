@@ -10,7 +10,7 @@ namespace Karkinolution {
 			namespace Physic {
 				namespace Motor {
 					Analyzer::CanBeOutput
-					move(EntityId id, const Vec3 &new_position, Karkinolution::World::World &world);
+					move(EntityId id, const Vec2 &new_position, Karkinolution::World::World &world);
 				} // namespace Motor
 			} // namespace Physic
 		} // namespace Entities

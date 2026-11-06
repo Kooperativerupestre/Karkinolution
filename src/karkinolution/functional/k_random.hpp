@@ -6,8 +6,8 @@
 #include <ranges>
 
 using Karkinolution::Math::LV::CT::NormalizedValue;
-using Karkinolution::Math::Vec::Vec3;
-using Karkinolution::Math::Vec::Vec3Like;
+using Karkinolution::Math::Vec::Vec2;
+using Karkinolution::Math::Vec::Vec2Like;
 
 namespace Karkinolution {
 	namespace Functional {
@@ -147,10 +147,8 @@ namespace Karkinolution {
 					return std::uniform_int_distribution<T>{min, max}(gen);
 				}
 
-				inline Vec3 generate(const Vec3 &min, const Vec3 &max) {
-					return Vec3{generate(min.x, max.x),
-								generate(min.y, max.y),
-								generate(min.z, max.z)};
+				inline Vec2 generate(const Vec2 &min, const Vec2 &max) {
+					return Vec2{generate(min.x, max.x), generate(min.y, max.y)};
 				}
 
 				template <std::floating_point T> T generate() {
@@ -163,8 +161,8 @@ namespace Karkinolution {
 					return std::uniform_int_distribution<T>(limit.lowest(), limit.max())(gen);
 				}
 
-				template <Vec3Like T> Vec3 generate() {
-					return Vec3{generate<double>(), generate<double>(), generate<double>()};
+				template <Vec2Like T> Vec2 generate() {
+					return Vec2{generate<double>(), generate<double>()};
 				}
 
 				template <typename T, typename U> float inheritance(T v1, U v2) {

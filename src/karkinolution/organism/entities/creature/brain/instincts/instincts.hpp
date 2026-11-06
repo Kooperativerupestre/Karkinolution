@@ -56,7 +56,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 			MIN_DISTANCE_TO_EAT * MIN_DISTANCE_TO_EAT;
 
 		struct Goal {
-				Vec3                                                               position;
+				Vec2                                                               position;
 				FoodHint                                                           hint;
 				std::variant<EntityId, Karkinolution::Organisms::Nature::NatureId> id;
 

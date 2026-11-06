@@ -12,15 +12,15 @@ namespace Karkinolution {
 	namespace Terrain {
 		namespace Trees {
 			namespace RTree::BoxConversion {
-				Karkinolution::Terrain::Trees::RTree::Box3D to_box(const Math::Units::Size &size,
-																   const Vec3 &position);
-				Karkinolution::Terrain::Trees::RTree::Box3D
-				to_box(const Math::Geometry::Radius &radius, const Vec3 &position);
-				Karkinolution::Terrain::Trees::RTree::Box3D
+				Karkinolution::Terrain::Trees::RTree::Box2D to_box(const Math::Units::Size &size,
+																   const Vec2 &position);
+				Karkinolution::Terrain::Trees::RTree::Box2D
+				to_box(const Math::Geometry::Radius &radius, const Vec2 &position);
+				Karkinolution::Terrain::Trees::RTree::Box2D
 				to_box(const Karkinolution::Terrain::Soil::SoilPiece &soil);
-				Karkinolution::Terrain::Trees::RTree::Box3D
+				Karkinolution::Terrain::Trees::RTree::Box2D
 				to_box(const Karkinolution::Organisms::Nature::Grass::Grass &grass);
-				Karkinolution::Terrain::Trees::RTree::Box3D
+				Karkinolution::Terrain::Trees::RTree::Box2D
 				to_box(const Karkinolution::Organisms::Nature::NatureEntity &nature_entity);
 			} // namespace RTree::BoxConversion
 
@@ -28,7 +28,7 @@ namespace Karkinolution {
 			concept BoxConvertible = requires(const T &value) {
 				{
 					RTree::BoxConversion::to_box(value)
-				} -> std::same_as<Karkinolution::Terrain::Trees::RTree::Box3D>;
+				} -> std::same_as<Karkinolution::Terrain::Trees::RTree::Box2D>;
 			};
 
 		} // namespace Trees

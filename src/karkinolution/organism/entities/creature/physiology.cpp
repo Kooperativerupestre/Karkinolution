@@ -83,7 +83,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 								   .cost = GrowCost{.reserved_energy = reserved_energy_cost}};
 	}
 
-	float Growing::get_new_lateral_increment(
+	float Growing::get_new_width_increment(
 		const Creature                                             &creature,
 		const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
 		const auto &vital_genome      = creature.genome.creature_genome.vital;
@@ -91,21 +91,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 		const auto &body              = creature.body;
 
 		const NormalizedValue<float> remaining =
-			1.0f - body.morphology.size.lateral.value / morphology_genome.average_lateral.value;
-		const auto muscle_factor = body.vital.life.ratio().value();
-
-		return remaining.value() * muscle_factor;
-	}
-
-	float Growing::get_new_depth_increment(
-		const Creature                                             &creature,
-		const Karkinolution::Organisms::Entities::EntitiesRegistry &organisms) {
-		const auto &vital_genome      = creature.genome.creature_genome.vital;
-		const auto &morphology_genome = creature.genome.creature_genome.morphology;
-		const auto &body              = creature.body;
-
-		const NormalizedValue<float> remaining =
-			1.0f - body.morphology.size.depth.value / morphology_genome.average_back.value;
+			1.0f - body.morphology.size.width.value / morphology_genome.average_width.value;
 		const auto muscle_factor = body.vital.life.ratio().value();
 
 		return remaining.value() * muscle_factor;
@@ -119,7 +105,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 		const auto &body              = creature.body;
 
 		const NormalizedValue<float> remaining =
-			1.0f - body.morphology.size.height.value / morphology_genome.average_back.value;
+			1.0f - body.morphology.size.height.value / morphology_genome.average_height.value;
 		const auto muscle_factor = body.vital.life.ratio().value();
 
 		return remaining.value() * muscle_factor;
@@ -178,10 +164,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Physiology {
 		MorphologyPart morphology{
 			.size = embryo.size(),
 			.mass = Mass{cg.morphology.average_mass.value
-						 * (embryo.volume.value
-							/ Size::volume(cg.morphology.average_lateral,
-										   cg.morphology.average_height,
-										   cg.morphology.average_back)
+						 * (embryo.area.value
+							/ Size::area(cg.morphology.average_width, cg.morphology.average_height)
 								  .value)},
 		};
 

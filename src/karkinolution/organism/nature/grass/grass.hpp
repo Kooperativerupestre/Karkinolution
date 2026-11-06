@@ -22,7 +22,7 @@ namespace Karkinolution {
 						BaseIdType id;
 
 						Quality                quality;
-						Vec3                   position;
+						Vec2                   position;
 						Math::Geometry::Radius radius;
 						GrassMatter            matter;
 

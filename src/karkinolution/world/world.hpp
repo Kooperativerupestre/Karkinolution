@@ -68,7 +68,7 @@ namespace Karkinolution {
 				bool remove(Karkinolution::Organisms::Entities::EntityId id);
 				bool add(Karkinolution::Organisms::Entities::Entity &&entity);
 				bool update(Karkinolution::Organisms::Entities::EntityId id,
-							const Karkinolution::Math::Vec::Vec3        &new_position);
+							const Karkinolution::Math::Vec::Vec2        &new_position);
 
 				bool exists_entity(Karkinolution::Organisms::Entities::EntityId id) const {
 					return entities_registry.exists(id) && entity_map.has_entity(id);

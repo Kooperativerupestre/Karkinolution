@@ -5,7 +5,7 @@
 #include "karkinolution/binary/serializer.hpp"
 
 // SRI implementations
-VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const Karkinolution::Math::Vec::Vec3 &vec) {
+VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const Karkinolution::Math::Vec::Vec2 &vec) {
 	VecSRI::BytesArrays::Vec result;
 
 	const auto x = Karkinolution::Binary::Serializer::convert_double(vec.x);
@@ -14,8 +14,6 @@ VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const Karkinolution::Math::Vec::V
 	const auto y = Karkinolution::Binary::Serializer::convert_double(vec.y);
 	Karkinolution::Binary::Utils::append_bytes(result, y, VecSRI::Layout::Y::OFFSET);
 
-	const auto z = Karkinolution::Binary::Serializer::convert_double(vec.z);
-	Karkinolution::Binary::Utils::append_bytes(result, z, VecSRI::Layout::Z::OFFSET);
 	return result;
 }
 
@@ -30,14 +28,7 @@ double VecDSI::get_y(const std::vector<std::byte> &payload, std::size_t offset) 
 															VecSRI::Layout::Y::OFFSET + offset);
 }
 
-double VecDSI::get_z(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Binary::Deserializer::read_double(payload,
-															VecSRI::Layout::Z::OFFSET + offset);
-}
-
-Karkinolution::Math::Vec::Vec3 VecDSI::get_vec(const std::vector<std::byte> &payload,
+Karkinolution::Math::Vec::Vec2 VecDSI::get_vec(const std::vector<std::byte> &payload,
 											   std::size_t                   offset) {
-	return Karkinolution::Math::Vec::Vec3(get_x(payload, offset),
-										  get_y(payload, offset),
-										  get_z(payload, offset));
+	return Karkinolution::Math::Vec::Vec2(get_x(payload, offset), get_y(payload, offset));
 }

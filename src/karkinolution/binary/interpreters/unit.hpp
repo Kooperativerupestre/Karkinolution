@@ -22,38 +22,34 @@ namespace Karkinolution {
 					/*
 					 * Size protocol
 					 *
-					 * [8 bytes - lateral]
+					 * [8 bytes - width]
 					 * [8 bytes - height]
-					 * [8 bytes - depth]
 					 *
 					 */
 					namespace Layout {
-						using Lateral = Field<0, sizeof(double)>;
-						using Height  = Next<Lateral, sizeof(double)>;
-						using Depth   = Next<Height, sizeof(double)>;
+						using Width  = Field<0, sizeof(double)>;
+						using Height = Next<Width, sizeof(double)>;
 
-						inline constexpr std::size_t TOTAL_SIZE = Depth::END;
+						inline constexpr std::size_t TOTAL_SIZE = Height::END;
 					} // namespace Layout
 
 					namespace BytesArrays {
 						using Size = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArrays
 
-					StandardPhysicBytes serialize_volume(Karkinolution::Math::Volume volume);
+					StandardPhysicBytes serialize_area(Karkinolution::Math::Area area);
 					StandardPhysicBytes serialize_mass(Karkinolution::Math::Units::Mass mass);
 					StandardPhysicBytes
 					serialize_density(Karkinolution::Math::Units::Density density);
 					StandardPhysicBytes serialize_meter(Karkinolution::Math::Units::Meter meter);
 
-					StandardPhysicBytes
-					serialize_lateral(Karkinolution::Math::Units::Lateral lateral);
+					StandardPhysicBytes serialize_width(Karkinolution::Math::Units::Width width);
 					StandardPhysicBytes serialize_height(Karkinolution::Math::Units::Height height);
-					StandardPhysicBytes serialize_depth(Karkinolution::Math::Units::Depth depth);
 
 					BytesArrays::Size serialize_size(const Karkinolution::Math::Units::Size &size);
 
 					StatsSRI::BytesArray::Stat
-					serialize_shared_volume(const Karkinolution::Math::SharedVolume &shared_volume);
+					serialize_shared_area(const Karkinolution::Math::SharedArea &shared_area);
 					StatsSRI::BytesArray::Stat
 					serialize_efficiency(const Karkinolution::Math::Efficiency &efficiency);
 					StatsSRI::BytesArray::Stat
@@ -64,8 +60,8 @@ namespace Karkinolution {
 
 			namespace DSI {
 				namespace Units {
-					Karkinolution::Math::Volume
-					deserialize_volume(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Area
+					deserialize_area(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Math::Units::Mass
 					deserialize_mass(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Math::Units::Density
@@ -73,19 +69,17 @@ namespace Karkinolution {
 					Karkinolution::Math::Units::Meter
 					deserialize_meter(const std::vector<std::byte> &payload, std::size_t offset);
 
-					Karkinolution::Math::Units::Lateral
-					deserialize_lateral(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Math::Units::Width
+					deserialize_width(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Math::Units::Height
 					deserialize_height(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Units::Depth
-					deserialize_depth(const std::vector<std::byte> &payload, std::size_t offset);
 
 					Karkinolution::Math::Units::Size
 					deserialize_size(const std::vector<std::byte> &payload, std::size_t offset);
 
-					Karkinolution::Math::SharedVolume
-					deserialize_shared_volume(const std::vector<std::byte> &payload,
-											  std::size_t                   offset);
+					Karkinolution::Math::SharedArea
+					deserialize_shared_area(const std::vector<std::byte> &payload,
+											std::size_t                   offset);
 					Karkinolution::Math::Efficiency
 					deserialize_efficiency(const std::vector<std::byte> &payload,
 										   std::size_t                   offset);

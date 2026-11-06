@@ -20,7 +20,7 @@ namespace Karkinolution {
 				struct Shell {
 						NormalizedValue<float> resistance;
 						ShellValue             state;
-						Volume                 volume;
+						Area                   area;
 				};
 
 				struct EggNutrients {
@@ -33,7 +33,7 @@ namespace Karkinolution {
 						Shell                 shell;
 						EggNutrients          nutrients;
 						std::vector<EntityId> embryos;
-						Vec3                  position;
+						Vec2                  position;
 						Size                  size;
 
 						[[nodiscard]] EntityId build_id() const noexcept {

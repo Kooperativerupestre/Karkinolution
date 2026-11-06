@@ -22,7 +22,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 		const auto        id       = blueprint.id.value_or(Core::Id::gen_id());
 		const std::string name     = blueprint.name.value_or(gen_name());
 		const auto        gender   = blueprint.gender.value_or(choose_random_gender());
-		const Vec3        position = blueprint.position.value_or(Vec3{0.0, 0.0, 0.0});
+		const Vec2        position = blueprint.position.value_or(Vec2{0.0, 0.0});
 
 		const float initial_max_energy   = genome.calculate_embryo_average_max_energy();
 		const float initial_energy_value = initial_max_energy * NEONATE_FRACTION;
@@ -45,9 +45,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 		MorphologyPart morphology{
 			.size =
 				Size{
-					.lateral = Lateral{cg.morphology.average_lateral.value * NEONATE_FRACTION},
-					.height  = Height{cg.morphology.average_height.value * NEONATE_FRACTION},
-					.depth   = Depth{cg.morphology.average_back.value * NEONATE_FRACTION},
+					.width  = Width{cg.morphology.average_width.value * NEONATE_FRACTION},
+					.height = Height{cg.morphology.average_height.value * NEONATE_FRACTION},
 				},
 			.mass = Mass{cg.morphology.average_mass.value * NEONATE_FRACTION},
 		};

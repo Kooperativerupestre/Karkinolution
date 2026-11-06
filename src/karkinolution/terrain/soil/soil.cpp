@@ -20,7 +20,7 @@ namespace Karkinolution::Terrain::Soil {
 
 	SoilPiece SoilF::gen_soil_piece(SoilTypes                     s_t,
 									const Math::Geometry::Radius &radius,
-									const Vec3                   &position) {
+									const Vec2                   &position) {
 
 		SoilPiece soil{.radius = radius};
 

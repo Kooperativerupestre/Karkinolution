@@ -10,44 +10,71 @@ TEST(SerializeDeserializeRoundtrip, HighLevel_AllTypesRoundtrip) {
 	for (int iteration = 0; iteration < 10; iteration++) {
 		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
 
-		const auto        original_u32   = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
-		const auto        original_u64   = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
-		const auto        original_dbl   = Karkinolution::Functional::KRandom::RandomGenerators::generate<double>();
-		const auto        original_u8    = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
-		const std::string original_str   = TestUtils::random_string();
-		const auto        original_float = Karkinolution::Functional::KRandom::RandomGenerators::generate<float>();
-		const auto        original_int   = Karkinolution::Functional::KRandom::RandomGenerators::generate<int>();
+		const auto original_u32 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
+		const auto original_u64 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
+		const auto original_dbl =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<double>();
+		const auto original_u8 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
+		const std::string original_str = TestUtils::random_string();
+		const auto        original_float =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<float>();
+		const auto original_int =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<int>();
 
 
 		std::vector<std::byte> buffer;
 
 		const size_t offset_u32 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_uint32_t(original_u32));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::convert_uint32_t(original_u32));
 
 		const size_t offset_u64 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_uint64_t(original_u64));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::convert_uint64_t(original_u64));
 
 		const size_t offset_dbl = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_double(original_dbl));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::convert_double(original_dbl));
 
 		const size_t offset_u8 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_uint8_t(original_u8));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::convert_uint8_t(original_u8));
 
 		const size_t offset_str = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_string(original_str));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::convert_string(original_str));
 
 		const size_t offset_float = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_float(original_float));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::convert_float(original_float));
 
 		const size_t offset_int = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::convert_int(original_int));
+		TestUtils::append_to_buffer(buffer,
+									Karkinolution::Binary::Serializer::convert_int(original_int));
 
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_uint32_t(buffer, offset_u32), original_u32);
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_uint64_t(buffer, offset_u64), original_u64);
-		EXPECT_DOUBLE_EQ(Karkinolution::Binary::Deserializer::read_double(buffer, offset_dbl), original_dbl);
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_uint8_t(buffer, offset_u8), original_u8);
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_string(buffer, offset_str, original_str.size()), original_str);
-		EXPECT_FLOAT_EQ(Karkinolution::Binary::Deserializer::read_float(buffer, offset_float), original_float);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_uint32_t(buffer, offset_u32),
+				  original_u32);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_uint64_t(buffer, offset_u64),
+				  original_u64);
+		EXPECT_DOUBLE_EQ(Karkinolution::Binary::Deserializer::read_double(buffer, offset_dbl),
+						 original_dbl);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_uint8_t(buffer, offset_u8),
+				  original_u8);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_string(buffer,
+																   offset_str,
+																   original_str.size()),
+				  original_str);
+		EXPECT_FLOAT_EQ(Karkinolution::Binary::Deserializer::read_float(buffer, offset_float),
+						original_float);
 		EXPECT_EQ(Karkinolution::Binary::Deserializer::read_int(buffer, offset_int), original_int);
 	}
 }
@@ -58,30 +85,46 @@ TEST(SerializeDeserializeRoundtrip, Core_RandomValuesRoundtripWithOffsets) {
 	for (int iteration = 0; iteration < 10; iteration++) {
 		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
 
-		const auto original_8 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
-		const auto original_4 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
-		const auto original_2 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint16_t>();
-		const auto original_1 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
+		const auto original_8 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
+		const auto original_4 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
+		const auto original_2 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint16_t>();
+		const auto original_1 =
+			Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
 
 		// Add dummy padding bytes to verify offset interpretation works properly
 		std::vector<std::byte> buffer = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
 
 		const size_t offset_8 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::Core::convert_8_bytes(original_8));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::Core::convert_8_bytes(original_8));
 
 		const size_t offset_4 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::Core::convert_4_bytes(original_4));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::Core::convert_4_bytes(original_4));
 
 		const size_t offset_2 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::Core::convert_2_bytes(original_2));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::Core::convert_2_bytes(original_2));
 
 		const size_t offset_1 = buffer.size();
-		TestUtils::append_to_buffer(buffer, Karkinolution::Binary::Serializer::Core::convert_1_byte(original_1));
+		TestUtils::append_to_buffer(
+			buffer,
+			Karkinolution::Binary::Serializer::Core::convert_1_byte(original_1));
 
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(buffer, offset_8), original_8);
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(buffer, offset_4), original_4);
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(buffer, offset_2), original_2);
-		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(buffer, offset_1), std::byte{original_1});
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(buffer, offset_8),
+				  original_8);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(buffer, offset_4),
+				  original_4);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(buffer, offset_2),
+				  original_2);
+		EXPECT_EQ(Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(buffer, offset_1),
+				  std::byte{original_1});
 	}
 }
 
@@ -91,7 +134,7 @@ TEST(SerializeDeserializeRoundtrip, Core_ByteOrderAndValueInterpretation) {
 	// 8 Bytes: 0x0102030405060708ULL -> Big-endian byte representation
 	{
 		constexpr std::uint64_t test_val = 0x0102030405060708ULL;
-		constexpr auto          bytes    = Karkinolution::Binary::Serializer::Core::convert_8_bytes(test_val);
+		constexpr auto bytes = Karkinolution::Binary::Serializer::Core::convert_8_bytes(test_val);
 
 		EXPECT_EQ(bytes[0], std::byte{0x01});
 		EXPECT_EQ(bytes[1], std::byte{0x02});
@@ -102,45 +145,49 @@ TEST(SerializeDeserializeRoundtrip, Core_ByteOrderAndValueInterpretation) {
 		EXPECT_EQ(bytes[6], std::byte{0x07});
 		EXPECT_EQ(bytes[7], std::byte{0x08});
 
-		constexpr auto deserialized = Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(bytes, 0);
+		constexpr auto deserialized =
+			Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(bytes, 0);
 		EXPECT_EQ(deserialized, test_val);
 	}
 
 	// 4 Bytes: 0x12345678U -> Big-endian byte representation
 	{
 		constexpr std::uint32_t test_val = 0x12345678U;
-		constexpr auto          bytes    = Karkinolution::Binary::Serializer::Core::convert_4_bytes(test_val);
+		constexpr auto bytes = Karkinolution::Binary::Serializer::Core::convert_4_bytes(test_val);
 
 		EXPECT_EQ(bytes[0], std::byte{0x12});
 		EXPECT_EQ(bytes[1], std::byte{0x34});
 		EXPECT_EQ(bytes[2], std::byte{0x56});
 		EXPECT_EQ(bytes[3], std::byte{0x78});
 
-		constexpr auto deserialized = Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(bytes, 0);
+		constexpr auto deserialized =
+			Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(bytes, 0);
 		EXPECT_EQ(deserialized, test_val);
 	}
 
 	// 2 Bytes: 0xABCD -> Big-endian byte representation
 	{
 		constexpr std::uint16_t test_val = 0xABCD;
-		constexpr auto          bytes    = Karkinolution::Binary::Serializer::Core::convert_2_bytes(test_val);
+		constexpr auto bytes = Karkinolution::Binary::Serializer::Core::convert_2_bytes(test_val);
 
 		EXPECT_EQ(bytes[0], std::byte{0xAB});
 		EXPECT_EQ(bytes[1], std::byte{0xCD});
 
-		constexpr auto deserialized = Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(bytes, 0);
+		constexpr auto deserialized =
+			Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(bytes, 0);
 		EXPECT_EQ(deserialized, test_val);
 	}
 
 	// 1 Byte: 0xEF
 	{
 		constexpr std::uint8_t test_val = 0xEF;
-		constexpr auto         byte     = Karkinolution::Binary::Serializer::Core::convert_1_byte(test_val);
+		constexpr auto byte = Karkinolution::Binary::Serializer::Core::convert_1_byte(test_val);
 
 		EXPECT_EQ(byte, std::byte{0xEF});
 
 		constexpr std::array<std::byte, 1> bytes_arr = {byte};
-		constexpr auto deserialized = Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(bytes_arr, 0);
+		constexpr auto                     deserialized =
+			Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(bytes_arr, 0);
 		EXPECT_EQ(deserialized, std::byte{0xEF});
 	}
 }
@@ -151,14 +198,15 @@ TEST(SerializeDeserializeRoundtrip, Core_TypesInterpretation) {
 	// 8-byte interpretation: uint64, int64, double
 	{
 		constexpr std::int64_t original_i64 = -9223372036854775807LL;
-		constexpr auto         bytes_i64 =
-			Karkinolution::Binary::Serializer::Core::convert_8_bytes(static_cast<std::uint64_t>(original_i64));
+		constexpr auto         bytes_i64 = Karkinolution::Binary::Serializer::Core::convert_8_bytes(
+            static_cast<std::uint64_t>(original_i64));
 		Karkinolution::Binary::Deserializer::Types::Bytes8Deserialized des8_i64(bytes_i64, 0);
 		EXPECT_EQ(des8_i64.as_int64_t(), original_i64);
 
 		constexpr double original_dbl = -123456.789012345;
 		constexpr auto   dbl_bits     = std::bit_cast<std::uint64_t>(original_dbl);
-		constexpr auto   bytes_dbl    = Karkinolution::Binary::Serializer::Core::convert_8_bytes(dbl_bits);
+		constexpr auto   bytes_dbl =
+			Karkinolution::Binary::Serializer::Core::convert_8_bytes(dbl_bits);
 		Karkinolution::Binary::Deserializer::Types::Bytes8Deserialized des8_dbl(bytes_dbl, 0);
 		EXPECT_DOUBLE_EQ(des8_dbl.as_double(), original_dbl);
 		EXPECT_EQ(des8_dbl.as_uint64_t(), dbl_bits);
@@ -167,20 +215,22 @@ TEST(SerializeDeserializeRoundtrip, Core_TypesInterpretation) {
 	// 4-byte interpretation: uint32, int32, float
 	{
 		constexpr std::int32_t original_i32 = -2147483647;
-		constexpr auto         bytes_i32 =
-			Karkinolution::Binary::Serializer::Core::convert_4_bytes(static_cast<std::uint32_t>(original_i32));
+		constexpr auto         bytes_i32 = Karkinolution::Binary::Serializer::Core::convert_4_bytes(
+            static_cast<std::uint32_t>(original_i32));
 		Karkinolution::Binary::Deserializer::Types::Bytes4Deserialized des4_i32(bytes_i32, 0);
 		EXPECT_EQ(des4_i32.as_int32_t(), original_i32);
 
 		constexpr float original_flt = -987.654f;
 		constexpr auto  flt_bits     = std::bit_cast<std::uint32_t>(original_flt);
-		constexpr auto  bytes_flt    = Karkinolution::Binary::Serializer::Core::convert_4_bytes(flt_bits);
+		constexpr auto  bytes_flt =
+			Karkinolution::Binary::Serializer::Core::convert_4_bytes(flt_bits);
 		Karkinolution::Binary::Deserializer::Types::Bytes4Deserialized des4_flt(bytes_flt, 0);
 		EXPECT_FLOAT_EQ(des4_flt.as_float(), original_flt);
 		EXPECT_EQ(des4_flt.as_uint32_t(), flt_bits);
 
 		constexpr int  original_int = std::numeric_limits<int>::max();
-		constexpr auto bytes_int    = Karkinolution::Binary::Serializer::Core::convert_4_bytes(original_int);
+		constexpr auto bytes_int =
+			Karkinolution::Binary::Serializer::Core::convert_4_bytes(original_int);
 		Karkinolution::Binary::Deserializer::Types::Bytes4Deserialized des4_int(bytes_int, 0);
 		EXPECT_EQ(des4_int.as_int(), original_int);
 	}
@@ -188,8 +238,8 @@ TEST(SerializeDeserializeRoundtrip, Core_TypesInterpretation) {
 	// 2-byte interpretation: uint16, int16
 	{
 		constexpr std::int16_t original_i16 = -32767;
-		constexpr auto         bytes_i16 =
-			Karkinolution::Binary::Serializer::Core::convert_2_bytes(static_cast<std::uint16_t>(original_i16));
+		constexpr auto         bytes_i16 = Karkinolution::Binary::Serializer::Core::convert_2_bytes(
+            static_cast<std::uint16_t>(original_i16));
 		Karkinolution::Binary::Deserializer::Types::Bytes2Deserialized des2_i16(bytes_i16, 0);
 		EXPECT_EQ(des2_i16.as_int16_t(), original_i16);
 		EXPECT_EQ(des2_i16.as_uint16_t(), static_cast<std::uint16_t>(original_i16));
@@ -197,9 +247,10 @@ TEST(SerializeDeserializeRoundtrip, Core_TypesInterpretation) {
 
 	// 1-byte interpretation: uint8, byte
 	{
-		constexpr std::uint8_t             original_u8 = 250;
-		constexpr auto                     byte_val = Karkinolution::Binary::Serializer::Core::convert_1_byte(original_u8);
-		constexpr std::array<std::byte, 1> bytes_u8 = {byte_val};
+		constexpr std::uint8_t original_u8 = 250;
+		constexpr auto         byte_val =
+			Karkinolution::Binary::Serializer::Core::convert_1_byte(original_u8);
+		constexpr std::array<std::byte, 1>                             bytes_u8 = {byte_val};
 		Karkinolution::Binary::Deserializer::Types::Bytes1Deserialized des1_u8(bytes_u8, 0);
 		EXPECT_EQ(des1_u8.as_uint8_t(), original_u8);
 		EXPECT_EQ(des1_u8.as_byte(), std::byte{original_u8});
@@ -212,20 +263,28 @@ TEST(SerializeDeserializeRoundtrip, Core_InsufficientBufferSizeThrowsError) {
 	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}};
 
 	// 8 bytes required, but buffer has only 2 bytes
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
 	// 4 bytes required, but buffer has only 2 bytes
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(short_buffer, 0),
+				 Karkinolution::Binary::ByteError);
 
 	// 2 bytes required, but offset 1 leaves only 1 byte
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(short_buffer, 1), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(short_buffer, 1),
+				 Karkinolution::Binary::ByteError);
 
 	// 1 byte required, but offset 2 is out of range
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(short_buffer, 2), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(short_buffer, 2),
+				 Karkinolution::Binary::ByteError);
 
 	// Completely out of range offset
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(short_buffer, 100), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(short_buffer, 100), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(short_buffer, 100), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(short_buffer, 100), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_8_bytes(short_buffer, 100),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_4_bytes(short_buffer, 100),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_2_bytes(short_buffer, 100),
+				 Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Karkinolution::Binary::Deserializer::Core::deserialize_1_byte(short_buffer, 100),
+				 Karkinolution::Binary::ByteError);
 }

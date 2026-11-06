@@ -1,7 +1,6 @@
 #include "karkinolution/terrain/terrain_gen.hpp"
 
 #include "karkinolution/functional/k_random.hpp"
-#include "karkinolution/math/fixed_z.hpp"
 #include "karkinolution/math/units.hpp"
 
 #include <FastNoise/FastNoise.h>
@@ -51,10 +50,10 @@ namespace Karkinolution::Terrain::TerrainFactory {
 
 		Territory territory{size};
 
-		for (double lateral = 0.0; lateral <= size.lateral.value; lateral += epsilon) {
-			for (double depth = 0.0; depth <= size.depth.value; depth += epsilon) {
+		for (double width = 0.0; width <= size.width.value; width += epsilon) {
+			for (double height = 0.0; height <= size.height.value; height += epsilon) {
 
-				const Vec3 coord{lateral, depth, Karkinolution::Math::Constants::FIXED_Z};
+				const Vec2 coord{width, height};
 
 				const auto noise_value = terrain_noise->GenSingle2D(static_cast<float>(coord.x),
 																	static_cast<float>(coord.y),

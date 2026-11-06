@@ -10,7 +10,7 @@
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 	struct FoodCandidate {
 			FoodHint hint;
-			Vec3     position;
+			Vec2     position;
 			float    energy;
 	};
 

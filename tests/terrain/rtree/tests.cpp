@@ -7,9 +7,9 @@
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <variant>
 
-using Karkinolution::Math::Vec::Vec3;
+using Karkinolution::Math::Vec::Vec2;
 using Karkinolution::Terrain::Soil::SoilPieceId;
-using Karkinolution::Terrain::Trees::RTree::Box3D;
+using Karkinolution::Terrain::Trees::RTree::Box2D;
 using Karkinolution::Terrain::Trees::RTree::NodeType;
 using Karkinolution::Terrain::Trees::RTree::RStarTree;
 using Karkinolution::Terrain::Trees::RTree::RtreeEntry;
@@ -22,8 +22,8 @@ using TRTreeEntry = RtreeEntry<SoilPieceId>;
 
 namespace {
 
-	Box3D make_box(double x, double y, double z, double size = 1.0) {
-		return Box3D{.max = Vec3{x + size, y + size, z + size}, .min = Vec3{x, y, z}};
+	Box2D make_box(double x, double y, double size = 1.0) {
+		return Box2D{.max = Vec2{x + size, y + size}, .min = Vec2{x, y}};
 	}
 
 	void assert_node_invariants(const TRTreeNode &node, bool is_root = true) {
@@ -50,19 +50,17 @@ namespace {
 		}
 	}
 
-	void assert_box_equal(const Box3D &lhs, const Box3D &rhs) {
+	void assert_box_equal(const Box2D &lhs, const Box2D &rhs) {
 		EXPECT_DOUBLE_EQ(lhs.min.x, rhs.min.x);
 		EXPECT_DOUBLE_EQ(lhs.min.y, rhs.min.y);
-		EXPECT_DOUBLE_EQ(lhs.min.z, rhs.min.z);
 
 		EXPECT_DOUBLE_EQ(lhs.max.x, rhs.max.x);
 		EXPECT_DOUBLE_EQ(lhs.max.y, rhs.max.y);
-		EXPECT_DOUBLE_EQ(lhs.max.z, rhs.max.z);
 	}
 
 	void assert_mbr_invariant(const TRTreeNode &node) {
 		if (!node.entries.empty()) {
-			Box3D expected = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
+			Box2D expected = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
 
 			ASSERT_TRUE(node.box.has_value());
 
@@ -103,9 +101,7 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertions) {
 
 	for (SoilPieceId id = 0; id < 1000; ++id) {
 		tree.insert(id,
-					make_box(static_cast<double>(id % 100),
-							 static_cast<double>((id / 100) % 10),
-							 static_cast<double>(static_cast<double>(id) / 1000)));
+					make_box(static_cast<double>(id % 100), static_cast<double>((id / 100) % 10)));
 
 		if (!tree.exists(id)) {
 			FAIL();
@@ -122,9 +118,7 @@ TEST(RStarTreeTest, InvariantsHoldAfterMultipleInsertionsAndDeletions) {
 
 	for (SoilPieceId id = 0; id < count; ++id) {
 		tree.insert(id,
-					make_box(static_cast<double>(id % 100),
-							 static_cast<double>((id / 100) % 10),
-							 static_cast<double>(static_cast<double>(id) / 1000)));
+					make_box(static_cast<double>(id % 100), static_cast<double>((id / 100) % 10)));
 
 		if (!tree.exists(id)) {
 			FAIL();
@@ -202,7 +196,7 @@ TEST(RStarTreeTest, DeletingOneSoilPieceDoesNotRemoveOthers) {
 	constexpr SoilPieceId count = 100;
 
 	for (SoilPieceId id = 0; id < count; ++id) {
-		tree.insert(id, make_box(static_cast<double>(id * 2), 0.0, 0.0));
+		tree.insert(id, make_box(static_cast<double>(id * 2), 0.0));
 	}
 
 	assert_all_ids_exist(tree, count);
@@ -234,7 +228,7 @@ TEST(RStarTreeTest, ClearReallyWorks) {
 	constexpr SoilPieceId count = 100;
 
 	for (SoilPieceId id = 0; id < count; ++id) {
-		tree.insert(id, make_box(static_cast<double>(id * 2), 0.0, 0.0));
+		tree.insert(id, make_box(static_cast<double>(id * 2), 0.0));
 	}
 	tree.clear();
 	ASSERT_TRUE(tree.size() == 0);
@@ -243,22 +237,21 @@ TEST(RStarTreeTest, ClearReallyWorks) {
 TEST(RStarTreeTest, FindReallyWorks) {
 	TRStarTree tree;
 
-	constexpr SoilPieceId count = 500;
+	constexpr SoilPieceId count = 100;
 
-	// Insert 500 boxes in a 10 x 10 x 5 grid.
+	// Insert 100 boxes in a 10 x 10 grid.
 	for (SoilPieceId id = 0; id < count; ++id) {
 		const double x = static_cast<double>(id % 10) * 10.0;
-		const double y = static_cast<double>((id / 10) % 10) * 10.0;
-		const double z = static_cast<double>(id / 100) * 10.0;
+		const double y = static_cast<double>(id / 10) * 10.0;
 
-		tree.insert(id, make_box(x, y, z));
+		tree.insert(id, make_box(x, y));
 	}
 
 	assert_tree_invariants(tree);
 
 	// Find a region containing exactly one box.
 	{
-		const Box3D query = make_box(20.0, 30.0, 10.0, 1.0);
+		const Box2D query = make_box(20.0, 30.0, 1.0);
 
 		const auto result = tree.find(query);
 
@@ -268,31 +261,27 @@ TEST(RStarTreeTest, FindReallyWorks) {
 
 	// Find a larger region.
 	//
-	// Box boundaries are inclusive, so boxes starting exactly at
-	// x = 30, y = 30, or z = 20 also intersect the query.
+	// Box boundaries are inclusive, so boxes starting exactly at x = 30 or y = 30
+	// also intersect the query.
 	//
 	// x: 0, 10, 20, 30 -> 4
 	// y: 0, 10, 20, 30 -> 4
-	// z: 0, 10, 20      -> 3
-	//
-	// Total: 4 * 4 * 3 = 48.
+	// Total: 4 * 4 = 16.
 	{
-		const Box3D query = Box3D{
-			.max = Vec3{30.0, 30.0, 20.0},
-			.min = Vec3{0.0, 0.0, 0.0},
+		const Box2D query = Box2D{
+			.max = Vec2{30.0, 30.0},
+			.min = Vec2{0.0, 0.0},
 		};
 
 		const auto result = tree.find(query);
 
-		ASSERT_EQ(result.size(), 48);
+		ASSERT_EQ(result.size(), 16);
 
 		std::unordered_set<SoilPieceId> expected;
 
-		for (SoilPieceId z = 0; z <= 2; ++z) {
-			for (SoilPieceId y = 0; y <= 3; ++y) {
-				for (SoilPieceId x = 0; x <= 3; ++x) {
-					expected.insert(z * 100 + y * 10 + x);
-				}
+		for (SoilPieceId y = 0; y <= 3; ++y) {
+			for (SoilPieceId x = 0; x <= 3; ++x) {
+				expected.insert(y * 10 + x);
 			}
 		}
 
@@ -301,9 +290,9 @@ TEST(RStarTreeTest, FindReallyWorks) {
 
 	// Search a completely empty region.
 	{
-		const Box3D query = Box3D{
-			.max = Vec3{1010.0, 1010.0, 1010.0},
-			.min = Vec3{1000.0, 1000.0, 1000.0},
+		const Box2D query = Box2D{
+			.max = Vec2{1010.0, 1010.0},
+			.min = Vec2{1000.0, 1000.0},
 		};
 
 		const auto result = tree.find(query);
@@ -313,9 +302,9 @@ TEST(RStarTreeTest, FindReallyWorks) {
 
 	// Search a region between the inserted boxes.
 	{
-		const Box3D query = Box3D{
-			.max = Vec3{9.0, 9.0, 9.0},
-			.min = Vec3{5.0, 5.0, 5.0},
+		const Box2D query = Box2D{
+			.max = Vec2{9.0, 9.0},
+			.min = Vec2{5.0, 5.0},
 		};
 
 		const auto result = tree.find(query);
