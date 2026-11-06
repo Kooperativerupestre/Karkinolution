@@ -12,6 +12,9 @@ namespace KarkinolutionView {
 	namespace Gui {
 		namespace Panel {
 			namespace Layout {
+				// Layout works with edges instead of center-plus-extent rectangles. This
+				// keeps stacking arithmetic independent from the geometry conversion used
+				// by the rest of the GUI.
 				struct Edges {
 						double left;
 						double top;
@@ -42,6 +45,8 @@ namespace KarkinolutionView {
 					HORIZONTAL
 				};
 
+				// Fixed and content policies consume space before fill policies. Fill
+				// policies share whatever remains after those mandatory sizes and gaps.
 				struct Fixed {
 						double extent;
 				};
@@ -55,6 +60,8 @@ namespace KarkinolutionView {
 				using SizePolicy = std::variant<Fixed, Content, Fill>;
 				using Measure    = std::function<Size()>;
 
+				// A leaf is the only node that produces an assignment. Containers only
+				// describe how their descendants receive space and are never indexed.
 				struct Leaf {
 						Components::ComponentId id;
 						Measure                 measure;
@@ -67,6 +74,9 @@ namespace KarkinolutionView {
 						std::shared_ptr<const Node> node;
 				};
 
+				// A stack distributes children along one main axis and aligns them on
+				// the other axis. The same representation supports vertical and
+				// horizontal layout without duplicating the algorithm.
 				struct Stack {
 						Direction          direction;
 						Insets             padding;
@@ -89,6 +99,8 @@ namespace KarkinolutionView {
 						bool                    overflowed = false;
 				};
 
+				// Performs a deterministic pure layout pass. It does not know about the
+				// panel, quadtree, component mutation, rendering, or frame state.
 				[[nodiscard]] LayoutResult layout(const Edges &box, const Node &root);
 			} // namespace Layout
 		} // namespace Panel
