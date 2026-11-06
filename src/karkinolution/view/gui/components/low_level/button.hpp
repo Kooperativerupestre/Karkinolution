@@ -65,7 +65,7 @@ namespace KarkinolutionView {
 							ButtonStyles          style_;
 							bool                  press_started_inside_ = false;
 
-							void draw(ButtonStates state) const;
+							void draw(ButtonStates state, const Geometry::Position &origin) const;
 
 							void invoke() const {
 								std::invoke(callback_);
@@ -106,6 +106,7 @@ namespace KarkinolutionView {
 							}
 
 							void run();
+							void run(const Geometry::Position &origin);
 					};
 				} // namespace Button
 			} // namespace LowLevel

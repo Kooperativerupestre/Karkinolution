@@ -6,18 +6,24 @@ namespace KarkinolutionView {
 	namespace Gui {
 		namespace Components {
 			namespace LowLevel {
-				void Button::RectangleButton::draw(Button::ButtonStates state) const {
+				void Button::RectangleButton::draw(Button::ButtonStates state, const Geometry::Position &origin) const {
 					const auto bounds = rectangle_component_.get_bounds();
-					DrawRectangleRec(::Rectangle{.x      = bounds.left().value,
-												 .y      = bounds.top().value,
+					DrawRectangleRec(::Rectangle{.x      = bounds.left().value + origin.x,
+												 .y      = bounds.top().value + origin.y,
 												 .width  = static_cast<float>(bounds.width.value()),
 												 .height = static_cast<float>(bounds.height.value())},
 									 Colors::translate(style_.get(state)));
-					label.draw();
+					label.draw(origin);
 				}
 
 				void Button::RectangleButton::run() {
-					const bool hovered = Drivers::Mouse::is_cursor_inside(rectangle_component_.get_bounds());
+					run({0, 0});
+				}
+
+				void Button::RectangleButton::run(const Geometry::Position &origin) {
+					const auto                bounds = rectangle_component_.get_bounds();
+					const Geometry::Rectangle screen_bounds{bounds.position + origin, bounds.width, bounds.height};
+					const bool                hovered = Drivers::Mouse::is_cursor_inside(screen_bounds);
 					const bool pressed = hovered && Drivers::Mouse::is_pressed(Drivers::Mouse::Buttons::LEFT);
 					if (Drivers::Mouse::was_pressed(Drivers::Mouse::Buttons::LEFT)) {
 						press_started_inside_ = hovered;
@@ -25,7 +31,8 @@ namespace KarkinolutionView {
 
 					draw(pressed       ? Button::ButtonStates::PRESSED
 							 : hovered ? Button::ButtonStates::HOVERED
-									   : Button::ButtonStates::IDLE);
+									   : Button::ButtonStates::IDLE,
+						 origin);
 
 					if (Drivers::Mouse::was_released(Drivers::Mouse::Buttons::LEFT)) {
 						const bool clicked    = hovered && press_started_inside_;

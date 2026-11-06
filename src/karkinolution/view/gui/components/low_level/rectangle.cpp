@@ -11,8 +11,12 @@ KarkinolutionView::Gui::Components::LowLevel::Rectangle::Rectangle(
 	, color(color) {}
 
 void KarkinolutionView::Gui::Components::LowLevel::Rectangle::draw() const {
-	DrawRectangleRec(::Rectangle{.x      = bounds_.left().value,
-								 .y      = bounds_.top().value,
+	draw({0, 0});
+}
+
+void KarkinolutionView::Gui::Components::LowLevel::Rectangle::draw(const Geometry::Position &origin) const {
+	DrawRectangleRec(::Rectangle{.x      = bounds_.left().value + origin.x,
+								 .y      = bounds_.top().value + origin.y,
 								 .width  = static_cast<float>(bounds_.width.value()),
 								 .height = static_cast<float>(bounds_.height.value())},
 					 KarkinolutionView::Gui::Colors::translate(color));

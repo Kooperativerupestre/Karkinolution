@@ -26,8 +26,12 @@ namespace KarkinolutionView {
 				}
 
 				void RectangleLabel::draw() const {
-					rectangle_.draw();
-					text_.draw();
+					draw({0, 0});
+				}
+
+				void RectangleLabel::draw(const Geometry::Position &origin) const {
+					rectangle_.draw(origin);
+					text_.draw(origin);
 				}
 			} // namespace LowLevel
 		} // namespace Components

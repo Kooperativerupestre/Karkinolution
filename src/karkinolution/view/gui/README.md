@@ -28,3 +28,11 @@ References:
 
 - [Unreal Slate layout](https://dev.epicgames.com/documentation/unreal-engine/understanding-the-slate-ui-architecture-in-unreal-engine?lang=en-US)
 - [Godot Control layout](https://docs.godotengine.org/en/stable/classes/class_control.html)
+
+## Rendering panel-local geometry
+
+Components keep their geometry in panel-local coordinates. Drawing receives the
+accumulated parent origin at the rendering boundary, while mouse queries apply
+the inverse translation before consulting the local index. This keeps dragging
+as a transform of the rendered and interactive result instead of a mutation of
+every component bound.

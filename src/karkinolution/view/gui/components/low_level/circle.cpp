@@ -23,7 +23,11 @@ bool KarkinolutionView::Gui::Components::LowLevel::Circle::set_slot(
 }
 
 void KarkinolutionView::Gui::Components::LowLevel::Circle::draw() const {
-	DrawCircleV(Vector2{bounds_.position.x, bounds_.position.y},
+	draw({0, 0});
+}
+
+void KarkinolutionView::Gui::Components::LowLevel::Circle::draw(const Geometry::Position &origin) const {
+	DrawCircleV(Vector2{bounds_.position.x + origin.x, bounds_.position.y + origin.y},
 				bounds_.radius.value(),
 				KarkinolutionView::Gui::Colors::translate(color));
 }

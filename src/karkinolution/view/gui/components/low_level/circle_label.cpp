@@ -33,8 +33,12 @@ namespace KarkinolutionView {
 				}
 
 				void CircleLabel::draw() const {
-					circle_.draw();
-					text_.draw();
+					draw({0, 0});
+				}
+
+				void CircleLabel::draw(const Geometry::Position &origin) const {
+					circle_.draw(origin);
+					text_.draw(origin);
 				}
 			} // namespace LowLevel
 		} // namespace Components

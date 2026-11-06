@@ -24,8 +24,12 @@ KarkinolutionView::Gui::Geometry::Rectangle KarkinolutionView::Gui::Components::
 }
 
 void KarkinolutionView::Gui::Components::LowLevel::Line::draw() const {
-	DrawLineEx(Vector2{.x = begin_.x, .y = begin_.y},
-			   Vector2{.x = end_.x, .y = end_.y},
+	draw({0, 0});
+}
+
+void KarkinolutionView::Gui::Components::LowLevel::Line::draw(const Geometry::Position &origin) const {
+	DrawLineEx(Vector2{.x = begin_.x + origin.x, .y = begin_.y + origin.y},
+			   Vector2{.x = end_.x + origin.x, .y = end_.y + origin.y},
 			   static_cast<float>(thickness_.value()),
 			   Colors::translate(color));
 }

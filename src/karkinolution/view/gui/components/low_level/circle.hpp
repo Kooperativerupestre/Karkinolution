@@ -28,6 +28,7 @@ namespace KarkinolutionView {
 						bool set_slot(const Geometry::Rectangle &slot);
 
 						void draw() const;
+						void draw(const Geometry::Position &origin) const;
 						void draw_bounds(Geometry::Thickness thickness) const;
 				};
 			} // namespace LowLevel

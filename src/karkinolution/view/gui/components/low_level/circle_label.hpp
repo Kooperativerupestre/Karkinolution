@@ -61,6 +61,7 @@ namespace KarkinolutionView {
 						}
 
 						void draw() const;
+						void draw(const Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel
 		} // namespace Components
