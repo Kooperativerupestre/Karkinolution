@@ -17,7 +17,7 @@ namespace KarkinolutionView {
 					private:
 
 						Rectangle rectangle_;
-						Text            text_;
+						Text      text_;
 
 					public:
 
@@ -43,17 +43,19 @@ namespace KarkinolutionView {
 						}
 
 						void set_text(std::string text);
+
 						bool set_slot(const Geometry::Rectangle &slot) {
-						const auto old_slot = rectangle_.get_bounds();
-						if (!rectangle_.set_slot(slot)) {
-							return false;
+							const auto old_slot = rectangle_.get_bounds();
+							if (!rectangle_.set_slot(slot)) {
+								return false;
+							}
+							if (!text_.set_slot(slot)) {
+								rectangle_.set_slot(old_slot);
+								return false;
+							}
+							return true;
 						}
-						if (!text_.set_slot(slot)) {
-							rectangle_.set_slot(old_slot);
-							return false;
-						}
-						return true;
-						}
+
 						void draw() const;
 				};
 			} // namespace LowLevel

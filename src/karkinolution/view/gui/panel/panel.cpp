@@ -19,7 +19,7 @@ namespace KarkinolutionView {
 				components_.reserve(components_.size() + 1);
 
 				const auto index_bounds = component->get_index_bounds();
-				const bool indexed = quadtree_.add(id, index_bounds);
+				const bool indexed      = quadtree_.add(id, index_bounds);
 				if (!indexed) {
 					return false;
 				}
@@ -46,13 +46,13 @@ namespace KarkinolutionView {
 					return false;
 				}
 
-					components_.erase(component);
+				components_.erase(component);
 				layout_dirty_ = true;
 				return true;
 			}
 
 			void Panel::set_layout(Layout::Node layout_root) {
-				layout_root_ = std::move(layout_root);
+				layout_root_  = std::move(layout_root);
 				layout_dirty_ = true;
 			}
 
@@ -66,10 +66,10 @@ namespace KarkinolutionView {
 				}
 
 				const Layout::Edges root_edges{bounds_.left().value,
-												 bounds_.top().value,
-												 bounds_.right().value,
-												 bounds_.floor().value};
-				const auto result = Layout::layout(root_edges, *layout_root_);
+											   bounds_.top().value,
+											   bounds_.right().value,
+											   bounds_.floor().value};
+				const auto          result = Layout::layout(root_edges, *layout_root_);
 
 				for (const auto &assignment : result.assignments) {
 					const auto entry = components_.find(assignment.id);

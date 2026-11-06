@@ -1,25 +1,24 @@
 #include <gtest/gtest.h>
 #include <karkinolution/view/gui/panel/layout/layout.hpp>
-
 #include <memory>
 
-namespace Layout = KarkinolutionView::Gui::Panel::Layout;
+namespace Layout   = KarkinolutionView::Gui::Panel::Layout;
 namespace Geometry = KarkinolutionView::Gui::Geometry;
 using KarkinolutionView::Gui::Components::ComponentType;
 using KarkinolutionView::Gui::Components::gen_id;
 
 namespace {
-Layout::Node leaf(const Layout::Measure &measure = {}) {
-	return Layout::Node{Layout::Leaf{gen_id(ComponentType::RECTANGLE), measure}};
-}
+	Layout::Node leaf(const Layout::Measure &measure = {}) {
+		return Layout::Node{Layout::Leaf{gen_id(ComponentType::RECTANGLE), measure}};
+	}
 
-std::shared_ptr<const Layout::Node> child_node(const Layout::Measure &measure = {}) {
-	return std::make_shared<const Layout::Node>(leaf(measure));
-}
+	std::shared_ptr<const Layout::Node> child_node(const Layout::Measure &measure = {}) {
+		return std::make_shared<const Layout::Node>(leaf(measure));
+	}
 
-Geometry::Rectangle slot(const Layout::Assignment &assignment) {
-	return assignment.slot;
-}
+	Geometry::Rectangle slot(const Layout::Assignment &assignment) {
+		return assignment.slot;
+	}
 } // namespace
 
 TEST(GuiLayout, EmptyStackProducesNoAssignments) {
@@ -32,13 +31,12 @@ TEST(GuiLayout, EmptyStackProducesNoAssignments) {
 }
 
 TEST(GuiLayout, FillChildrenUseWeightedRemainingSpace) {
-	const auto first = child_node();
-	const auto second = child_node();
-	const auto third = child_node();
-	const Layout::Node root{Layout::Stack{.direction = Layout::Direction::VERTICAL,
-																	.children = {{Layout::Fill{1.0}, first},
-																							 {Layout::Fill{2.0}, second},
-																							 {Layout::Fill{1.0}, third}}}};
+	const auto         first  = child_node();
+	const auto         second = child_node();
+	const auto         third  = child_node();
+	const Layout::Node root{Layout::Stack{
+		.direction = Layout::Direction::VERTICAL,
+		.children  = {{Layout::Fill{1.0}, first}, {Layout::Fill{2.0}, second}, {Layout::Fill{1.0}, third}}}};
 
 	const auto result = Layout::layout({0, 0, 20, 100}, root);
 
@@ -50,14 +48,15 @@ TEST(GuiLayout, FillChildrenUseWeightedRemainingSpace) {
 }
 
 TEST(GuiLayout, ContentAndFixedChildrenLeaveRemainingSpaceForFill) {
-	const auto content = child_node([] { return Layout::Size{20, 15}; });
-	const auto fixed = child_node();
-	const auto fill = child_node();
-	const Layout::Node root{Layout::Stack{.direction = Layout::Direction::VERTICAL,
-																	.spacing = 5,
-																	.children = {{Layout::Content{}, content},
-																							 {Layout::Fixed{20}, fixed},
-																							 {Layout::Fill{}, fill}}}};
+	const auto         content = child_node([] {
+        return Layout::Size{20, 15};
+    });
+	const auto         fixed   = child_node();
+	const auto         fill    = child_node();
+	const Layout::Node root{
+		Layout::Stack{.direction = Layout::Direction::VERTICAL,
+					  .spacing   = 5,
+					  .children  = {{Layout::Content{}, content}, {Layout::Fixed{20}, fixed}, {Layout::Fill{}, fill}}}};
 
 	const auto result = Layout::layout({0, 0, 100, 100}, root);
 
@@ -69,11 +68,10 @@ TEST(GuiLayout, ContentAndFixedChildrenLeaveRemainingSpaceForFill) {
 }
 
 TEST(GuiLayout, OverflowClampsSlotsAndReportsOverflow) {
-	const auto first = child_node();
-	const auto second = child_node();
+	const auto         first  = child_node();
+	const auto         second = child_node();
 	const Layout::Node root{Layout::Stack{.direction = Layout::Direction::VERTICAL,
-																	.children = {{Layout::Fixed{80}, first},
-																							 {Layout::Fixed{80}, second}}}};
+										  .children  = {{Layout::Fixed{80}, first}, {Layout::Fixed{80}, second}}}};
 
 	const auto result = Layout::layout({0, 0, 100, 100}, root);
 
@@ -86,10 +84,12 @@ TEST(GuiLayout, OverflowClampsSlotsAndReportsOverflow) {
 }
 
 TEST(GuiLayout, CenterAlignmentUsesPreferredCrossExtent) {
-	const auto child = child_node([] { return Layout::Size{20, 10}; });
-	const Layout::Node root{Layout::Stack{.direction = Layout::Direction::VERTICAL,
-																	.cross_align = Layout::CrossAlign::CENTER,
-																	.children = {{Layout::Fill{}, child}}}};
+	const auto         child = child_node([] {
+        return Layout::Size{20, 10};
+    });
+	const Layout::Node root{Layout::Stack{.direction   = Layout::Direction::VERTICAL,
+										  .cross_align = Layout::CrossAlign::CENTER,
+										  .children    = {{Layout::Fill{}, child}}}};
 
 	const auto result = Layout::layout({0, 0, 100, 100}, root);
 

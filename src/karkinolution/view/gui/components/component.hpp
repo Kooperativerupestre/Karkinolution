@@ -11,9 +11,9 @@
 #include "karkinolution/view/gui/components/medium_level/grid.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 
-#include <cstdint>
 #include <algorithm>
 #include <concepts>
+#include <cstdint>
 #include <optional>
 #include <type_traits>
 #include <typeindex>
@@ -22,7 +22,7 @@
 
 namespace KarkinolutionView::Gui::Panel {
 	class Panel;
-}
+} // namespace KarkinolutionView::Gui::Panel
 
 namespace KarkinolutionView {
 	namespace Gui {
@@ -100,8 +100,9 @@ namespace KarkinolutionView {
 							[](const auto &component) -> Geometry::Rectangle {
 								using Bounds = std::remove_cvref_t<decltype(component.get_bounds())>;
 								if constexpr (std::same_as<Bounds, Geometry::Circle>) {
-									const auto circle = component.get_bounds();
-									const double diameter = std::max(1e-6, static_cast<double>(circle.radius.value()) * 2.0);
+									const auto   circle = component.get_bounds();
+									const double diameter =
+										std::max(1e-6, static_cast<double>(circle.radius.value()) * 2.0);
 									return {circle.position, Geometry::Width{diameter}, Geometry::Height{diameter}};
 								} else {
 									return component.get_bounds();

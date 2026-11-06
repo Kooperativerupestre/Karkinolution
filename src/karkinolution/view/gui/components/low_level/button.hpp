@@ -60,7 +60,7 @@ namespace KarkinolutionView {
 					class RectangleButton : public BaseComponent<ComponentType::BUTTON> {
 						private:
 
-						Rectangle             rectangle_component_;
+							Rectangle             rectangle_component_;
 							std::function<void()> callback_;
 							ButtonStyles          style_;
 							bool                  press_started_inside_ = false;
@@ -93,17 +93,17 @@ namespace KarkinolutionView {
 								label.set_text(std::move(text));
 							}
 
-						bool set_slot(const Geometry::Rectangle &slot) {
-							const auto old_slot = rectangle_component_.get_bounds();
-							if (!rectangle_component_.set_slot(slot)) {
-								return false;
+							bool set_slot(const Geometry::Rectangle &slot) {
+								const auto old_slot = rectangle_component_.get_bounds();
+								if (!rectangle_component_.set_slot(slot)) {
+									return false;
+								}
+								if (!label.set_slot(slot)) {
+									rectangle_component_.set_slot(old_slot);
+									return false;
+								}
+								return true;
 							}
-							if (!label.set_slot(slot)) {
-								rectangle_component_.set_slot(old_slot);
-								return false;
-							}
-							return true;
-						}
 
 							void run();
 					};
