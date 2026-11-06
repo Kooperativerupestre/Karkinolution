@@ -30,6 +30,8 @@ namespace KarkinolutionView {
 				};
 
 				struct Size {
+						// Size is the preferred, unallocated extent of a leaf. It is not the
+						// slot the leaf receives; the parent stack decides that slot.
 						double width{};
 						double height{};
 				};
@@ -58,7 +60,12 @@ namespace KarkinolutionView {
 				};
 
 				using SizePolicy = std::variant<Fixed, Content, Fill>;
-				using Measure    = std::function<Size()>;
+				// A measurement callback supplies intrinsic content size in GUI units.
+				// The layout invokes it only for Content policies and for cross-axis
+				// preferred sizing. It must be deterministic and must not mutate the
+				// component or depend on rendering/frame state. Non-positive results are
+				// normalized to the layout minimum by the caller.
+				using Measure = std::function<Size()>;
 
 				// A leaf is the only node that produces an assignment. Containers only
 				// describe how their descendants receive space and are never indexed.
@@ -95,12 +102,18 @@ namespace KarkinolutionView {
 				};
 
 				struct LayoutResult {
+						// Assignments are emitted in tree/child order so the panel can apply
+						// them as one deterministic transaction.
 						std::vector<Assignment> assignments;
-						bool                    overflowed = false;
+						// True means the requested preferred/fixed arrangement did not fit;
+						// slots are still clamped to valid geometry for transactional handling.
+						bool overflowed = false;
 				};
 
-				// Performs a deterministic pure layout pass. It does not know about the
-				// panel, quadtree, component mutation, rendering, or frame state.
+				// Performs a deterministic pure layout pass. The root box is expressed in
+				// edge coordinates, and the result contains one rectangular slot per leaf.
+				// It does not know about the panel, quadtree, component mutation, rendering,
+				// or frame state; the panel owns applying the returned assignments.
 				[[nodiscard]] LayoutResult layout(const Edges &box, const Node &root);
 			} // namespace Layout
 		} // namespace Panel

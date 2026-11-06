@@ -7,6 +7,9 @@
 namespace KarkinolutionView {
 	namespace Gui {
 		namespace Panel {
+			// Add is deliberately a two-phase ownership operation: the spatial index
+			// must accept the component before the map claims ownership. If map insertion
+			// unexpectedly fails, remove restores the pre-call state.
 			bool Panel::add(std::shared_ptr<Components::Component> component) {
 				if (!component) {
 					return false;
@@ -37,6 +40,8 @@ namespace KarkinolutionView {
 				return true;
 			}
 
+			// Removing the map entry first would lose the bound needed to remove the
+			// matching quadtree record, so the index is retired before ownership.
 			bool Panel::remove(Components::ComponentId id) {
 				const auto component = components_.find(id);
 				if (component == components_.end()) {
@@ -52,6 +57,8 @@ namespace KarkinolutionView {
 				return true;
 			}
 
+			// Layout changes are cheap to stage and potentially expensive to apply;
+			// defer the pass so callers can edit the tree without partial updates.
 			void Panel::set_layout(Layout::Node layout_root) {
 				layout_root_  = std::move(layout_root);
 				layout_dirty_ = true;
@@ -61,6 +68,9 @@ namespace KarkinolutionView {
 				layout_dirty_ = true;
 			}
 
+			// The validation pass prevents a malformed tree from changing only part of
+			// the panel. The application pass then reuses set_bounds for each atomic
+			// component/index update and records old slots for reverse rollback.
 			LayoutApplyResult Panel::relayout() {
 				if (!layout_dirty_ || !layout_root_) {
 					return {};
@@ -102,6 +112,9 @@ namespace KarkinolutionView {
 				return {.applied = true, .overflowed = result.overflowed};
 			}
 
+			// Quadtree::update removes the old record before inserting the new one.
+			// Therefore the Entry::indexed_bound value, rather than component geometry,
+			// is always used for both the update and any recovery operation.
 			bool Panel::set_bounds(Components::ComponentId id, const Geometry::Rectangle &slot) {
 				const auto entry = components_.find(id);
 				if (entry == components_.end() || !Geometry::can_contain(bounds_, slot)) {
@@ -134,6 +147,9 @@ namespace KarkinolutionView {
 				return true;
 			}
 
+			// Resize computes all targets before mutating anything. Component updates are
+			// staged first, then a replacement quadtree is built off to the side; the
+			// live boundary/index pair changes only after both are known to be valid.
 			bool Panel::resize(const Geometry::Rectangle &bounds) {
 				std::unordered_map<Components::ComponentId, Geometry::Rectangle> target_bounds;
 				target_bounds.reserve(components_.size());
@@ -202,6 +218,8 @@ namespace KarkinolutionView {
 				return true;
 			}
 
+			// Parent and local spaces differ only by translation. Keeping this conversion
+			// centralized prevents callers from accidentally applying the origin twice.
 			Geometry::Rectangle Panel::to_local(const Geometry::Rectangle &area) const {
 				return {area.position - origin_, area.width, area.height};
 			}
@@ -210,6 +228,8 @@ namespace KarkinolutionView {
 				return {area.position - origin_, area.radius};
 			}
 
+			// The panel returns the shared handle so the screen can render the component;
+			// mutation of its slot remains private to Panel through Component::set_slot.
 			std::shared_ptr<Components::Component> Panel::get(Components::ComponentId id) const {
 				const auto component = components_.find(id);
 				if (component == components_.end()) {
@@ -218,6 +238,8 @@ namespace KarkinolutionView {
 				return component->second.component;
 			}
 
+			// These helpers expose only broad-phase candidates. Exact shape checks are
+			// intentionally performed by intersects in the next stage.
 			std::vector<Components::ComponentId> Panel::find_in_area(const Geometry::Rectangle &area) const {
 				return quadtree_.find_in_area(area);
 			}
@@ -226,6 +248,8 @@ namespace KarkinolutionView {
 				return quadtree_.find_in_area(area);
 			}
 
+			// A rectangular quadtree bound is conservative for circles and lines, so
+			// candidate retrieval alone cannot define collision semantics.
 			template <typename Area> bool Panel::intersects(Components::ComponentId id, const Area &area) const {
 				const auto component = get(id);
 				if (!component) {
@@ -239,6 +263,8 @@ namespace KarkinolutionView {
 					component->get_bounds());
 			}
 
+			// Narrowing the broad-phase candidates here gives callers exact collisions
+			// without coupling the quadtree to every component shape.
 			template <typename Area>
 			std::vector<Components::ComponentId> Panel::collides_in_area(const Area &area) const {
 				std::vector<Components::ComponentId> collisions;
@@ -266,6 +292,8 @@ namespace KarkinolutionView {
 				return collides(to_local(area));
 			}
 
+			// Stop after the first exact match, preserving quadtree traversal order and
+			// avoiding a false promise that the result is nearest or visually foremost.
 			template <typename Area>
 			std::optional<Components::ComponentId> Panel::find_one_collision_in_area_impl(const Area &area) const {
 				for (const auto id : find_in_area(area)) {
