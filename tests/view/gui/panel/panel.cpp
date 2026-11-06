@@ -72,6 +72,18 @@ TEST(GuiPanel, ResizeRebuildsIndexForComponentsThatRemainInside) {
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(10, 10)).has_value());
 }
 
+TEST(GuiPanel, ResizeKeepsBoundsLocalAndMovesTheParentOrigin) {
+	Panel::Panel panel{rectangle(50, 50, 100, 100)};
+	const auto   component = rectangle_component(rectangle(0, 0));
+
+	ASSERT_TRUE(panel.add(component));
+	ASSERT_TRUE(panel.resize(rectangle(100, 80, 200, 120)));
+
+	EXPECT_EQ(panel.origin(), (Geometry::Position{100, 80}));
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(0, 0)).has_value());
+	EXPECT_TRUE(panel.find_one_collision_in_parent(rectangle(100, 80)).has_value());
+}
+
 TEST(GuiPanel, CircularComponentsUseInscribedSlotsAndExactCollisionFiltering) {
 	Panel::Panel panel{rectangle(0, 0, 100, 100)};
 	const auto   component = circle_component(Geometry::Circle{Geometry::Position{0, 0}, Geometry::Radius{5}});

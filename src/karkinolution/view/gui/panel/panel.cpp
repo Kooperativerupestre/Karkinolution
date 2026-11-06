@@ -150,19 +150,23 @@ namespace KarkinolutionView {
 			// Resize computes all targets before mutating anything. Component updates are
 			// staged first, then a replacement quadtree is built off to the side; the
 			// live boundary/index pair changes only after both are known to be valid.
+			// The argument is a parent-space rectangle, so its position becomes the new
+			// origin while the replacement boundary is normalized back to local space.
 			bool Panel::resize(const Geometry::Rectangle &bounds) {
+				const Geometry::Rectangle local_bounds{{0, 0}, bounds.width, bounds.height};
 				std::unordered_map<Components::ComponentId, Geometry::Rectangle> target_bounds;
 				target_bounds.reserve(components_.size());
 
 				if (layout_root_) {
-					const Layout::Edges                         edges{bounds.left().value,
-                                              bounds.top().value,
-                                              bounds.right().value,
-                                              bounds.floor().value};
+					const Layout::Edges                         edges{local_bounds.left().value,
+                                              local_bounds.top().value,
+                                              local_bounds.right().value,
+                                              local_bounds.floor().value};
 					const auto                                  result = Layout::layout(edges, *layout_root_);
 					std::unordered_set<Components::ComponentId> assigned_ids;
 					for (const auto &assignment : result.assignments) {
-						if (!components_.contains(assignment.id) || !Geometry::can_contain(bounds, assignment.slot)
+						if (!components_.contains(assignment.id)
+							|| !Geometry::can_contain(local_bounds, assignment.slot)
 							|| !assigned_ids.insert(assignment.id).second) {
 							return false;
 						}
@@ -172,7 +176,7 @@ namespace KarkinolutionView {
 
 				for (const auto &[id, entry] : components_) {
 					if (!target_bounds.contains(id)) {
-						if (!Geometry::can_contain(bounds, entry.indexed_bound)) {
+						if (!Geometry::can_contain(local_bounds, entry.indexed_bound)) {
 							return false;
 						}
 						target_bounds.emplace(id, entry.indexed_bound);
@@ -197,7 +201,7 @@ namespace KarkinolutionView {
 					changed.emplace_back(id, old);
 				}
 
-				Quadtree::Quadtree replacement{bounds};
+				Quadtree::Quadtree replacement{local_bounds};
 				for (const auto &[id, target] : target_bounds) {
 					if (!replacement.add(id, target)) {
 						for (auto rollback = changed.rbegin(); rollback != changed.rend(); ++rollback) {
@@ -213,7 +217,8 @@ namespace KarkinolutionView {
 					components_.at(id).indexed_bound = target;
 				}
 				quadtree_     = std::move(replacement);
-				bounds_       = bounds;
+				bounds_       = local_bounds;
+				origin_       = bounds.position;
 				layout_dirty_ = false;
 				return true;
 			}
