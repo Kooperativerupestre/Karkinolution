@@ -15,7 +15,7 @@ namespace KarkinolutionView {
 
 						// The stable maximum bound supports spatial indexing. The measured current
 						// bound is centered inside it for rendering and hit-testing.
-						const Geometry::Rectangle max_bound_;
+						Geometry::Rectangle max_bound_;
 						Geometry::Rectangle       current_bound_;
 						std::string               text_;
 
@@ -45,6 +45,7 @@ namespace KarkinolutionView {
 						}
 
 						void set_text(std::string text);
+						bool set_slot(const Geometry::Rectangle &slot);
 						void draw() const;
 				};
 			} // namespace LowLevel

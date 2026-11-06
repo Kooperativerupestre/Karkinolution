@@ -38,3 +38,30 @@ TEST(GuiGeometry, ContainsCircleOnBoundaryAndRejectsOverflow) {
 	EXPECT_TRUE(Geometry::can_contain(container, contained));
 	EXPECT_FALSE(Geometry::can_contain(container, overflowing));
 }
+
+TEST(GuiGeometry, BuildsRectangleFromEdges) {
+	const auto rectangle = Geometry::Rectangle::from_edges(Geometry::Left{-20},
+											 Geometry::Top{10},
+											 Geometry::Right{40},
+											 Geometry::Floor{70});
+
+	EXPECT_EQ(rectangle.position, (Geometry::Position{10, 40}));
+	EXPECT_DOUBLE_EQ(rectangle.width.value(), 60.0);
+	EXPECT_DOUBLE_EQ(rectangle.height.value(), 60.0);
+	EXPECT_FLOAT_EQ(rectangle.left().value, -20.0F);
+	EXPECT_FLOAT_EQ(rectangle.right().value, 40.0F);
+	EXPECT_FLOAT_EQ(rectangle.top().value, 10.0F);
+	EXPECT_FLOAT_EQ(rectangle.floor().value, 70.0F);
+}
+
+TEST(GuiGeometry, RectangleFromEdgesRoundTripsCenterAndExtents) {
+	const Geometry::Rectangle original{Geometry::Position{17.5F, 23.5F},
+											 Geometry::Width{31.0},
+											 Geometry::Height{19.0}};
+	const auto reconstructed = Geometry::Rectangle::from_edges(original.left(),
+															 original.top(),
+															 original.right(),
+															 original.floor());
+
+	EXPECT_EQ(reconstructed, original);
+}

@@ -222,6 +222,13 @@ namespace KarkinolutionView {
 						, width(width)
 						, height(height) {}
 
+					static constexpr Rectangle from_edges(Left left, Top top, Right right, Floor floor) {
+						return Rectangle{Position{(left.value + right.value) / 2.0f,
+											 (top.value + floor.value) / 2.0f},
+									 Geometry::Width{static_cast<double>(right.value - left.value)},
+									 Geometry::Height{static_cast<double>(floor.value - top.value)}};
+					}
+
 					constexpr Top top() const {
 						return {position.move_up(static_cast<float>(height.value()) / 2.0f).y};
 					}
