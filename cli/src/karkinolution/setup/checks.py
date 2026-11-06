@@ -10,7 +10,7 @@ GENERATOR_TOOLS = {"Ninja": "ninja"}
 
 SUBMODULE_PATH_PATTERN = re.compile(r"^\s*path\s*=\s*(\S+)\s*$", re.MULTILINE)
 
-VIEW_ONLY_SUBMODULES = frozenset({"raylib", "imgui", "rlImGui"})
+VIEW_ONLY_SUBMODULES = frozenset({"raylib"})
 
 
 @dataclass(frozen=True)

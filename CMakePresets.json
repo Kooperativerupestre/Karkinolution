@@ -154,7 +154,7 @@
     },
     {
       "name": "view-debug",
-      "displayName": "Debug with View (raylib + imgui)",
+      "displayName": "Debug with View (raylib)",
       "inherits": [
         "base",
         "clang"

@@ -64,37 +64,34 @@ namespace KarkinolutionView {
 							const Rectangle       rectangle_component_;
 							std::function<void()> callback_;
 							ButtonStyles          style_;
+							bool                  press_started_inside_ = false;
 
-
-							void draw_rectangle_component() const;
-							void draw() const;
+							void draw(ButtonStates state) const;
 
 							void invoke() const {
 								std::invoke(callback_);
-							}
-
-							bool is_being_touched() const {
-								return Drivers::Mouse::is_cursor_inside(
-										   rectangle_component_.get_bounds())
-									&& Drivers::Mouse::is_pressed(Drivers::Mouse::Buttons::LEFT);
 							}
 
 							Text label;
 
 						public:
 
-							explicit RectangleButton(const Rectangle      &bounds,
-													 std::function<void()> callback,
-													 ButtonStyles          style,
-													 const Text           &text)
-								: rectangle_component_(bounds)
+							explicit RectangleButton(const Geometry::Rectangle &bounds,
+													 std::function<void()>      callback,
+													 ButtonStyles               style,
+													 const Text                &text)
+								: rectangle_component_(bounds, style.get(ButtonStates::IDLE))
 								, callback_(std::move(callback))
-								, style_(style)
+								, style_(std::move(style))
 								, label(text) {}
 
 							[[nodiscard]]
 							Geometry::Rectangle get_bounds() const {
 								return rectangle_component_.get_bounds();
+							}
+
+							void set_text(std::string text) {
+								label.set_text(std::move(text));
 							}
 
 							void run();

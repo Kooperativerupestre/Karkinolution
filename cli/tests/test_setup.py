@@ -39,12 +39,6 @@ GITMODULES = """[submodule "dependencies/FastNoise2"]
 VIEW_ONLY_GITMODULES = """[submodule "dependencies/raylib"]
 \tpath = dependencies/raylib
 \turl = https://example.com/raylib.git
-[submodule "dependencies/imgui"]
-\tpath = dependencies/imgui
-\turl = https://example.com/imgui.git
-[submodule "dependencies/rlImGui"]
-\tpath = dependencies/rlImGui
-\turl = https://example.com/rlImGui.git
 """
 
 
@@ -111,8 +105,6 @@ class TestSubmodules(unittest.TestCase):
                 "dependencies/FastNoise2",
                 "dependencies/asio",
                 "dependencies/raylib",
-                "dependencies/imgui",
-                "dependencies/rlImGui",
             ],
         )
 

@@ -3,22 +3,22 @@
 #include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/gui/colors.hpp"
 #include "karkinolution/view/gui/components/component.hpp"
+#include "karkinolution/view/gui/components/low_level/button.hpp"
 #include "karkinolution/view/gui/components/medium_level/grid.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 #include "karkinolution/view/gui/panel/panel.hpp"
 #include "karkinolution/view/screen.hpp"
 #include "karkinolution/view/synchronizer.hpp"
 #include "karkinolution/view/window.hpp"
-#include "rlImGui.h"
 
 #include <array>
-#include <imgui.h>
 #include <karkinolution/view/gui/colors.hpp>
 #include <karkinolution/view/presets/aliases.hpp>
 #include <karkinolution/view/presets/grid.hpp>
 #include <random>
 #include <raylib.h>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
@@ -34,7 +34,27 @@ int main() {
 
 	KarkinolutionView::Window::init_before_loop(screen_preset);
 
-	Synchronizer synchronizer;
+	Synchronizer                 synchronizer;
+	const GuiGeometry::Rectangle connection_button_bounds{GuiGeometry::Position{100, 40},
+														  GuiGeometry::Width{160},
+														  GuiGeometry::Height{40}};
+	Components::LowLevel::Button::RectangleButton connection_button{
+		connection_button_bounds,
+		[&synchronizer] {
+			if (synchronizer.is_connected()) {
+				synchronizer.disconnect();
+			} else {
+				synchronizer.connect();
+			}
+		},
+		Components::LowLevel::Button::ButtonStyles{Colors::Presets::DarkGray,
+												   Colors::Presets::Gray,
+												   Colors::Presets::Black},
+		Components::LowLevel::Text{connection_button_bounds,
+								   "Connect",
+								   Colors::Presets::White,
+								   20}};
+	std::string  connection_button_label{"Connect"};
 	Panel::Panel panel{GuiGeometry::Rectangle{GuiGeometry::Position{400, 225},
 											  GuiGeometry::Width{800},
 											  GuiGeometry::Height{450}}};
@@ -78,16 +98,13 @@ int main() {
 
 		synchronizer.draw();
 
-		ImGui::SetCursorPos(ImVec2{20, 20});
 		const std::string_view connection_label =
 			synchronizer.is_connected() ? "Disconnect" : "Connect";
-		if (ImGui::Button(connection_label.data(), ImVec2{160, 40})) {
-			if (synchronizer.is_connected()) {
-				synchronizer.disconnect();
-			} else {
-				synchronizer.connect();
-			}
+		if (connection_label != connection_button_label) {
+			connection_button.set_text(std::string{connection_label});
+			connection_button_label = std::string{connection_label};
 		}
+		connection_button.run();
 
 		for (const auto id : panel.collides(GuiGeometry::Rectangle{GuiGeometry::Position{400, 225},
 																   GuiGeometry::Width{800},

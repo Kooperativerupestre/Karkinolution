@@ -205,6 +205,10 @@ Raylib. I chose it because I needed an extensible UI that I could enhance whenev
 
 I added raygui because I did not want to reinvent GUI elements from scratch. That is not the project's main goal and doing so would significantly slow development.
 
+## Why did I remove ImGui and rlImGui?
+
+I did not like ImGui's system. Its way of working was so far from what I intended for Karkinolution that the cost of building an abstraction on top of ImGui's abstractions was equal to or greater than the cost of creating my own components.
+
 # 1.5 - C++26 toolchain
 
 ## Why did I standardize on Clang 21 with GCC 16's libstdc++?

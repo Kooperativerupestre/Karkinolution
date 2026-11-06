@@ -26,7 +26,7 @@ printf '#include <inplace_vector>\nint main() { std::inplace_vector<int, 1> valu
   clang++-21 --gcc-toolchain=/usr -stdlib=libstdc++ -std=c++26 -x c++ -fsyntax-only -
 ```
 
-Seven dependencies are Git submodules, so a plain `git clone` is not enough:
+Five dependencies are Git submodules, so a plain `git clone` is not enough:
 
 ```bash
 git clone --recurse-submodules https://github.com/Kooperativerupestre/karkinolution.git
@@ -36,7 +36,7 @@ cd karkinolution
 Already cloned without `--recurse-submodules`:
 
 ```bash
-git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum dependencies/raylib dependencies/imgui dependencies/rlImGui
+git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum dependencies/raylib
 ```
 
 ## 2. Configure and build
@@ -122,8 +122,6 @@ Some dependencies arrive on their own at configure time, others do not.
 | GoogleTest `v1.17.0` | Git submodule | Yes: `git submodule update --init` |
 | magic_enum `v0.9.8` | Git submodule | Yes: `git submodule update --init` |
 | raylib | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
-| imgui `v1.92.9b` | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
-| rlImGui | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
 
 Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
 

@@ -1,5 +1,4 @@
 
-#include <imgui.h>
 #include <karkinolution/view/screen.hpp>
 
 void KarkinolutionView::Screen::StateView::draw() {
