@@ -38,6 +38,7 @@ workflow:
       purpose: "Architecture and verification requirements for client-accessible APIs."
   principles:
     - rule: "Document every architectural or protocol decision in the relevant documentation file before or alongside code implementation."
+    - rule: "Document the rationale behind architectural decisions and the stable principles they protect. Do not record transient implementation facts, and do not duplicate source code in documentation."
     - rule: "Read and modify one file at a time rather than mass-reading entire directory trees."
     - rule: "Always separate tests into distinct files when testing different domain levels or concerns."
     - rule: "Run code quality formatting and tidy fixes on modified files prior to finalizing changes."

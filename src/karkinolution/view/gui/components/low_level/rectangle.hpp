@@ -12,7 +12,7 @@ namespace KarkinolutionView {
 				class Rectangle : public BaseComponent<ComponentType::RECTANGLE> {
 					private:
 
-						const Geometry::Rectangle bounds_;
+						Geometry::Rectangle bounds_;
 
 					public:
 
@@ -24,6 +24,11 @@ namespace KarkinolutionView {
 						Geometry::Rectangle get_bounds() const {
 							return bounds_;
 						}
+
+					bool set_slot(const Geometry::Rectangle &slot) {
+						bounds_ = slot;
+						return true;
+					}
 
 						void draw() const;
 						void draw_bounds(Geometry::Thickness thickness) const;

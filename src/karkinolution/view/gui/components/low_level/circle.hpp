@@ -12,7 +12,7 @@ namespace KarkinolutionView {
 				class Circle : public BaseComponent<ComponentType::CIRCLE> {
 					private:
 
-						const Geometry::Circle bounds_;
+						Geometry::Circle bounds_;
 
 					public:
 
@@ -24,6 +24,8 @@ namespace KarkinolutionView {
 						Geometry::Circle get_bounds() const {
 							return bounds_;
 						}
+
+					bool set_slot(const Geometry::Rectangle &slot);
 
 						void draw() const;
 						void draw_bounds(Geometry::Thickness thickness) const;

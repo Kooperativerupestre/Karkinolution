@@ -16,7 +16,7 @@ namespace KarkinolutionView {
 				class Grid : public BaseComponent<ComponentType::GRID> {
 					private:
 
-						const Geometry::Rectangle bounds_;
+						Geometry::Rectangle bounds_;
 						const Geometry::Thickness thickness_;
 						const Geometry::Width     max_cell_width_;
 						const Geometry::Height    max_cell_height_;
@@ -41,6 +41,11 @@ namespace KarkinolutionView {
 						Geometry::Rectangle get_bounds() const {
 							return bounds_;
 						}
+
+					bool set_slot(const Geometry::Rectangle &slot) {
+						bounds_ = slot;
+						return true;
+					}
 
 						[[nodiscard]]
 						Karkinolution::Math::LV::CT::GreaterThanZeroValue<double> size() const {

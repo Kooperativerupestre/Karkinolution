@@ -16,30 +16,23 @@ namespace KarkinolutionView {
 					return false;
 				}
 
-				std::unordered_map<Components::ComponentId, std::shared_ptr<Components::Component>> staged_component;
-				staged_component.emplace(id, std::move(component));
 				components_.reserve(components_.size() + 1);
 
-				const auto &staged  = staged_component.at(id);
-				const auto  bounds  = staged->get_bounds();
-				const bool  indexed = std::visit(
-                    [this, id](const auto &bound) {
-                        return quadtree_.add(id, bound);
-                    },
-                    bounds);
+				const auto index_bounds = component->get_index_bounds();
+				const bool indexed = quadtree_.add(id, index_bounds);
 				if (!indexed) {
 					return false;
 				}
 
-				auto node   = staged_component.extract(id);
-				auto result = components_.insert(std::move(node));
-				if (!result.inserted) {
+				auto result = components_.emplace(id, Entry{std::move(component), index_bounds});
+				if (!result.second) {
 					if (!quadtree_.remove(id)) {
 						throw std::logic_error("Failed to roll back component insertion");
 					}
 					return false;
 				}
 
+				layout_dirty_ = true;
 				return true;
 			}
 
@@ -53,7 +46,90 @@ namespace KarkinolutionView {
 					return false;
 				}
 
-				components_.erase(component);
+					components_.erase(component);
+				layout_dirty_ = true;
+				return true;
+			}
+
+			void Panel::set_layout(Layout::Node layout_root) {
+				layout_root_ = std::move(layout_root);
+				layout_dirty_ = true;
+			}
+
+			void Panel::mark_layout_dirty() noexcept {
+				layout_dirty_ = true;
+			}
+
+			LayoutApplyResult Panel::relayout() {
+				if (!layout_dirty_ || !layout_root_) {
+					return {};
+				}
+
+				const Layout::Edges root_edges{bounds_.left().value,
+												 bounds_.top().value,
+												 bounds_.right().value,
+												 bounds_.floor().value};
+				const auto result = Layout::layout(root_edges, *layout_root_);
+
+				for (const auto &assignment : result.assignments) {
+					const auto entry = components_.find(assignment.id);
+					if (entry == components_.end() || !Geometry::can_contain(bounds_, assignment.slot)) {
+						return {.applied = false, .overflowed = result.overflowed};
+					}
+				}
+
+				std::vector<std::pair<Components::ComponentId, Geometry::Rectangle>> applied;
+				for (const auto &assignment : result.assignments) {
+					const auto entry = components_.find(assignment.id);
+					if (entry->second.indexed_bound == assignment.slot) {
+						continue;
+					}
+
+					const auto old_slot = entry->second.indexed_bound;
+					if (!set_bounds(assignment.id, assignment.slot)) {
+						for (auto rollback = applied.rbegin(); rollback != applied.rend(); ++rollback) {
+							if (!set_bounds(rollback->first, rollback->second)) {
+								throw std::logic_error("Failed to roll back layout batch");
+							}
+						}
+						return {.applied = false, .overflowed = result.overflowed};
+					}
+					applied.emplace_back(assignment.id, old_slot);
+				}
+
+				layout_dirty_ = false;
+				return {.applied = true, .overflowed = result.overflowed};
+			}
+
+			bool Panel::set_bounds(Components::ComponentId id, const Geometry::Rectangle &slot) {
+				const auto entry = components_.find(id);
+				if (entry == components_.end() || !Geometry::can_contain(bounds_, slot)) {
+					return false;
+				}
+
+				const auto update = quadtree_.update(id, slot, entry->second.indexed_bound);
+
+				if (update == Quadtree::UpdateOutput::DOES_NOT_EXIST) {
+					return false;
+				}
+				if (update == Quadtree::UpdateOutput::EXISTS_BUT_WAS_REMOVED) {
+					const bool restored = quadtree_.add(id, entry->second.indexed_bound);
+					if (!restored) {
+						throw std::logic_error("Failed to restore removed component bound");
+					}
+					return false;
+				}
+
+				if (!entry->second.component->set_slot(slot)) {
+					const bool rolled_back =
+						quadtree_.update(id, entry->second.indexed_bound, slot) == Quadtree::UpdateOutput::UPDATED;
+					if (!rolled_back) {
+						throw std::logic_error("Failed to roll back component bound update");
+					}
+					return false;
+				}
+
+				entry->second.indexed_bound = slot;
 				return true;
 			}
 
@@ -62,7 +138,7 @@ namespace KarkinolutionView {
 				if (component == components_.end()) {
 					return {};
 				}
-				return component->second;
+				return component->second.component;
 			}
 
 			std::vector<Components::ComponentId> Panel::find_in_area(const Geometry::Rectangle &area) const {

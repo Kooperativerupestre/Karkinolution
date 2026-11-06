@@ -11,9 +11,10 @@ component outside the panel's rectangular boundary cannot be added.
 These operations preserve consistency between the two data structures. They do
 not provide synchronization between threads.
 
-Component bounds are fixed after construction, so the panel has no bounds
-update operation. Moving a component requires removing it and adding a newly
-constructed component.
+The panel owns component slot updates. It updates the quadtree and the
+component together, using the previously indexed bound as the rollback source.
+If either side rejects an update, the operation leaves both the component and
+the quadtree unchanged.
 
 ## Collision queries
 
@@ -31,3 +32,13 @@ the nearest component or a stable ordering.
 
 Panels index components but do not draw them. Rendering remains the
 responsibility of the screen.
+
+## Layout slots and indexed bounds
+
+The panel accepts rectangular layout slots for all layout-participating
+components. The spatial index stores the component's conservative rectangular
+axis-aligned bound, even when the component renders or tests input as another
+shape. Exact collision filtering remains responsible for the component's
+actual geometry. This keeps layout independent from shape-specific rendering
+rules and follows the rectangular widget arrangement model used by established
+UI systems.

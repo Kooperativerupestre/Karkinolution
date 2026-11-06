@@ -12,10 +12,17 @@
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 
 #include <cstdint>
+#include <algorithm>
+#include <concepts>
+#include <optional>
 #include <type_traits>
 #include <typeindex>
 #include <utility>
 #include <variant>
+
+namespace KarkinolutionView::Gui::Panel {
+	class Panel;
+}
 
 namespace KarkinolutionView {
 	namespace Gui {
@@ -33,7 +40,21 @@ namespace KarkinolutionView {
 			class Component {
 				private:
 
-					const AllComponents data_;
+					AllComponents data_;
+
+					bool set_slot(const Geometry::Rectangle &slot) {
+						return std::visit(
+							[&slot](auto &component) {
+								if constexpr (requires { component.set_slot(slot); }) {
+									return component.set_slot(slot);
+								} else {
+									return false;
+								}
+							},
+							data_);
+					}
+
+					friend class KarkinolutionView::Gui::Panel::Panel;
 
 				public:
 
@@ -69,6 +90,21 @@ namespace KarkinolutionView {
 								} else {
 									using Bounds = std::remove_cvref_t<decltype(component.get_bounds())>;
 									return Bound{std::in_place_type<Bounds>, component.get_bounds()};
+								}
+							},
+							data_);
+					}
+
+					[[nodiscard]] Geometry::Rectangle get_index_bounds() const {
+						return std::visit(
+							[](const auto &component) -> Geometry::Rectangle {
+								using Bounds = std::remove_cvref_t<decltype(component.get_bounds())>;
+								if constexpr (std::same_as<Bounds, Geometry::Circle>) {
+									const auto circle = component.get_bounds();
+									const double diameter = std::max(1e-6, static_cast<double>(circle.radius.value()) * 2.0);
+									return {circle.position, Geometry::Width{diameter}, Geometry::Height{diameter}};
+								} else {
+									return component.get_bounds();
 								}
 							},
 							data_);

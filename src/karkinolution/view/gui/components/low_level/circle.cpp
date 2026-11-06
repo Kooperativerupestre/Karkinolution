@@ -3,10 +3,24 @@
 #include "karkinolution/view/gui/colors.hpp"
 #include "raylib.h"
 
+#include <algorithm>
+
 KarkinolutionView::Gui::Components::LowLevel::Circle::Circle(const KarkinolutionView::Gui::Geometry::Circle &bounds,
 															 const Karkinolution::Colors::Color             &color)
 	: bounds_(bounds)
 	, color(color) {}
+
+bool KarkinolutionView::Gui::Components::LowLevel::Circle::set_slot(
+	const KarkinolutionView::Gui::Geometry::Rectangle &slot) {
+	const float diameter = std::min(static_cast<float>(slot.width.value()), static_cast<float>(slot.height.value()));
+	if (diameter <= 0.0F) {
+		return false;
+	}
+
+	const Geometry::Circle candidate{slot.position, Geometry::Radius{diameter / 2.0F}};
+	bounds_ = candidate;
+	return true;
+}
 
 void KarkinolutionView::Gui::Components::LowLevel::Circle::draw() const {
 	DrawCircleV(Vector2{bounds_.position.x, bounds_.position.y},
