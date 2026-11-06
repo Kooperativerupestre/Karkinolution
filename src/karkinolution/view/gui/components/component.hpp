@@ -42,6 +42,9 @@ namespace KarkinolutionView {
 
 					AllComponents data_;
 
+					// Slot mutation is centralized here so the panel cannot update the index
+					// without updating the component, or vice versa. Components that do not
+					// accept rectangular layout slots fail instead of being silently mutated.
 					bool set_slot(const Geometry::Rectangle &slot) {
 						return std::visit(
 							[&slot](auto &component) {
@@ -80,6 +83,9 @@ namespace KarkinolutionView {
 							data_);
 					}
 
+					// Some components, notably Text, have a measured current shape inside
+					// a larger indexed/layout bound. Consumers use this for exact rendering
+					// or hit testing without weakening the stable outer bound.
 					[[nodiscard]]
 					Bound get_current_bounds() const {
 						return std::visit(
@@ -95,6 +101,9 @@ namespace KarkinolutionView {
 							data_);
 					}
 
+					// The quadtree is intentionally rectangular. A circle therefore contributes
+					// its conservative AABB; exact circle/rectangle intersection is checked by
+					// Panel after the broad-phase query.
 					[[nodiscard]] Geometry::Rectangle get_index_bounds() const {
 						return std::visit(
 							[](const auto &component) -> Geometry::Rectangle {
@@ -120,6 +129,8 @@ namespace KarkinolutionView {
 							data_);
 					}
 
+					// Rendering code receives the closed variant read-only. Mutation remains
+					// private so Panel can preserve component/index consistency.
 					[[nodiscard]]
 					const AllComponents &get_data() const noexcept {
 						return data_;

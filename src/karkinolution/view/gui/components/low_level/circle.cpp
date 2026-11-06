@@ -12,6 +12,8 @@ KarkinolutionView::Gui::Components::LowLevel::Circle::Circle(const Karkinolution
 
 bool KarkinolutionView::Gui::Components::LowLevel::Circle::set_slot(
 	const KarkinolutionView::Gui::Geometry::Rectangle &slot) {
+	// Using the smaller extent produces the centered inscribed circle required by
+	// the rectangular layout contract and avoids stretching the circle into an oval.
 	const float diameter = std::min(static_cast<float>(slot.width.value()), static_cast<float>(slot.height.value()));
 	if (diameter <= 0.0F) {
 		return false;

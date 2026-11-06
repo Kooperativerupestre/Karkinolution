@@ -44,6 +44,8 @@ namespace KarkinolutionView {
 
 						void set_text(std::string text);
 
+						// Both children must accept the same slot. Restoring the rectangle when
+						// text rejects it keeps the compound component atomic.
 						bool set_slot(const Geometry::Rectangle &slot) {
 							const auto old_slot = rectangle_.get_bounds();
 							if (!rectangle_.set_slot(slot)) {
@@ -57,6 +59,8 @@ namespace KarkinolutionView {
 						}
 
 						void draw() const;
+						// The origin is forwarded to both children so their local geometry stays
+						// unchanged while the panel moves in its parent.
 						void draw(const Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel

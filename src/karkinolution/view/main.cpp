@@ -109,6 +109,9 @@ int main() {
 			std::visit(
 				[&grid_colors, &panel](const auto &visible_component) {
 					using VisibleComponent = std::remove_cvref_t<decltype(visible_component)>;
+					// Components are indexed and queried in panel-local coordinates. The
+					// accumulated origin is added only at rendering time, so dragging does
+					// not rewrite every component or quadtree entry.
 					if constexpr (requires { visible_component.draw(panel.origin()); }) {
 						visible_component.draw(panel.origin());
 					}

@@ -25,9 +25,13 @@ namespace KarkinolutionView {
 							return bounds_;
 						}
 
+						// Layout remains rectangular, so the circle adopts the largest centered
+						// circle that fits the slot. Shape-specific fitting stays out of Layout.
 						bool set_slot(const Geometry::Rectangle &slot);
 
 						void draw() const;
+						// The origin translates panel-local geometry at the rendering boundary;
+						// the stored circle remains local and is not mutated by drawing.
 						void draw(const Geometry::Position &origin) const;
 						void draw_bounds(Geometry::Thickness thickness) const;
 				};

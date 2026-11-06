@@ -21,6 +21,9 @@ namespace KarkinolutionView {
 				}
 
 				void Button::RectangleButton::run(const Geometry::Position &origin) {
+					// Mouse coordinates are in parent/screen space while button bounds are
+					// local. Translating the bound for the query keeps interaction aligned
+					// with the translated rendering without mutating layout state.
 					const auto                bounds = rectangle_component_.get_bounds();
 					const Geometry::Rectangle screen_bounds{bounds.position + origin, bounds.width, bounds.height};
 					const bool                hovered = Drivers::Mouse::is_cursor_inside(screen_bounds);

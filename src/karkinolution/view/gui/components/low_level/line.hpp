@@ -29,6 +29,8 @@ namespace KarkinolutionView {
 						Geometry::Rectangle get_bounds() const;
 
 						void draw() const;
+						// Lines follow the same accumulated-origin rule as area components, even
+						// though their hit-test bound is only a conservative rectangle.
 						void draw(const Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel

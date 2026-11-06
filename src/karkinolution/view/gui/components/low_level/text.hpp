@@ -56,8 +56,12 @@ namespace KarkinolutionView {
 						}
 
 						void set_text(std::string text);
+						// A slot changes the stable maximum bound only after the current text
+						// fits inside it, allowing Panel to roll back without partial state.
 						bool set_slot(const Geometry::Rectangle &slot);
 						void draw() const;
+						// Text is measured and stored locally; origin is added only for rendering
+						// so indexed/current bounds remain stable during panel dragging.
 						void draw(const Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel

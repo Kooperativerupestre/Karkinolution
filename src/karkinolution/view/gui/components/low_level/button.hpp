@@ -93,6 +93,8 @@ namespace KarkinolutionView {
 								label.set_text(std::move(text));
 							}
 
+							// A button is a rectangle plus a label, so slot changes must be atomic
+							// across both parts to avoid drawing a label outside its background.
 							bool set_slot(const Geometry::Rectangle &slot) {
 								const auto old_slot = rectangle_component_.get_bounds();
 								if (!rectangle_component_.set_slot(slot)) {
@@ -106,6 +108,8 @@ namespace KarkinolutionView {
 							}
 
 							void run();
+							// Input and drawing use the same parent-space translation; press state is
+							// still tracked in the button and is not part of layout geometry.
 							void run(const Geometry::Position &origin);
 					};
 				} // namespace Button

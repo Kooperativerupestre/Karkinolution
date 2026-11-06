@@ -222,11 +222,14 @@ namespace KarkinolutionView {
 						, width(width)
 						, height(height) {}
 
+					// Layout performs arithmetic in edges because adjacent slots share exact
+					// boundaries. This is the sole conversion back to the center-plus-extents
+					// representation used by Geometry; callers must provide left < right and
+					// top < floor so the positive dimensions remain representable.
 					static constexpr Rectangle from_edges(Left left, Top top, Right right, Floor floor) {
-						return Rectangle{Position{(left.value + right.value) / 2.0f,
-											 (top.value + floor.value) / 2.0f},
-									 Geometry::Width{static_cast<double>(right.value - left.value)},
-									 Geometry::Height{static_cast<double>(floor.value - top.value)}};
+						return Rectangle{Position{(left.value + right.value) / 2.0f, (top.value + floor.value) / 2.0f},
+										 Geometry::Width{static_cast<double>(right.value - left.value)},
+										 Geometry::Height{static_cast<double>(floor.value - top.value)}};
 					}
 
 					constexpr Top top() const {

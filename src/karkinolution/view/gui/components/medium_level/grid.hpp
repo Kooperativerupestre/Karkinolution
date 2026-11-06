@@ -42,6 +42,8 @@ namespace KarkinolutionView {
 							return bounds_;
 						}
 
+						// Cell limits remain unchanged; only the drawable grid rectangle follows
+						// the layout slot, so rows and columns are recomputed from its size.
 						bool set_slot(const Geometry::Rectangle &slot) {
 							bounds_ = slot;
 							return true;
@@ -88,8 +90,12 @@ namespace KarkinolutionView {
 						}
 
 						void draw() const;
+						// Grid geometry remains panel-local; the origin is applied only when
+						// constructing the rendered lines and cells.
 						void draw(const Geometry::Position &origin) const;
 
+						// The explicit-size overload validates cell dimensions before applying
+						// the same origin used by the grid lines.
 						void draw_cell(Geometry::Width                     width,
 									   Geometry::Height                    height,
 									   Geometry::Column                    column,

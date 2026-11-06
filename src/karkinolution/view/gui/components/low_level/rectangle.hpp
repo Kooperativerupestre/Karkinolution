@@ -25,12 +25,16 @@ namespace KarkinolutionView {
 							return bounds_;
 						}
 
+						// Rectangles interpret the slot directly because their render and hit-test
+						// geometry already has the same shape as the layout allocation.
 						bool set_slot(const Geometry::Rectangle &slot) {
 							bounds_ = slot;
 							return true;
 						}
 
 						void draw() const;
+						// Drawing accepts the accumulated parent origin instead of rewriting the
+						// local rectangle during panel movement.
 						void draw(const Geometry::Position &origin) const;
 						void draw_bounds(Geometry::Thickness thickness) const;
 				};

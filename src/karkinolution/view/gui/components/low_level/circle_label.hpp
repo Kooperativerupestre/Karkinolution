@@ -44,6 +44,8 @@ namespace KarkinolutionView {
 
 						void set_text(std::string text);
 
+						// Circle fitting and text fitting are one compound update. The old circle
+						// is reconstructed if the text cannot fit the proposed slot.
 						bool set_slot(const Geometry::Rectangle &slot) {
 							const auto old_slot = circle_.get_bounds();
 							if (!circle_.set_slot(slot)) {
@@ -61,6 +63,7 @@ namespace KarkinolutionView {
 						}
 
 						void draw() const;
+						// Both the fitted circle and centered text receive the same translation.
 						void draw(const Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel
