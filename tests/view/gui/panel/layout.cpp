@@ -151,3 +151,61 @@ TEST(GuiLayout, FractionalFillDistributionEndsAtTheContainerEdge) {
 	EXPECT_FLOAT_EQ(slot(result.assignments[2]).top().value, 20.0F / 3.0F);
 	EXPECT_FLOAT_EQ(slot(result.assignments[2]).floor().value, 10.0F);
 }
+
+TEST(GuiLayout, FillWithoutRemainingSpaceReportsOverflowAndKeepsAValidSlot) {
+	const auto         fixed = child_node();
+	const auto         fill  = child_node();
+	const Layout::Node root{Layout::Stack{.direction = Layout::Direction::VERTICAL,
+										  .children  = {{Layout::Fixed{10}, fixed}, {Layout::Fill{}, fill}}}};
+
+	const auto result = Layout::layout({0, 0, 10, 10}, root);
+
+	ASSERT_EQ(result.assignments.size(), 2);
+	EXPECT_TRUE(result.overflowed);
+	EXPECT_GE(slot(result.assignments[1]).height.value(), 1.0);
+	EXPECT_LE(slot(result.assignments[1]).floor().value, 10.0F);
+}
+
+TEST(GuiLayout, ContentLargerThanTheContainerReportsOverflowAndClampsTheSlot) {
+	const auto         content = child_node([] {
+        return Layout::Size{20, 50};
+    });
+	const Layout::Node root{
+		Layout::Stack{.direction = Layout::Direction::VERTICAL, .children = {{Layout::Content{}, content}}}};
+
+	const auto result = Layout::layout({0, 0, 20, 10}, root);
+
+	ASSERT_EQ(result.assignments.size(), 1);
+	EXPECT_TRUE(result.overflowed);
+	EXPECT_LE(slot(result.assignments[0]).floor().value, 10.0F);
+	EXPECT_GE(slot(result.assignments[0]).top().value, 0.0F);
+}
+
+TEST(GuiLayout, PaddingLargerThanTheContainerStillProducesAContainedSlot) {
+	const auto         child = child_node();
+	const Layout::Node root{Layout::Stack{.direction   = Layout::Direction::VERTICAL,
+										  .padding     = {.left = 20, .top = 20, .right = 20, .floor = 20},
+										  .cross_align = Layout::CrossAlign::STRETCH,
+										  .children    = {{Layout::Fill{}, child}}}};
+
+	const auto result = Layout::layout({0, 0, 10, 10}, root);
+
+	ASSERT_EQ(result.assignments.size(), 1);
+	EXPECT_TRUE(result.overflowed);
+	EXPECT_GE(slot(result.assignments[0]).width.value(), 1.0);
+	EXPECT_GE(slot(result.assignments[0]).height.value(), 1.0);
+	EXPECT_LE(slot(result.assignments[0]).right().value, 10.0F);
+	EXPECT_LE(slot(result.assignments[0]).floor().value, 10.0F);
+}
+
+TEST(GuiLayout, SpacingDoesNotAffectAStackWithOneChild) {
+	const auto         child = child_node();
+	const Layout::Node root{
+		Layout::Stack{.direction = Layout::Direction::VERTICAL, .spacing = 25, .children = {{Layout::Fill{}, child}}}};
+
+	const auto result = Layout::layout({0, 0, 10, 10}, root);
+
+	ASSERT_EQ(result.assignments.size(), 1);
+	EXPECT_DOUBLE_EQ(slot(result.assignments[0]).top().value, 0.0);
+	EXPECT_DOUBLE_EQ(slot(result.assignments[0]).floor().value, 10.0);
+}
