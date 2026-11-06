@@ -21,6 +21,10 @@ namespace {
 	std::shared_ptr<Components::Component> rectangle_component(const Geometry::Rectangle &bounds) {
 		return std::make_shared<Components::Component>(Components::AllComponents{LowLevel::Rectangle{bounds, White}});
 	}
+
+	std::shared_ptr<Components::Component> circle_component(const Geometry::Circle &bounds) {
+		return std::make_shared<Components::Component>(Components::AllComponents{LowLevel::Circle{bounds, White}});
+	}
 } // namespace
 
 TEST(GuiPanel, SetBoundsMovesRectangleAndPreservesCollisionQueries) {
@@ -66,6 +70,19 @@ TEST(GuiPanel, ResizeRebuildsIndexForComponentsThatRemainInside) {
 	ASSERT_TRUE(panel.resize(rectangle(0, 0, 200, 200)));
 
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(10, 10)).has_value());
+}
+
+TEST(GuiPanel, CircularComponentsUseInscribedSlotsAndExactCollisionFiltering) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   component = circle_component(Geometry::Circle{Geometry::Position{0, 0}, Geometry::Radius{5}});
+
+	ASSERT_TRUE(panel.add(component));
+	ASSERT_TRUE(panel.set_bounds(component->get_id(), rectangle(0, 0, 40, 20)));
+
+	EXPECT_TRUE(panel.find_one_collision_in_area(Geometry::Circle{{0, 0}, Geometry::Radius{10}}).has_value());
+	EXPECT_FALSE(
+		panel.find_one_collision_in_area(Geometry::Rectangle{{13, 13}, Geometry::Width{2}, Geometry::Height{2}})
+			.has_value());
 }
 
 TEST(GuiPanel, RelayoutAppliesAssignmentsAndClearsDirtyFlag) {
