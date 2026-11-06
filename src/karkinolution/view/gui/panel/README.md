@@ -61,3 +61,7 @@ Dragging changes only that origin, so the quadtree remains unchanged. Parent
 space hit tests subtract the accumulated panel origin before querying the local
 index. This keeps movement independent from layout and avoids rewriting every
 indexed component during a drag.
+
+Parent-space collision queries use the same inverse translation as dragging.
+They are the entry point for screen-level hit testing; local queries remain
+available for panel-internal traversal.

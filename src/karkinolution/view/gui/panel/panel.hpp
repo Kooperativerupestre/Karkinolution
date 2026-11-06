@@ -97,6 +97,12 @@ namespace KarkinolutionView {
 					std::optional<Components::ComponentId>
 					find_one_collision_in_area(const Geometry::Circle &area) const;
 
+					[[nodiscard]] std::optional<Components::ComponentId>
+					find_one_collision_in_parent(const Geometry::Rectangle &area) const;
+
+					[[nodiscard]] std::optional<Components::ComponentId>
+					find_one_collision_in_parent(const Geometry::Circle &area) const;
+
 					[[nodiscard]]
 					std::size_t size() const noexcept {
 						return components_.size();

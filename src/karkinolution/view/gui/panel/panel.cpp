@@ -285,6 +285,16 @@ namespace KarkinolutionView {
 			Panel::find_one_collision_in_area(const Geometry::Circle &area) const {
 				return find_one_collision_in_area_impl(area);
 			}
+
+			std::optional<Components::ComponentId>
+			Panel::find_one_collision_in_parent(const Geometry::Rectangle &area) const {
+				return find_one_collision_in_area(to_local(area));
+			}
+
+			std::optional<Components::ComponentId>
+			Panel::find_one_collision_in_parent(const Geometry::Circle &area) const {
+				return find_one_collision_in_area(to_local(area));
+			}
 		} // namespace Panel
 	} // namespace Gui
 } // namespace KarkinolutionView

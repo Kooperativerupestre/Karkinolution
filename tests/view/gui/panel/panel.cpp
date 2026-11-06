@@ -97,6 +97,7 @@ TEST(GuiPanel, DraggingChangesParentHitTestingWithoutChangingLocalSlots) {
 	EXPECT_EQ(panel.origin(), (Geometry::Position{70, 60}));
 	EXPECT_TRUE(panel.collides_in_parent(rectangle(70, 60)).size() == 1);
 	EXPECT_TRUE(panel.collides(rectangle(0, 0)).size() == 1);
+	EXPECT_TRUE(panel.find_one_collision_in_parent(rectangle(70, 60)).has_value());
 }
 
 TEST(GuiPanel, RelayoutAppliesAssignmentsAndClearsDirtyFlag) {
