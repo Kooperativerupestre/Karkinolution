@@ -6,20 +6,23 @@
 #include <stdexcept>
 #include <utility>
 
-KarkinolutionView::Gui::Components::LowLevel::Text::Text(const KarkinolutionView::Gui::Geometry::Rectangle &max_bound,
-														 std::string                                        text,
-														 const Karkinolution::Colors::Color                &color,
-														 GreaterThanZeroValue<int>                          font_size)
+KarkinolutionView::Gui::Components::LowLevel::Text::Text(
+	const KarkinolutionView::Gui::Geometry::Rectangle                       &max_bound,
+	std::string                                                              text,
+	const Karkinolution::Colors::Color                                      &color,
+	GreaterThanZeroValue<int>                                                font_size,
+	std::function<Drivers::Font::TextMeasurement(std::string_view, int32_t)> measure)
 	: max_bound_(max_bound)
 	, current_bound_(max_bound)
 	, text_()
+	, measure_(std::move(measure))
 	, color(color)
 	, font_size(font_size) {
 	set_text(std::move(text));
 }
 
 void KarkinolutionView::Gui::Components::LowLevel::Text::set_text(std::string text) {
-	const auto                text_size = Drivers::Font::measure_text(text, font_size.value());
+	const auto                text_size = measure_(text, font_size.value());
 	const Geometry::Rectangle candidate_bound{max_bound_.position,
 											  Geometry::Width{text_size.width},
 											  Geometry::Height{text_size.height}};
@@ -33,7 +36,7 @@ void KarkinolutionView::Gui::Components::LowLevel::Text::set_text(std::string te
 }
 
 bool KarkinolutionView::Gui::Components::LowLevel::Text::set_slot(const Geometry::Rectangle &slot) {
-	const auto                text_size = Drivers::Font::measure_text(text_, font_size.value());
+	const auto                text_size = measure_(text_, font_size.value());
 	const Geometry::Rectangle candidate_bound{slot.position,
 											  Geometry::Width{text_size.width},
 											  Geometry::Height{text_size.height}};
