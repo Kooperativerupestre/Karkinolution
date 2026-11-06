@@ -56,7 +56,7 @@ int main() {
 		GuiGeometry::Rectangle{GuiGeometry::Position{400, 225}, GuiGeometry::Width{800}, GuiGeometry::Height{450}}};
 	auto grid_component = std::make_shared<Components::Component>(
 		Components::AllComponents{KarkinolutionView::Gui::Components::MediumLevel::Grid{
-			GuiGeometry::Rectangle{GuiGeometry::Position{400, 260}, GuiGeometry::Width{400}, GuiGeometry::Height{240}},
+			GuiGeometry::Rectangle{GuiGeometry::Position{0, 35}, GuiGeometry::Width{400}, GuiGeometry::Height{240}},
 			GuiGeometry::Thickness{5},
 			GuiGeometry::Width{50},
 			GuiGeometry::Height{40},
@@ -98,7 +98,7 @@ int main() {
 		}
 		connection_button.run();
 
-		for (const auto id : panel.collides(GuiGeometry::Rectangle{GuiGeometry::Position{400, 225},
+		for (const auto id : panel.collides(GuiGeometry::Rectangle{GuiGeometry::Position{0, 0},
 																   GuiGeometry::Width{800},
 																   GuiGeometry::Height{450}})) {
 			const auto component = panel.get(id);
@@ -107,10 +107,10 @@ int main() {
 			}
 
 			std::visit(
-				[&grid_colors](const auto &visible_component) {
+				[&grid_colors, &panel](const auto &visible_component) {
 					using VisibleComponent = std::remove_cvref_t<decltype(visible_component)>;
-					if constexpr (requires { visible_component.draw(); }) {
-						visible_component.draw();
+					if constexpr (requires { visible_component.draw(panel.origin()); }) {
+						visible_component.draw(panel.origin());
 					}
 
 					if constexpr (std::is_same_v<VisibleComponent,
@@ -120,7 +120,8 @@ int main() {
 							for (int column = 0; column < visible_component.columns().value(); ++column) {
 								visible_component.draw_cell(GuiGeometry::Column{column},
 															GuiGeometry::Row{row},
-															grid_colors[color_index++]);
+															grid_colors[color_index++],
+															panel.origin());
 							}
 						}
 					}

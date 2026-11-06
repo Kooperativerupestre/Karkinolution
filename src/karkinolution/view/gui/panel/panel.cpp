@@ -202,6 +202,14 @@ namespace KarkinolutionView {
 				return true;
 			}
 
+			Geometry::Rectangle Panel::to_local(const Geometry::Rectangle &area) const {
+				return {area.position - origin_, area.width, area.height};
+			}
+
+			Geometry::Circle Panel::to_local(const Geometry::Circle &area) const {
+				return {area.position - origin_, area.radius};
+			}
+
 			std::shared_ptr<Components::Component> Panel::get(Components::ComponentId id) const {
 				const auto component = components_.find(id);
 				if (component == components_.end()) {
@@ -248,6 +256,14 @@ namespace KarkinolutionView {
 
 			std::vector<Components::ComponentId> Panel::collides(const Geometry::Circle &area) const {
 				return collides_in_area(area);
+			}
+
+			std::vector<Components::ComponentId> Panel::collides_in_parent(const Geometry::Rectangle &area) const {
+				return collides(to_local(area));
+			}
+
+			std::vector<Components::ComponentId> Panel::collides_in_parent(const Geometry::Circle &area) const {
+				return collides(to_local(area));
 			}
 
 			template <typename Area>

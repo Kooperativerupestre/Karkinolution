@@ -55,19 +55,24 @@ namespace KarkinolutionView {
 				}
 
 				void Grid::draw() const {
+					draw({0, 0});
+				}
+
+				void Grid::draw(const Geometry::Position &origin) const {
 					for (int column = 0; column <= columns().value(); ++column) {
-						const float    x = static_cast<float>(get_line_x_based_on_column(Geometry::Column{column}));
-						LowLevel::Line line{{x, static_cast<float>(top())},
-											{x, static_cast<float>(bottom())},
+						const float x =
+							static_cast<float>(get_line_x_based_on_column(Geometry::Column{column})) + origin.x;
+						LowLevel::Line line{{x, static_cast<float>(top()) + origin.y},
+											{x, static_cast<float>(bottom()) + origin.y},
 											thickness_,
 											color};
 						line.draw();
 					}
 
 					for (int row = 0; row <= rows().value(); ++row) {
-						const float    y = static_cast<float>(get_line_y_based_on_row(Geometry::Row{row}));
-						LowLevel::Line line{{static_cast<float>(left()), y},
-											{static_cast<float>(right()), y},
+						const float    y = static_cast<float>(get_line_y_based_on_row(Geometry::Row{row})) + origin.y;
+						LowLevel::Line line{{static_cast<float>(left()) + origin.x, y},
+											{static_cast<float>(right()) + origin.x, y},
 											thickness_,
 											color};
 						line.draw();
@@ -77,7 +82,14 @@ namespace KarkinolutionView {
 				void Grid::draw_cell(Geometry::Column                    column,
 									 Geometry::Row                       row,
 									 const Karkinolution::Colors::Color &cell_color) const {
-					draw_cell(max_cell_width_, max_cell_height_, column, row, cell_color);
+					draw_cell(max_cell_width_, max_cell_height_, column, row, cell_color, {0, 0});
+				}
+
+				void Grid::draw_cell(Geometry::Column                    column,
+									 Geometry::Row                       row,
+									 const Karkinolution::Colors::Color &cell_color,
+									 const Geometry::Position           &origin) const {
+					draw_cell(max_cell_width_, max_cell_height_, column, row, cell_color, origin);
 				}
 
 				void Grid::draw_cell(Geometry::Width                     width,
@@ -85,6 +97,15 @@ namespace KarkinolutionView {
 									 Geometry::Column                    column,
 									 Geometry::Row                       row,
 									 const Karkinolution::Colors::Color &cell_color) const {
+					draw_cell(width, height, column, row, cell_color, {0, 0});
+				}
+
+				void Grid::draw_cell(Geometry::Width                     width,
+									 Geometry::Height                    height,
+									 Geometry::Column                    column,
+									 Geometry::Row                       row,
+									 const Karkinolution::Colors::Color &cell_color,
+									 const Geometry::Position           &origin) const {
 					if (width > max_cell_width_) {
 						throw Karkinolution::Errors::SimulationError(
 							std::format("Width {} of cell of grid to draw is larger than max {}",
@@ -98,7 +119,7 @@ namespace KarkinolutionView {
 										max_cell_height_.value()));
 					}
 
-					const auto                position = get_cell_position(column, row);
+					const auto                position = get_cell_position(column, row) + origin;
 					const LowLevel::Rectangle cell_rectangle{{{position.x + static_cast<float>(width.value()) / 2.0f,
 															   position.y + static_cast<float>(height.value()) / 2.0f},
 															  Geometry::Width{width.value() - thickness_.value()},

@@ -88,6 +88,7 @@ namespace KarkinolutionView {
 						}
 
 						void draw() const;
+						void draw(const Geometry::Position &origin) const;
 
 						void draw_cell(Geometry::Width                     width,
 									   Geometry::Height                    height,
@@ -95,9 +96,21 @@ namespace KarkinolutionView {
 									   Geometry::Row                       row,
 									   const Karkinolution::Colors::Color &cell_color) const;
 
+						void draw_cell(Geometry::Width                     width,
+									   Geometry::Height                    height,
+									   Geometry::Column                    column,
+									   Geometry::Row                       row,
+									   const Karkinolution::Colors::Color &cell_color,
+									   const Geometry::Position           &origin) const;
+
 						void draw_cell(Geometry::Column                    column,
 									   Geometry::Row                       row,
 									   const Karkinolution::Colors::Color &cell_color) const;
+
+						void draw_cell(Geometry::Column                    column,
+									   Geometry::Row                       row,
+									   const Karkinolution::Colors::Color &cell_color,
+									   const Geometry::Position           &origin) const;
 				};
 			} // namespace MediumLevel
 		} // namespace Components

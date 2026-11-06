@@ -52,3 +52,12 @@ and indexed bound is valid. A resize that cannot keep every component inside
 the new boundary is rejected; components are never silently removed from the
 index. This preserves stable component identity while maintaining the
 quadtree's containment invariant.
+
+## Local coordinates and dragging
+
+The panel boundary and its component slots use panel-local coordinates centered
+at `(0, 0)`. The panel origin is stored separately in parent coordinates.
+Dragging changes only that origin, so the quadtree remains unchanged. Parent
+space hit tests subtract the accumulated panel origin before querying the local
+index. This keeps movement independent from layout and avoids rewriting every
+indexed component during a drag.

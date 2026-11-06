@@ -23,6 +23,7 @@ namespace KarkinolutionView {
 
 					Quadtree::Quadtree          quadtree_;
 					Geometry::Rectangle         bounds_;
+					Geometry::Position          origin_;
 					std::optional<Layout::Node> layout_root_;
 					bool                        layout_dirty_ = false;
 
@@ -45,17 +46,29 @@ namespace KarkinolutionView {
 					template <typename Area>
 					std::optional<Components::ComponentId> find_one_collision_in_area_impl(const Area &area) const;
 
+					[[nodiscard]] Geometry::Rectangle to_local(const Geometry::Rectangle &area) const;
+					[[nodiscard]] Geometry::Circle    to_local(const Geometry::Circle &area) const;
+
 				public:
 
 					explicit Panel(const Geometry::Rectangle &bounds)
-						: quadtree_(bounds)
-						, bounds_(bounds) {}
+						: quadtree_(Geometry::Rectangle{{0, 0}, bounds.width, bounds.height})
+						, bounds_(Geometry::Rectangle{{0, 0}, bounds.width, bounds.height})
+						, origin_(bounds.position) {}
 
 					bool add(std::shared_ptr<Components::Component> component);
 					bool remove(Components::ComponentId id);
 
 					[[nodiscard]] bool set_bounds(Components::ComponentId id, const Geometry::Rectangle &slot);
 					[[nodiscard]] bool resize(const Geometry::Rectangle &bounds);
+
+					void drag_by(const Geometry::Position &delta) noexcept {
+						origin_ += delta;
+					}
+
+					[[nodiscard]] Geometry::Position origin() const noexcept {
+						return origin_;
+					}
 
 					void                            set_layout(Layout::Node layout_root);
 					void                            mark_layout_dirty() noexcept;
@@ -69,6 +82,12 @@ namespace KarkinolutionView {
 
 					[[nodiscard]]
 					std::vector<Components::ComponentId> collides(const Geometry::Circle &area) const;
+
+					[[nodiscard]] std::vector<Components::ComponentId>
+					collides_in_parent(const Geometry::Rectangle &area) const;
+
+					[[nodiscard]] std::vector<Components::ComponentId>
+					collides_in_parent(const Geometry::Circle &area) const;
 
 					[[nodiscard]]
 					std::optional<Components::ComponentId>
