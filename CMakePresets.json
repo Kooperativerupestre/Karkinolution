@@ -269,6 +269,42 @@
       "displayName": "shared: CI Debug with ThreadSanitizer",
       "configurePreset": "ci-tsan",
       "targets": ["karkinolution_shared"]
+    },
+    {
+      "name": "opsiamethystos-debug",
+      "displayName": "opsiamethystos: Debug build of opsiamethystos",
+      "configurePreset": "debug",
+      "targets": ["opsiamethystos", "opsiamethystos_tests"]
+    },
+    {
+      "name": "opsiamethystos-sanitizers",
+      "displayName": "opsiamethystos: Debug with AddressSanitizer and UBSan",
+      "configurePreset": "sanitizers",
+      "targets": ["opsiamethystos", "opsiamethystos_tests"]
+    },
+    {
+      "name": "opsiamethystos-tsan",
+      "displayName": "opsiamethystos: Debug with ThreadSanitizer",
+      "configurePreset": "tsan",
+      "targets": ["opsiamethystos", "opsiamethystos_tests"]
+    },
+    {
+      "name": "opsiamethystos-ci",
+      "displayName": "opsiamethystos: CI Debug build",
+      "configurePreset": "ci",
+      "targets": ["opsiamethystos", "opsiamethystos_tests"]
+    },
+    {
+      "name": "opsiamethystos-ci-sanitizers",
+      "displayName": "opsiamethystos: CI Debug with AddressSanitizer and UBSan",
+      "configurePreset": "ci-sanitizers",
+      "targets": ["opsiamethystos", "opsiamethystos_tests"]
+    },
+    {
+      "name": "opsiamethystos-ci-tsan",
+      "displayName": "opsiamethystos: CI Debug with ThreadSanitizer",
+      "configurePreset": "ci-tsan",
+      "targets": ["opsiamethystos", "opsiamethystos_tests"]
     }
   ],
   "testPresets": [

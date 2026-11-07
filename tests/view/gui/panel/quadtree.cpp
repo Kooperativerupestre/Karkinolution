@@ -1,13 +1,13 @@
-#include "karkinolution/view/gui/panel/quadtree/quadtree.hpp"
+#include "opsiamethystos/gui/panel/quadtree/quadtree.hpp"
 
 #include <algorithm>
 #include <gtest/gtest.h>
 
 namespace {
-	namespace Geometry = KarkinolutionView::Gui::Geometry;
-	namespace Quadtree = KarkinolutionView::Gui::Panel::Quadtree;
-	using KarkinolutionView::Gui::Components::ComponentType;
-	using KarkinolutionView::Gui::Components::gen_id;
+	namespace Geometry = Opsiamethystos::Gui::Geometry;
+	namespace Quadtree = Opsiamethystos::Gui::Panel::Quadtree;
+	using Opsiamethystos::Gui::Components::ComponentType;
+	using Opsiamethystos::Gui::Components::gen_id;
 
 	Geometry::Rectangle rectangle(float x, float y, double width = 10, double height = 10) {
 		return {Geometry::Position{x, y}, Geometry::Width{width}, Geometry::Height{height}};

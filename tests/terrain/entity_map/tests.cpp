@@ -2,21 +2,21 @@
 
 #include <algorithm>
 #include <gtest/gtest.h>
-#include <shared/math/physic/vec/model.hpp>
-#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/terrain/entity_map.hpp>
 #include <karkinolution/terrain/terrain.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/units.hpp>
 
-using KShared::Core::Id::BaseIdType;
-using KShared::Functional::Quadtree::AABB;
-using KShared::Math::Units::Size;
-using KShared::Math::Vec::Vec2;
 using Karkinolution::Organisms::Entities::create_corpse_id;
 using Karkinolution::Organisms::Entities::EntityId;
 using Karkinolution::Organisms::Entities::Corpse::Corpse;
 using Karkinolution::Terrain::EntityMap;
 using Karkinolution::Terrain::Territory;
+using KShared::Core::Id::BaseIdType;
+using KShared::Functional::Quadtree::AABB;
+using KShared::Math::Units::Size;
+using KShared::Math::Vec::Vec2;
 
 namespace {
 

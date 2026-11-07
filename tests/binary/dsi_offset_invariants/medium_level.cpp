@@ -7,7 +7,7 @@
 
 TEST(DSIOffsetInvariantsMidLevel, VecMidLevelAuxiliaryGettersAutoAddOffset) {
 	const KShared::Math::Vec::Vec2 original{12.5, -45.0};
-	const auto                           vec_bytes = VecSRI::serialize_vec(original);
+	const auto                     vec_bytes = VecSRI::serialize_vec(original);
 
 	std::vector<std::byte> payload     = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
 	const std::size_t      base_offset = payload.size();
@@ -19,7 +19,7 @@ TEST(DSIOffsetInvariantsMidLevel, VecMidLevelAuxiliaryGettersAutoAddOffset) {
 
 TEST(DSIOffsetInvariantsMidLevel, UnitsSizeMidLevelAuxiliaryGettersAutoAddOffset) {
 	const KShared::Math::Units::Size original{10.0, 20.0};
-	const auto                             size_bytes = UnitsSRI::serialize_size(original);
+	const auto                       size_bytes = UnitsSRI::serialize_size(original);
 
 	std::vector<std::byte> payload     = {std::byte{0xDE}, std::byte{0xAD}};
 	const std::size_t      base_offset = payload.size();

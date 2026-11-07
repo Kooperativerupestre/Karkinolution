@@ -44,15 +44,12 @@ add_subdirectory(
 "${CMAKE_SOURCE_DIR}/dependencies/magic_enum"
 )
 
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(
+    "${CMAKE_SOURCE_DIR}/dependencies/raylib"
+)
+
 option(KARKINOLUTION_BUILD_VIEW "Build karkinolution_view target" OFF)
-
-if (KARKINOLUTION_BUILD_VIEW)
-    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    add_subdirectory(
-        "${CMAKE_SOURCE_DIR}/dependencies/raylib"
-    )
-
-endif ()
 
 # ---------------- Sanitizers ----------------
 # add_compile_options / add_link_options only affect targets created AFTER
@@ -98,15 +95,39 @@ target_link_libraries(karkinolution_shared
         magic_enum::magic_enum
 )
 
+# ---------------- Opsiamethystos library ----------------
+
+file(GLOB_RECURSE OPSIAMETHYSTOS_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/opsiamethystos/*.cpp"
+)
+
+add_library(opsiamethystos)
+
+set_target_properties(opsiamethystos PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+)
+
+target_sources(opsiamethystos
+    PRIVATE
+        ${OPSIAMETHYSTOS_SOURCES}
+)
+
+target_include_directories(opsiamethystos PUBLIC
+    "${CMAKE_SOURCE_DIR}"
+)
+
+target_link_libraries(opsiamethystos
+    PUBLIC
+        karkinolution_shared
+        raylib
+)
+
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
 "${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
 )
 list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/view/.*")
-list(APPEND KARKINOLUTION_SOURCES
-    "${CMAKE_SOURCE_DIR}/src/karkinolution/view/gui/panel/layout/layout.cpp"
-)
 
 add_library(karkinolution)
 
@@ -150,6 +171,7 @@ if (KARKINOLUTION_BUILD_VIEW)
 
     target_link_libraries(karkinolution_view PRIVATE
         karkinolution
+        opsiamethystos
         raylib
     )
 endif ()

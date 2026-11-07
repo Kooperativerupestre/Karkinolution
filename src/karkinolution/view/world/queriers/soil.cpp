@@ -4,8 +4,8 @@
 #include <karkinolution/view/world/queriers/soil.hpp>
 
 std::optional<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
-KarkinolutionView::World::Queriers::Soil::see_soil(KShared::Core::Id::BaseIdType id,
-												   KarkinolutionView::Client::Client  &client) {
+KarkinolutionView::World::Queriers::Soil::see_soil(KShared::Core::Id::BaseIdType      id,
+												   KarkinolutionView::Client::Client &client) {
 	return KarkinolutionSDK::Interpreters::Soil::see_soil(client, id);
 }
 

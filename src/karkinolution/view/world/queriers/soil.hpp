@@ -1,7 +1,7 @@
 #pragma once
 #include <karkinolution/binary/interpreters/models/soil.hpp>
-#include <shared/core/id.hpp>
 #include <karkinolution/view/client/client.hpp>
+#include <shared/core/id.hpp>
 
 namespace KarkinolutionView {
 	namespace World {

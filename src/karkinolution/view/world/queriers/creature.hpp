@@ -1,6 +1,6 @@
 #pragma once
-#include "shared/core/id.hpp"
 #include "karkinolution/view/client/client.hpp"
+#include "shared/core/id.hpp"
 
 #include <karkinolution/binary/interpreters/models/creature.hpp>
 

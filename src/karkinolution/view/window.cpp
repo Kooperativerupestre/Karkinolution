@@ -1,12 +1,12 @@
-#include "shared/core/color.hpp"
 #include "karkinolution/view/presets/screen.hpp"
+#include "shared/core/color.hpp"
 
-#include <karkinolution/view/gui/colors.hpp>
 #include <karkinolution/view/window.hpp>
+#include <opsiamethystos/raylib_utils/colors.hpp>
 #include <raylib.h>
 
 void KarkinolutionView::Window::init_inside_loop() {
-	ClearBackground(KarkinolutionView::Gui::Colors::translate(KShared::Colors::Presets::Cyan));
+	ClearBackground(Opsiamethystos::Gui::Colors::translate(KShared::Colors::Presets::Cyan));
 }
 
 void KarkinolutionView::Window::init_before_loop(KarkinolutionView::Presets::Screen screen_preset) {

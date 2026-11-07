@@ -1,4 +1,4 @@
 # Namespace Prefixes
 
 K- -> KarkinolutionView
-KG -> KarkinolutionView::Gui
+KG -> Opsiamethystos::Gui

@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <karkinolution/view/gui/panel/layout/layout.hpp>
 #include <memory>
+#include <opsiamethystos/gui/panel/layout/layout.hpp>
 
-namespace Layout   = KarkinolutionView::Gui::Panel::Layout;
-namespace Geometry = KarkinolutionView::Gui::Geometry;
-using KarkinolutionView::Gui::Components::ComponentType;
-using KarkinolutionView::Gui::Components::gen_id;
+namespace Layout   = Opsiamethystos::Gui::Panel::Layout;
+namespace Geometry = Opsiamethystos::Gui::Geometry;
+using Opsiamethystos::Gui::Components::ComponentType;
+using Opsiamethystos::Gui::Components::gen_id;
 
 namespace {
 	Layout::Node leaf(const Layout::Measure &measure = {}) {

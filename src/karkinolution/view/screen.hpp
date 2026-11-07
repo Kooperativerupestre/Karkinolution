@@ -1,13 +1,14 @@
 #pragma once
 
 
+#include "opsiamethystos/gui/components/low_level/text.hpp"
+#include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
-#include "karkinolution/view/gui/components/low_level/text.hpp"
-#include "karkinolution/view/gui/geometry/geometry.hpp"
 
 #include <string>
 
 namespace KarkinolutionView {
+	namespace Gui = Opsiamethystos::Gui;
 
 	namespace Screen {
 		class State {

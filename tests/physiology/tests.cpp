@@ -1,22 +1,22 @@
-#include "shared/core/id.hpp"
-#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/corpse/physiology.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/creature/physiology.hpp"
 #include "karkinolution/organism/entities/embryo/physiology.hpp"
 #include "karkinolution/organism/registry.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <gtest/gtest.h>
 
-using KShared::Core::Id::gen_id;
-using KShared::Math::Area;
-using KShared::Math::LV::CT::NormalizedValue;
-using KShared::Math::Vec::Vec2;
 using Karkinolution::Organisms::Energy;
 using Karkinolution::Organisms::Health;
 using Karkinolution::Organisms::Life;
 using Karkinolution::Organisms::OrganismRegistry;
 using Karkinolution::Organisms::Entities::Corpse::Corpse;
+using KShared::Core::Id::gen_id;
+using KShared::Math::Area;
+using KShared::Math::LV::CT::NormalizedValue;
+using KShared::Math::Vec::Vec2;
 using CreatureEntity = Karkinolution::Organisms::Entities::Creature::Creature;
 using Karkinolution::Organisms::Entities::Creature::CreatureSpecies;
 using Karkinolution::Organisms::Entities::Creature::Gender;

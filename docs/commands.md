@@ -17,6 +17,10 @@ Append `--parallel $(nproc)` to any build command for parallel compilation.
 | `shared-sanitizers` | `build-sanitizers` | Build only `karkinolution_shared` with AddressSanitizer and UBSan |
 | `shared-tsan` | `build-tsan` | Build only `karkinolution_shared` with ThreadSanitizer |
 | `shared-ci`, `shared-ci-sanitizers`, `shared-ci-tsan` | `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Build only `karkinolution_shared` in CI variants |
+| `opsiamethystos-debug` | `build` | Build only `opsiamethystos` (Debug) |
+| `opsiamethystos-sanitizers` | `build-sanitizers` | Build only `opsiamethystos` with AddressSanitizer and UBSan |
+| `opsiamethystos-tsan` | `build-tsan` | Build only `opsiamethystos` with ThreadSanitizer |
+| `opsiamethystos-ci`, `opsiamethystos-ci-sanitizers`, `opsiamethystos-ci-tsan` | `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Build only `opsiamethystos` in CI variants |
 
 List them with `cmake --list-presets`. Every preset has a matching build preset. `debug`, `release`, `sanitizers`, `ci` and
 `ci-sanitizers` also have a test preset.

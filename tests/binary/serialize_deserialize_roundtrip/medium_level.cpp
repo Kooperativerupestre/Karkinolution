@@ -6,12 +6,12 @@
 #include <karkinolution/binary/interpreters/stats.hpp>
 #include <karkinolution/binary/interpreters/unit.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
+#include <karkinolution/test/utils.hpp>
 #include <shared/functional/k_random.hpp>
 #include <shared/math/physic/vec/model.hpp>
 #include <shared/math/stats/compile_values.hpp>
 #include <shared/math/stats/runtime_values.hpp>
 #include <shared/math/units.hpp>
-#include <karkinolution/test/utils.hpp>
 
 namespace RandomGenerators = KShared::Functional::KRandom::RandomGenerators;
 using KShared::Math::Area;

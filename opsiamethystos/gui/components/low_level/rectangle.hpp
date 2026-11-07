@@ -1,0 +1,44 @@
+#pragma once
+
+#include "opsiamethystos/gui/components/base_component.hpp"
+#include "opsiamethystos/gui/components/identity.hpp"
+#include "opsiamethystos/math/geometry/geometry.hpp"
+#include "shared/core/color.hpp"
+
+namespace Opsiamethystos {
+	namespace Gui {
+		namespace Components {
+			namespace LowLevel {
+				class Rectangle : public BaseComponent<ComponentType::RECTANGLE> {
+					private:
+
+						Geometry::Rectangle bounds_;
+
+					public:
+
+						const KShared::Colors::Color color;
+
+						Rectangle(const Geometry::Rectangle &bounds, const KShared::Colors::Color &color);
+
+						[[nodiscard]]
+						Geometry::Rectangle get_bounds() const {
+							return bounds_;
+						}
+
+						// Rectangles interpret the slot directly because their render and hit-test
+						// geometry already has the same shape as the layout allocation.
+						bool set_slot(const Geometry::Rectangle &slot) {
+							bounds_ = slot;
+							return true;
+						}
+
+						void draw() const;
+						// Drawing accepts the accumulated parent origin instead of rewriting the
+						// local rectangle during panel movement.
+						void draw(const Geometry::Position &origin) const;
+						void draw_bounds(Geometry::Thickness thickness) const;
+				};
+			} // namespace LowLevel
+		} // namespace Components
+	} // namespace Gui
+} // namespace Opsiamethystos

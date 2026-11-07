@@ -1,9 +1,9 @@
 
+#include "karkinolution/organism/entities/creature/constructor.hpp"
+#include "karkinolution/organism/entities/genetics/genetic.hpp"
 #include "shared/core/error.hpp"
 #include "shared/core/id.hpp"
 #include "shared/math/geometry/models.hpp"
-#include "karkinolution/organism/entities/creature/constructor.hpp"
-#include "karkinolution/organism/entities/genetics/genetic.hpp"
 
 #include <gtest/gtest.h>
 #include <karkinolution/binary/interpreters/corpse.hpp>
@@ -15,12 +15,12 @@
 #include <karkinolution/binary/interpreters/territory.hpp>
 #include <karkinolution/binary/interpreters/unit.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/test/utils.hpp>
 #include <limits>
+#include <shared/functional/k_random.hpp>
 
 // Properties: GenericProperty Roundtrip
 
@@ -112,8 +112,8 @@ TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
 // Terrain Soil: Full Serialization
 
 TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
-	const auto                                  damage_value  = std::numeric_limits<float>::max();
-	const auto                                  movement_cost = 0.001f;
+	const auto                            damage_value  = std::numeric_limits<float>::max();
+	const auto                            movement_cost = 0.001f;
 	const KShared::Core::Id::BaseIdType   id            = 248539453;
 	const KShared::Math::Geometry::Radius radius{24};
 

@@ -1,6 +1,6 @@
-#include "shared/core/error.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
 #include "karkinolution/test/utils.hpp"
+#include "shared/core/error.hpp"
 
 #include <chrono>
 #include <gtest/gtest.h>

@@ -380,3 +380,7 @@ decoders were retained in the active code. Deployments must update both ends of 
 # Shared Layer Extraction
 
 I intend to separate Karkinolution's visual engine into an independent folder. To make this possible, I needed to isolate the dependencies that intersected both the simulation and the engine simultaneously. My solution was to create this `shared` directory containing all of these reused files.
+
+# Opsiaméthystos Visual Engine Extraction
+
+Continuing the decoupling of the visual engine from Karkinolution's simulation core, the GUI, geometry, raylib utilities, and driver components have been extracted into the `opsiamethystos` library. Opsiaméthystos depends only on `karkinolution_shared` and `raylib`.

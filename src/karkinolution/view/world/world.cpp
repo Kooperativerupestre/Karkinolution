@@ -1,9 +1,9 @@
 #include "karkinolution/binary/interpreters/models/soil.hpp"
-#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/world/queriers/creature.hpp"
 #include "karkinolution/view/world/queriers/territory.hpp"
+#include "shared/core/id.hpp"
 
 #include <algorithm>
 #include <karkinolution/view/world/queriers/corpse.hpp>

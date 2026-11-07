@@ -2,18 +2,18 @@
 
 #include <cassert>
 #include <gtest/gtest.h>
-#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <variant>
 
-using KShared::Math::Vec::Vec2;
 using Karkinolution::Terrain::Soil::SoilPieceId;
 using Karkinolution::Terrain::Trees::RTree::Box2D;
 using Karkinolution::Terrain::Trees::RTree::NodeType;
 using Karkinolution::Terrain::Trees::RTree::RStarTree;
 using Karkinolution::Terrain::Trees::RTree::RtreeEntry;
 using Karkinolution::Terrain::Trees::RTree::RtreeNode;
+using KShared::Math::Vec::Vec2;
 namespace RStarTreeMotor = Karkinolution::Terrain::Trees::RTree::RStarTreeMotor;
 
 using TRStarTree  = RStarTree<SoilPieceId>;

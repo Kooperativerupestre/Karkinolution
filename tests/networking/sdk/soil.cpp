@@ -8,9 +8,9 @@
 #include <ranges>
 #include <unordered_set>
 
-using KShared::Core::Id::BaseIdType;
 using Karkinolution::Terrain::Soil::SoilPiece;
 using Karkinolution::World::World;
+using KShared::Core::Id::BaseIdType;
 
 namespace {
 	class SoilListClient {

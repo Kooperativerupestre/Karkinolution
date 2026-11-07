@@ -1,22 +1,22 @@
 #include <gtest/gtest.h>
-#include <shared/core/id.hpp>
-#include <shared/functional/data_structures.hpp>
-#include <shared/math/physic/vec/model.hpp>
-#include <shared/math/units.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <karkinolution/terrain/terrain_gen.hpp>
 #include <karkinolution/test/rtree_service_test_generator.hpp>
+#include <shared/core/id.hpp>
+#include <shared/functional/data_structures.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/units.hpp>
 
-using KShared::Core::Id::gen_id;
-using KShared::Math::Units::Size;
-using KShared::Math::Vec::Vec2;
 using Karkinolution::Terrain::Territory;
 using Karkinolution::Terrain::Soil::SoilPiece;
 using Karkinolution::Terrain::Soil::SoilTypes;
 using Karkinolution::Terrain::Soil::SoilF::gen_soil_piece;
 using Karkinolution::Terrain::TerrainFactory::gen_terrain;
 using Karkinolution::Terrain::TerrainFactory::TerrainScale;
+using KShared::Core::Id::gen_id;
+using KShared::Math::Units::Size;
+using KShared::Math::Vec::Vec2;
 namespace BoxConversion = Karkinolution::Terrain::Trees::RTree::BoxConversion;
 
 namespace {

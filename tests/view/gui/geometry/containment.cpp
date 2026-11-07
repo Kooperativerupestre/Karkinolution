@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <karkinolution/view/gui/geometry/geometry.hpp>
+#include <opsiamethystos/math/geometry/geometry.hpp>
 
-namespace Geometry = KarkinolutionView::Gui::Geometry;
+namespace Geometry = Opsiamethystos::Gui::Geometry;
 
 TEST(GuiGeometry, ContainsSmallerCenteredRectangle) {
 	const Geometry::Rectangle container{Geometry::Position{170, 320}, Geometry::Width{140}, Geometry::Height{40}};
