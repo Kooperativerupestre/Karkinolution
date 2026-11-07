@@ -29,7 +29,7 @@ Invariant tests must put the invariant under meaningful pressure rather than che
   supported request target, and verify resource-specific restrictions for both allowed and forbidden values.
 - For layout and offset rules, use prefixed sentinel bytes and verify that the decoder reads from the specified offset,
   not from the start of the buffer or from a mistakenly adjusted offset. Follow the domain-specific rules in
-  [`BINARY_CONVENTIONS.md`](../src/karkinolution/binary/BINARY_CONVENTIONS.md).
+  [`BINARY_CONVENTIONS.md`](../karkinolution/binary/BINARY_CONVENTIONS.md).
 - Prefer exhaustive checks for small finite domains. For larger domains, use deterministic generated cases and cover
   important edges; tests must remain reproducible.
 - Assert the properties that define the invariant, not incidental implementation details.

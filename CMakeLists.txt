@@ -125,7 +125,7 @@ target_link_libraries(opsiamethystos
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
-"${CMAKE_SOURCE_DIR}/src/karkinolution/*.cpp"
+"${CMAKE_SOURCE_DIR}/karkinolution/*.cpp"
 )
 list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/view/.*")
 
@@ -141,7 +141,7 @@ PRIVATE
 )
 
 target_include_directories(karkinolution PUBLIC
-"${CMAKE_SOURCE_DIR}/src"
+"${CMAKE_SOURCE_DIR}"
 )
 
 target_link_libraries(karkinolution
@@ -163,7 +163,7 @@ karkinolution
 
 if (KARKINOLUTION_BUILD_VIEW)
     file(GLOB_RECURSE KARKINOLUTION_VIEW_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_SOURCE_DIR}/src/karkinolution/view/*.cpp"
+        "${CMAKE_SOURCE_DIR}/karkinolution/view/*.cpp"
     )
     list(FILTER KARKINOLUTION_VIEW_SOURCES EXCLUDE REGEX ".*/panel/layout/layout.cpp")
 

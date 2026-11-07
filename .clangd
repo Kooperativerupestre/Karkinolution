@@ -1,6 +1,6 @@
 If:
-  PathMatch: src/karkinolution/.*
-  PathExclude: src/karkinolution/view/.*
+  PathMatch: karkinolution/.*
+  PathExclude: karkinolution/view/.*
 
 CompileFlags:
   CompilationDatabase: build
@@ -11,7 +11,7 @@ Diagnostics:
 ---
 
 If:
-  PathMatch: src/karkinolution/view/.*
+  PathMatch: karkinolution/view/.*
 
 CompileFlags:
   CompilationDatabase: build-view
