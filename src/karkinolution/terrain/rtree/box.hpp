@@ -13,10 +13,10 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			const KShared::Math::Vec::Vec2 &operator[](Bound) const noexcept;
 			KShared::Math::Vec::Vec2 &operator[](Bound) noexcept;
 
-			[[nodiscard]] double                         width() const noexcept;
-			[[nodiscard]] double                         height() const noexcept;
-			[[nodiscard]] double                         area() const noexcept;
-			[[nodiscard]] double                         margin() const noexcept;
+			[[nodiscard]] double                   width() const noexcept;
+			[[nodiscard]] double                   height() const noexcept;
+			[[nodiscard]] double                   area() const noexcept;
+			[[nodiscard]] double                   margin() const noexcept;
 			[[nodiscard]] KShared::Math::Vec::Vec2 center() const noexcept;
 
 			[[nodiscard]] Box2D operator+(const Box2D &other) const;

@@ -2,10 +2,10 @@
 #include "shared/math/units.hpp"
 
 #include <cstdint>
-#include <shared/math/geometry/models.hpp>
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <stdexcept>
 
 namespace Karkinolution {

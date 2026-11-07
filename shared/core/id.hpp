@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
-#include <shared/functional/k_random.hpp>
 #include <random>
+#include <shared/functional/k_random.hpp>
 
 namespace KShared {
 	namespace Core {

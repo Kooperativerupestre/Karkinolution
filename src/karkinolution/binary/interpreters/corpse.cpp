@@ -11,8 +11,7 @@
 #include <karkinolution/binary/interpreters/vec.hpp>
 
 // SRI implementations
-Karkinolution::Binary::Interpreters::CoreBytes::Identity::Id
-CorpseSRI::serialize_id(KShared::Core::Id::BaseIdType id) {
+Karkinolution::Binary::Interpreters::CoreBytes::Identity::Id CorpseSRI::serialize_id(KShared::Core::Id::BaseIdType id) {
 	return Karkinolution::Binary::Serializer::convert_uint64_t(id);
 }
 
@@ -79,8 +78,7 @@ Karkinolution::Binary::Interpreters::Models::Corpse::Corpse CorpseDSI::get_corps
 	};
 }
 
-KShared::Core::Id::BaseIdType
-CorpseDSI::Request::interpret_like_see_corpse(const std::vector<std::byte> &payload) {
+KShared::Core::Id::BaseIdType CorpseDSI::Request::interpret_like_see_corpse(const std::vector<std::byte> &payload) {
 	return KShared::Core::Id::BaseIdType{
 		Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0)};
 }

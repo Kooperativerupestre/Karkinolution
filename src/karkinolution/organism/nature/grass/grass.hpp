@@ -2,11 +2,11 @@
 #include "shared/core/id.hpp"
 #include "shared/math/stats/runtime_values.hpp"
 
+#include <karkinolution/organism/nature/identity.hpp>
+#include <karkinolution/organism/values.hpp>
 #include <shared/math/geometry/models.hpp>
 #include <shared/math/physic/vec/model.hpp>
 #include <shared/math/units.hpp>
-#include <karkinolution/organism/nature/identity.hpp>
-#include <karkinolution/organism/values.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {
@@ -21,10 +21,10 @@ namespace Karkinolution {
 
 						BaseIdType id;
 
-						Quality                quality;
-						Vec2                   position;
+						Quality                         quality;
+						Vec2                            position;
 						KShared::Math::Geometry::Radius radius;
-						GrassMatter            matter;
+						GrassMatter                     matter;
 
 						bool constexpr should_disappear() const {
 							return matter.is_zero();

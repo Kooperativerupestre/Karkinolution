@@ -4,10 +4,10 @@
 #include "shared/math/units.hpp"
 
 #include <FastNoise/FastNoise.h>
-#include <shared/math/geometry/models.hpp>
-#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <utility>
 
 namespace Karkinolution::Terrain::TerrainFactory {
@@ -34,9 +34,9 @@ namespace Karkinolution::Terrain::TerrainFactory {
 	// Soil height is temporarily fixed to simplify interface and physics development.
 	// Variable heights will be reintroduced later.
 	Territory gen_terrain(const KShared::Math::Units::Size      &size,
-						  int                           seed,
-						  float                         scale,
-						  float                         epsilon,
+						  int                                    seed,
+						  float                                  scale,
+						  float                                  epsilon,
 						  const KShared::Math::Geometry::Radius &min_radius,
 						  const KShared::Math::Geometry::Radius &max_radius) {
 		auto simplex = FastNoise::New<FastNoise::Simplex>();
@@ -60,7 +60,8 @@ namespace Karkinolution::Terrain::TerrainFactory {
 
 				const auto soil_type = TerrainFactory::get_soil_type(noise_value);
 
-				const auto radius = KShared::Functional::KRandom::RandomGenerators::generate(min_radius.value, max_radius.value);
+				const auto radius =
+					KShared::Functional::KRandom::RandomGenerators::generate(min_radius.value, max_radius.value);
 
 				auto soil = Soil::SoilF::gen_soil_piece(soil_type, radius, coord);
 

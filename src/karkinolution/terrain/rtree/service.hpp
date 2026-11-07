@@ -1,10 +1,10 @@
 #pragma once
 
+#include <karkinolution/terrain/rtree/box_conversion.hpp>
+#include <karkinolution/terrain/rtree/rtree.hpp>
 #include <shared/functional/data_structures.hpp>
 #include <shared/math/physic/vec/model.hpp>
 #include <shared/math/units.hpp>
-#include <karkinolution/terrain/rtree/box_conversion.hpp>
-#include <karkinolution/terrain/rtree/rtree.hpp>
 #include <unordered_map>
 
 // Don't use if you aren't testing.
@@ -22,7 +22,7 @@ namespace Karkinolution {
 
 					Karkinolution::Terrain::Trees::RTree::RStarTree<ID> tree_;
 					std::unordered_map<ID, V>                           registry_;
-					KShared::Math::Units::Size                                   size_;
+					KShared::Math::Units::Size                          size_;
 
 				public:
 

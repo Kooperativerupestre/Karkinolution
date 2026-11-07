@@ -1,8 +1,6 @@
 #include "karkinolution/organism/entities/creature/brain/intents.hpp"
 #include "karkinolution/organism/registry.hpp"
 
-#include <shared/functional/k_random.hpp>
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/creature/physiology.hpp>
@@ -12,6 +10,8 @@
 #include <karkinolution/organism/reproduction/state/state.hpp>
 #include <karkinolution/organism/values.hpp>
 #include <karkinolution/utils/namegenerator.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <utility>
 
 namespace Karkinolution::Organisms::Entities::Creature::Physiology {

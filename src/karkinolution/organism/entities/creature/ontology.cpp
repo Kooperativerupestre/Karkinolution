@@ -1,10 +1,10 @@
 
 
-#include <shared/functional/k_random.hpp>
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/internal_aliases.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <stdexcept>
 
 namespace Karkinolution::Organisms::Entities::Creature {

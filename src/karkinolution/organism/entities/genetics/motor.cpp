@@ -2,13 +2,13 @@
 
 #include <algorithm>
 #include <cmath>
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/disturbs.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/entities/genetics/motor.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/functional/k_random.hpp>
 
 namespace Karkinolution::Organisms::Entities::Genetic {
 	namespace Motor {

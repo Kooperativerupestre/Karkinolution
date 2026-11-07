@@ -1,19 +1,19 @@
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/protocol/layouts.hpp"
-#include "shared/math/units.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/generic_id.hpp"
 #include "karkinolution/world/world.hpp"
+#include "shared/math/units.hpp"
 
 #include <karkinolution/binary/interpreters/creature.hpp>
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/test/utils.hpp>
+#include <shared/functional/k_random.hpp>
 
 Karkinolution::World::World TestUtils::make_small_world() {
 	Karkinolution::World::WorldPreset preset{
 		.seed    = 1,
 		.size    = KShared::Math::Units::Size{.width  = KShared::Math::Units::Width{100.0},
-													.height = KShared::Math::Units::Height{100.0}},
+											  .height = KShared::Math::Units::Height{100.0}},
 		.epsilon = 5.0f};
 	return {preset};
 }

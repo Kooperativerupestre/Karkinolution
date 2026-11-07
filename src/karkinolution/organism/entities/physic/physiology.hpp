@@ -1,7 +1,7 @@
 #pragma once
 
-#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 namespace Karkinolution {
 	namespace Organisms {

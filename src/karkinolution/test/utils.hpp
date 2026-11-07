@@ -1,12 +1,12 @@
 #pragma once
+#include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "shared/core/error.hpp"
 #include "shared/core/id.hpp"
-#include "karkinolution/networking/sdk/src/client/client.hpp"
 
 #include <karkinolution/binary/frames/motor.hpp>
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/world/world.hpp>
 #include <random>
+#include <shared/functional/k_random.hpp>
 #include <string>
 
 namespace TestUtils {
@@ -51,6 +51,5 @@ namespace TestUtils {
 	Karkinolution::World::World make_small_world();
 
 	std::vector<std::byte> make_see_creature_frame(RequestId id, KShared::Core::Id::BaseIdType creature_id);
-	KarkinolutionSDK::Client::RequestData
-	make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id);
+	KarkinolutionSDK::Client::RequestData make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id);
 } // namespace TestUtils

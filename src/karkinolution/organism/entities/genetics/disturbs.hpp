@@ -1,9 +1,9 @@
 #pragma once
 #include <cmath>
+#include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <shared/functional/k_random.hpp>
 #include <shared/math/stats/compile_values.hpp>
 #include <shared/math/units.hpp>
-#include <karkinolution/organism/entities/genetics/genetic.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {

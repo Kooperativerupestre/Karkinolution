@@ -36,8 +36,8 @@ namespace Karkinolution {
 
 			namespace DSI {
 				namespace Vec {
-					double                         get_x(const std::vector<std::byte> &payload, std::size_t offset);
-					double                         get_y(const std::vector<std::byte> &payload, std::size_t offset);
+					double                   get_x(const std::vector<std::byte> &payload, std::size_t offset);
+					double                   get_y(const std::vector<std::byte> &payload, std::size_t offset);
 					KShared::Math::Vec::Vec2 get_vec(const std::vector<std::byte> &payload, std::size_t offset);
 				} // namespace Vec
 			} // namespace DSI

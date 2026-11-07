@@ -1,10 +1,10 @@
 #include "karkinolution/organism/entities/creature/creature.hpp"
 
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/constructor.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/reproduction/state/state.hpp>
 #include <karkinolution/utils/namegenerator.hpp>
+#include <shared/functional/k_random.hpp>
 
 namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 	namespace {

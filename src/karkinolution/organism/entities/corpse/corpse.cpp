@@ -1,5 +1,5 @@
-#include <shared/math/global_epsilon.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
+#include <shared/math/global_epsilon.hpp>
 
 namespace Karkinolution::Organisms::Entities::Corpse {
 

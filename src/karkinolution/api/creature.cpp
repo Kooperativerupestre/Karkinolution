@@ -1,6 +1,6 @@
-#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
+#include "shared/core/id.hpp"
 
 #include <karkinolution/api/creature.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -9,7 +9,7 @@
 namespace Karkinolution::API::Creature {
 
 	const Karkinolution::Organisms::Entities::Creature::Creature* see_creature(const Karkinolution::World::World &world,
-																			   KShared::Core::Id::BaseIdType id) {
+																			   KShared::Core::Id::BaseIdType      id) {
 		const auto entity_id = Karkinolution::Organisms::Entities::create_creature_id(id);
 
 		if (!world.see_entities_registry().exists(entity_id)) {
@@ -22,7 +22,7 @@ namespace Karkinolution::API::Creature {
 	make_creature(Karkinolution::World::World                                                 &world,
 				  std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 				  std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-				  const std::optional<KShared::Math::Vec::Vec2>                         &position,
+				  const std::optional<KShared::Math::Vec::Vec2>                               &position,
 				  const std::optional<std::string>                                            &name) {
 		auto creature = Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor::from_blueprint(
 			Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint{.specie   = specie,

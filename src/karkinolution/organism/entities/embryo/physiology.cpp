@@ -1,10 +1,10 @@
 #include "karkinolution/organism/values.hpp"
 
 #include <algorithm>
-#include <shared/functional/k_random.hpp>
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/embryo/physiology.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
 
 namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 	bool EmbryoPhysiology::is_dead(const Embryo &embryo) {

@@ -1,7 +1,7 @@
 #pragma once
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/egg/egg.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
+#include <shared/math/stats/compile_values.hpp>
 
 namespace Karkinolution::Organisms::Entities::Egg::Physiology {
 	Karkinolution::Organisms::Entities::Embryo::EmbryonicEnergy

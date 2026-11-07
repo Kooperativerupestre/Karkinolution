@@ -1,12 +1,10 @@
 #pragma once
 
+#include "karkinolution/organism/reproduction/state/ontology.hpp"
 #include "shared/core/id.hpp"
 #include "shared/math/physic/vec/model.hpp"
-#include "karkinolution/organism/reproduction/state/ontology.hpp"
 
 #include <cstdint>
-#include <shared/math/stats/compile_values.hpp>
-#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
@@ -14,6 +12,8 @@
 #include <karkinolution/organism/internal_aliases.hpp>
 #include <karkinolution/organism/reproduction/state/state.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/units.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {

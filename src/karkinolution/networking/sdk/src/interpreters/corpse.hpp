@@ -9,8 +9,8 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/binary/interpreters/models/corpse.hpp>
-#include <shared/core/id.hpp>
 #include <optional>
+#include <shared/core/id.hpp>
 
 namespace KarkinolutionSDK {
 	namespace Interpreters {

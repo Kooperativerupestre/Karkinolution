@@ -1,5 +1,3 @@
-#include "shared/core/id.hpp"
-#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/creature.hpp"
 #include "karkinolution/organism/entities/embryo/embryo.hpp"
 #include "karkinolution/organism/entities/genetics/motor.hpp"
@@ -7,11 +5,13 @@
 #include "karkinolution/organism/reproduction/state/state.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
 #include "karkinolution/organism/values.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/validator.hpp>
 #include <karkinolution/organism/reproduction/state/physiology.hpp>
 #include <random>
+#include <shared/functional/k_random.hpp>
 
 namespace Karkinolution::Organisms::Entities::Reproduction::State {
 	int Physiology::get_children_count(Creature::Creature &creature) {

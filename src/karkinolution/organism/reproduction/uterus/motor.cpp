@@ -1,5 +1,5 @@
-#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/reproduction/state/state.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>

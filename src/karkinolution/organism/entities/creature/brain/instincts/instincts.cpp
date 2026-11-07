@@ -1,17 +1,17 @@
-#include "shared/core/error.hpp"
-#include "shared/math/physic/vec/model.hpp"
-#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/actions/presets.hpp"
 #include "karkinolution/organism/entities/creature/brain/instincts/metabolism.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
+#include "shared/core/error.hpp"
+#include "shared/math/physic/vec/model.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
-#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/functional/k_random.hpp>
 #include <utility>
 #include <variant>
 

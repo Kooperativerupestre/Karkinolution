@@ -69,20 +69,16 @@ namespace Karkinolution {
 
 			namespace DSI {
 				namespace Corpse {
-					KShared::Core::Id::BaseIdType  get_id(const std::vector<std::byte> &payload,
-																std::size_t                   offset);
-					Karkinolution::Organisms::RawMeat    get_raw_meat(const std::vector<std::byte> &payload,
-																	  std::size_t                   offset);
-					KShared::Math::Vec::Vec2       get_position(const std::vector<std::byte> &payload,
-																	  std::size_t                   offset);
-					KShared::Math::Units::Size     get_size(const std::vector<std::byte> &payload,
-																  std::size_t                   offset);
+					KShared::Core::Id::BaseIdType     get_id(const std::vector<std::byte> &payload, std::size_t offset);
+					Karkinolution::Organisms::RawMeat get_raw_meat(const std::vector<std::byte> &payload,
+																   std::size_t                   offset);
+					KShared::Math::Vec::Vec2   get_position(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Math::Units::Size get_size(const std::vector<std::byte> &payload, std::size_t offset);
 					Interpreters::Models::Corpse::Corpse get_corpse(const std::vector<std::byte> &payload,
 																	std::size_t                   offset);
 
 					namespace Request {
-						KShared::Core::Id::BaseIdType
-						interpret_like_see_corpse(const std::vector<std::byte> &payload);
+						KShared::Core::Id::BaseIdType interpret_like_see_corpse(const std::vector<std::byte> &payload);
 					} // namespace Request
 				} // namespace Corpse
 			} // namespace DSI

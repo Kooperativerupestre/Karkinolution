@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <shared/core/id.hpp>
 #include <karkinolution/organism/internal_aliases.hpp>
+#include <shared/core/id.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {

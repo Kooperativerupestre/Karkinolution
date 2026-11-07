@@ -1,12 +1,12 @@
 #pragma once
 #include "karkinolution/organism/entities/identity.hpp"
 
-#include <shared/math/physic/vec/model.hpp>
-#include <shared/math/stats/runtime_values.hpp>
-#include <shared/math/units.hpp>
 #include <karkinolution/organism/foods/nutrient.hpp>
 #include <karkinolution/organism/internal_aliases.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/stats/runtime_values.hpp>
+#include <shared/math/units.hpp>
 #include <vector>
 
 namespace Karkinolution {

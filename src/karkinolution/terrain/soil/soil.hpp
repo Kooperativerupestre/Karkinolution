@@ -4,12 +4,12 @@
 
 #include <cstdint>
 #include <functional>
-#include <shared/math/physic/vec/model.hpp>
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/organism/values.hpp>
 #include <karkinolution/terrain/rtree/box.hpp>
 #include <memory>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
@@ -157,12 +157,13 @@ namespace Karkinolution {
 					Components                                        components;
 
 					KShared::Math::Geometry::Radius radius;
-					Vec2                   position;
-					SoilPieceId            id;
+					Vec2                            position;
+					SoilPieceId                     id;
 			};
 
 			namespace SoilF {
-				SoilPiece gen_soil_piece(SoilTypes s_t, const KShared::Math::Geometry::Radius &radius, const Vec2 &position);
+				SoilPiece
+				gen_soil_piece(SoilTypes s_t, const KShared::Math::Geometry::Radius &radius, const Vec2 &position);
 			} // namespace SoilF
 
 

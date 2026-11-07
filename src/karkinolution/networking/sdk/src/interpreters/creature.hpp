@@ -10,8 +10,8 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/binary/interpreters/models/creature.hpp>
-#include <shared/core/id.hpp>
 #include <optional>
+#include <shared/core/id.hpp>
 
 namespace KarkinolutionSDK {
 	namespace Interpreters {
@@ -51,7 +51,7 @@ namespace KarkinolutionSDK {
 			make_creature(T                                                                           &client,
 						  std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 						  std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-						  const std::optional<KShared::Math::Vec::Vec2>                         &position,
+						  const std::optional<KShared::Math::Vec::Vec2>                               &position,
 						  const std::optional<std::string>                                            &name) {
 				const auto payload = CreatureSRI::Request::make_create_creature(gender, specie, position, name);
 				const auto built   = Karkinolution::Binary::Frames::Motor::make_request(

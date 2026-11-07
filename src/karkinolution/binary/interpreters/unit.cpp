@@ -64,24 +64,20 @@ KShared::Math::Units::Mass UnitsDSI::deserialize_mass(const std::vector<std::byt
 	return KShared::Math::Units::Mass(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-KShared::Math::Units::Density UnitsDSI::deserialize_density(const std::vector<std::byte> &payload,
-																  std::size_t                   offset) {
+KShared::Math::Units::Density UnitsDSI::deserialize_density(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::Units::Density(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-KShared::Math::Units::Meter UnitsDSI::deserialize_meter(const std::vector<std::byte> &payload,
-															  std::size_t                   offset) {
+KShared::Math::Units::Meter UnitsDSI::deserialize_meter(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::Units::Meter(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-KShared::Math::Units::Width UnitsDSI::deserialize_width(const std::vector<std::byte> &payload,
-															  std::size_t                   offset) {
+KShared::Math::Units::Width UnitsDSI::deserialize_width(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::Units::Width(
 		Karkinolution::Binary::Deserializer::read_double(payload, offset + UnitsSRI::Layout::Width::OFFSET));
 }
 
-KShared::Math::Units::Height UnitsDSI::deserialize_height(const std::vector<std::byte> &payload,
-																std::size_t                   offset) {
+KShared::Math::Units::Height UnitsDSI::deserialize_height(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::Units::Height(
 		Karkinolution::Binary::Deserializer::read_double(payload, offset + UnitsSRI::Layout::Height::OFFSET));
 }
@@ -93,13 +89,11 @@ KShared::Math::Units::Size UnitsDSI::deserialize_size(const std::vector<std::byt
 	return KShared::Math::Units::Size{.width = width, .height = height};
 }
 
-KShared::Math::SharedArea UnitsDSI::deserialize_shared_area(const std::vector<std::byte> &payload,
-																  std::size_t                   offset) {
+KShared::Math::SharedArea UnitsDSI::deserialize_shared_area(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::SharedArea(StatsDSI::get_value<double>(payload, offset));
 }
 
-KShared::Math::Efficiency UnitsDSI::deserialize_efficiency(const std::vector<std::byte> &payload,
-																 std::size_t                   offset) {
+KShared::Math::Efficiency UnitsDSI::deserialize_efficiency(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::Efficiency(StatsDSI::get_value<float>(payload, offset));
 }
 

@@ -1,5 +1,5 @@
-#include <shared/math/stats/runtime_values.hpp>
 #include <karkinolution/organism/reproduction/uterus/uterus.hpp>
+#include <shared/math/stats/runtime_values.hpp>
 
 namespace Karkinolution::Organisms::Entities::Reproduction::Uterus {
 

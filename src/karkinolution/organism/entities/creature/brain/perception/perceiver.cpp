@@ -1,18 +1,18 @@
-#include "shared/core/error.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/organism/nature/grass/grass.hpp"
 #include "karkinolution/organism/nature/identity.hpp"
 #include "karkinolution/organism/nature/natures.hpp"
 #include "karkinolution/terrain/terrain.hpp"
+#include "shared/core/error.hpp"
 
-#include <shared/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/world/world.hpp>
+#include <shared/functional/data_structures.hpp>
 
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	PerceivedCreature Perceiver::perceive(const Creature &target, const Creature &perceiver) {
@@ -65,8 +65,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		const auto soils_id = world.see_territory().find(radius, perceiver.position);
 		const auto entities_id =
-			world.see_entity_map().find(KShared::Math::Units::Size{radius.value, radius.value},
-										perceiver.position);
+			world.see_entity_map().find(KShared::Math::Units::Size{radius.value, radius.value}, perceiver.position);
 		const auto natures_id = world.see_natures().find(radius, perceiver.position);
 
 		p_entities.reserve(entities_id.size());
@@ -89,8 +88,8 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			if (id.type == EntityTypes::CREATURE) {
 
 				(void)KShared::Functional::try_add(p_entities,
-										  id,
-										  PerceivedEntity{perceive(std::get<Creature>(entity), perceiver)});
+												   id,
+												   PerceivedEntity{perceive(std::get<Creature>(entity), perceiver)});
 			} else { // == Corpse
 				(void)KShared::Functional::try_add(
 					p_entities,

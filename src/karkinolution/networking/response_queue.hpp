@@ -2,8 +2,8 @@
 #include "karkinolution/binary/frames/parser.hpp"
 
 #include <karkinolution/binary/frames/aliases.hpp>
-#include <shared/core/error.hpp>
 #include <queue>
+#include <shared/core/error.hpp>
 #include <vector>
 
 namespace Karkinolution::Networking {

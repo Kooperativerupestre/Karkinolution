@@ -8,8 +8,8 @@
 namespace Karkinolution {
 	namespace API {
 		namespace Soil {
-			const Karkinolution::Terrain::Soil::SoilPiece* see_soil(const Karkinolution::World::World  &world,
-																	KShared::Core::Id::BaseIdType id);
+			const Karkinolution::Terrain::Soil::SoilPiece* see_soil(const Karkinolution::World::World &world,
+																	KShared::Core::Id::BaseIdType      id);
 
 			inline const auto &see_all_soils(const Karkinolution::World::World &world) {
 				return world.see_territory().registry();

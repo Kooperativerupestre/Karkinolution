@@ -33,13 +33,13 @@ namespace Karkinolution {
 			namespace DSI {
 				namespace Geometry {
 					KShared::Math::Geometry::Radius deserialize_radius(const std::vector<std::byte> &payload,
-																			 std::size_t                   offset);
+																	   std::size_t                   offset);
 					KShared::Math::Geometry::Circumference
 					deserialize_circumference(const std::vector<std::byte> &payload, std::size_t offset);
 					KShared::Math::Geometry::Diameter deserialize_diameter(const std::vector<std::byte> &payload,
-																				 std::size_t                   offset);
+																		   std::size_t                   offset);
 					KShared::Math::Geometry::Area     deserialize_area(const std::vector<std::byte> &payload,
-																			 std::size_t                   offset);
+																	   std::size_t                   offset);
 				} // namespace Geometry
 			} // namespace DSI
 		} // namespace Interpreters

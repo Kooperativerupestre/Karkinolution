@@ -9,9 +9,9 @@
 #include "karkinolution/binary/interpreters/properties.hpp"
 #include "karkinolution/binary/interpreters/vec.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
+#include "shared/core/id.hpp"
 
 #include <cstddef>
 #include <format>

@@ -1,12 +1,12 @@
 #pragma once
-#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/egg/egg.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
-#include <shared/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
+#include <shared/functional/data_structures.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {

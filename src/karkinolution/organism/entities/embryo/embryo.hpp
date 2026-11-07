@@ -1,13 +1,13 @@
 #pragma once
-#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
+#include "shared/core/id.hpp"
 
 #include <cmath>
+#include <karkinolution/organism/entities/genetics/genetic.hpp>
+#include <karkinolution/organism/values.hpp>
 #include <shared/math/physic/vec/model.hpp>
 #include <shared/math/stats/runtime_values.hpp>
 #include <shared/math/units.hpp>
-#include <karkinolution/organism/entities/genetics/genetic.hpp>
-#include <karkinolution/organism/values.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {

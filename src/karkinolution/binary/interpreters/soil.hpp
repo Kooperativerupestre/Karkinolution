@@ -6,10 +6,10 @@
 #include "karkinolution/binary/interpreters/models/soil.hpp"
 #include "karkinolution/binary/interpreters/properties.hpp"
 #include "karkinolution/binary/interpreters/vec.hpp"
-#include "shared/core/id.hpp"
-#include "shared/math/units.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/units.hpp"
 
 #include <array>
 #include <cstddef>
@@ -114,13 +114,11 @@ namespace Karkinolution {
 					get_damage(const std::vector<std::byte> &payload, std::size_t offset);
 					std::optional<Interpreters::Models::Soil::MovementCostComponent>
 					get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset);
-					KShared::Core::Id::BaseIdType     get_id(const std::vector<std::byte> &payload,
-																   std::size_t                   offset);
-					KShared::Math::Vec::Vec2          get_position(const std::vector<std::byte> &payload,
-																		 std::size_t                   offset);
+					KShared::Core::Id::BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Math::Vec::Vec2 get_position(const std::vector<std::byte> &payload, std::size_t offset);
 					Karkinolution::Terrain::Soil::SoilTypes get_type(const std::vector<std::byte> &payload,
 																	 std::size_t                   offset);
-					KShared::Math::Geometry::Radius   get_radius(const std::vector<std::byte> &payload,
+					KShared::Math::Geometry::Radius         get_radius(const std::vector<std::byte> &payload,
 																	   std::size_t                   offset);
 
 					std::vector<Karkinolution::Terrain::Soil::SoilProperties>
@@ -132,8 +130,7 @@ namespace Karkinolution {
 															  std::size_t                   offset);
 
 					namespace Request {
-						KShared::Core::Id::BaseIdType
-						interpret_like_get_soil(const std::vector<std::byte> &payload);
+						KShared::Core::Id::BaseIdType interpret_like_get_soil(const std::vector<std::byte> &payload);
 					} // namespace Request
 				} // namespace Soil
 			} // namespace DSI

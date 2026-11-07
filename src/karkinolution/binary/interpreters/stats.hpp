@@ -73,8 +73,7 @@ namespace Karkinolution {
 					}
 
 					template <typename T>
-					BytesArray::Stat
-					serialize_normalized_value(const KShared::Math::LV::CT::NormalizedValue<T> value) {
+					BytesArray::Stat serialize_normalized_value(const KShared::Math::LV::CT::NormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
 						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<T>();
@@ -93,8 +92,8 @@ namespace Karkinolution {
 					}
 
 					template <typename T>
-					BytesArray::Stat serialize_signed_normalized_value(
-						const KShared::Math::LV::CT::SignedNormalizedValue<T> value) {
+					BytesArray::Stat
+					serialize_signed_normalized_value(const KShared::Math::LV::CT::SignedNormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
 						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<T>();

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "shared/math/physic/vec/model.hpp"
-#include "shared/math/units.hpp"
 #include "karkinolution/organism/entities/creature/creature.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/terrain/natures_map.hpp"
+#include "shared/math/physic/vec/model.hpp"
+#include "shared/math/units.hpp"
 
 #include <karkinolution/terrain/entity_map.hpp>
 #include <karkinolution/terrain/natures_map.hpp>
@@ -17,9 +17,9 @@ namespace Karkinolution {
 		class WorldTestHelper;
 
 		struct WorldPreset {
-				int                              seed;
+				int                        seed;
 				KShared::Math::Units::Size size;
-				float                            epsilon;
+				float                      epsilon;
 		};
 
 		class World {
@@ -67,7 +67,7 @@ namespace Karkinolution {
 				bool remove(Karkinolution::Organisms::Entities::EntityId id);
 				bool add(Karkinolution::Organisms::Entities::Entity &&entity);
 				bool update(Karkinolution::Organisms::Entities::EntityId id,
-							const KShared::Math::Vec::Vec2        &new_position);
+							const KShared::Math::Vec::Vec2              &new_position);
 
 				bool exists_entity(Karkinolution::Organisms::Entities::EntityId id) const {
 					return entities_registry.exists(id) && entity_map.has_entity(id);

@@ -4,13 +4,13 @@
 #include <cassert>
 #include <cstdint>
 #include <flat_map>
-#include <shared/functional/k_random.hpp>
-#include <shared/math/stats/compile_values.hpp>
-#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/organism/reproduction/state/ontology.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/units.hpp>
 #include <stdexcept>
 #include <utility>
 #include <variant>
@@ -67,7 +67,7 @@ namespace Karkinolution {
 						struct MorphologyGenome {
 								KShared::Math::Units::Width  average_width;
 								KShared::Math::Units::Height average_height;
-								Mass                average_mass;
+								Mass                         average_mass;
 						};
 
 					} // namespace Morphology

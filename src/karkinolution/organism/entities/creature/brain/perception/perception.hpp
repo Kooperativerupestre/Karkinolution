@@ -1,8 +1,8 @@
 #pragma once
 
+#include "karkinolution/terrain/rtree/box.hpp"
 #include "shared/math/geometry/models.hpp"
 #include "shared/math/physic/vec/model.hpp"
-#include "karkinolution/terrain/rtree/box.hpp"
 
 #include <functional>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -21,7 +21,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	struct PerceivedSoil {
 			Karkinolution::Terrain::Soil::SoilPieceId id;
 			Vec2                                      position;
-			KShared::Math::Geometry::Radius     radius;
+			KShared::Math::Geometry::Radius           radius;
 
 			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage>       damage;
 			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost> movement_cost;
@@ -55,7 +55,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			Karkinolution::Organisms::Nature::NatureId           id;
 			Karkinolution::Organisms::Nature::Grass::GrassMatter matter;
 			Vec2                                                 position;
-			KShared::Math::Geometry::Radius                radius;
+			KShared::Math::Geometry::Radius                      radius;
 	};
 
 	using PerceptionData =
@@ -185,7 +185,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	class Perception {
 		private:
 
-			PerceptionData                        data_;
+			PerceptionData                  data_;
 			KShared::Math::Geometry::Radius radius_;
 
 			PerceptionEntityRegistry entities_;
@@ -200,13 +200,13 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		public:
 
-			Perception(PerceptionData                              &data,
+			Perception(PerceptionData                        &data,
 					   const KShared::Math::Geometry::Radius &radius,
-					   const PerceptionEntityRegistry              &entities,
-					   const PerceptionSoilRegistry                &soils,
-					   const PerceptionNatureRegistry              &natures,
-					   const Vec2                                   position,
-					   const Vec2                                   farthest)
+					   const PerceptionEntityRegistry        &entities,
+					   const PerceptionSoilRegistry          &soils,
+					   const PerceptionNatureRegistry        &natures,
+					   const Vec2                             position,
+					   const Vec2                             farthest)
 				: data_(std::move(data))
 				, radius_(radius)
 				, entities_(entities)
@@ -337,17 +337,17 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 										   const std::vector<Karkinolution::Organisms::Nature::NatureId> &natures);
 
 		// Utils
-		PerceptionView reduce(const Perception                            &perception,
+		PerceptionView reduce(const Perception                      &perception,
 							  const KShared::Math::Geometry::Radius &radius,
-							  std::optional<EntityFilter>                  entity_filter = std::nullopt,
-							  std::optional<SoilFilter>                    soil_filter   = std::nullopt,
-							  std::optional<NatureFilter>                  nature_filter = std::nullopt);
+							  std::optional<EntityFilter>            entity_filter = std::nullopt,
+							  std::optional<SoilFilter>              soil_filter   = std::nullopt,
+							  std::optional<NatureFilter>            nature_filter = std::nullopt);
 
-		PerceptionView reduce(const PerceptionView                        &view,
+		PerceptionView reduce(const PerceptionView                  &view,
 							  const KShared::Math::Geometry::Radius &radius,
-							  std::optional<EntityFilter>                  entity_filter = std::nullopt,
-							  std::optional<SoilFilter>                    soil_filter   = std::nullopt,
-							  std::optional<NatureFilter>                  nature_filter = std::nullopt);
+							  std::optional<EntityFilter>            entity_filter = std::nullopt,
+							  std::optional<SoilFilter>              soil_filter   = std::nullopt,
+							  std::optional<NatureFilter>            nature_filter = std::nullopt);
 
 		NormalizedValue<double> normalize_distance(const Perception &perception, const Vec2 &position);
 		NormalizedValue<double> normalize_distance(const PerceptionView &view, const Vec2 &poition);

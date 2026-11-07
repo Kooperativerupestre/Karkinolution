@@ -1,9 +1,9 @@
 #pragma once
-#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <variant>
 
 namespace Karkinolution::Organisms::Entities::Creature::Actions {

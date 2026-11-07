@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
-#include <shared/math/stats/runtime_values.hpp>
 #include <karkinolution/organism/internal_aliases.hpp>
+#include <shared/math/stats/runtime_values.hpp>
 
 namespace Karkinolution {
 	namespace Organisms {

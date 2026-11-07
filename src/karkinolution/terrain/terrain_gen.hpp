@@ -3,10 +3,10 @@
 #include "shared/math/stats/compile_values.hpp"
 
 #include <FastNoise/FastNoise.h>
-#include <shared/math/geometry/models.hpp>
-#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/physic/vec/model.hpp>
 
 namespace Karkinolution {
 	namespace Terrain {
@@ -22,9 +22,9 @@ namespace Karkinolution {
 			Soil::SoilTypes get_soil_type(const KShared::Math::LV::CT::SignedNormalizedValue<float> &factor);
 
 			Territory gen_terrain(const KShared::Math::Units::Size      &size,
-								  int                           seed,
-								  float                         scale,
-								  float                         epsilon,
+								  int                                    seed,
+								  float                                  scale,
+								  float                                  epsilon,
 								  const KShared::Math::Geometry::Radius &min_radius,
 								  const KShared::Math::Geometry::Radius &max_radius);
 

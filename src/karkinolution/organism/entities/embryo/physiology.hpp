@@ -1,8 +1,8 @@
 #pragma once
 
-#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/math/stats/compile_values.hpp>
 
 // Energy 100% (embryotrophic)
 

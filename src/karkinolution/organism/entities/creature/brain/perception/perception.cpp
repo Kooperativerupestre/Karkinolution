@@ -1,8 +1,7 @@
+#include "karkinolution/terrain/rtree/box.hpp"
 #include "shared/math/stats/compile_values.hpp"
 #include "shared/math/units.hpp"
-#include "karkinolution/terrain/rtree/box.hpp"
 
-#include <shared/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -12,6 +11,7 @@
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <optional>
+#include <shared/functional/data_structures.hpp>
 #include <vector>
 
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
@@ -323,11 +323,11 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 							  std::move(filter));
 	}
 
-	PerceptionView PerceptionAnalyzer::reduce(const Perception                            &perception,
+	PerceptionView PerceptionAnalyzer::reduce(const Perception                      &perception,
 											  const KShared::Math::Geometry::Radius &radius,
-											  std::optional<EntityFilter>                  entity_filter,
-											  std::optional<SoilFilter>                    soil_filter,
-											  std::optional<NatureFilter>                  nature_filter) {
+											  std::optional<EntityFilter>            entity_filter,
+											  std::optional<SoilFilter>              soil_filter,
+											  std::optional<NatureFilter>            nature_filter) {
 		const auto radius_box = perception.radius_box();
 
 		return filter(
@@ -346,11 +346,11 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			std::move(nature_filter));
 	}
 
-	PerceptionView PerceptionAnalyzer::reduce(const PerceptionView                        &view,
+	PerceptionView PerceptionAnalyzer::reduce(const PerceptionView                  &view,
 											  const KShared::Math::Geometry::Radius &radius,
-											  std::optional<EntityFilter>                  entity_filter,
-											  std::optional<SoilFilter>                    soil_filter,
-											  std::optional<NatureFilter>                  nature_filter) {
+											  std::optional<EntityFilter>            entity_filter,
+											  std::optional<SoilFilter>              soil_filter,
+											  std::optional<NatureFilter>            nature_filter) {
 		const auto radius_box = view.perception().radius_box();
 
 		return filter(

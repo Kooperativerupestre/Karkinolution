@@ -24,22 +24,20 @@ UnitsSRI::StandardPhysicBytes GeometrySRI::serialize_area(KShared::Math::Geometr
 
 // DSI implementations
 KShared::Math::Geometry::Radius GeometryDSI::deserialize_radius(const std::vector<std::byte> &payload,
-																	  std::size_t                   offset) {
+																std::size_t                   offset) {
 	return KShared::Math::Geometry::Radius(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-KShared::Math::Geometry::Circumference
-GeometryDSI::deserialize_circumference(const std::vector<std::byte> &payload, std::size_t offset) {
-	return KShared::Math::Geometry::Circumference(
-		Karkinolution::Binary::Deserializer::read_double(payload, offset));
+KShared::Math::Geometry::Circumference GeometryDSI::deserialize_circumference(const std::vector<std::byte> &payload,
+																			  std::size_t                   offset) {
+	return KShared::Math::Geometry::Circumference(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
 KShared::Math::Geometry::Diameter GeometryDSI::deserialize_diameter(const std::vector<std::byte> &payload,
-																		  std::size_t                   offset) {
+																	std::size_t                   offset) {
 	return KShared::Math::Geometry::Diameter(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }
 
-KShared::Math::Geometry::Area GeometryDSI::deserialize_area(const std::vector<std::byte> &payload,
-																  std::size_t                   offset) {
+KShared::Math::Geometry::Area GeometryDSI::deserialize_area(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Math::Geometry::Area(Karkinolution::Binary::Deserializer::read_double(payload, offset));
 }

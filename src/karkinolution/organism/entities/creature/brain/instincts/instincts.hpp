@@ -1,9 +1,9 @@
 #pragma once
 
-#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/actions/presets.hpp"
 #include "karkinolution/organism/foods/foods.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
@@ -50,7 +50,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 
 	namespace PlannerFindFood {
 		inline constexpr KShared::Math::Geometry::Radius FIND_FOOD_RADIUS{5};
-		inline constexpr double                                MIN_DISTANCE_TO_EAT = 0.5;
+		inline constexpr double                          MIN_DISTANCE_TO_EAT = 0.5;
 		inline constexpr double MIN_SQUARED_DISTANCE_TO_EAT = MIN_DISTANCE_TO_EAT * MIN_DISTANCE_TO_EAT;
 
 		struct Goal {

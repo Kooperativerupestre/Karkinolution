@@ -15,7 +15,7 @@ int main() {
 	Karkinolution::World::WorldPreset preset{
 		.seed    = 1,
 		.size    = KShared::Math::Units::Size{.width  = KShared::Math::Units::Width{100.0},
-													.height = KShared::Math::Units::Height{100.0}},
+											  .height = KShared::Math::Units::Height{100.0}},
 		.epsilon = 5.0f};
 
 	Karkinolution::World::World       world{preset};

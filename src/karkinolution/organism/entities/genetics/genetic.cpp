@@ -1,12 +1,12 @@
 #include "karkinolution/organism/entities/properties/properties.hpp"
 
 #include <cassert>
+#include <karkinolution/organism/entities/genetics/disturbs.hpp>
+#include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <shared/core/error.hpp>
 #include <shared/functional/k_random.hpp>
 #include <shared/math/geometry/models.hpp>
 #include <shared/math/units.hpp>
-#include <karkinolution/organism/entities/genetics/disturbs.hpp>
-#include <karkinolution/organism/entities/genetics/genetic.hpp>
 
 namespace Karkinolution::Organisms::Entities::Genetic {
 

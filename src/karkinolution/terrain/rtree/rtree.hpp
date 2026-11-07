@@ -7,11 +7,11 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
-#include <shared/math/physic/vec/model.hpp>
 #include <limits>
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <shared/math/physic/vec/model.hpp>
 #include <utility>
 #include <variant>
 #include <vector>

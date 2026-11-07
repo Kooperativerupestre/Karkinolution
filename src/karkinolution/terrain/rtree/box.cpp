@@ -1,6 +1,6 @@
 #include <algorithm>
-#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/rtree/box.hpp>
+#include <shared/math/physic/vec/model.hpp>
 
 namespace Karkinolution::Terrain::Trees::RTree {
 	const KShared::Math::Vec::Vec2 &Box2D::operator[](Bound bound) const noexcept {

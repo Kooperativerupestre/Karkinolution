@@ -2,10 +2,10 @@
 
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "shared/core/id.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/concepts.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/generic_id.hpp"
+#include "shared/core/id.hpp"
 
 #include <karkinolution/binary/frames/analyzer.hpp>
 #include <karkinolution/binary/frames/motor.hpp>

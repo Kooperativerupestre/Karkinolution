@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
-#include <shared/math/stats/runtime_values.hpp>
 #include <karkinolution/organism/reproduction/gestation.hpp>
 #include <karkinolution/organism/values.hpp>
+#include <shared/math/stats/runtime_values.hpp>
 #include <variant>
 #include <vector>
 

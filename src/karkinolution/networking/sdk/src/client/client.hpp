@@ -1,7 +1,5 @@
 #pragma once
 #include "karkinolution/binary/frames/parser.hpp"
-#include "shared/core/error.hpp"
-#include "shared/core/id.hpp"
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
@@ -9,6 +7,8 @@
 #include "karkinolution/networking/sdk/src/client/protocol_session.hpp"
 #include "karkinolution/networking/sdk/src/client/request_queue.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
 
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>

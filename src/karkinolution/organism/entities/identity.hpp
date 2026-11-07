@@ -17,7 +17,7 @@ namespace Karkinolution {
 
 			struct EntityId {
 					KShared::Core::Id::BaseIdType value;
-					EntityTypes          type;
+					EntityTypes                   type;
 
 					bool operator==(const EntityId &) const = default;
 			};

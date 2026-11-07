@@ -3,13 +3,13 @@
 #include "shared/core/id.hpp"
 
 #include <cstdint>
-#include <shared/functional/k_random.hpp>
-#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/internal_alias.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <optional>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <string>
 
 namespace Karkinolution::Organisms::Entities::Creature::Constructor {
@@ -18,10 +18,10 @@ namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 	struct CreatureBlueprint {
 			std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie =
 				std::nullopt;                                                                        // random if absent
-			std::optional<KShared::Core::Id::BaseIdType>                  id   = std::nullopt; // random if absent
+			std::optional<KShared::Core::Id::BaseIdType>                        id   = std::nullopt; // random if absent
 			std::optional<std::string>                                          name = std::nullopt; // random if absent
 			std::optional<Karkinolution::Organisms::Entities::Creature::Gender> gender =
-				std::nullopt;                                                      // random if absent
+				std::nullopt;                                                // random if absent
 			std::optional<KShared::Math::Vec::Vec2> position = std::nullopt; // zero-vector if absent
 	};
 
