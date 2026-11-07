@@ -1,7 +1,7 @@
-#include "karkinolution/math/geometry/models.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/geometry/models.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
-#include <karkinolution/core/id.hpp>
+#include <shared/core/id.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 
 namespace Karkinolution::Terrain::Soil {
@@ -18,13 +18,13 @@ namespace Karkinolution::Terrain::Soil {
 
 	// SoilF
 
-	SoilPiece SoilF::gen_soil_piece(SoilTypes s_t, const Math::Geometry::Radius &radius, const Vec2 &position) {
+	SoilPiece SoilF::gen_soil_piece(SoilTypes s_t, const KShared::Math::Geometry::Radius &radius, const Vec2 &position) {
 
 		SoilPiece soil{.radius = radius};
 
 		soil.position = position;
 		soil.type     = s_t;
-		soil.id       = Core::Id::gen_id();
+		soil.id       = KShared::Core::Id::gen_id();
 
 		const auto &blueprint = blueprints[s_t];
 

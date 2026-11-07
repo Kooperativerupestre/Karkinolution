@@ -1,5 +1,5 @@
 #pragma once
-#include <karkinolution/math/global_epsilon.hpp>
+#include <shared/math/global_epsilon.hpp>
 
 /*
  * Copyright 2026 Koöperative Rüpestrën
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  */
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace LV {
 			namespace CT {
@@ -291,4 +291,4 @@ namespace Karkinolution {
 
 		} // namespace LV
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

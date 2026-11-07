@@ -1,14 +1,14 @@
 #pragma once
 
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 
 namespace KarkinolutionSDK {
 
-	class CPPSdkError : public Karkinolution::Errors::SimulationError {
+	class CPPSdkError : public KShared::Errors::SimulationError {
 		public:
 
 			explicit CPPSdkError(const std::string &message)
-				: Karkinolution::Errors::SimulationError(message) {}
+				: KShared::Errors::SimulationError(message) {}
 	};
 
 	class ClientError : public CPPSdkError {

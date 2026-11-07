@@ -3,7 +3,7 @@
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/models/territory.hpp"
 #include "karkinolution/binary/interpreters/unit.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/math/units.hpp"
 
 #include <array>
 #include <cstddef>

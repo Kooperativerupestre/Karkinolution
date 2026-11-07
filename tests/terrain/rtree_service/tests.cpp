@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
-#include <karkinolution/core/id.hpp>
-#include <karkinolution/functional/data_structures.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/core/id.hpp>
+#include <shared/functional/data_structures.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <karkinolution/terrain/terrain_gen.hpp>
 #include <karkinolution/test/rtree_service_test_generator.hpp>
 
-using Karkinolution::Core::Id::gen_id;
-using Karkinolution::Math::Units::Size;
-using Karkinolution::Math::Vec::Vec2;
+using KShared::Core::Id::gen_id;
+using KShared::Math::Units::Size;
+using KShared::Math::Vec::Vec2;
 using Karkinolution::Terrain::Territory;
 using Karkinolution::Terrain::Soil::SoilPiece;
 using Karkinolution::Terrain::Soil::SoilTypes;
@@ -61,7 +61,7 @@ TEST(RSTServiceTest, AddIsAtomic) {
 	SoilPiece soil_D = gen_soil_piece(SoilTypes::ROCK, 10, Vec2{0.0, 0.0});
 	soil_D.id        = common_id;
 
-	bool was_C_inserted_on_registry = Karkinolution::Functional::try_add(registry, common_id, std::move(soil_C));
+	bool was_C_inserted_on_registry = KShared::Functional::try_add(registry, common_id, std::move(soil_C));
 	ASSERT_TRUE(was_C_inserted_on_registry);
 
 	bool was_D_inserted_on_territory = territory.add(soil_D.id, std::move(soil_D));
@@ -110,7 +110,7 @@ TEST(RSTServiceTest, RemoveIsAtomic) {
 	SoilPiece soil_B = gen_soil_piece(SoilTypes::ROCK, 10, Vec2{0.0, 0.0});
 	soil_B.id        = common_id;
 
-	const bool was_B_added = Karkinolution::Functional::try_add(registry, common_id, std::move(soil_B));
+	const bool was_B_added = KShared::Functional::try_add(registry, common_id, std::move(soil_B));
 	ASSERT_TRUE(was_B_added);
 
 	const bool was_B_removed = territory.remove(common_id);

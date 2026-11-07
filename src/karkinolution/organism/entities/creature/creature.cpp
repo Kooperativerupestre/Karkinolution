@@ -1,6 +1,6 @@
-#include <karkinolution/math/global_epsilon.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/math/global_epsilon.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/values.hpp>
 
@@ -23,8 +23,8 @@ namespace Karkinolution::Organisms::Entities::Creature {
 		return energy.ratio();
 	}
 
-	[[nodiscard]] Karkinolution::Math::Units::Mass MorphologyPart::density() const noexcept {
-		if (area().value == Math::Approx<float>(0.0f)) {
+	[[nodiscard]] KShared::Math::Units::Mass MorphologyPart::density() const noexcept {
+		if (area().value == KShared::Math::Approx<float>(0.0f)) {
 			return 0.0f;
 		}
 		return mass.value / area().value;

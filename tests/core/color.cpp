@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include <karkinolution/core/color.hpp>
+#include <shared/core/color.hpp>
 
 TEST(Color, GradientsFirstElementIsNotEqualOriginalColor) {
-	auto color = Karkinolution::Colors::Presets::Red;
+	auto color = KShared::Colors::Presets::Red;
 
 	const auto gradient_strong_to_weak = color.gradient_strong_to_weak<10>(0.05f, 0.0f);
 	const auto gradient_weak_to_strong = color.gradient_weak_to_strong<10>(0.05f, 0.0f);
@@ -12,7 +12,7 @@ TEST(Color, GradientsFirstElementIsNotEqualOriginalColor) {
 }
 
 TEST(Color, GradientStrongToWeakOrder) {
-	auto color = Karkinolution::Colors::Presets::SkyBlue;
+	auto color = KShared::Colors::Presets::SkyBlue;
 
 	const auto gradient = color.gradient_strong_to_weak<10>(0.05f, 0.053f);
 
@@ -28,7 +28,7 @@ TEST(Color, GradientStrongToWeakOrder) {
 }
 
 TEST(Color, GradientWeakToStrongOrder) {
-	auto color = Karkinolution::Colors::Presets::SkyBlue;
+	auto color = KShared::Colors::Presets::SkyBlue;
 
 	const auto gradient = color.gradient_weak_to_strong<10>(0.05f, 0.053f);
 

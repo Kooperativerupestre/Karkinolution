@@ -1,9 +1,9 @@
 #pragma once
 #include <cstdint>
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <random>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Core {
 		namespace Id {
 			using BaseIdType = int64_t;
@@ -12,8 +12,8 @@ namespace Karkinolution {
 
 			inline BaseIdType gen_id() {
 				std::uniform_int_distribution<BaseIdType> dist(1, std::numeric_limits<BaseIdType>::max());
-				return dist(Karkinolution::Functional::KRandom::gen);
+				return dist(KShared::Functional::KRandom::gen);
 			}
 		} // namespace Id
 	} // namespace Core
-} // namespace Karkinolution
+} // namespace KShared

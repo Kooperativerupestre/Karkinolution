@@ -15,7 +15,7 @@
  * errors that will be necessary when I have to perform specific
  * rate, growth, etc. calculations for the creatures.
  */
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		template <std::floating_point T> class Approx {
 			public:
@@ -97,4 +97,4 @@ namespace Karkinolution {
 		};
 
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

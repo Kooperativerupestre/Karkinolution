@@ -233,6 +233,42 @@
       "targets": [
         "karkinolution_view"
       ]
+    },
+    {
+      "name": "shared-debug",
+      "displayName": "shared: Debug build of karkinolution_shared",
+      "configurePreset": "debug",
+      "targets": ["karkinolution_shared"]
+    },
+    {
+      "name": "shared-sanitizers",
+      "displayName": "shared: Debug with AddressSanitizer and UBSan",
+      "configurePreset": "sanitizers",
+      "targets": ["karkinolution_shared"]
+    },
+    {
+      "name": "shared-tsan",
+      "displayName": "shared: Debug with ThreadSanitizer",
+      "configurePreset": "tsan",
+      "targets": ["karkinolution_shared"]
+    },
+    {
+      "name": "shared-ci",
+      "displayName": "shared: CI Debug build",
+      "configurePreset": "ci",
+      "targets": ["karkinolution_shared"]
+    },
+    {
+      "name": "shared-ci-sanitizers",
+      "displayName": "shared: CI Debug with AddressSanitizer and UBSan",
+      "configurePreset": "ci-sanitizers",
+      "targets": ["karkinolution_shared"]
+    },
+    {
+      "name": "shared-ci-tsan",
+      "displayName": "shared: CI Debug with ThreadSanitizer",
+      "configurePreset": "ci-tsan",
+      "targets": ["karkinolution_shared"]
     }
   ],
   "testPresets": [

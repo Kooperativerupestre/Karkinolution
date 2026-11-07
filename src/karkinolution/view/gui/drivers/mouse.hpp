@@ -1,6 +1,6 @@
 #pragma once
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
 
 #include <algorithm>
 #include <cstdint>

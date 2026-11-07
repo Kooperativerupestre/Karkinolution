@@ -1,10 +1,10 @@
 #include "karkinolution/organism/entities/properties/properties.hpp"
 
 #include <cassert>
-#include <karkinolution/core/error.hpp>
-#include <karkinolution/functional/k_random.hpp>
-#include <karkinolution/math/geometry/models.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/core/error.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/genetics/disturbs.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 

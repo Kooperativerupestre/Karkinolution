@@ -2,7 +2,7 @@
 
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 
 #include <cstddef>
 #include <string>
@@ -24,8 +24,8 @@ namespace Karkinolution {
 
 					std::vector<std::byte> serialize_error(const std::string &error);
 
-					SerializedErrorOutput serialize_creature_was_not_found(Karkinolution::Core::Id::BaseIdType id);
-					SerializedErrorOutput serialize_corpse_was_not_found(Karkinolution::Core::Id::BaseIdType id);
+					SerializedErrorOutput serialize_creature_was_not_found(KShared::Core::Id::BaseIdType id);
+					SerializedErrorOutput serialize_corpse_was_not_found(KShared::Core::Id::BaseIdType id);
 				} // namespace Error
 			} // namespace SRI
 		} // namespace Interpreters

@@ -1,11 +1,11 @@
 #pragma once
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/geometry/models.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/geometry/models.hpp"
 
 #include <cstdint>
 #include <functional>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/organism/values.hpp>
 #include <karkinolution/terrain/rtree/box.hpp>
@@ -148,7 +148,7 @@ namespace Karkinolution {
 						   .properties          = {},
 						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::SWIMM}}}};
 
-			using SoilPieceId = Core::Id::BaseIdType;
+			using SoilPieceId = KShared::Core::Id::BaseIdType;
 
 			struct SoilPiece {
 					SoilTypes                                         type;
@@ -156,13 +156,13 @@ namespace Karkinolution {
 					std::vector<Organisms::Entities::GenericProperty> required_capabilities;
 					Components                                        components;
 
-					Math::Geometry::Radius radius;
+					KShared::Math::Geometry::Radius radius;
 					Vec2                   position;
 					SoilPieceId            id;
 			};
 
 			namespace SoilF {
-				SoilPiece gen_soil_piece(SoilTypes s_t, const Math::Geometry::Radius &radius, const Vec2 &position);
+				SoilPiece gen_soil_piece(SoilTypes s_t, const KShared::Math::Geometry::Radius &radius, const Vec2 &position);
 			} // namespace SoilF
 
 

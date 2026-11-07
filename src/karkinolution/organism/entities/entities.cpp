@@ -1,4 +1,4 @@
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
@@ -12,7 +12,7 @@
 namespace Karkinolution::Organisms::Entities {
 
 	bool EntitiesRegistry::add(Entity &&entity) {
-		return Functional::try_add(registry, EntityGetters::get_id(entity), std::move(entity));
+		return KShared::Functional::try_add(registry, EntityGetters::get_id(entity), std::move(entity));
 	}
 
 	Entity &EntitiesRegistry::at(EntityId id) {
@@ -85,23 +85,23 @@ namespace Karkinolution::Organisms::Entities {
 		return egg.build_id();
 	}
 
-	Karkinolution::Math::Vec::Vec2 &EntityGetters::get_position(Entity &entity) {
+	KShared::Math::Vec::Vec2 &EntityGetters::get_position(Entity &entity) {
 		return std::visit(
-			[](auto &entity) -> Karkinolution::Math::Vec::Vec2 & {
+			[](auto &entity) -> KShared::Math::Vec::Vec2 & {
 				return entity.position;
 			},
 			entity);
 	}
 
-	const Karkinolution::Math::Vec::Vec2 &EntityGetters::get_position(const Entity &entity) {
+	const KShared::Math::Vec::Vec2 &EntityGetters::get_position(const Entity &entity) {
 		return std::visit(
-			[](const auto &entity) -> const Karkinolution::Math::Vec::Vec2 & {
+			[](const auto &entity) -> const KShared::Math::Vec::Vec2 & {
 				return entity.position;
 			},
 			entity);
 	}
 
-	Karkinolution::Math::Units::Size EntityGetters::get_size(const Entity &entity) {
+	KShared::Math::Units::Size EntityGetters::get_size(const Entity &entity) {
 		if (std::holds_alternative<Creature::Creature>(entity)) {
 			return std::get<Creature::Creature>(entity).body.morphology.size;
 		} else if (std::holds_alternative<Corpse::Corpse>(entity)) {

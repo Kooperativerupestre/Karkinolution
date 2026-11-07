@@ -2,8 +2,8 @@
 
 #include "karkinolution/binary/frames/aliases.hpp"
 #include "karkinolution/binary/frames/processor.hpp"
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 
 #include <asio/io_context.hpp>

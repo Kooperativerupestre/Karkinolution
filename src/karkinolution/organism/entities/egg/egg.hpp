@@ -1,9 +1,9 @@
 #pragma once
 #include "karkinolution/organism/entities/identity.hpp"
 
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/stats/runtime_values.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/stats/runtime_values.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/foods/nutrient.hpp>
 #include <karkinolution/organism/internal_aliases.hpp>
 #include <karkinolution/organism/values.hpp>

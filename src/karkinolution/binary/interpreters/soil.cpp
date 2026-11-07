@@ -9,7 +9,7 @@
 #include "karkinolution/binary/interpreters/properties.hpp"
 #include "karkinolution/binary/interpreters/vec.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
 
@@ -133,7 +133,7 @@ SoilSRI::BytesArray::Soil SoilSRI::serialize_soil(const Karkinolution::Terrain::
 
 // Request implementations
 
-std::array<std::byte, 8> SoilSRI::Request::make_see_soil(Karkinolution::Core::Id::BaseIdType id) {
+std::array<std::byte, 8> SoilSRI::Request::make_see_soil(KShared::Core::Id::BaseIdType id) {
 	return Karkinolution::Binary::Serializer::serialize(id);
 }
 
@@ -166,11 +166,11 @@ SoilDSI::get_movement_cost(const std::vector<std::byte> &payload, std::size_t of
 			Karkinolution::Binary::Deserializer::read_float(payload, offset + SoilSRI::Layout::HasMovementCost::SIZE)};
 }
 
-Karkinolution::Core::Id::BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, offset);
+KShared::Core::Id::BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);
 }
 
-Karkinolution::Math::Vec::Vec2 SoilDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
+KShared::Math::Vec::Vec2 SoilDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
 	return VecDSI::get_vec(payload, offset);
 }
 
@@ -183,7 +183,7 @@ Karkinolution::Terrain::Soil::SoilTypes SoilDSI::get_type(const std::vector<std:
 	return type;
 }
 
-Karkinolution::Math::Geometry::Radius SoilDSI::get_radius(const std::vector<std::byte> &payload, std::size_t offset) {
+KShared::Math::Geometry::Radius SoilDSI::get_radius(const std::vector<std::byte> &payload, std::size_t offset) {
 	return GeometryDSI::deserialize_radius(payload, offset);
 }
 
@@ -240,6 +240,6 @@ Karkinolution::Binary::Interpreters::Models::Soil::Soil SoilDSI::get_soil(const 
 
 // Request implementations
 
-Karkinolution::Core::Id::BaseIdType SoilDSI::Request::interpret_like_get_soil(const std::vector<std::byte> &payload) {
-	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, 0);
+KShared::Core::Id::BaseIdType SoilDSI::Request::interpret_like_get_soil(const std::vector<std::byte> &payload) {
+	return Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0);
 }

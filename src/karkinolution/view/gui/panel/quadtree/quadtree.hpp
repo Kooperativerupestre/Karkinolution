@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/functional/quadtree.hpp"
+#include "shared/functional/quadtree.hpp"
 #include "karkinolution/view/gui/components/identity.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 
@@ -10,15 +10,15 @@
 
 namespace KarkinolutionView::Gui::Panel::Quadtree {
 
-	using UpdateOutput = Karkinolution::Functional::Quadtree::UpdateOutput;
+	using UpdateOutput = KShared::Functional::Quadtree::UpdateOutput;
 
 	class Quadtree {
 		private:
 
-			using FunctionalTree = Karkinolution::Functional::Quadtree::Quadtree<Components::ComponentId>;
+			using FunctionalTree = KShared::Functional::Quadtree::Quadtree<Components::ComponentId>;
 			FunctionalTree tree_;
 
-			static Karkinolution::Functional::Quadtree::AABB to_aabb(const Geometry::Rectangle &rectangle) {
+			static KShared::Functional::Quadtree::AABB to_aabb(const Geometry::Rectangle &rectangle) {
 				// The functional index stores AABBs, so this conversion keeps the GUI
 				// geometry convention at the adapter boundary instead of leaking it into
 				// the generic spatial structure.
@@ -28,7 +28,7 @@ namespace KarkinolutionView::Gui::Panel::Quadtree {
 						{rectangle.position.x + half_width, rectangle.position.y + half_height}};
 			}
 
-			static Karkinolution::Functional::Quadtree::AABB to_aabb(const Geometry::Circle &circle) {
+			static KShared::Functional::Quadtree::AABB to_aabb(const Geometry::Circle &circle) {
 				// A circle's AABB is a conservative broad-phase bound. It may produce
 				// false-positive candidates, which Panel narrows with exact geometry tests.
 				const auto radius = circle.radius.value();

@@ -1,6 +1,6 @@
 #include "karkinolution/view/gui/components/medium_level/grid.hpp"
 
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 #include "karkinolution/view/gui/components/low_level/line.hpp"
 #include "karkinolution/view/gui/components/low_level/rectangle.hpp"
 
@@ -14,7 +14,7 @@ namespace KarkinolutionView {
 						   Geometry::Thickness                 thickness,
 						   Geometry::Width                     max_cell_width,
 						   Geometry::Height                    max_cell_height,
-						   const Karkinolution::Colors::Color &color)
+						   const KShared::Colors::Color &color)
 					: bounds_(bounds)
 					, thickness_(thickness)
 					, max_cell_width_(max_cell_width)
@@ -23,28 +23,28 @@ namespace KarkinolutionView {
 
 				double Grid::get_line_x_based_on_column(Geometry::Column column) const {
 					if (column.value() > columns().value()) {
-						throw Karkinolution::Errors::SimulationError("Column is outside of grid bounds");
+						throw KShared::Errors::SimulationError("Column is outside of grid bounds");
 					}
 					return left() + column.value() * max_cell_width_.value();
 				}
 
 				double Grid::get_line_y_based_on_row(Geometry::Row row) const {
 					if (row.value() > rows().value()) {
-						throw Karkinolution::Errors::SimulationError("Row is outside of grid bounds");
+						throw KShared::Errors::SimulationError("Row is outside of grid bounds");
 					}
 					return top() + row.value() * max_cell_height_.value();
 				}
 
 				double Grid::get_cell_x_based_on_column(Geometry::Column column) const {
 					if (column.value() >= columns().value()) {
-						throw Karkinolution::Errors::SimulationError("Column is outside of cell bounds of the grid");
+						throw KShared::Errors::SimulationError("Column is outside of cell bounds of the grid");
 					}
 					return left() + column.value() * max_cell_width_.value();
 				}
 
 				double Grid::get_cell_y_based_on_row(Geometry::Row row) const {
 					if (row.value() >= rows().value()) {
-						throw Karkinolution::Errors::SimulationError("Row is outside of cell bounds of the grid");
+						throw KShared::Errors::SimulationError("Row is outside of cell bounds of the grid");
 					}
 					return top() + row.value() * max_cell_height_.value();
 				}
@@ -81,13 +81,13 @@ namespace KarkinolutionView {
 
 				void Grid::draw_cell(Geometry::Column                    column,
 									 Geometry::Row                       row,
-									 const Karkinolution::Colors::Color &cell_color) const {
+									 const KShared::Colors::Color &cell_color) const {
 					draw_cell(max_cell_width_, max_cell_height_, column, row, cell_color, {0, 0});
 				}
 
 				void Grid::draw_cell(Geometry::Column                    column,
 									 Geometry::Row                       row,
-									 const Karkinolution::Colors::Color &cell_color,
+									 const KShared::Colors::Color &cell_color,
 									 const Geometry::Position           &origin) const {
 					draw_cell(max_cell_width_, max_cell_height_, column, row, cell_color, origin);
 				}
@@ -96,7 +96,7 @@ namespace KarkinolutionView {
 									 Geometry::Height                    height,
 									 Geometry::Column                    column,
 									 Geometry::Row                       row,
-									 const Karkinolution::Colors::Color &cell_color) const {
+									 const KShared::Colors::Color &cell_color) const {
 					draw_cell(width, height, column, row, cell_color, {0, 0});
 				}
 
@@ -104,16 +104,16 @@ namespace KarkinolutionView {
 									 Geometry::Height                    height,
 									 Geometry::Column                    column,
 									 Geometry::Row                       row,
-									 const Karkinolution::Colors::Color &cell_color,
+									 const KShared::Colors::Color &cell_color,
 									 const Geometry::Position           &origin) const {
 					if (width > max_cell_width_) {
-						throw Karkinolution::Errors::SimulationError(
+						throw KShared::Errors::SimulationError(
 							std::format("Width {} of cell of grid to draw is larger than max {}",
 										width.value(),
 										max_cell_width_.value()));
 					}
 					if (height > max_cell_height_) {
-						throw Karkinolution::Errors::SimulationError(
+						throw KShared::Errors::SimulationError(
 							std::format("Height {} of cell of grid to draw is larger than max {}",
 										height.value(),
 										max_cell_height_.value()));

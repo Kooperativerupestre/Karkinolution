@@ -6,7 +6,7 @@
 
 KarkinolutionView::Gui::Components::LowLevel::Rectangle::Rectangle(
 	const KarkinolutionView::Gui::Geometry::Rectangle &bounds,
-	const Karkinolution::Colors::Color                &color)
+	const KShared::Colors::Color                &color)
 	: bounds_(bounds)
 	, color(color) {}
 

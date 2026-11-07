@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/disturbs.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>

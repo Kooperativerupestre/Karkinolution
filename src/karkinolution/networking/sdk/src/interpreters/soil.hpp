@@ -2,7 +2,7 @@
 
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/concepts.hpp"
 #include "karkinolution/networking/sdk/src/interpreters/generic_id.hpp"
@@ -20,7 +20,7 @@ namespace KarkinolutionSDK {
 
 			template <HasRequest T>
 			std::optional<Karkinolution::Binary::Interpreters::Models::Soil::Soil>
-			see_soil(T &client, Karkinolution::Core::Id::BaseIdType id) {
+			see_soil(T &client, KShared::Core::Id::BaseIdType id) {
 				const auto payload = SoilSRI::Request::make_see_soil(id);
 
 				const auto built = Karkinolution::Binary::Frames::Motor::make_request(

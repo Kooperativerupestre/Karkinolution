@@ -1,8 +1,8 @@
 #pragma once
 
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Colors {
 
 		namespace Components {
@@ -304,4 +304,4 @@ namespace Karkinolution {
 		} // namespace Presets
 
 	} // namespace Colors
-} // namespace Karkinolution
+} // namespace KShared

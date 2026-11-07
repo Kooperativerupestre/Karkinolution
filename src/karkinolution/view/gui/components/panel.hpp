@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 #include "karkinolution/view/gui/components/low_level/circle.hpp"
 #include "karkinolution/view/gui/components/low_level/rectangle.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
@@ -29,7 +29,7 @@ namespace KarkinolutionView {
 					}
 
 					void draw_bounds(Geometry::Thickness thickness) const;
-					void fill_background(const Karkinolution::Colors::Color &color) const;
+					void fill_background(const KShared::Colors::Color &color) const;
 			};
 		} // namespace Components
 	} // namespace Gui

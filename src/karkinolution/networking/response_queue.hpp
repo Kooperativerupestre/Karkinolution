@@ -2,7 +2,7 @@
 #include "karkinolution/binary/frames/parser.hpp"
 
 #include <karkinolution/binary/frames/aliases.hpp>
-#include <karkinolution/core/error.hpp>
+#include <shared/core/error.hpp>
 #include <queue>
 #include <vector>
 

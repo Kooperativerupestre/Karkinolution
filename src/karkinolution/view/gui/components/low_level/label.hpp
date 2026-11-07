@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 #include "karkinolution/view/gui/components/base_component.hpp"
 #include "karkinolution/view/gui/components/identity.hpp"
 #include "karkinolution/view/gui/components/low_level/rectangle.hpp"
@@ -23,8 +23,8 @@ namespace KarkinolutionView {
 
 						RectangleLabel(const Geometry::Rectangle          &bounds,
 									   std::string                         text,
-									   const Karkinolution::Colors::Color &rectangle_color,
-									   const Karkinolution::Colors::Color &text_color,
+									   const KShared::Colors::Color &rectangle_color,
+									   const KShared::Colors::Color &text_color,
 									   GreaterThanZeroValue<int>           font_size);
 
 						[[nodiscard]]

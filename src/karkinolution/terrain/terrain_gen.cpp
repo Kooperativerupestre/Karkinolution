@@ -1,18 +1,18 @@
 #include "karkinolution/terrain/terrain_gen.hpp"
 
-#include "karkinolution/functional/k_random.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/functional/k_random.hpp"
+#include "shared/math/units.hpp"
 
 #include <FastNoise/FastNoise.h>
-#include <karkinolution/math/geometry/models.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <utility>
 
 namespace Karkinolution::Terrain::TerrainFactory {
 
-	Soil::SoilTypes get_soil_type(const Math::LV::CT::SignedNormalizedValue<float> &factor) {
+	Soil::SoilTypes get_soil_type(const KShared::Math::LV::CT::SignedNormalizedValue<float> &factor) {
 
 		const NormalizedValue<float> normalized_factor = (factor.value() + 1.0f) / 2.0f;
 
@@ -33,12 +33,12 @@ namespace Karkinolution::Terrain::TerrainFactory {
 
 	// Soil height is temporarily fixed to simplify interface and physics development.
 	// Variable heights will be reintroduced later.
-	Territory gen_terrain(const Math::Units::Size      &size,
+	Territory gen_terrain(const KShared::Math::Units::Size      &size,
 						  int                           seed,
 						  float                         scale,
 						  float                         epsilon,
-						  const Math::Geometry::Radius &min_radius,
-						  const Math::Geometry::Radius &max_radius) {
+						  const KShared::Math::Geometry::Radius &min_radius,
+						  const KShared::Math::Geometry::Radius &max_radius) {
 		auto simplex = FastNoise::New<FastNoise::Simplex>();
 		simplex->SetScale(scale);
 
@@ -60,7 +60,7 @@ namespace Karkinolution::Terrain::TerrainFactory {
 
 				const auto soil_type = TerrainFactory::get_soil_type(noise_value);
 
-				const auto radius = Functional::KRandom::RandomGenerators::generate(min_radius.value, max_radius.value);
+				const auto radius = KShared::Functional::KRandom::RandomGenerators::generate(min_radius.value, max_radius.value);
 
 				auto soil = Soil::SoilF::gen_soil_piece(soil_type, radius, coord);
 

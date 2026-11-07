@@ -1,8 +1,8 @@
 #pragma once
-#include <karkinolution/core/error.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/core/error.hpp>
+#include <shared/math/stats/compile_values.hpp>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		class FloatValue {
 			public:
@@ -104,4 +104,4 @@ namespace Karkinolution {
 			};
 		} // namespace Units
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

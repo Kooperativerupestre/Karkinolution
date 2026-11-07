@@ -1,7 +1,7 @@
 #pragma once
 #include "karkinolution/binary/interpreters/models/soil.hpp"
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/units.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 #include "karkinolution/view/client/client.hpp"
@@ -11,8 +11,8 @@
 
 namespace KarkinolutionView {
 	namespace World {
-		using Karkinolution::Core::Id::BaseIdType;
-		using Karkinolution::Math::Units::Size;
+		using KShared::Core::Id::BaseIdType;
+		using KShared::Math::Units::Size;
 
 		inline constexpr bool SYNC_TERRAIN_SIZE = false;
 

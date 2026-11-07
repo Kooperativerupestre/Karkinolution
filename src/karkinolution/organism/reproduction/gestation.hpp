@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include <karkinolution/math/stats/runtime_values.hpp>
+#include <shared/math/stats/runtime_values.hpp>
 #include <karkinolution/organism/internal_aliases.hpp>
 
 namespace Karkinolution {

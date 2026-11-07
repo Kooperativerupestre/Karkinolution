@@ -6,36 +6,36 @@
 #include <karkinolution/binary/interpreters/stats.hpp>
 #include <karkinolution/binary/interpreters/unit.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
-#include <karkinolution/functional/k_random.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/math/stats/runtime_values.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/stats/runtime_values.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/test/utils.hpp>
 
-namespace RandomGenerators = Karkinolution::Functional::KRandom::RandomGenerators;
-using Karkinolution::Math::Area;
-using Karkinolution::Math::Efficiency;
-using Karkinolution::Math::Quality;
-using Karkinolution::Math::SharedArea;
-using Karkinolution::Math::LV::CT::NormalizedValue;
-using Karkinolution::Math::LV::CT::SignedNormalizedValue;
-using Karkinolution::Math::LV::RT::GenericRuntimeValue;
-using Karkinolution::Math::Units::Density;
-using Karkinolution::Math::Units::Height;
-using Karkinolution::Math::Units::Mass;
-using Karkinolution::Math::Units::Meter;
-using Karkinolution::Math::Units::Size;
-using Karkinolution::Math::Units::Width;
-using Karkinolution::Math::Vec::Vec2;
+namespace RandomGenerators = KShared::Functional::KRandom::RandomGenerators;
+using KShared::Math::Area;
+using KShared::Math::Efficiency;
+using KShared::Math::Quality;
+using KShared::Math::SharedArea;
+using KShared::Math::LV::CT::NormalizedValue;
+using KShared::Math::LV::CT::SignedNormalizedValue;
+using KShared::Math::LV::RT::GenericRuntimeValue;
+using KShared::Math::Units::Density;
+using KShared::Math::Units::Height;
+using KShared::Math::Units::Mass;
+using KShared::Math::Units::Meter;
+using KShared::Math::Units::Size;
+using KShared::Math::Units::Width;
+using KShared::Math::Vec::Vec2;
 
 namespace PhysicsStats {
-	using Karkinolution::Math::SharedArea;
-	using Karkinolution::Math::Units::Density;
-	using Karkinolution::Math::Units::Mass;
+	using KShared::Math::SharedArea;
+	using KShared::Math::Units::Density;
+	using KShared::Math::Units::Mass;
 } // namespace PhysicsStats
 
-namespace GeometryForms = Karkinolution::Math::Geometry;
+namespace GeometryForms = KShared::Math::Geometry;
 
 // Math: Vec
 

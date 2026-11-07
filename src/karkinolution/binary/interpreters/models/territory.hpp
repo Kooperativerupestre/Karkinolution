@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/math/units.hpp"
+#include "shared/math/units.hpp"
 
 namespace Karkinolution {
 	namespace Binary {
@@ -10,7 +10,7 @@ namespace Karkinolution {
 					class Territory {
 						public:
 
-							Karkinolution::Math::Units::Size size;
+							KShared::Math::Units::Size size;
 					};
 				} // namespace Territory
 			} // namespace Models

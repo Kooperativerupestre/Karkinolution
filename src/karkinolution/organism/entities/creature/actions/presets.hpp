@@ -1,5 +1,5 @@
 #pragma once
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
@@ -9,7 +9,7 @@
 namespace Karkinolution::Organisms::Entities::Creature::Actions {
 
 	struct MovePreset {
-			Karkinolution::Math::Vec::Vec2 new_coord;
+			KShared::Math::Vec::Vec2 new_coord;
 	};
 
 	struct EatPreset {

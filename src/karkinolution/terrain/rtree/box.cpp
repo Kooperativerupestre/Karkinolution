@@ -1,13 +1,13 @@
 #include <algorithm>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/rtree/box.hpp>
 
 namespace Karkinolution::Terrain::Trees::RTree {
-	const Karkinolution::Math::Vec::Vec2 &Box2D::operator[](Bound bound) const noexcept {
+	const KShared::Math::Vec::Vec2 &Box2D::operator[](Bound bound) const noexcept {
 		return bound == Bound::MAX ? max : min;
 	}
 
-	Karkinolution::Math::Vec::Vec2 &Box2D::operator[](Bound bound) noexcept {
+	KShared::Math::Vec::Vec2 &Box2D::operator[](Bound bound) noexcept {
 		return bound == Bound::MAX ? max : min;
 	}
 
@@ -36,8 +36,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	Box2D Box2DMotor::intersection(const Box2D &a, const Box2D &b) {
-		return Box2D{.max = Karkinolution::Math::Vec::Vec2{std::min(a.max.x, b.max.x), std::min(a.max.y, b.max.y)},
-					 .min = Karkinolution::Math::Vec::Vec2{std::max(a.min.x, b.min.x), std::max(a.min.y, b.min.y)}};
+		return Box2D{.max = KShared::Math::Vec::Vec2{std::min(a.max.x, b.max.x), std::min(a.max.y, b.max.y)},
+					 .min = KShared::Math::Vec::Vec2{std::max(a.min.x, b.min.x), std::max(a.min.y, b.min.y)}};
 	}
 
 	double Box2DMotor::overlap_area(const Box2D &a, const Box2D &b) {
@@ -46,7 +46,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		return width <= 0.0 || height <= 0.0 ? 0.0 : width * height;
 	}
 
-	Karkinolution::Math::Vec::Vec2 Box2D::center() const noexcept {
+	KShared::Math::Vec::Vec2 Box2D::center() const noexcept {
 		return {(min.x + max.x) / 2.0, (min.y + max.y) / 2.0};
 	}
 

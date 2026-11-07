@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Functional {
 
 		template <typename K, typename V> [[nodiscard]] V* try_at(std::unordered_map<K, V> &map, const K &key) {
@@ -41,4 +41,4 @@ namespace Karkinolution {
 			return map.erase(key) > 0;
 		}
 	} // namespace Functional
-} // namespace Karkinolution
+} // namespace KShared

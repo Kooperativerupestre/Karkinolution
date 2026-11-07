@@ -1,8 +1,8 @@
 #pragma once
 #include <cmath>
-#include <karkinolution/functional/k_random.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 
 namespace Karkinolution {

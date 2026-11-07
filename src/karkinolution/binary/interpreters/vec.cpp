@@ -5,7 +5,7 @@
 #include "karkinolution/binary/serializer.hpp"
 
 // SRI implementations
-VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const Karkinolution::Math::Vec::Vec2 &vec) {
+VecSRI::BytesArrays::Vec VecSRI::serialize_vec(const KShared::Math::Vec::Vec2 &vec) {
 	VecSRI::BytesArrays::Vec result;
 
 	const auto x = Karkinolution::Binary::Serializer::convert_double(vec.x);
@@ -26,6 +26,6 @@ double VecDSI::get_y(const std::vector<std::byte> &payload, std::size_t offset) 
 	return Karkinolution::Binary::Deserializer::read_double(payload, VecSRI::Layout::Y::OFFSET + offset);
 }
 
-Karkinolution::Math::Vec::Vec2 VecDSI::get_vec(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Math::Vec::Vec2(get_x(payload, offset), get_y(payload, offset));
+KShared::Math::Vec::Vec2 VecDSI::get_vec(const std::vector<std::byte> &payload, std::size_t offset) {
+	return KShared::Math::Vec::Vec2(get_x(payload, offset), get_y(payload, offset));
 }

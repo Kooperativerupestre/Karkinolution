@@ -1,17 +1,17 @@
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 
 #include <algorithm>
 #include <gtest/gtest.h>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/terrain/entity_map.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 
-using Karkinolution::Core::Id::BaseIdType;
-using Karkinolution::Functional::Quadtree::AABB;
-using Karkinolution::Math::Units::Size;
-using Karkinolution::Math::Vec::Vec2;
+using KShared::Core::Id::BaseIdType;
+using KShared::Functional::Quadtree::AABB;
+using KShared::Math::Units::Size;
+using KShared::Math::Vec::Vec2;
 using Karkinolution::Organisms::Entities::create_corpse_id;
 using Karkinolution::Organisms::Entities::EntityId;
 using Karkinolution::Organisms::Entities::Corpse::Corpse;

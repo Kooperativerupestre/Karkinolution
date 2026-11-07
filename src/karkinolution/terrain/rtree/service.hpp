@@ -1,8 +1,8 @@
 #pragma once
 
-#include <karkinolution/functional/data_structures.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/functional/data_structures.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/terrain/rtree/box_conversion.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <unordered_map>
@@ -22,11 +22,11 @@ namespace Karkinolution {
 
 					Karkinolution::Terrain::Trees::RTree::RStarTree<ID> tree_;
 					std::unordered_map<ID, V>                           registry_;
-					Math::Units::Size                                   size_;
+					KShared::Math::Units::Size                                   size_;
 
 				public:
 
-					RSTService(const Math::Units::Size &size)
+					RSTService(const KShared::Math::Units::Size &size)
 						: size_(size) {}
 
 					std::unordered_map<ID, V> &registry() {
@@ -41,7 +41,7 @@ namespace Karkinolution {
 						return tree_;
 					}
 
-					const Math::Units::Size &size() const {
+					const KShared::Math::Units::Size &size() const {
 						return size_;
 					}
 
@@ -60,7 +60,7 @@ namespace Karkinolution {
 							return false;
 						}
 
-						bool added = Functional::try_add(registry_, id, std::move(value));
+						bool added = KShared::Functional::try_add(registry_, id, std::move(value));
 						if (!added) {
 							return false;
 						}
@@ -79,15 +79,15 @@ namespace Karkinolution {
 							return false;
 						}
 
-						return Functional::try_remove(registry_, id);
+						return KShared::Functional::try_remove(registry_, id);
 					}
 
-					std::vector<ID> find(const Math::Geometry::Radius &radius, const Vec2 &position) const {
+					std::vector<ID> find(const KShared::Math::Geometry::Radius &radius, const Vec2 &position) const {
 						auto box = RTree::BoxConversion::to_box(radius, position);
 						return tree_.find(box);
 					}
 
-					std::vector<ID> find(const Math::Units::Size &size, const Vec2 &position) const {
+					std::vector<ID> find(const KShared::Math::Units::Size &size, const Vec2 &position) const {
 						auto box = RTree::BoxConversion::to_box(size, position);
 						return tree_.find(box);
 					}

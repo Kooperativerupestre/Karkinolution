@@ -1,4 +1,4 @@
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/embryo/embryo.hpp"
 #include "karkinolution/organism/reproduction/gestation.hpp"
 #include "karkinolution/organism/reproduction/state/physiology.hpp"
@@ -33,8 +33,8 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State::Motor {
 		auto number_of_children = State::Physiology::get_children_count(creature);
 		Karkinolution::Organisms::Entities::Reproduction::Uterus::Motor::transfer_energy_to_uterus(
 			creature,
-			Karkinolution::Math::LV::CT::NormalizedValue<float>(0.3f),
-			Karkinolution::Math::LV::CT::NormalizedValue<float>(0.5f));
+			KShared::Math::LV::CT::NormalizedValue<float>(0.3f),
+			KShared::Math::LV::CT::NormalizedValue<float>(0.5f));
 		creature.body.reproduction.fertility.zero();
 		uterus.state = Karkinolution::Organisms::Entities::Reproduction::Uterus::PregnantUterus{
 			.embryos = {},

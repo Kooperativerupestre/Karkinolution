@@ -1,8 +1,8 @@
-#include "karkinolution/math/stats/compile_values.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/math/stats/compile_values.hpp"
+#include "shared/math/units.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
 
-#include <karkinolution/functional/data_structures.hpp>
+#include <shared/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
@@ -324,7 +324,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	}
 
 	PerceptionView PerceptionAnalyzer::reduce(const Perception                            &perception,
-											  const Karkinolution::Math::Geometry::Radius &radius,
+											  const KShared::Math::Geometry::Radius &radius,
 											  std::optional<EntityFilter>                  entity_filter,
 											  std::optional<SoilFilter>                    soil_filter,
 											  std::optional<NatureFilter>                  nature_filter) {
@@ -347,7 +347,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	}
 
 	PerceptionView PerceptionAnalyzer::reduce(const PerceptionView                        &view,
-											  const Karkinolution::Math::Geometry::Radius &radius,
+											  const KShared::Math::Geometry::Radius &radius,
 											  std::optional<EntityFilter>                  entity_filter,
 											  std::optional<SoilFilter>                    soil_filter,
 											  std::optional<NatureFilter>                  nature_filter) {

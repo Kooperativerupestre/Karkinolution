@@ -1,8 +1,8 @@
 #pragma once
 
-#include "karkinolution/functional/errors.hpp"
+#include "shared/functional/errors.hpp"
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Functional {
 		[[noreturn]] inline constexpr void unreachable_or_throw() {
 			throw UnreachableError("Unreachable");
@@ -12,4 +12,4 @@ namespace Karkinolution {
 			throw UnreachableError(message);
 		}
 	} // namespace Functional
-} // namespace Karkinolution
+} // namespace KShared

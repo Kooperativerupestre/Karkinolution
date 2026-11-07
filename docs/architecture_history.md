@@ -376,3 +376,7 @@ This migration is a breaking protocol change for spatial payloads. Clients and s
 protocol are not wire-compatible with the 2D protocol because `Vec2` and `Size` have fewer serialized fields and the
 domain layouts have different offsets and total sizes. No compatibility aliases, padding fields, or dual 3D/2D
 decoders were retained in the active code. Deployments must update both ends of the connection together.
+
+# Shared Layer Extraction
+
+I intend to separate Karkinolution's visual engine into an independent folder. To make this possible, I needed to isolate the dependencies that intersected both the simulation and the engine simultaneously. My solution was to create this `shared` directory containing all of these reused files.

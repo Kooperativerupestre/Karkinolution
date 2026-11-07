@@ -1,4 +1,4 @@
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <iostream>
 #include <karkinolution/organism/entities/creature/creature.hpp>

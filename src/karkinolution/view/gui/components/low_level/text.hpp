@@ -5,7 +5,7 @@
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 
 #include <functional>
-#include <karkinolution/core/color.hpp>
+#include <shared/core/color.hpp>
 #include <string>
 #include <string_view>
 
@@ -28,14 +28,14 @@ namespace KarkinolutionView {
 
 					public:
 
-						const Karkinolution::Colors::Color color;
+						const KShared::Colors::Color color;
 						const GreaterThanZeroValue<int>    font_size;
 
 						// The provider must use the same width/height convention as draw().
 						// It is called whenever text is assigned or a panel proposes a new slot.
 						Text(const Geometry::Rectangle                                               &max_bound,
 							 std::string                                                              text,
-							 const Karkinolution::Colors::Color                                      &color,
+							 const KShared::Colors::Color                                      &color,
 							 GreaterThanZeroValue<int>                                                font_size,
 							 std::function<Drivers::Font::TextMeasurement(std::string_view, int32_t)> measure =
 								 Drivers::Font::measure_text);

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <FastNoise/FastNoise.h>
-#include <karkinolution/math/geometry/models.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 
@@ -19,14 +19,14 @@ namespace Karkinolution {
 
 			inline constexpr TerrainScale GLOBAL_SCALE{};
 
-			Soil::SoilTypes get_soil_type(const Math::LV::CT::SignedNormalizedValue<float> &factor);
+			Soil::SoilTypes get_soil_type(const KShared::Math::LV::CT::SignedNormalizedValue<float> &factor);
 
-			Territory gen_terrain(const Math::Units::Size      &size,
+			Territory gen_terrain(const KShared::Math::Units::Size      &size,
 								  int                           seed,
 								  float                         scale,
 								  float                         epsilon,
-								  const Math::Geometry::Radius &min_radius,
-								  const Math::Geometry::Radius &max_radius);
+								  const KShared::Math::Geometry::Radius &min_radius,
+								  const KShared::Math::Geometry::Radius &max_radius);
 
 
 		} // namespace TerrainFactory

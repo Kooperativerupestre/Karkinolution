@@ -8,7 +8,7 @@
 #include <karkinolution/binary/interpreters/territory.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/binary/serializer.hpp>
-#include <karkinolution/core/id.hpp>
+#include <shared/core/id.hpp>
 #include <karkinolution/organism/entities/creature/constructor.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
@@ -41,9 +41,9 @@ TEST(DSIOffsetInvariantsHighLevel, CreatureAuxiliaryGettersDoNotAutoAddOffset) {
 	}
 
 	{
-		const Karkinolution::Core::Id::BaseIdType expected_id = 987654321;
+		const KShared::Core::Id::BaseIdType expected_id = 987654321;
 		const auto                                id_bytes =
-			Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(expected_id);
+			Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(expected_id);
 		std::vector<std::byte> payload = {std::byte{0x12}, std::byte{0x34}, std::byte{0x56}};
 		const std::size_t      offset  = payload.size();
 		Karkinolution::Binary::Utils::append_bytes(payload, id_bytes);
@@ -60,9 +60,9 @@ TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {
 	}
 
 	{
-		const Karkinolution::Core::Id::BaseIdType expected_id = 1122334455;
+		const KShared::Core::Id::BaseIdType expected_id = 1122334455;
 		const auto                                id_bytes =
-			Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(expected_id);
+			Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(expected_id);
 		std::vector<std::byte> payload = {std::byte{0xDE}, std::byte{0xAD}};
 		const std::size_t      offset  = payload.size();
 		Karkinolution::Binary::Utils::append_bytes(payload, id_bytes);
@@ -71,7 +71,7 @@ TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {
 	}
 
 	{
-		const Karkinolution::Math::Geometry::Radius original_radius{42.5};
+		const KShared::Math::Geometry::Radius original_radius{42.5};
 		const auto                                  radius_bytes = GeometrySRI::serialize_radius(original_radius);
 		std::vector<std::byte>                      payload      = {std::byte{0x01}, std::byte{0x02}, std::byte{0x03}};
 		const std::size_t                           offset       = payload.size();
@@ -81,7 +81,7 @@ TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {
 	}
 
 	{
-		const Karkinolution::Math::Vec::Vec2 original_pos{1.0, 2.0};
+		const KShared::Math::Vec::Vec2 original_pos{1.0, 2.0};
 		const auto                           pos_bytes = VecSRI::serialize_vec(original_pos);
 		std::vector<std::byte>               payload   = {std::byte{0xAA}};
 		const std::size_t                    offset    = payload.size();
@@ -94,7 +94,7 @@ TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {
 
 	{
 		Karkinolution::Terrain::Soil::SoilPiece soil{.type     = Karkinolution::Terrain::Soil::SoilTypes::DIRT,
-													 .radius   = Karkinolution::Math::Geometry::Radius{1.0},
+													 .radius   = KShared::Math::Geometry::Radius{1.0},
 													 .position = {0, 0},
 													 .id       = 1};
 		soil.components.add(Karkinolution::Terrain::Soil::SoilPieceComponents::Damage{15.5f});
@@ -111,7 +111,7 @@ TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {
 
 	{
 		Karkinolution::Terrain::Soil::SoilPiece soil{.type     = Karkinolution::Terrain::Soil::SoilTypes::DIRT,
-													 .radius   = Karkinolution::Math::Geometry::Radius{1.0},
+													 .radius   = KShared::Math::Geometry::Radius{1.0},
 													 .position = {0, 0},
 													 .id       = 1};
 		soil.components.add(Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost{2.5f});
@@ -154,7 +154,7 @@ TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {
 
 TEST(DSIOffsetInvariantsHighLevel, CorpseAuxiliaryGettersDoNotAutoAddOffset) {
 	{
-		const Karkinolution::Core::Id::BaseIdType expected_id = 99887766;
+		const KShared::Core::Id::BaseIdType expected_id = 99887766;
 		const auto                                id_bytes    = CorpseSRI::serialize_id(expected_id);
 		std::vector<std::byte>                    payload     = {std::byte{0x01}, std::byte{0x02}};
 		const std::size_t                         offset      = payload.size();
@@ -174,7 +174,7 @@ TEST(DSIOffsetInvariantsHighLevel, CorpseAuxiliaryGettersDoNotAutoAddOffset) {
 	}
 
 	{
-		const Karkinolution::Math::Vec::Vec2 original_pos{10.0, 20.0};
+		const KShared::Math::Vec::Vec2 original_pos{10.0, 20.0};
 		const auto                           pos_bytes = CorpseSRI::serialize_position(original_pos);
 		std::vector<std::byte>               payload   = {std::byte{0x99}};
 		const std::size_t                    offset    = payload.size();
@@ -186,7 +186,7 @@ TEST(DSIOffsetInvariantsHighLevel, CorpseAuxiliaryGettersDoNotAutoAddOffset) {
 	}
 
 	{
-		const Karkinolution::Math::Units::Size original_size{4.0, 5.0};
+		const KShared::Math::Units::Size original_size{4.0, 5.0};
 		const auto                             size_bytes = CorpseSRI::serialize_size(original_size);
 		std::vector<std::byte>                 payload    = {std::byte{0x12}, std::byte{0x34}};
 		const std::size_t                      offset     = payload.size();
@@ -199,7 +199,7 @@ TEST(DSIOffsetInvariantsHighLevel, CorpseAuxiliaryGettersDoNotAutoAddOffset) {
 }
 
 TEST(DSIOffsetInvariantsHighLevel, TerritoryDeserializerReadsFromProvidedOffset) {
-	const Karkinolution::Math::Units::Size                                  original_size{12.5, 24.0};
+	const KShared::Math::Units::Size                                  original_size{12.5, 24.0};
 	const Karkinolution::Binary::Interpreters::Models::Territory::Territory original{original_size};
 	const auto serialized = TerritorySRI::serialize_territory(original);
 

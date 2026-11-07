@@ -1,6 +1,6 @@
 #pragma once
 #include "karkinolution/binary/frames/parser.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/math/units.hpp"
 
 #include <karkinolution/networking/raw_frame_buffer.hpp>
 #include <karkinolution/networking/response_queue.hpp>

@@ -1,8 +1,8 @@
 #pragma once
 #include <format>
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/math/stats/compile_values.hpp>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace LV {
 			namespace RT {
@@ -332,4 +332,4 @@ namespace Karkinolution {
 			} // namespace RT
 		} // namespace LV
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

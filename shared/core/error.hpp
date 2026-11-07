@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Errors {
 
 
@@ -14,4 +14,4 @@ namespace Karkinolution {
 		};
 
 	} // namespace Errors
-} // namespace Karkinolution
+} // namespace KShared

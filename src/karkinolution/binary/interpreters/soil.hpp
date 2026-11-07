@@ -6,8 +6,8 @@
 #include "karkinolution/binary/interpreters/models/soil.hpp"
 #include "karkinolution/binary/interpreters/properties.hpp"
 #include "karkinolution/binary/interpreters/vec.hpp"
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/units.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
 
@@ -101,7 +101,7 @@ namespace Karkinolution {
 					BytesArray::Soil serialize_soil(const Karkinolution::Terrain::Soil::SoilPiece &soil);
 
 					namespace Request {
-						std::array<std::byte, 8> make_see_soil(Karkinolution::Core::Id::BaseIdType id);
+						std::array<std::byte, 8> make_see_soil(KShared::Core::Id::BaseIdType id);
 						std::array<std::byte, 1> make_see_all_soils();
 					} // namespace Request
 
@@ -114,13 +114,13 @@ namespace Karkinolution {
 					get_damage(const std::vector<std::byte> &payload, std::size_t offset);
 					std::optional<Interpreters::Models::Soil::MovementCostComponent>
 					get_movement_cost(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Core::Id::BaseIdType     get_id(const std::vector<std::byte> &payload,
+					KShared::Core::Id::BaseIdType     get_id(const std::vector<std::byte> &payload,
 																   std::size_t                   offset);
-					Karkinolution::Math::Vec::Vec2          get_position(const std::vector<std::byte> &payload,
+					KShared::Math::Vec::Vec2          get_position(const std::vector<std::byte> &payload,
 																		 std::size_t                   offset);
 					Karkinolution::Terrain::Soil::SoilTypes get_type(const std::vector<std::byte> &payload,
 																	 std::size_t                   offset);
-					Karkinolution::Math::Geometry::Radius   get_radius(const std::vector<std::byte> &payload,
+					KShared::Math::Geometry::Radius   get_radius(const std::vector<std::byte> &payload,
 																	   std::size_t                   offset);
 
 					std::vector<Karkinolution::Terrain::Soil::SoilProperties>
@@ -132,7 +132,7 @@ namespace Karkinolution {
 															  std::size_t                   offset);
 
 					namespace Request {
-						Karkinolution::Core::Id::BaseIdType
+						KShared::Core::Id::BaseIdType
 						interpret_like_get_soil(const std::vector<std::byte> &payload);
 					} // namespace Request
 				} // namespace Soil

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "karkinolution/binary/fields.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <array>
 #include <cstddef>
@@ -26,11 +26,11 @@ namespace Karkinolution {
 					} // namespace BytesArrays
 
 					/*
-					 * Always, a Karkinolution::Math::Vec::Vec2 must be like this
+					 * Always, a KShared::Math::Vec::Vec2 must be like this
 					 * [x](8 bytes)[y](8 bytes)
 					 */
 
-					BytesArrays::Vec serialize_vec(const Karkinolution::Math::Vec::Vec2 &vec);
+					BytesArrays::Vec serialize_vec(const KShared::Math::Vec::Vec2 &vec);
 				} // namespace Vec
 			} // namespace SRI
 
@@ -38,7 +38,7 @@ namespace Karkinolution {
 				namespace Vec {
 					double                         get_x(const std::vector<std::byte> &payload, std::size_t offset);
 					double                         get_y(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Vec::Vec2 get_vec(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Math::Vec::Vec2 get_vec(const std::vector<std::byte> &payload, std::size_t offset);
 				} // namespace Vec
 			} // namespace DSI
 		} // namespace Interpreters

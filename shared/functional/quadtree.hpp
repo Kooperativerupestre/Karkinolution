@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <array>
 #include <cstddef>
@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-namespace Karkinolution::Functional::Quadtree {
+namespace KShared::Functional::Quadtree {
 
 	using Position = Math::Vec::Vec2;
 
@@ -420,4 +420,4 @@ namespace Karkinolution::Functional::Quadtree {
 			}
 	};
 
-} // namespace Karkinolution::Functional::Quadtree
+} // namespace KShared::Functional::Quadtree

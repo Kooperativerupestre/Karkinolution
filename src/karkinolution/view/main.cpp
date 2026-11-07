@@ -1,4 +1,4 @@
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/gui/colors.hpp"
@@ -24,7 +24,7 @@
 #include <vector>
 
 namespace GuiGeometry = KarkinolutionView::Gui::Geometry;
-namespace Colors      = Karkinolution::Colors;
+namespace Colors      = KShared::Colors;
 namespace Components  = KarkinolutionView::Gui::Components;
 namespace Panel       = KarkinolutionView::Gui::Panel;
 using KarkinolutionView::Synchronizer;
@@ -66,7 +66,7 @@ int main() {
 	}
 	const auto &grid = std::get<KarkinolutionView::Gui::Components::MediumLevel::Grid>(grid_component->get_data());
 
-	const std::array<Karkinolution::Colors::Color, 8> cell_colors{Colors::Presets::Red,
+	const std::array<KShared::Colors::Color, 8> cell_colors{Colors::Presets::Red,
 																  Colors::Presets::Orange,
 																  Colors::Presets::Yellow,
 																  Colors::Presets::Green,
@@ -76,7 +76,7 @@ int main() {
 																  Colors::Presets::Teal};
 	std::mt19937                                      random_engine{std::random_device{}()};
 	std::uniform_int_distribution<std::size_t>        random_color{0, cell_colors.size() - 1};
-	std::vector<Karkinolution::Colors::Color>         grid_colors;
+	std::vector<KShared::Colors::Color>         grid_colors;
 	grid_colors.reserve(static_cast<std::size_t>(grid.rows().value() * grid.columns().value()));
 	for (int row = 0; row < grid.rows().value(); ++row) {
 		for (int column = 0; column < grid.columns().value(); ++column) {

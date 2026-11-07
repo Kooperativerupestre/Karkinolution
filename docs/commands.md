@@ -13,6 +13,10 @@ Append `--parallel $(nproc)` to any build command for parallel compilation.
 | `native` | `build-native` | Optimized with `-march=native` (includes server and `karkinolution_view`). Benchmarking only, not portable. |
 | `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
 | `ci-tidy`, `ci`, `ci-sanitizers`, `ci-tsan` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Used by CI with `clang-21` and ccache |
+| `shared-debug` | `build` | Build only `karkinolution_shared` (Debug) |
+| `shared-sanitizers` | `build-sanitizers` | Build only `karkinolution_shared` with AddressSanitizer and UBSan |
+| `shared-tsan` | `build-tsan` | Build only `karkinolution_shared` with ThreadSanitizer |
+| `shared-ci`, `shared-ci-sanitizers`, `shared-ci-tsan` | `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Build only `karkinolution_shared` in CI variants |
 
 List them with `cmake --list-presets`. Every preset has a matching build preset. `debug`, `release`, `sanitizers`, `ci` and
 `ci-sanitizers` also have a test preset.

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/values.hpp>
 

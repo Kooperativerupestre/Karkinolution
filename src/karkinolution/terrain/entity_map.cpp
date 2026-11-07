@@ -7,10 +7,10 @@
 namespace Karkinolution::Terrain {
 
 	namespace {
-		using AABB     = Karkinolution::Functional::Quadtree::AABB;
+		using AABB     = KShared::Functional::Quadtree::AABB;
 		using EntityId = Karkinolution::Organisms::Entities::EntityId;
-		using Size     = Karkinolution::Math::Units::Size;
-		using Vec2     = Karkinolution::Math::Vec::Vec2;
+		using Size     = KShared::Math::Units::Size;
+		using Vec2     = KShared::Math::Vec::Vec2;
 
 		AABB to_aabb(const Size &size, const Vec2 &position) {
 			const Vec2 half_size{size.width.value / 2.0, size.height.value / 2.0};
@@ -79,7 +79,7 @@ namespace Karkinolution::Terrain {
 		if (!territory_aabb(territory.size()).contains(new_bound)) {
 			return false;
 		}
-		return quadtree.update(id, new_bound, old_bound) == Functional::Quadtree::UpdateOutput::UPDATED;
+		return quadtree.update(id, new_bound, old_bound) == KShared::Functional::Quadtree::UpdateOutput::UPDATED;
 	}
 
 	bool EntityMap::can_contain(const Size &size, const Vec2 &position) const {

@@ -7,7 +7,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -117,29 +117,29 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			std::array<std::array<std::vector<RtreeEntry<IdType>*>, 2>, 2> ordenations;
 
 			for (auto &entry : entries) {
-				ordenations[index(Karkinolution::Math::Vec::Axis::X)][index(Bound::MAX)].push_back(&entry);
-				ordenations[index(Karkinolution::Math::Vec::Axis::X)][index(Bound::MIN)].push_back(&entry);
+				ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MAX)].push_back(&entry);
+				ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MIN)].push_back(&entry);
 
-				ordenations[index(Karkinolution::Math::Vec::Axis::Y)][index(Bound::MAX)].push_back(&entry);
-				ordenations[index(Karkinolution::Math::Vec::Axis::Y)][index(Bound::MIN)].push_back(&entry);
+				ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MAX)].push_back(&entry);
+				ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MIN)].push_back(&entry);
 			}
 
-			std::ranges::sort(ordenations[index(Karkinolution::Math::Vec::Axis::X)][index(Bound::MAX)],
+			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MAX)],
 							  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
 								  return std::pair{A->box.max.x, A->box.min.x} < std::pair{B->box.max.x, B->box.min.x};
 							  });
 
-			std::ranges::sort(ordenations[index(Karkinolution::Math::Vec::Axis::X)][index(Bound::MIN)],
+			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MIN)],
 							  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
 								  return std::pair{A->box.min.x, A->box.max.x} < std::pair{B->box.min.x, B->box.max.x};
 							  });
 
-			std::ranges::sort(ordenations[index(Karkinolution::Math::Vec::Axis::Y)][index(Bound::MAX)],
+			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MAX)],
 							  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
 								  return std::pair{A->box.max.y, A->box.min.y} < std::pair{B->box.max.y, B->box.min.y};
 							  });
 
-			std::ranges::sort(ordenations[index(Karkinolution::Math::Vec::Axis::Y)][index(Bound::MIN)],
+			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MIN)],
 							  [](const RtreeEntry<IdType>* A, const RtreeEntry<IdType>* B) {
 								  return std::pair{A->box.min.y, A->box.max.y} < std::pair{B->box.min.y, B->box.max.y};
 							  });
@@ -551,7 +551,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		}
 
 		if (!found) {
-			throw Errors::SimulationError("Node must be in parent");
+			throw KShared::Errors::SimulationError("Node must be in parent");
 		}
 
 		parent->entries.push_back(RtreeEntry<IdType>{.box = right_node->box.value(), .content = std::move(right_node)});

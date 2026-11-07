@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -7,7 +7,7 @@
 #include <functional>
 #include <spanstream>
 
-using namespace Karkinolution::Math::LV::CT;
+using namespace KShared::Math::LV::CT;
 
 namespace KarkinolutionView {
 	namespace Gui {

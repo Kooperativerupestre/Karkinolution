@@ -1,5 +1,5 @@
-#include "karkinolution/math/geometry/models.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/geometry/models.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
@@ -8,7 +8,7 @@
 #include <variant>
 
 namespace Karkinolution::Organisms::Nature {
-	const Math::Geometry::Radius &NatureGetters::get_radius(const NatureEntity &nature_entity) {
+	const KShared::Math::Geometry::Radius &NatureGetters::get_radius(const NatureEntity &nature_entity) {
 		if (std::holds_alternative<Grass::Grass>(nature_entity)) {
 			return std::get<Grass::Grass>(nature_entity).radius;
 		}

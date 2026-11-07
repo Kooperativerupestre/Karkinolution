@@ -1,5 +1,5 @@
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/corpse/physiology.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/creature/physiology.hpp"
@@ -8,10 +8,10 @@
 
 #include <gtest/gtest.h>
 
-using Karkinolution::Core::Id::gen_id;
-using Karkinolution::Math::Area;
-using Karkinolution::Math::LV::CT::NormalizedValue;
-using Karkinolution::Math::Vec::Vec2;
+using KShared::Core::Id::gen_id;
+using KShared::Math::Area;
+using KShared::Math::LV::CT::NormalizedValue;
+using KShared::Math::Vec::Vec2;
 using Karkinolution::Organisms::Energy;
 using Karkinolution::Organisms::Health;
 using Karkinolution::Organisms::Life;

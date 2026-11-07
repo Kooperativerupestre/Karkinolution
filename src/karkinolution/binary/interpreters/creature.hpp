@@ -2,7 +2,7 @@
 
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/models/creature.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
 
@@ -73,11 +73,11 @@ namespace Karkinolution {
 							} // namespace CreateCreature
 						} // namespace Layout
 
-						std::array<std::byte, 8> make_see_creature(Karkinolution::Core::Id::BaseIdType id);
+						std::array<std::byte, 8> make_see_creature(KShared::Core::Id::BaseIdType id);
 						std::array<std::byte, Layout::CreateCreature::TOTAL_SIZE> make_create_creature(
 							std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 							std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-							const std::optional<Karkinolution::Math::Vec::Vec2>                         &position,
+							const std::optional<KShared::Math::Vec::Vec2>                         &position,
 							const std::optional<std::string>                                            &name);
 					} // namespace Request
 				} // namespace Creature
@@ -94,7 +94,7 @@ namespace Karkinolution {
 					uint8_t get_name_size(const std::vector<std::byte> &payload, std::size_t offset);
 
 					std::string get_name(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Core::Id::BaseIdType      get_id(const std::vector<std::byte> &payload,
+					KShared::Core::Id::BaseIdType      get_id(const std::vector<std::byte> &payload,
 																	std::size_t                   offset);
 					Interpreters::Models::Creature::Creature get_creature(const std::vector<std::byte> &payload,
 																		  std::size_t                   offset);
@@ -102,7 +102,7 @@ namespace Karkinolution {
 					namespace Request {
 
 
-						Karkinolution::Core::Id::BaseIdType
+						KShared::Core::Id::BaseIdType
 						interpret_like_get_creature(const std::vector<std::byte> &payload);
 						Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint
 						interpret_like_create_creature(const std::vector<std::byte> &payload);

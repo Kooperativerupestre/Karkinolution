@@ -1,4 +1,4 @@
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/organism/nature/grass/grass.hpp"
@@ -6,7 +6,7 @@
 #include "karkinolution/organism/nature/natures.hpp"
 #include "karkinolution/terrain/terrain.hpp"
 
-#include <karkinolution/functional/data_structures.hpp>
+#include <shared/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perceiver.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
@@ -65,7 +65,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		const auto soils_id = world.see_territory().find(radius, perceiver.position);
 		const auto entities_id =
-			world.see_entity_map().find(Karkinolution::Math::Units::Size{radius.value, radius.value},
+			world.see_entity_map().find(KShared::Math::Units::Size{radius.value, radius.value},
 										perceiver.position);
 		const auto natures_id = world.see_natures().find(radius, perceiver.position);
 
@@ -75,7 +75,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		for (auto id : soils_id) {
 			const auto &soil = world.see_territory().registry().at(id);
-			(void)Functional::try_add(p_soils, id, perceive(soil, perceiver));
+			(void)KShared::Functional::try_add(p_soils, id, perceive(soil, perceiver));
 			data.insert(id, Karkinolution::Terrain::Trees::RTree::BoxConversion::to_box(soil));
 		}
 
@@ -88,11 +88,11 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			const auto &entity = world.see_entities_registry().at(id);
 			if (id.type == EntityTypes::CREATURE) {
 
-				(void)Functional::try_add(p_entities,
+				(void)KShared::Functional::try_add(p_entities,
 										  id,
 										  PerceivedEntity{perceive(std::get<Creature>(entity), perceiver)});
 			} else { // == Corpse
-				(void)Functional::try_add(
+				(void)KShared::Functional::try_add(
 					p_entities,
 					id,
 					PerceivedEntity{
@@ -108,7 +108,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			const auto &nature = world.see_natures().registry().at(id);
 
 			if (id.type == Karkinolution::Organisms::Nature::NatureTypes::GRASS) {
-				(void)Functional::try_add(
+				(void)KShared::Functional::try_add(
 					p_natures,
 					id,
 					PerceivedNature{

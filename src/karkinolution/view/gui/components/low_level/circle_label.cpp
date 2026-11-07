@@ -22,8 +22,8 @@ namespace KarkinolutionView {
 
 				CircleLabel::CircleLabel(const Geometry::Circle             &bounds,
 										 std::string                         text,
-										 const Karkinolution::Colors::Color &circle_color,
-										 const Karkinolution::Colors::Color &text_color,
+										 const KShared::Colors::Color &circle_color,
+										 const KShared::Colors::Color &text_color,
 										 GreaterThanZeroValue<int>           font_size)
 					: circle_(bounds, circle_color)
 					, text_(make_text_max_bound(bounds), std::move(text), text_color, font_size) {}

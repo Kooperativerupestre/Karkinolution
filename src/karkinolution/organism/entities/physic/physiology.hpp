@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/entities.hpp"
 
 namespace Karkinolution {

@@ -3,7 +3,7 @@
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 
 #include "karkinolution/binary/frames/aliases.hpp"
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 
 #include <karkinolution/view/client/client.hpp>
 

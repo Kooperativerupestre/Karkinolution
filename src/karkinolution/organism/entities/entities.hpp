@@ -1,8 +1,8 @@
 #pragma once
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/egg/egg.hpp"
 
-#include <karkinolution/functional/data_structures.hpp>
+#include <shared/functional/data_structures.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
@@ -54,7 +54,7 @@ namespace Karkinolution {
 					}
 
 					bool remove(EntityId id) {
-						return Functional::try_remove(registry, id);
+						return KShared::Functional::try_remove(registry, id);
 					}
 			};
 

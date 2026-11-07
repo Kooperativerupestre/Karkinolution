@@ -1,12 +1,12 @@
 #pragma once
 
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/organism/reproduction/state/ontology.hpp"
 
 #include <cstdint>
-#include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>

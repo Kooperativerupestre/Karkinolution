@@ -1,10 +1,10 @@
 #pragma once
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/organism/entities/identity.hpp"
 #include "karkinolution/organism/internal_aliases.hpp"
 
-#include <karkinolution/math/units.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/values.hpp>
 
 namespace Karkinolution {

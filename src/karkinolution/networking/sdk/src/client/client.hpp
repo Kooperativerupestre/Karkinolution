@@ -1,7 +1,7 @@
 #pragma once
 #include "karkinolution/binary/frames/parser.hpp"
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
@@ -173,7 +173,7 @@ namespace KarkinolutionSDK {
 				asio::ip::tcp::socket                         socket_;
 
 
-				std::atomic<Karkinolution::Core::Id::BaseIdType> next_request_id = 0;
+				std::atomic<KShared::Core::Id::BaseIdType> next_request_id = 0;
 
 
 				// These two data structures below use mutex

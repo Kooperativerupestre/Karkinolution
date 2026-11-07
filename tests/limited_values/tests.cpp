@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <karkinolution/math/stats/compile_values.hpp>
-#include <karkinolution/math/stats/runtime_values.hpp>
+#include <shared/math/stats/compile_values.hpp>
+#include <shared/math/stats/runtime_values.hpp>
 
-using Karkinolution::Math::LV::CT::GenericLimitedValue;
-using Karkinolution::Math::LV::RT::GenericRuntimeValue;
+using KShared::Math::LV::CT::GenericLimitedValue;
+using KShared::Math::LV::RT::GenericRuntimeValue;
 
 // ==================== Factor ====================
 

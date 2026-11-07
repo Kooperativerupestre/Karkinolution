@@ -1,8 +1,8 @@
 #pragma once
 
-#include "karkinolution/core/color.hpp"
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/core/color.hpp"
+#include "shared/core/error.hpp"
+#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/view/gui/components/base_component.hpp"
 #include "karkinolution/view/gui/components/identity.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
@@ -29,13 +29,13 @@ namespace KarkinolutionView {
 
 					public:
 
-						const Karkinolution::Colors::Color color;
+						const KShared::Colors::Color color;
 
 						Grid(const Geometry::Rectangle          &bounds,
 							 Geometry::Thickness                 thickness,
 							 Geometry::Width                     max_cell_width,
 							 Geometry::Height                    max_cell_height,
-							 const Karkinolution::Colors::Color &color);
+							 const KShared::Colors::Color &color);
 
 						[[nodiscard]]
 						Geometry::Rectangle get_bounds() const {
@@ -50,7 +50,7 @@ namespace KarkinolutionView {
 						}
 
 						[[nodiscard]]
-						Karkinolution::Math::LV::CT::GreaterThanZeroValue<double> size() const {
+						KShared::Math::LV::CT::GreaterThanZeroValue<double> size() const {
 							return bounds_.width.value() * bounds_.height.value();
 						}
 
@@ -100,22 +100,22 @@ namespace KarkinolutionView {
 									   Geometry::Height                    height,
 									   Geometry::Column                    column,
 									   Geometry::Row                       row,
-									   const Karkinolution::Colors::Color &cell_color) const;
+									   const KShared::Colors::Color &cell_color) const;
 
 						void draw_cell(Geometry::Width                     width,
 									   Geometry::Height                    height,
 									   Geometry::Column                    column,
 									   Geometry::Row                       row,
-									   const Karkinolution::Colors::Color &cell_color,
+									   const KShared::Colors::Color &cell_color,
 									   const Geometry::Position           &origin) const;
 
 						void draw_cell(Geometry::Column                    column,
 									   Geometry::Row                       row,
-									   const Karkinolution::Colors::Color &cell_color) const;
+									   const KShared::Colors::Color &cell_color) const;
 
 						void draw_cell(Geometry::Column                    column,
 									   Geometry::Row                       row,
-									   const Karkinolution::Colors::Color &cell_color,
+									   const KShared::Colors::Color &cell_color,
 									   const Geometry::Position           &origin) const;
 				};
 			} // namespace MediumLevel

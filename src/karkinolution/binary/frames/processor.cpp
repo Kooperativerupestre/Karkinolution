@@ -48,7 +48,7 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 	}
 
 
-	Karkinolution::Functional::unreachable_or_throw(
+	KShared::Functional::unreachable_or_throw(
 		std::format("Non implemented yey: request sub type {} and request resource {}",
 					Binary::Utils::cast_numeric(sub_type),
 					Binary::Utils::cast_numeric(resource)));

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "karkinolution/math/geometry/models.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/geometry/models.hpp"
+#include "shared/math/physic/vec/model.hpp"
 #include "karkinolution/terrain/rtree/box.hpp"
 
 #include <functional>
@@ -21,7 +21,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	struct PerceivedSoil {
 			Karkinolution::Terrain::Soil::SoilPieceId id;
 			Vec2                                      position;
-			Karkinolution::Math::Geometry::Radius     radius;
+			KShared::Math::Geometry::Radius     radius;
 
 			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::Damage>       damage;
 			std::optional<Karkinolution::Terrain::Soil::SoilPieceComponents::MovementCost> movement_cost;
@@ -55,7 +55,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 			Karkinolution::Organisms::Nature::NatureId           id;
 			Karkinolution::Organisms::Nature::Grass::GrassMatter matter;
 			Vec2                                                 position;
-			Karkinolution::Math::Geometry::Radius                radius;
+			KShared::Math::Geometry::Radius                radius;
 	};
 
 	using PerceptionData =
@@ -125,7 +125,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 						   std::optional<NatureFilter> nature_filter = std::nullopt) {
 
 				if (!entity_filter.has_value() && !soil_filter.has_value() && !nature_filter.has_value()) {
-					throw Karkinolution::Errors::SimulationError("At least one filter should have value");
+					throw KShared::Errors::SimulationError("At least one filter should have value");
 				}
 
 				soils_    = soils;
@@ -141,7 +141,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 			const Perception &perception() const {
 				if (perception_ == nullptr) {
-					throw Karkinolution::Errors::SimulationError(
+					throw KShared::Errors::SimulationError(
 						"Invalid perception view: Original perception was be deleted");
 				}
 				return *perception_;
@@ -186,7 +186,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		private:
 
 			PerceptionData                        data_;
-			Karkinolution::Math::Geometry::Radius radius_;
+			KShared::Math::Geometry::Radius radius_;
 
 			PerceptionEntityRegistry entities_;
 			PerceptionSoilRegistry   soils_;
@@ -201,7 +201,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 		public:
 
 			Perception(PerceptionData                              &data,
-					   const Karkinolution::Math::Geometry::Radius &radius,
+					   const KShared::Math::Geometry::Radius &radius,
 					   const PerceptionEntityRegistry              &entities,
 					   const PerceptionSoilRegistry                &soils,
 					   const PerceptionNatureRegistry              &natures,
@@ -235,7 +235,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 				return natures_;
 			}
 
-			[[nodiscard]] const Karkinolution::Math::Geometry::Radius &radius() const {
+			[[nodiscard]] const KShared::Math::Geometry::Radius &radius() const {
 				return radius_;
 			};
 
@@ -338,13 +338,13 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 
 		// Utils
 		PerceptionView reduce(const Perception                            &perception,
-							  const Karkinolution::Math::Geometry::Radius &radius,
+							  const KShared::Math::Geometry::Radius &radius,
 							  std::optional<EntityFilter>                  entity_filter = std::nullopt,
 							  std::optional<SoilFilter>                    soil_filter   = std::nullopt,
 							  std::optional<NatureFilter>                  nature_filter = std::nullopt);
 
 		PerceptionView reduce(const PerceptionView                        &view,
-							  const Karkinolution::Math::Geometry::Radius &radius,
+							  const KShared::Math::Geometry::Radius &radius,
 							  std::optional<EntityFilter>                  entity_filter = std::nullopt,
 							  std::optional<SoilFilter>                    soil_filter   = std::nullopt,
 							  std::optional<NatureFilter>                  nature_filter = std::nullopt);

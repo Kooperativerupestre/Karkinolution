@@ -72,6 +72,32 @@ if (DEFINED _san_flags)
     add_link_options(${_san_flags})
 endif ()
 
+# ---------------- Shared library ----------------
+
+file(GLOB_RECURSE KARKINOLUTION_SHARED_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/shared/*.cpp"
+)
+
+add_library(karkinolution_shared)
+
+set_target_properties(karkinolution_shared PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+)
+
+target_sources(karkinolution_shared
+    PRIVATE
+        ${KARKINOLUTION_SHARED_SOURCES}
+)
+
+target_include_directories(karkinolution_shared PUBLIC
+    "${CMAKE_SOURCE_DIR}"
+)
+
+target_link_libraries(karkinolution_shared
+    PUBLIC
+        magic_enum::magic_enum
+)
+
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
@@ -102,6 +128,7 @@ PUBLIC
 FastNoise
 asio
 magic_enum::magic_enum
+karkinolution_shared
 )
 # ---------------- Main executable ----------------
 

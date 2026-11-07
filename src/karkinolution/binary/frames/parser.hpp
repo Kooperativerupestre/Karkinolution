@@ -4,7 +4,7 @@
 #include "karkinolution/binary/frames/invariants.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
-#include "karkinolution/functional/unreachable_or_throw.hpp"
+#include "shared/functional/unreachable_or_throw.hpp"
 
 #include <cstdint>
 #include <deque>
@@ -127,7 +127,7 @@ namespace Karkinolution {
 					} else if (type == BinaryTypes::Response) {
 						return ResponseSubTypes{read};
 					}
-					Karkinolution::Functional::unreachable_or_throw();
+					KShared::Functional::unreachable_or_throw();
 				}
 
 				template <ByteRange T> bool has_size(const T &byte) {
@@ -397,7 +397,7 @@ namespace Karkinolution {
 							case RequestSubTypes::WANT:
 								return Want::calculate_declared_size(payload_size);
 						}
-						Karkinolution::Functional::unreachable_or_throw();
+						KShared::Functional::unreachable_or_throw();
 					}
 
 					inline std::uint32_t calculate_payload_size(std::uint32_t declared_size, RequestSubTypes sub_type) {
@@ -413,7 +413,7 @@ namespace Karkinolution {
 							case RequestSubTypes::WANT:
 								return Want::calculate_payload_size(declared_size);
 						}
-						Karkinolution::Functional::unreachable_or_throw();
+						KShared::Functional::unreachable_or_throw();
 					}
 
 					template <ByteRange T>
@@ -436,7 +436,7 @@ namespace Karkinolution {
 						} else if (sub_type == RequestSubTypes::ERASE) {
 							return Erase::get_payload(bytes);
 						}
-						Karkinolution::Functional::unreachable_or_throw();
+						KShared::Functional::unreachable_or_throw();
 					}
 
 					template <ByteRange T> bool has_payload(const T &bytes) {
@@ -452,7 +452,7 @@ namespace Karkinolution {
 						} else if (sub_type == RequestSubTypes::ERASE) {
 							return Erase::has_payload(bytes);
 						}
-						Karkinolution::Functional::unreachable_or_throw();
+						KShared::Functional::unreachable_or_throw();
 					}
 
 					template <ByteRange T> FrameExistence has_frame(const T &bytes) {
@@ -478,7 +478,7 @@ namespace Karkinolution {
 							case RequestSubTypes::WANT:
 								return Want::has_frame(bytes);
 						}
-						Karkinolution::Functional::unreachable_or_throw();
+						KShared::Functional::unreachable_or_throw();
 					}
 
 					template <ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
@@ -494,7 +494,7 @@ namespace Karkinolution {
 							case RequestSubTypes::WANT:
 								return Want::get_frame(bytes);
 						}
-						Karkinolution::Functional::unreachable_or_throw();
+						KShared::Functional::unreachable_or_throw();
 					}
 				} // namespace Request
 
@@ -630,7 +630,7 @@ namespace Karkinolution {
 						}
 						return Error::has_frame(bytes);
 					}
-					Karkinolution::Functional::unreachable_or_throw();
+					KShared::Functional::unreachable_or_throw();
 				}
 
 				// The public dispatchers route by frame type and CodeVariant subtype.
@@ -688,7 +688,7 @@ namespace Karkinolution {
 					} else if (type == BinaryTypes::Error) {
 						return Error::get_payload(bytes);
 					}
-					Karkinolution::Functional::unreachable_or_throw();
+					KShared::Functional::unreachable_or_throw();
 				}
 
 				template <ByteRange T> std::uint32_t get_frame_size(const T &bytes) {
@@ -710,7 +710,7 @@ namespace Karkinolution {
 					if (type == BinaryTypes::Error) {
 						return Error::get_frame(bytes);
 					}
-					Karkinolution::Functional::unreachable_or_throw();
+					KShared::Functional::unreachable_or_throw();
 				}
 
 				template <ByteRange T> Models::Request::Request parse_request_frame(const T &bytes) {
@@ -736,7 +736,7 @@ namespace Karkinolution {
 							extra = Models::Request::CycleExtra{};
 							break;
 						default:
-							Karkinolution::Functional::unreachable_or_throw();
+							KShared::Functional::unreachable_or_throw();
 					}
 					return Models::Request::Request{get_declared_size(bytes),
 													Request::get_id(bytes),
@@ -771,7 +771,7 @@ namespace Karkinolution {
 					} else if (type == BinaryTypes::Error) {
 						return Models::GenericFrame{parse_error_frame(bytes), type};
 					}
-					Karkinolution::Functional::unreachable_or_throw();
+					KShared::Functional::unreachable_or_throw();
 				}
 			} // namespace Parser
 		} // namespace Frames

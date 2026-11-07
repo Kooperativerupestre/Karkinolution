@@ -2,12 +2,12 @@
 
 #include <cassert>
 #include <gtest/gtest.h>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <variant>
 
-using Karkinolution::Math::Vec::Vec2;
+using KShared::Math::Vec::Vec2;
 using Karkinolution::Terrain::Soil::SoilPieceId;
 using Karkinolution::Terrain::Trees::RTree::Box2D;
 using Karkinolution::Terrain::Trees::RTree::NodeType;

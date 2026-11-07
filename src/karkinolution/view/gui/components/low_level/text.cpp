@@ -9,7 +9,7 @@
 KarkinolutionView::Gui::Components::LowLevel::Text::Text(
 	const KarkinolutionView::Gui::Geometry::Rectangle                       &max_bound,
 	std::string                                                              text,
-	const Karkinolution::Colors::Color                                      &color,
+	const KShared::Colors::Color                                      &color,
 	GreaterThanZeroValue<int>                                                font_size,
 	std::function<Drivers::Font::TextMeasurement(std::string_view, int32_t)> measure)
 	: max_bound_(max_bound)

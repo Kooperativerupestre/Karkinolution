@@ -2,7 +2,7 @@
 
 #include "karkinolution/binary/interpreters/unit.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/math/geometry/models.hpp"
+#include "shared/math/geometry/models.hpp"
 
 #include <cstddef>
 #include <vector>
@@ -22,23 +22,23 @@ namespace Karkinolution {
 
 					} // namespace Layout
 
-					UnitsSRI::StandardPhysicBytes serialize_radius(Karkinolution::Math::Geometry::Radius radius);
+					UnitsSRI::StandardPhysicBytes serialize_radius(KShared::Math::Geometry::Radius radius);
 					UnitsSRI::StandardPhysicBytes
-					serialize_circumference(Karkinolution::Math::Geometry::Circumference circumference);
-					UnitsSRI::StandardPhysicBytes serialize_diameter(Karkinolution::Math::Geometry::Diameter diameter);
-					UnitsSRI::StandardPhysicBytes serialize_area(Karkinolution::Math::Geometry::Area area);
+					serialize_circumference(KShared::Math::Geometry::Circumference circumference);
+					UnitsSRI::StandardPhysicBytes serialize_diameter(KShared::Math::Geometry::Diameter diameter);
+					UnitsSRI::StandardPhysicBytes serialize_area(KShared::Math::Geometry::Area area);
 				} // namespace Geometry
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Geometry {
-					Karkinolution::Math::Geometry::Radius deserialize_radius(const std::vector<std::byte> &payload,
+					KShared::Math::Geometry::Radius deserialize_radius(const std::vector<std::byte> &payload,
 																			 std::size_t                   offset);
-					Karkinolution::Math::Geometry::Circumference
+					KShared::Math::Geometry::Circumference
 					deserialize_circumference(const std::vector<std::byte> &payload, std::size_t offset);
-					Karkinolution::Math::Geometry::Diameter deserialize_diameter(const std::vector<std::byte> &payload,
+					KShared::Math::Geometry::Diameter deserialize_diameter(const std::vector<std::byte> &payload,
 																				 std::size_t                   offset);
-					Karkinolution::Math::Geometry::Area     deserialize_area(const std::vector<std::byte> &payload,
+					KShared::Math::Geometry::Area     deserialize_area(const std::vector<std::byte> &payload,
 																			 std::size_t                   offset);
 				} // namespace Geometry
 			} // namespace DSI

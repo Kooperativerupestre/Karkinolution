@@ -1,7 +1,7 @@
 #pragma once
 
-#include <karkinolution/functional/data_structures.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/functional/data_structures.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/terrain/rtree/box_conversion.hpp>
 #include <karkinolution/terrain/rtree/rtree.hpp>
 #include <karkinolution/terrain/rtree/service.hpp>
@@ -14,7 +14,7 @@ namespace Karkinolution::Terrain::Trees {
 
 			template <typename ID, BoxConvertible V>
 			static RSTService<ID, V>
-			create(RTree::RStarTree<ID> &tree, std::unordered_map<ID, V> &registry, const Math::Units::Size &size) {
+			create(RTree::RStarTree<ID> &tree, std::unordered_map<ID, V> &registry, const KShared::Math::Units::Size &size) {
 				RSTService<ID, V> service{size};
 				service.tree_     = std::move(tree);
 				service.registry_ = std::move(registry);
@@ -41,11 +41,11 @@ namespace Karkinolution::Terrain::Trees {
 			}
 
 			template <typename ID, BoxConvertible V>
-			static const Math::Units::Size &get_size(const RSTService<ID, V> &service) {
+			static const KShared::Math::Units::Size &get_size(const RSTService<ID, V> &service) {
 				return service.size_;
 			}
 
-			template <typename ID, BoxConvertible V> static Math::Units::Size &get_size(RSTService<ID, V> &service) {
+			template <typename ID, BoxConvertible V> static KShared::Math::Units::Size &get_size(RSTService<ID, V> &service) {
 				return service.size_;
 			}
 	};

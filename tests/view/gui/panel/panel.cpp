@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <karkinolution/core/color.hpp>
+#include <shared/core/color.hpp>
 #include <karkinolution/view/gui/components/component.hpp>
 #include <karkinolution/view/gui/components/low_level/circle.hpp>
 #include <karkinolution/view/gui/components/low_level/rectangle.hpp>
@@ -14,7 +14,7 @@ namespace {
 	namespace Drivers    = Components::Drivers;
 	namespace LowLevel   = Components::LowLevel;
 	namespace Panel      = KarkinolutionView::Gui::Panel;
-	using Karkinolution::Colors::Presets::White;
+	using KShared::Colors::Presets::White;
 
 	Geometry::Rectangle rectangle(float x, float y, double width = 10.0, double height = 10.0) {
 		return {Geometry::Position{x, y}, Geometry::Width{width}, Geometry::Height{height}};
@@ -36,7 +36,7 @@ namespace {
 			Components::AllComponents{LowLevel::Text{bounds,
 													 "rollback",
 													 White,
-													 Karkinolution::Math::LV::CT::GreaterThanZeroValue<int>{10},
+													 KShared::Math::LV::CT::GreaterThanZeroValue<int>{10},
 													 measure}});
 	}
 } // namespace

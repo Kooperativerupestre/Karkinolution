@@ -4,7 +4,7 @@
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/interpreters/identity.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 
 #include <cstddef>
 #include <karkinolution/binary/interpreters/unit.hpp>
@@ -12,7 +12,7 @@
 
 // SRI implementations
 Karkinolution::Binary::Interpreters::CoreBytes::Identity::Id
-CorpseSRI::serialize_id(Karkinolution::Core::Id::BaseIdType id) {
+CorpseSRI::serialize_id(KShared::Core::Id::BaseIdType id) {
 	return Karkinolution::Binary::Serializer::convert_uint64_t(id);
 }
 
@@ -21,11 +21,11 @@ CorpseSRI::serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat)
 	return Karkinolution::Binary::Serializer::convert_float(raw_meat.value);
 }
 
-VecSRI::BytesArrays::Vec CorpseSRI::serialize_position(const Karkinolution::Math::Vec::Vec2 &position) {
+VecSRI::BytesArrays::Vec CorpseSRI::serialize_position(const KShared::Math::Vec::Vec2 &position) {
 	return VecSRI::serialize_vec(position);
 }
 
-UnitsSRI::BytesArrays::Size CorpseSRI::serialize_size(const Karkinolution::Math::Units::Size &size) {
+UnitsSRI::BytesArrays::Size CorpseSRI::serialize_size(const KShared::Math::Units::Size &size) {
 	return UnitsSRI::serialize_size(size);
 }
 
@@ -48,24 +48,24 @@ CorpseSRI::serialize_corpse(const Karkinolution::Organisms::Entities::Corpse::Co
 	return bytes;
 }
 
-std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(Karkinolution::Core::Id::BaseIdType id) {
-	return Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(id);
+std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(KShared::Core::Id::BaseIdType id) {
+	return Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
 }
 
 // DSI implementations
-Karkinolution::Core::Id::BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, offset);
+KShared::Core::Id::BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);
 }
 
 Karkinolution::Organisms::RawMeat CorpseDSI::get_raw_meat(const std::vector<std::byte> &payload, std::size_t offset) {
 	return Karkinolution::Organisms::RawMeat(Karkinolution::Binary::Deserializer::read_float(payload, offset));
 }
 
-Karkinolution::Math::Vec::Vec2 CorpseDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
+KShared::Math::Vec::Vec2 CorpseDSI::get_position(const std::vector<std::byte> &payload, std::size_t offset) {
 	return VecDSI::get_vec(payload, offset);
 }
 
-Karkinolution::Math::Units::Size CorpseDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
+KShared::Math::Units::Size CorpseDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
 	return UnitsDSI::deserialize_size(payload, offset);
 }
 
@@ -79,8 +79,8 @@ Karkinolution::Binary::Interpreters::Models::Corpse::Corpse CorpseDSI::get_corps
 	};
 }
 
-Karkinolution::Core::Id::BaseIdType
+KShared::Core::Id::BaseIdType
 CorpseDSI::Request::interpret_like_see_corpse(const std::vector<std::byte> &payload) {
-	return Karkinolution::Core::Id::BaseIdType{
-		Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, 0)};
+	return KShared::Core::Id::BaseIdType{
+		Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0)};
 }

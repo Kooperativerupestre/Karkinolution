@@ -1,8 +1,8 @@
 #pragma once
 
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Functional {
 
 		class FunctionalError : public Errors::SimulationError {
@@ -19,4 +19,4 @@ namespace Karkinolution {
 					: FunctionalError(message) {}
 		};
 	} // namespace Functional
-} // namespace Karkinolution
+} // namespace KShared

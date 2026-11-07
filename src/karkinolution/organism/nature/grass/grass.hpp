@@ -1,10 +1,10 @@
 #pragma once
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/stats/runtime_values.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/stats/runtime_values.hpp"
 
-#include <karkinolution/math/geometry/models.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
-#include <karkinolution/math/units.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/physic/vec/model.hpp>
+#include <shared/math/units.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
 #include <karkinolution/organism/values.hpp>
 
@@ -23,7 +23,7 @@ namespace Karkinolution {
 
 						Quality                quality;
 						Vec2                   position;
-						Math::Geometry::Radius radius;
+						KShared::Math::Geometry::Radius radius;
 						GrassMatter            matter;
 
 						bool constexpr should_disappear() const {

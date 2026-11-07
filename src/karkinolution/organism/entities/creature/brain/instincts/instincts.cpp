@@ -1,11 +1,11 @@
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/math/physic/vec/model.hpp"
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/core/error.hpp"
+#include "shared/math/physic/vec/model.hpp"
+#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/actions/presets.hpp"
 #include "karkinolution/organism/entities/creature/brain/instincts/metabolism.hpp"
 #include "karkinolution/organism/reproduction/state/validator.hpp"
 
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/brain/instincts/instincts.hpp>
 #include <karkinolution/organism/entities/creature/brain/intents.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>
@@ -19,7 +19,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 	NormalizedValue<float> BrainFeelingsCalculator::pregnancy_risK(const Creature &creature) {
 		NormalizedValue<float> factor;
 		if (!creature.body.reproduction.state.is_pregnant()) {
-			throw Karkinolution::Errors::SimulationError("Only pregnant creature have risk factor");
+			throw KShared::Errors::SimulationError("Only pregnant creature have risk factor");
 		}
 
 		Reproduction::State::Validator::is_pregnant(creature.body.reproduction.state);
@@ -180,7 +180,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Instincts {
 	NothingPresets PlannerNothing::plan(
 		const Creature                                                                    &creature,
 		const Karkinolution::Organisms::Entities::Creature::Brain::Perception::Perception &perception) {
-		bool const want_to_move = Karkinolution::Functional::KRandom::choice_bool(0.5, 0.5);
+		bool const want_to_move = KShared::Functional::KRandom::choice_bool(0.5, 0.5);
 
 		if (want_to_move) {
 			const Vec2 new_coord = creature.position + Vec2{1.0, 0.0};

@@ -6,12 +6,12 @@
 #include "karkinolution/binary/interpreters/models/stats.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <array>
 #include <karkinolution/binary/byte_utils.hpp>
 #include <karkinolution/binary/interpreters/nlt.hpp>
-#include <karkinolution/math/stats/utils.hpp>
+#include <shared/math/stats/utils.hpp>
 #include <vector>
 
 namespace Karkinolution {
@@ -45,7 +45,7 @@ namespace Karkinolution {
 						using Stat = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArray
 
-					template <Karkinolution::Math::LV::StatLike T>
+					template <KShared::Math::LV::StatLike T>
 					BytesArray::Stat serialize_limited_value(const T &limited_value) {
 						BytesArray::Stat bytes{};
 
@@ -59,7 +59,7 @@ namespace Karkinolution {
 
 						bytes[Layout::Type::OFFSET] = NLTSRI::serialize_nlt_type(NTL_Type);
 
-						const auto stat = Karkinolution::Math::LV::get(limited_value);
+						const auto stat = KShared::Math::LV::get(limited_value);
 
 						const auto serialized_value = Karkinolution::Binary::Serializer::serialize(stat.value);
 						const auto serialized_max   = Karkinolution::Binary::Serializer::serialize(stat.max);
@@ -74,7 +74,7 @@ namespace Karkinolution {
 
 					template <typename T>
 					BytesArray::Stat
-					serialize_normalized_value(const Karkinolution::Math::LV::CT::NormalizedValue<T> value) {
+					serialize_normalized_value(const KShared::Math::LV::CT::NormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
 						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<T>();
@@ -94,7 +94,7 @@ namespace Karkinolution {
 
 					template <typename T>
 					BytesArray::Stat serialize_signed_normalized_value(
-						const Karkinolution::Math::LV::CT::SignedNormalizedValue<T> value) {
+						const KShared::Math::LV::CT::SignedNormalizedValue<T> value) {
 						BytesArray::Stat bytes{};
 
 						Karkinolution::Binary::Protocol::Validator::NumericType::validate_dynamic_type_exists<T>();

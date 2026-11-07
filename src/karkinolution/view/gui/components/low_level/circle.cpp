@@ -6,7 +6,7 @@
 #include <algorithm>
 
 KarkinolutionView::Gui::Components::LowLevel::Circle::Circle(const KarkinolutionView::Gui::Geometry::Circle &bounds,
-															 const Karkinolution::Colors::Color             &color)
+															 const KShared::Colors::Color             &color)
 	: bounds_(bounds)
 	, color(color) {}
 

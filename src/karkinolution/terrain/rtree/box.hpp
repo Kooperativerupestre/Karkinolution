@@ -1,5 +1,5 @@
 #pragma once
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/physic/vec/model.hpp>
 
 namespace Karkinolution::Terrain::Trees::RTree {
 	enum class Bound : uint8_t {
@@ -8,21 +8,21 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	};
 
 	struct Box2D {
-			Karkinolution::Math::Vec::Vec2 max, min;
+			KShared::Math::Vec::Vec2 max, min;
 
-			const Karkinolution::Math::Vec::Vec2 &operator[](Bound) const noexcept;
-			Karkinolution::Math::Vec::Vec2 &operator[](Bound) noexcept;
+			const KShared::Math::Vec::Vec2 &operator[](Bound) const noexcept;
+			KShared::Math::Vec::Vec2 &operator[](Bound) noexcept;
 
 			[[nodiscard]] double                         width() const noexcept;
 			[[nodiscard]] double                         height() const noexcept;
 			[[nodiscard]] double                         area() const noexcept;
 			[[nodiscard]] double                         margin() const noexcept;
-			[[nodiscard]] Karkinolution::Math::Vec::Vec2 center() const noexcept;
+			[[nodiscard]] KShared::Math::Vec::Vec2 center() const noexcept;
 
 			[[nodiscard]] Box2D operator+(const Box2D &other) const;
 	};
 
-	constexpr size_t index(Karkinolution::Math::Vec::Axis axis) {
+	constexpr size_t index(KShared::Math::Vec::Axis axis) {
 		return static_cast<size_t>(axis);
 	}
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/math/physic/vec/model.hpp"
+#include "shared/math/physic/vec/model.hpp"
 
 #include <cstdint>
 #include <karkinolution/organism/entities/creature/creature.hpp>

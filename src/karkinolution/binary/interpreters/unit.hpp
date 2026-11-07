@@ -2,7 +2,7 @@
 
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/math/units.hpp"
 
 #include <array>
 #include <cstddef>
@@ -37,48 +37,48 @@ namespace Karkinolution {
 						using Size = std::array<std::byte, Layout::TOTAL_SIZE>;
 					} // namespace BytesArrays
 
-					StandardPhysicBytes serialize_area(Karkinolution::Math::Area area);
-					StandardPhysicBytes serialize_mass(Karkinolution::Math::Units::Mass mass);
-					StandardPhysicBytes serialize_density(Karkinolution::Math::Units::Density density);
-					StandardPhysicBytes serialize_meter(Karkinolution::Math::Units::Meter meter);
+					StandardPhysicBytes serialize_area(KShared::Math::Area area);
+					StandardPhysicBytes serialize_mass(KShared::Math::Units::Mass mass);
+					StandardPhysicBytes serialize_density(KShared::Math::Units::Density density);
+					StandardPhysicBytes serialize_meter(KShared::Math::Units::Meter meter);
 
-					StandardPhysicBytes serialize_width(Karkinolution::Math::Units::Width width);
-					StandardPhysicBytes serialize_height(Karkinolution::Math::Units::Height height);
+					StandardPhysicBytes serialize_width(KShared::Math::Units::Width width);
+					StandardPhysicBytes serialize_height(KShared::Math::Units::Height height);
 
-					BytesArrays::Size serialize_size(const Karkinolution::Math::Units::Size &size);
+					BytesArrays::Size serialize_size(const KShared::Math::Units::Size &size);
 
 					StatsSRI::BytesArray::Stat
-					serialize_shared_area(const Karkinolution::Math::SharedArea &shared_area);
-					StatsSRI::BytesArray::Stat serialize_efficiency(const Karkinolution::Math::Efficiency &efficiency);
-					StatsSRI::BytesArray::Stat serialize_quality(const Karkinolution::Math::Quality &quality);
+					serialize_shared_area(const KShared::Math::SharedArea &shared_area);
+					StatsSRI::BytesArray::Stat serialize_efficiency(const KShared::Math::Efficiency &efficiency);
+					StatsSRI::BytesArray::Stat serialize_quality(const KShared::Math::Quality &quality);
 
 				} // namespace Units
 			} // namespace SRI
 
 			namespace DSI {
 				namespace Units {
-					Karkinolution::Math::Area           deserialize_area(const std::vector<std::byte> &payload,
+					KShared::Math::Area           deserialize_area(const std::vector<std::byte> &payload,
 																		 std::size_t                   offset);
-					Karkinolution::Math::Units::Mass    deserialize_mass(const std::vector<std::byte> &payload,
+					KShared::Math::Units::Mass    deserialize_mass(const std::vector<std::byte> &payload,
 																		 std::size_t                   offset);
-					Karkinolution::Math::Units::Density deserialize_density(const std::vector<std::byte> &payload,
+					KShared::Math::Units::Density deserialize_density(const std::vector<std::byte> &payload,
 																			std::size_t                   offset);
-					Karkinolution::Math::Units::Meter   deserialize_meter(const std::vector<std::byte> &payload,
+					KShared::Math::Units::Meter   deserialize_meter(const std::vector<std::byte> &payload,
 																		  std::size_t                   offset);
 
-					Karkinolution::Math::Units::Width  deserialize_width(const std::vector<std::byte> &payload,
+					KShared::Math::Units::Width  deserialize_width(const std::vector<std::byte> &payload,
 																		 std::size_t                   offset);
-					Karkinolution::Math::Units::Height deserialize_height(const std::vector<std::byte> &payload,
+					KShared::Math::Units::Height deserialize_height(const std::vector<std::byte> &payload,
 																		  std::size_t                   offset);
 
-					Karkinolution::Math::Units::Size deserialize_size(const std::vector<std::byte> &payload,
+					KShared::Math::Units::Size deserialize_size(const std::vector<std::byte> &payload,
 																	  std::size_t                   offset);
 
-					Karkinolution::Math::SharedArea deserialize_shared_area(const std::vector<std::byte> &payload,
+					KShared::Math::SharedArea deserialize_shared_area(const std::vector<std::byte> &payload,
 																			std::size_t                   offset);
-					Karkinolution::Math::Efficiency deserialize_efficiency(const std::vector<std::byte> &payload,
+					KShared::Math::Efficiency deserialize_efficiency(const std::vector<std::byte> &payload,
 																		   std::size_t                   offset);
-					Karkinolution::Math::Quality    deserialize_quality(const std::vector<std::byte> &payload,
+					KShared::Math::Quality    deserialize_quality(const std::vector<std::byte> &payload,
 																		std::size_t                   offset);
 				} // namespace Units
 			} // namespace DSI

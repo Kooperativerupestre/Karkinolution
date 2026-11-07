@@ -1,6 +1,6 @@
 #include "karkinolution/organism/entities/creature/creature.hpp"
 
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/constructor.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/organism/reproduction/state/state.hpp>
@@ -19,7 +19,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Constructor {
 		const auto     &cg     = genome.creature_genome;
 		const auto     &bg     = genome.brain_genome;
 
-		const auto        id       = blueprint.id.value_or(Core::Id::gen_id());
+		const auto        id       = blueprint.id.value_or(KShared::Core::Id::gen_id());
 		const std::string name     = blueprint.name.value_or(gen_name());
 		const auto        gender   = blueprint.gender.value_or(choose_random_gender());
 		const Vec2        position = blueprint.position.value_or(Vec2{0.0, 0.0});

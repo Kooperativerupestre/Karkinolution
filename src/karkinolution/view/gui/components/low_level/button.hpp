@@ -1,7 +1,7 @@
 #pragma once
 
-#include "karkinolution/core/color.hpp"
-#include "karkinolution/functional/unreachable_or_throw.hpp"
+#include "shared/core/color.hpp"
+#include "shared/functional/unreachable_or_throw.hpp"
 #include "karkinolution/view/gui/components/base_component.hpp"
 #include "karkinolution/view/gui/components/identity.hpp"
 #include "karkinolution/view/gui/components/low_level/text.hpp"
@@ -27,18 +27,18 @@ namespace KarkinolutionView {
 					class ButtonStyles {
 						private:
 
-							Karkinolution::Colors::Color idle, hovered, pressed;
+							KShared::Colors::Color idle, hovered, pressed;
 
 						public:
 
-							ButtonStyles(const Karkinolution::Colors::Color &idle,
-										 const Karkinolution::Colors::Color &hovered,
-										 const Karkinolution::Colors::Color &pressed)
+							ButtonStyles(const KShared::Colors::Color &idle,
+										 const KShared::Colors::Color &hovered,
+										 const KShared::Colors::Color &pressed)
 								: idle(idle)
 								, hovered(hovered)
 								, pressed(pressed) {}
 
-							const Karkinolution::Colors::Color &operator[](ButtonStates state) const {
+							const KShared::Colors::Color &operator[](ButtonStates state) const {
 								switch (state) {
 									case ButtonStates::IDLE:
 										return idle;
@@ -48,11 +48,11 @@ namespace KarkinolutionView {
 									case ButtonStates::PRESSED:
 										return pressed;
 									default:
-										Karkinolution::Functional::unreachable_or_throw();
+										KShared::Functional::unreachable_or_throw();
 								}
 							}
 
-							const Karkinolution::Colors::Color &get(ButtonStates state) const {
+							const KShared::Colors::Color &get(ButtonStates state) const {
 								return (*this)[state];
 							}
 					};

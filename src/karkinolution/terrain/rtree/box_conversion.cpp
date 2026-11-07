@@ -1,7 +1,7 @@
 #include "karkinolution/organism/nature/natures.hpp"
 
-#include <karkinolution/math/geometry/models.hpp>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/physic/vec/model.hpp>
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/terrain/rtree/box.hpp>
 #include <karkinolution/terrain/rtree/box_conversion.hpp>
@@ -30,13 +30,13 @@ namespace Karkinolution::Terrain::Trees::RTree::BoxConversion {
 		std::unreachable();
 	}
 
-	Box2D to_box(const Math::Units::Size &size, const Vec2 &position) {
+	Box2D to_box(const KShared::Math::Units::Size &size, const Vec2 &position) {
 		Vec2 half_extents{size.width.value / 2, size.height.value / 2};
 		return Karkinolution::Terrain::Trees::RTree::Box2D{.max = position + half_extents,
 														   .min = position - half_extents};
 	}
 
-	Box2D to_box(const Math::Geometry::Radius &radius, const Vec2 &center) {
+	Box2D to_box(const KShared::Math::Geometry::Radius &radius, const Vec2 &center) {
 		Vec2 extent{radius.value, radius.value};
 		return Karkinolution::Terrain::Trees::RTree::Box2D{.max = center + extent, .min = center - extent};
 	}

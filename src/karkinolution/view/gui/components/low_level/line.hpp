@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 #include "karkinolution/view/gui/components/base_component.hpp"
 #include "karkinolution/view/gui/components/identity.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
@@ -18,12 +18,12 @@ namespace KarkinolutionView {
 
 					public:
 
-						const Karkinolution::Colors::Color color;
+						const KShared::Colors::Color color;
 
 						Line(Geometry::Position                  begin,
 							 Geometry::Position                  end,
 							 Geometry::Thickness                 thickness,
-							 const Karkinolution::Colors::Color &color);
+							 const KShared::Colors::Color &color);
 
 						[[nodiscard]]
 						Geometry::Rectangle get_bounds() const;

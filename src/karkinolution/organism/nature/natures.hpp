@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "karkinolution/functional/data_structures.hpp"
+#include "shared/functional/data_structures.hpp"
 
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
@@ -14,7 +14,7 @@ namespace Karkinolution {
 			using NatureEntity = std::variant<Grass::Grass>;
 
 			namespace NatureGetters {
-				const Math::Geometry::Radius &get_radius(const NatureEntity &nature);
+				const KShared::Math::Geometry::Radius &get_radius(const NatureEntity &nature);
 				const Vec2                   &get_position(const NatureEntity &nature);
 				NatureId                      get_id(const NatureEntity &nature);
 			} // namespace NatureGetters
@@ -44,7 +44,7 @@ namespace Karkinolution {
 					}
 
 					bool add(NatureEntity &&n_e) {
-						return Functional::try_add(data_, NatureGetters::get_id(n_e), std::move(n_e));
+						return KShared::Functional::try_add(data_, NatureGetters::get_id(n_e), std::move(n_e));
 					}
 			};
 

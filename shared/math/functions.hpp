@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		constexpr double sin(double x) {
 			return std::sin(x);
@@ -83,4 +83,4 @@ namespace Karkinolution {
 			return std::max(x, y);
 		}
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

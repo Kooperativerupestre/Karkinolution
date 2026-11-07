@@ -1,9 +1,9 @@
 #pragma once
-#include "karkinolution/math/units.hpp"
+#include "shared/math/units.hpp"
 
 #include <cstdint>
-#include <karkinolution/math/geometry/models.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/math/geometry/models.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/identity.hpp>
 #include <karkinolution/organism/foods/foods.hpp>
 #include <stdexcept>
@@ -63,8 +63,8 @@ namespace Karkinolution {
 					TERRITORIAL
 				};
 
-				struct VisionRadius : public Karkinolution::Math::Geometry::Radius {
-						using Karkinolution::Math::Geometry::Radius::Radius;
+				struct VisionRadius : public KShared::Math::Geometry::Radius {
+						using KShared::Math::Geometry::Radius::Radius;
 				};
 
 			} // namespace Creature

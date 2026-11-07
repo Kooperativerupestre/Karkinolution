@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace Constants {
 			constexpr double pi         = 3.14159265358979323846;
@@ -33,4 +33,4 @@ namespace Karkinolution {
 			constexpr double rad_to_deg = 180.0 / pi;
 		} // namespace Constants
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

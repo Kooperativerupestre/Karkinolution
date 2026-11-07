@@ -1,10 +1,10 @@
 #pragma once
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
 
 #include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <karkinolution/world/world.hpp>
 #include <random>
 #include <string>
@@ -17,11 +17,11 @@ namespace TestUtils {
 		std::uniform_int_distribution<size_t> char_dist(0, sizeof(CHARSET) - 2);
 
 		std::string result;
-		size_t      length = length_dist(Karkinolution::Functional::KRandom::gen);
+		size_t      length = length_dist(KShared::Functional::KRandom::gen);
 		result.reserve(length);
 
 		for (size_t i = 0; i < length; i++) {
-			result.push_back(CHARSET[char_dist(Karkinolution::Functional::KRandom::gen)]);
+			result.push_back(CHARSET[char_dist(KShared::Functional::KRandom::gen)]);
 		}
 
 		return result;
@@ -39,18 +39,18 @@ namespace TestUtils {
 
 	inline void add_trash(std::vector<std::byte> &bytes, std::size_t i = 1) {
 		if (i < 1) {
-			throw Karkinolution::Errors::SimulationError("Invalid number of trash additions");
+			throw KShared::Errors::SimulationError("Invalid number of trash additions");
 		}
 
 		for (size_t i = 0; i < 7; i++) {
 			bytes.push_back(
-				static_cast<std::byte>(Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>()));
+				static_cast<std::byte>(KShared::Functional::KRandom::RandomGenerators::generate<uint8_t>()));
 		}
 	}
 
 	Karkinolution::World::World make_small_world();
 
-	std::vector<std::byte> make_see_creature_frame(RequestId id, Karkinolution::Core::Id::BaseIdType creature_id);
+	std::vector<std::byte> make_see_creature_frame(RequestId id, KShared::Core::Id::BaseIdType creature_id);
 	KarkinolutionSDK::Client::RequestData
-	make_see_creature_request_data(Karkinolution::Core::Id::BaseIdType creature_id);
+	make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id);
 } // namespace TestUtils

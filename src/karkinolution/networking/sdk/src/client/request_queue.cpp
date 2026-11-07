@@ -1,4 +1,4 @@
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 
 #include <karkinolution/networking/sdk/src/client/request_queue.hpp>
 

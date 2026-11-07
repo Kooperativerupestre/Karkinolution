@@ -10,13 +10,13 @@ TEST(SerializeDeserializeRoundtrip, HighLevel_AllTypesRoundtrip) {
 	for (int iteration = 0; iteration < 10; iteration++) {
 		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
 
-		const auto original_u32 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
-		const auto original_u64 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
-		const auto original_dbl = Karkinolution::Functional::KRandom::RandomGenerators::generate<double>();
-		const auto original_u8  = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
+		const auto original_u32 = KShared::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
+		const auto original_u64 = KShared::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
+		const auto original_dbl = KShared::Functional::KRandom::RandomGenerators::generate<double>();
+		const auto original_u8  = KShared::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
 		const std::string original_str   = TestUtils::random_string();
-		const auto        original_float = Karkinolution::Functional::KRandom::RandomGenerators::generate<float>();
-		const auto        original_int   = Karkinolution::Functional::KRandom::RandomGenerators::generate<int>();
+		const auto        original_float = KShared::Functional::KRandom::RandomGenerators::generate<float>();
+		const auto        original_int   = KShared::Functional::KRandom::RandomGenerators::generate<int>();
 
 
 		std::vector<std::byte> buffer;
@@ -59,10 +59,10 @@ TEST(SerializeDeserializeRoundtrip, Core_RandomValuesRoundtripWithOffsets) {
 	for (int iteration = 0; iteration < 10; iteration++) {
 		SCOPED_TRACE(::testing::Message() << "iteration " << iteration);
 
-		const auto original_8 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
-		const auto original_4 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
-		const auto original_2 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint16_t>();
-		const auto original_1 = Karkinolution::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
+		const auto original_8 = KShared::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
+		const auto original_4 = KShared::Functional::KRandom::RandomGenerators::generate<std::uint32_t>();
+		const auto original_2 = KShared::Functional::KRandom::RandomGenerators::generate<std::uint16_t>();
+		const auto original_1 = KShared::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
 
 		// Add dummy padding bytes to verify offset interpretation works properly
 		std::vector<std::byte> buffer = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};

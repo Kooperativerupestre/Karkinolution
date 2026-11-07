@@ -1,7 +1,7 @@
 #pragma once
-#include <karkinolution/math/units.hpp>
+#include <shared/math/units.hpp>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace Geometry {
 			class Circumference : public Units::Meter {
@@ -33,4 +33,4 @@ namespace Karkinolution {
 			};
 		} // namespace Geometry
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

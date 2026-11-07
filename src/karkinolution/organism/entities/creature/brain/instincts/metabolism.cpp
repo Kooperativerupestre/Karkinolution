@@ -1,4 +1,4 @@
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <karkinolution/organism/entities/creature/brain/instincts/metabolism.hpp>
 #include <karkinolution/organism/entities/creature/brain/perception/perception.hpp>

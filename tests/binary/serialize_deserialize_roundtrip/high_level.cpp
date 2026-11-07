@@ -1,7 +1,7 @@
 
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/geometry/models.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/geometry/models.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
 
@@ -15,7 +15,7 @@
 #include <karkinolution/binary/interpreters/territory.hpp>
 #include <karkinolution/binary/interpreters/unit.hpp>
 #include <karkinolution/binary/interpreters/vec.hpp>
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
@@ -83,9 +83,9 @@ TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
 
 		for (size_t i = 0; i < 5; i++) {
 			const auto kind =
-				static_cast<std::byte>(Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>());
+				static_cast<std::byte>(KShared::Functional::KRandom::RandomGenerators::generate<uint8_t>());
 			const auto type =
-				static_cast<std::byte>(Karkinolution::Functional::KRandom::RandomGenerators::generate<uint8_t>());
+				static_cast<std::byte>(KShared::Functional::KRandom::RandomGenerators::generate<uint8_t>());
 
 			const auto kind_offset = bytes.size();
 
@@ -114,10 +114,10 @@ TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
 TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
 	const auto                                  damage_value  = std::numeric_limits<float>::max();
 	const auto                                  movement_cost = 0.001f;
-	const Karkinolution::Core::Id::BaseIdType   id            = 248539453;
-	const Karkinolution::Math::Geometry::Radius radius{24};
+	const KShared::Core::Id::BaseIdType   id            = 248539453;
+	const KShared::Math::Geometry::Radius radius{24};
 
-	const Karkinolution::Math::Vec::Vec2 position = {0, std::numeric_limits<double>::max()};
+	const KShared::Math::Vec::Vec2 position = {0, std::numeric_limits<double>::max()};
 
 	const std::vector<Karkinolution::Terrain::Soil::SoilProperties> properties{
 		Karkinolution::Terrain::Soil::SoilProperties::DANGEROUS};
@@ -161,13 +161,13 @@ TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
 // Corpse: Full Serialization
 
 TEST(CorpseSerializeDeserializeRoundtrip, FullCorpseSerialization) {
-	const Karkinolution::Core::Id::BaseIdType id = 248539453;
+	const KShared::Core::Id::BaseIdType id = 248539453;
 
 	const Karkinolution::Organisms::RawMeat raw_meat{std::numeric_limits<float>::max()};
 
-	const Karkinolution::Math::Vec::Vec2 position = {0.0, std::numeric_limits<double>::max()};
+	const KShared::Math::Vec::Vec2 position = {0.0, std::numeric_limits<double>::max()};
 
-	const Karkinolution::Math::Units::Size size{12.5, 24.0};
+	const KShared::Math::Units::Size size{12.5, 24.0};
 
 	Karkinolution::Organisms::Entities::Corpse::Corpse corpse{size, position, raw_meat, id};
 
@@ -189,9 +189,9 @@ TEST(CorpseSerializeDeserializeRoundtrip, FullCorpseSerialization) {
 // Corpse: Request DSI
 
 TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
-	constexpr Karkinolution::Core::Id::BaseIdType corpse_id = 248539453;
+	constexpr KShared::Core::Id::BaseIdType corpse_id = 248539453;
 
-	const auto bytes = Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(corpse_id);
+	const auto bytes = Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(corpse_id);
 	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 	const auto interpreted_id = CorpseDSI::Request::interpret_like_see_corpse(buffer);
@@ -202,7 +202,7 @@ TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
 // Territory: Size Roundtrip
 
 TEST(TerritorySerializeDeserializeRoundtrip, FullFields) {
-	const Karkinolution::Math::Units::Size size{12.5, 24.0};
+	const KShared::Math::Units::Size size{12.5, 24.0};
 
 	const auto                   serialized = UnitsSRI::serialize_size(size);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());
@@ -216,7 +216,7 @@ TEST(TerritorySerializeDeserializeRoundtrip, FullFields) {
 // Territory: Full Serialization
 
 TEST(TerritorySerializeDeserializeRoundtrip, FullTerritorySerialization) {
-	const Karkinolution::Math::Units::Size size{12.5, 24.0};
+	const KShared::Math::Units::Size size{12.5, 24.0};
 
 	Karkinolution::Binary::Interpreters::Models::Territory::Territory territory{size};
 
@@ -237,7 +237,7 @@ TEST(CreatureSerializeDeserializeRoundtrip, FullCreatureSerialization) {
 	const Karkinolution::Organisms::Entities::Creature::CreatureSpecies specie =
 		Karkinolution::Organisms::Entities::Creature::CreatureSpecies::FISH;
 
-	const Karkinolution::Math::Vec::Vec2 position{12.5, 24.0};
+	const KShared::Math::Vec::Vec2 position{12.5, 24.0};
 
 	const std::string name = "Karkinolution";
 

@@ -1,5 +1,5 @@
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/entities/creature/creature.hpp"
 #include "karkinolution/organism/entities/embryo/embryo.hpp"
 #include "karkinolution/organism/entities/genetics/motor.hpp"
@@ -8,7 +8,7 @@
 #include "karkinolution/organism/reproduction/state/validator.hpp"
 #include "karkinolution/organism/values.hpp"
 
-#include <karkinolution/functional/k_random.hpp>
+#include <shared/functional/k_random.hpp>
 #include <karkinolution/organism/entities/creature/validator.hpp>
 #include <karkinolution/organism/reproduction/state/physiology.hpp>
 #include <random>
@@ -56,7 +56,7 @@ namespace Karkinolution::Organisms::Entities::Reproduction::State {
 		Life   life(init_average_max_life / 2.0f, init_average_max_life);
 
 		return Embryo::Embryo{
-			.id     = Core::Id::gen_id(),
+			.id     = KShared::Core::Id::gen_id(),
 			.energy = energy,
 			.life   = life,
 			.health = new_genome.embryo_genome.body.average_health.value(),

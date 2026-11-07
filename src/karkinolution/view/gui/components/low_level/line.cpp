@@ -7,7 +7,7 @@
 KarkinolutionView::Gui::Components::LowLevel::Line::Line(KarkinolutionView::Gui::Geometry::Position  begin,
 														 KarkinolutionView::Gui::Geometry::Position  end,
 														 KarkinolutionView::Gui::Geometry::Thickness thickness,
-														 const Karkinolution::Colors::Color         &color)
+														 const KShared::Colors::Color         &color)
 	: begin_(begin)
 	, end_(end)
 	, thickness_(thickness)

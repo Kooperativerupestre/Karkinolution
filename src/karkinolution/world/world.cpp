@@ -47,7 +47,7 @@ namespace Karkinolution::World {
 	}
 
 	bool Karkinolution::World::World::update(Karkinolution::Organisms::Entities::EntityId id,
-											 const Karkinolution::Math::Vec::Vec2        &new_position) {
+											 const KShared::Math::Vec::Vec2        &new_position) {
 		if (!exists_entity(id)) {
 			return false;
 		}
@@ -72,6 +72,6 @@ namespace Karkinolution::World {
 														 preset.seed,
 														 Terrain::TerrainFactory::TerrainScale::NORMAL,
 														 preset.epsilon,
-														 Karkinolution::Math::Geometry::Radius(10.0),
-														 Karkinolution::Math::Geometry::Radius(20.0))) {}
+														 KShared::Math::Geometry::Radius(10.0),
+														 KShared::Math::Geometry::Radius(20.0))) {}
 } // namespace Karkinolution::World

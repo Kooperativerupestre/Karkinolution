@@ -1,7 +1,7 @@
-#include <karkinolution/math/constants.hpp>
-#include <karkinolution/math/geometry/models.hpp>
+#include <shared/math/constants.hpp>
+#include <shared/math/geometry/models.hpp>
 
-using namespace Karkinolution::Math;
+using namespace KShared::Math;
 
 [[nodiscard]] Geometry::Circumference Geometry::Radius::circumference() const noexcept {
 	return Circumference{value * Constants::two_pi};

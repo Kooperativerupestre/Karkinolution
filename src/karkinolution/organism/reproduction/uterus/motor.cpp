@@ -1,4 +1,4 @@
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/stats/compile_values.hpp"
 #include "karkinolution/organism/reproduction/state/state.hpp"
 
 #include <karkinolution/organism/entities/creature/creature.hpp>

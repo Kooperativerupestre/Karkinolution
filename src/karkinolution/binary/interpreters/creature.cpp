@@ -4,8 +4,8 @@
 #include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/binary/errors.hpp"
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/creature/ontology.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
@@ -76,25 +76,25 @@ CreatureSRI::serialize_creature(const Karkinolution::Organisms::Entities::Creatu
 	// Id
 
 	const auto id =
-		Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(creature.ontology.id);
+		Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(creature.ontology.id);
 	Karkinolution::Binary::Utils::append_bytes(bytes, id, Layout::Id::OFFSET);
 
 	return bytes;
 }
 
-std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(Karkinolution::Core::Id::BaseIdType id) {
-	return Karkinolution::Binary::Serializer::serialize<Karkinolution::Core::Id::BaseIdType>(id);
+std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(KShared::Core::Id::BaseIdType id) {
+	return Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
 }
 
 std::array<std::byte, CreatureSRI::Request::Layout::CreateCreature::TOTAL_SIZE>
 CreatureSRI::Request::make_create_creature(
 	std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 	std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-	const std::optional<Karkinolution::Math::Vec::Vec2>                         &position,
+	const std::optional<KShared::Math::Vec::Vec2>                         &position,
 	const std::optional<std::string>                                            &name) {
 	if (name) {
 		if (name->size() > CreatureSRI::Layout::MAX_NAME_SIZE) {
-			throw Karkinolution::Errors::SimulationError(std::format("The max size of name is {}, received {}",
+			throw KShared::Errors::SimulationError(std::format("The max size of name is {}, received {}",
 																	 CreatureSRI::Layout::MAX_NAME_SIZE,
 																	 name->size()));
 		}
@@ -206,21 +206,21 @@ std::string CreatureDSI::get_name(const std::vector<std::byte> &payload, std::si
 	return Karkinolution::Binary::Deserializer::read_string(payload, offset + sizeof(name_size), name_size);
 }
 
-Karkinolution::Core::Id::BaseIdType CreatureDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, offset);
+KShared::Core::Id::BaseIdType CreatureDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
+	return Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);
 }
 
-Karkinolution::Core::Id::BaseIdType
+KShared::Core::Id::BaseIdType
 CreatureDSI::Request::interpret_like_get_creature(const std::vector<std::byte> &payload) {
-	return Karkinolution::Core::Id::BaseIdType{
-		Karkinolution::Binary::Deserializer::deserialize<Karkinolution::Core::Id::BaseIdType>(payload, 0)};
+	return KShared::Core::Id::BaseIdType{
+		Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0)};
 }
 
 Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint
 CreatureDSI::Request::interpret_like_create_creature(const std::vector<std::byte> &payload) {
 	std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender   = std::nullopt;
 	std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> species  = std::nullopt;
-	std::optional<Karkinolution::Math::Vec::Vec2>                                position = std::nullopt;
+	std::optional<KShared::Math::Vec::Vec2>                                position = std::nullopt;
 	std::optional<std::string>                                                   name     = std::nullopt;
 
 	const auto has_gender = Karkinolution::Binary::Deserializer::deserialize<bool>(

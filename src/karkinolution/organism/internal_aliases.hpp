@@ -5,36 +5,36 @@
 Don't include this file outside src/karkinolution/organism
 */
 
-#include "karkinolution/core/error.hpp"
-#include "karkinolution/core/id.hpp"
-#include "karkinolution/math/stats/compile_values.hpp"
-#include "karkinolution/math/stats/runtime_values.hpp"
-#include "karkinolution/math/units.hpp"
+#include "shared/core/error.hpp"
+#include "shared/core/id.hpp"
+#include "shared/math/stats/compile_values.hpp"
+#include "shared/math/stats/runtime_values.hpp"
+#include "shared/math/units.hpp"
 
 namespace Karkinolution {
 	namespace Organisms {
-		using Karkinolution::Math::LV::CT::GenericLimitedValue;
-		using Karkinolution::Math::LV::CT::LimitedValue;
-		using Karkinolution::Math::LV::CT::NormalizedValue;
-		using Karkinolution::Math::LV::CT::SignedNormalizedValue;
+		using KShared::Math::LV::CT::GenericLimitedValue;
+		using KShared::Math::LV::CT::LimitedValue;
+		using KShared::Math::LV::CT::NormalizedValue;
+		using KShared::Math::LV::CT::SignedNormalizedValue;
 
-		using Karkinolution::Core::Id::BaseIdType;
-		using Karkinolution::Errors::SimulationError;
-		using Karkinolution::Math::Area;
-		using Karkinolution::Math::DoubleValue;
-		using Karkinolution::Math::Efficiency;
-		using Karkinolution::Math::FloatValue;
-		using Karkinolution::Math::Quality;
-		using Karkinolution::Math::SharedArea;
-		using Karkinolution::Math::LV::RT::IntegerLimited;
-		using Karkinolution::Math::LV::RT::IntegerWithMax;
-		using Karkinolution::Math::LV::RT::RuntimeLimitedValue;
-		using Karkinolution::Math::Units::Density;
-		using Karkinolution::Math::Units::Mass;
-		using Karkinolution::Math::Units::Size;
-		namespace KRandom = Karkinolution::Functional::KRandom;
-		using Karkinolution::Math::LV::CT::GreaterThanZeroValue;
-		using Karkinolution::Math::Units::Height;
-		using Karkinolution::Math::Units::Width;
+		using KShared::Core::Id::BaseIdType;
+		using KShared::Errors::SimulationError;
+		using KShared::Math::Area;
+		using KShared::Math::DoubleValue;
+		using KShared::Math::Efficiency;
+		using KShared::Math::FloatValue;
+		using KShared::Math::Quality;
+		using KShared::Math::SharedArea;
+		using KShared::Math::LV::RT::IntegerLimited;
+		using KShared::Math::LV::RT::IntegerWithMax;
+		using KShared::Math::LV::RT::RuntimeLimitedValue;
+		using KShared::Math::Units::Density;
+		using KShared::Math::Units::Mass;
+		using KShared::Math::Units::Size;
+		namespace KRandom = KShared::Functional::KRandom;
+		using KShared::Math::LV::CT::GreaterThanZeroValue;
+		using KShared::Math::Units::Height;
+		using KShared::Math::Units::Width;
 	} // namespace Organisms
 } // namespace Karkinolution

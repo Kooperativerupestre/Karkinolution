@@ -1,7 +1,7 @@
 #pragma once
 #include <concepts>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace LV {
 
@@ -49,4 +49,4 @@ namespace Karkinolution {
 
 		} // namespace LV
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace Vec {
 			enum class Axis : uint8_t {
@@ -179,4 +179,4 @@ namespace Karkinolution {
 			}
 		} // namespace Vec
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

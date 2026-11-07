@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 
 #include <cstdint>
 #include <magic_enum/magic_enum.hpp>

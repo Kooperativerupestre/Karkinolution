@@ -1,8 +1,8 @@
 #include "karkinolution/organism/entities/creature/brain/intents.hpp"
 #include "karkinolution/organism/registry.hpp"
 
-#include <karkinolution/functional/k_random.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/creature/ontology.hpp>
 #include <karkinolution/organism/entities/creature/physiology.hpp>

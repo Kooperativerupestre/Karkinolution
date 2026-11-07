@@ -8,7 +8,7 @@
 #include <ranges>
 #include <unordered_set>
 
-using Karkinolution::Core::Id::BaseIdType;
+using KShared::Core::Id::BaseIdType;
 using Karkinolution::Terrain::Soil::SoilPiece;
 using Karkinolution::World::World;
 

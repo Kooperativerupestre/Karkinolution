@@ -1,8 +1,8 @@
 #include "karkinolution/organism/values.hpp"
 
 #include <algorithm>
-#include <karkinolution/functional/k_random.hpp>
-#include <karkinolution/math/stats/compile_values.hpp>
+#include <shared/functional/k_random.hpp>
+#include <shared/math/stats/compile_values.hpp>
 #include <karkinolution/organism/entities/embryo/embryo.hpp>
 #include <karkinolution/organism/entities/embryo/physiology.hpp>
 
@@ -17,7 +17,7 @@ namespace Karkinolution::Organisms::Entities::Embryo::Physiology {
 
 	NormalizedValue<float> EmbryoGrowingPhysiology::get_increment(const NormalizedValue<float> &ratio,
 																  const NormalizedValue<float> &factor) {
-		if (ratio.value() < Math::Approx<float>(0.5)) {
+		if (ratio.value() < KShared::Math::Approx<float>(0.5)) {
 			float x = (0.5f - ratio.value()) / 0.5f;
 			return 1.0f + x * x;
 		}

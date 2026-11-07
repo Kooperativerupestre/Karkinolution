@@ -1,7 +1,7 @@
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/protocol/layouts.hpp"
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 

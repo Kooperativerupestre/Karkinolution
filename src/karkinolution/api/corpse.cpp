@@ -4,7 +4,7 @@
 
 const Karkinolution::Organisms::Entities::Corpse::Corpse*
 Karkinolution::API::Corpse::see_corpse(const Karkinolution::World::World  &world,
-									   Karkinolution::Core::Id::BaseIdType id) {
+									   KShared::Core::Id::BaseIdType id) {
 	const auto entity_id = Karkinolution::Organisms::Entities::create_corpse_id(id);
 
 	if (!world.see_entities_registry().exists(entity_id)) {

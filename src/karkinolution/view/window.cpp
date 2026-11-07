@@ -1,4 +1,4 @@
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 #include "karkinolution/view/presets/screen.hpp"
 
 #include <karkinolution/view/gui/colors.hpp>
@@ -6,7 +6,7 @@
 #include <raylib.h>
 
 void KarkinolutionView::Window::init_inside_loop() {
-	ClearBackground(KarkinolutionView::Gui::Colors::translate(Karkinolution::Colors::Presets::Cyan));
+	ClearBackground(KarkinolutionView::Gui::Colors::translate(KShared::Colors::Presets::Cyan));
 }
 
 void KarkinolutionView::Window::init_before_loop(KarkinolutionView::Presets::Screen screen_preset) {

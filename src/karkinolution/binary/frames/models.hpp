@@ -3,7 +3,7 @@
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/protocol/layouts.hpp"
-#include "karkinolution/functional/unreachable_or_throw.hpp"
+#include "shared/functional/unreachable_or_throw.hpp"
 
 #include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/binary/core_aliases.hpp>
@@ -66,7 +66,7 @@ namespace Karkinolution {
 								throw FrameError("Request with sub type Erase must have EraseExtra");
 							}
 						} else {
-							Karkinolution::Functional::unreachable_or_throw();
+							KShared::Functional::unreachable_or_throw();
 						}
 					}
 
@@ -262,7 +262,7 @@ namespace Karkinolution {
 							} else if (std::holds_alternative<Error::Error>(data_)) {
 								return BinaryTypes::Error;
 							}
-							Karkinolution::Functional::unreachable_or_throw();
+							KShared::Functional::unreachable_or_throw();
 						}
 
 						FrameDeclaredSize constexpr get_declared_size() const {
@@ -274,7 +274,7 @@ namespace Karkinolution {
 							} else if (type == BinaryTypes::Error) {
 								return std::get<Error::Error>(data_).get_declared_size();
 							}
-							Karkinolution::Functional::unreachable_or_throw();
+							KShared::Functional::unreachable_or_throw();
 						}
 
 						Protocol::Detail::CodeVariant constexpr get_sub_type() const {
@@ -286,7 +286,7 @@ namespace Karkinolution {
 							} else if (type == BinaryTypes::Error) {
 								return std::get<Error::Error>(data_).get_sub_type();
 							}
-							Karkinolution::Functional::unreachable_or_throw();
+							KShared::Functional::unreachable_or_throw();
 						}
 
 						const auto constexpr &get_data() const {

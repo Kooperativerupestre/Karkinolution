@@ -1,8 +1,8 @@
 #pragma once
 #include <cmath>
-#include <karkinolution/math/physic/vec/model.hpp>
+#include <shared/math/physic/vec/model.hpp>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Math {
 		namespace Vec {
 			[[nodiscard]] constexpr double angle_between(const Vec2 &a, const Vec2 &b) noexcept {
@@ -96,4 +96,4 @@ namespace Karkinolution {
 			}
 		} // namespace Vec
 	} // namespace Math
-} // namespace Karkinolution
+} // namespace KShared

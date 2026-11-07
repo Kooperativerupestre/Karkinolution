@@ -1,13 +1,13 @@
 #pragma once
 
-#include "karkinolution/core/error.hpp"
+#include "shared/core/error.hpp"
 
 namespace Karkinolution::Binary::Frames {
-	class FrameError : public Errors::SimulationError {
+	class FrameError : public KShared::Errors::SimulationError {
 		public:
 
 			explicit FrameError(const std::string &message)
-				: Errors::SimulationError(message) {}
+				: KShared::Errors::SimulationError(message) {}
 	};
 
 	class FrameInvariantError : public FrameError {

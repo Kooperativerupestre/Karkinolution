@@ -1,15 +1,15 @@
 #pragma once
-#include "karkinolution/math/physic/vec/model.hpp"
-#include "karkinolution/math/stats/compile_values.hpp"
+#include "shared/math/physic/vec/model.hpp"
+#include "shared/math/stats/compile_values.hpp"
 
 #include <random>
 #include <ranges>
 
-using Karkinolution::Math::LV::CT::NormalizedValue;
-using Karkinolution::Math::Vec::Vec2;
-using Karkinolution::Math::Vec::Vec2Like;
+using KShared::Math::LV::CT::NormalizedValue;
+using KShared::Math::Vec::Vec2;
+using KShared::Math::Vec::Vec2Like;
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Functional {
 
 		namespace KRandom {
@@ -208,4 +208,4 @@ namespace Karkinolution {
 
 
 	} // namespace Functional
-} // namespace Karkinolution
+} // namespace KShared

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "karkinolution/binary/serializer.hpp"
-#include "karkinolution/core/id.hpp"
+#include "shared/core/id.hpp"
 
 #include <cstdint>
 
@@ -10,7 +10,7 @@ namespace Karkinolution {
 		namespace Interpreters {
 			namespace CoreBytes {
 				namespace Identity {
-					static_assert(sizeof(Karkinolution::Core::Id::BaseIdType) == sizeof(int64_t));
+					static_assert(sizeof(KShared::Core::Id::BaseIdType) == sizeof(int64_t));
 					using Id = Karkinolution::Binary::Serializer::Core::EightBytes;
 				} // namespace Identity
 			} // namespace CoreBytes

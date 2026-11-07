@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 
 #include <raylib.h>
 
@@ -8,7 +8,7 @@ namespace KarkinolutionView {
 		using RayLibColor = Color;
 
 		namespace Colors {
-			constexpr RayLibColor translate(const Karkinolution::Colors::Color &color) {
+			constexpr RayLibColor translate(const KShared::Colors::Color &color) {
 				constexpr float scale = 255.0f;
 
 				return {static_cast<unsigned char>(color.r.value.value() * scale),

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "karkinolution/core/color.hpp"
+#include "shared/core/color.hpp"
 #include "karkinolution/view/gui/components/low_level/text.hpp"
 #include "karkinolution/view/gui/geometry/geometry.hpp"
 
@@ -26,7 +26,7 @@ namespace KarkinolutionView {
 											 Gui::Geometry::Width{140},
 											 Gui::Geometry::Height{40}},
 					"",
-					Karkinolution::Colors::Presets::DarkGray,
+					KShared::Colors::Presets::DarkGray,
 					20};
 
 			public:
