@@ -11,7 +11,7 @@ from karkinolution.see.namespaces.parser import FileNamespaces, parse_namespaces
 from karkinolution.see.namespaces.render import render_tree
 from karkinolution.see.namespaces.tree import build_tree, display_path, file_paths, filter_ignored
 
-DEFAULT_DIRECTORIES = ("karkinolution", "shared", "opsiamethystos", "tests")
+DEFAULT_DIRECTORIES = ("src", "karkinolution", "shared", "opsiamethystos", "tests")
 
 
 def resolve_scan_paths(paths: tuple[Path, ...], repo_root: Path) -> list[Path]:

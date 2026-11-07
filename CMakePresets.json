@@ -208,6 +208,7 @@
       "configurePreset": "ci",
       "targets": [
         "karkinolution_tests",
+        "opsiamethystos_tests",
         "karkinolution_app"
       ]
     },
@@ -216,6 +217,7 @@
       "configurePreset": "ci-sanitizers",
       "targets": [
         "karkinolution_tests",
+        "opsiamethystos_tests",
         "karkinolution_app"
       ]
     },
@@ -224,6 +226,7 @@
       "configurePreset": "ci-tsan",
       "targets": [
         "karkinolution_tests",
+        "opsiamethystos_tests",
         "karkinolution_app"
       ]
     },
