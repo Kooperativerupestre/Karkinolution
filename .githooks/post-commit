@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+# Appends commit hash to .git-blame-ignore-revs if message begins with "style" or "Style"
+REV=$(git rev-parse HEAD)
+MSG=$(git log -1 --pretty=%B)
+
+if echo "$MSG" | grep -qiE '^[sS]tyle'; then
+    ROOT_DIR="$(git rev-parse --show-toplevel)"
+    IGNORE_FILE="$ROOT_DIR/.git-blame-ignore-revs"
+    FIRST_LINE=$(echo "$MSG" | head -n 1)
+    if ! grep -q "$REV" "$IGNORE_FILE" 2>/dev/null; then
+        echo "$REV # $FIRST_LINE" >> "$IGNORE_FILE"
+    fi
+fi

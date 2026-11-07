@@ -1,0 +1,11 @@
+b4933bb97558ec70e4d3248da7a1b41b0e282a7c # style(gui): apply quality formatting
+400ba92cfcd7f42efbce81bf247bdffff32bbb9d # style(tidy): remove redundant member init check
+c65fe953e93e271472cf5564ee38628692a1cb71 # style(format): increase column limit to 120
+891d6d9ee0218f5c189e048e9e184ca2c558f589 # style(core): apply clang formatting
+b103ffab8ef400c0ae7a7b38adba8249036ea3bc # style(src): format source files
+7ba2202d42f84053a189379b7a76512fac921207 # style(ci): fix reported formatting and document architecture
+38401b0e15349010bf9618659ee0ec3e8e57a8cf # style: apply to all
+61f95a1f3a4faa47dac7ddb03b71cc0b2cf4ab61 # style: format
+2f343948dbcadde842b4588d1e8d3afc3c2f54e8 # style: apply to all files
+267095cc111470bf0011122feafb56d5739ac280 # style(tidy): apply for all files
+701ddd5a9c868436c514154836e7cc1dea403658 # style(tidy): remove empty extension from header file extensions
