@@ -9,3 +9,4 @@ b103ffab8ef400c0ae7a7b38adba8249036ea3bc # style(src): format source files
 2f343948dbcadde842b4588d1e8d3afc3c2f54e8 # style: apply to all files
 267095cc111470bf0011122feafb56d5739ac280 # style(tidy): apply for all files
 701ddd5a9c868436c514154836e7cc1dea403658 # style(tidy): remove empty extension from header file extensions
+c63d731a50a4d1e8ec980831c5bfe258b44870fe # style: apply clang-format across src, tests, shared, and main
