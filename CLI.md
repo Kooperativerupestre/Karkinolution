@@ -40,8 +40,8 @@ the CMake equivalents.
 Check or format selected source files:
 
 ```bash
-karkinolution style check src/karkinolution main.cpp
-karkinolution style format src/karkinolution/binary/interpreters
+karkinolution style check karkinolution main.cpp
+karkinolution style format karkinolution/binary/interpreters
 ```
 
 Run `clang-tidy` checks or apply its available fixes. Tidy needs a configured build with
@@ -49,9 +49,9 @@ Run `clang-tidy` checks or apply its available fixes. Tidy needs a configured bu
 database exists. Pass `--build-dir` to select another build directory.
 
 ```bash
-karkinolution tidy check src/karkinolution main.cpp
-karkinolution tidy check src/karkinolution main.cpp --changed-since origin/main
-karkinolution tidy fix src/karkinolution/binary/interpreters
+karkinolution tidy check karkinolution main.cpp
+karkinolution tidy check karkinolution main.cpp --changed-since origin/main
+karkinolution tidy fix karkinolution/binary/interpreters
 ```
 
 `--changed-since` limits tidy checks to files changed since the given Git ref, compared with its merge base. For a

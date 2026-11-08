@@ -118,7 +118,7 @@ jobs:
             -w /workspace \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution style check src main.cpp \
+            uv run karkinolution style check karkinolution shared opsiamethystos tests main.cpp \
               --style-file /workspace/.clang-format
 
       - name: Run tidy check
@@ -136,7 +136,7 @@ jobs:
             -w /workspace \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
-            uv run karkinolution tidy check src main.cpp \
+            uv run karkinolution tidy check karkinolution shared opsiamethystos main.cpp \
               --config-file /workspace/.clang-tidy \
               "${changed_since_args[@]}"
 

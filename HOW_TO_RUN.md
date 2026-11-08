@@ -75,9 +75,8 @@ cmake --build build --target karkinolution_app
 ./build/karkinolution_app
 ```
 
-* The server listens on port `9000` ([`port.hpp`](src/karkinolution/networking/port.hpp)).
-* It accepts one client at a time and does not stay alive if it disconnects.
-* More networking questions: [`help.md`](src/karkinolution/networking/help.md).
+* The server listens on port `9000` ([`port.hpp`](karkinolution/networking/port.hpp)).
+* More networking questions: [`help.md`](karkinolution/networking/help.md).
 
 ## 4. Run the view
 
