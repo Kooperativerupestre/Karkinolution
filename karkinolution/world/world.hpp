@@ -10,6 +10,7 @@
 #include <karkinolution/terrain/entity_map.hpp>
 #include <karkinolution/terrain/natures_map.hpp>
 #include <karkinolution/terrain/terrain.hpp>
+#include <shared/core/id.hpp>
 
 namespace Karkinolution {
 	namespace World {
@@ -35,6 +36,7 @@ namespace Karkinolution {
 				Karkinolution::Terrain::Territory                    territory;
 				int                                                  time = 0;
 
+				KShared::Core::Id::BaseIdType id = KShared::Core::Id::gen_id();
 
 			public:
 
@@ -56,6 +58,10 @@ namespace Karkinolution {
 
 				Karkinolution::Terrain::Territory &see_territory() {
 					return territory;
+				}
+
+				KShared::Core::Id::BaseIdType get_id() const {
+					return id;
 				}
 
 				void pass_time() {
