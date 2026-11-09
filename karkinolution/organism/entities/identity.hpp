@@ -42,7 +42,7 @@ namespace Karkinolution {
 	} // namespace Organisms
 } // namespace Karkinolution
 
-template <> struct ::std::hash<Karkinolution::Organisms::Entities::EntityId> {
+template <> struct std::hash<Karkinolution::Organisms::Entities::EntityId> {
 		std::size_t operator()(const Karkinolution::Organisms::Entities::EntityId &id) const noexcept {
 			std::size_t h1 = std::hash<KShared::Core::Id::BaseIdType>{}(id.value);
 			std::size_t h2 = std::hash<Karkinolution::Organisms::Entities::EntityTypes>{}(id.type);
