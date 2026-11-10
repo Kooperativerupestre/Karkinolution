@@ -31,6 +31,9 @@ RUN ln -s /usr/bin/clang-21 /usr/local/bin/clang && \
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN uv pip install --system "conan>=2.34.0"
+RUN uv venv /opt/conan-venv && \
+    uv pip install --python /opt/conan-venv/bin/python "conan>=2.34.0"
+
+ENV PATH="/opt/conan-venv/bin:${PATH}"
 
 WORKDIR /workspace
