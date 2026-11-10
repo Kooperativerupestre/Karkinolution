@@ -37,6 +37,8 @@ RUN apt-get update && apt-get install -y \
     libxv-dev \
     libxxf86vm-dev \
     libxcb-glx0-dev \
+    libxcb-util-dev \
+    libxcb-util0-dev \
     libxcb-render-util0-dev \
     libxcb-xkb-dev \
     libxcb-icccm4-dev \
