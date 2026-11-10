@@ -34,6 +34,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN uv venv /opt/conan-venv && \
     uv pip install --python /opt/conan-venv/bin/python "conan>=2.34.0"
 
-ENV PATH="/opt/conan-venv/bin:${PATH}"
+ENV PATH="/opt/conan-venv/bin:${PATH}" \
+    CONAN_HOME=/tmp/.conan2
 
 WORKDIR /workspace
