@@ -107,7 +107,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build'
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build'
 
       - name: Run style check
         run: |
@@ -174,7 +174,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci'
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci'
 
 
       - name: Build tests
@@ -231,7 +231,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci-sanitizers'
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-sanitizers'
 
 
       - name: Build tests
@@ -291,7 +291,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci-tsan'
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-tsan'
 
       - name: Build tests
         run: |

@@ -50,11 +50,11 @@ jobs:
             -v "$PWD:/workspace" \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install /workspace --output-folder=/workspace/build-valgrind --build=missing -s build_type=Debug && cmake \
+            sh -c 'conan profile detect --force && conan install /workspace --build=missing -s build_type=Debug && cmake \
               -S /workspace \
               -B /workspace/build-valgrind \
               -G Ninja \
-              -DCMAKE_TOOLCHAIN_FILE=/workspace/build-valgrind/conan_toolchain.cmake \
+              -DCMAKE_TOOLCHAIN_FILE=/workspace/build/Debug/generators/conan_toolchain.cmake \
               -DCMAKE_C_COMPILER=gcc-16 \
               -DCMAKE_CXX_COMPILER=g++-16 \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \
