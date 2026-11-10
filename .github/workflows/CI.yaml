@@ -58,7 +58,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          submodules: recursive
           fetch-depth: 0
 
       # An empty sha means there is no usable base, so tidy checks every file.
@@ -108,7 +107,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build'
+            sh -c 'conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build'
 
       - name: Run style check
         run: |
@@ -147,8 +146,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          submodules: recursive
 
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2.24
@@ -177,7 +174,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake --preset ci
+            sh -c 'conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci'
 
 
       - name: Build tests
@@ -206,8 +203,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          submodules: recursive
 
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2.24
@@ -236,7 +231,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake --preset ci-sanitizers
+            sh -c 'conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci-sanitizers'
 
 
       - name: Build tests
@@ -265,8 +260,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-            submodules: recursive
 
       - name: Set up ccache
         uses: hendrikmuhs/ccache-action@v1.2.24
@@ -298,7 +291,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            cmake --preset ci-tsan
+            sh -c 'conan install . --output-folder=build/Debug --build=missing -s build_type=Debug && cmake --preset ci-tsan'
 
       - name: Build tests
         run: |
