@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Development tools for the Karkino project"
 requires-python = ">=3.13"
 dependencies = [
+    "conan>=2.34.0",
     "rich>=14.0,<16.0",
     "tree-sitter>=0.26,<0.27",
     "tree-sitter-cpp>=0.23,<0.24",
@@ -22,3 +23,11 @@ package = true
 
 [tool.uv.build-backend]
 module-root = "cli/src"
+
+[tool.ruff]
+exclude = [
+    "dependencies/**",
+]
+
+[tool.ruff.lint]
+ignore = ["RUF012"]

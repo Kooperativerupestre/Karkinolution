@@ -35,8 +35,15 @@ void Opsiamethystos::Gui::Components::LowLevel::Circle::draw(const Geometry::Pos
 
 void Opsiamethystos::Gui::Components::LowLevel::Circle::draw_bounds(
 	Opsiamethystos::Gui::Geometry::Thickness thickness) const {
-	DrawCircleLinesEx(Vector2{.x = bounds_.position.x, .y = bounds_.position.y},
-					  bounds_.radius.value(),
-					  thickness.value(),
-					  Opsiamethystos::Gui::Colors::translate(color));
+	const Vector2 center{.x = bounds_.position.x, .y = bounds_.position.y};
+
+	const float radius = bounds_.radius.value();
+
+	DrawRing(center,
+			 radius - thickness.value(),
+			 radius,
+			 0.0f,
+			 360.0f,
+			 36,
+			 Opsiamethystos::Gui::Colors::translate(color));
 }

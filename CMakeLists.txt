@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 set(SANITIZER "" CACHE STRING "Sanitizer to enable: address | thread | (empty = none)")
@@ -19,41 +18,18 @@ if (ENABLE_ASAN AND SANITIZER STREQUAL "")
     set(SANITIZER "address")
 endif ()
 
+option(KARKINOLUTION_BUILD_VIEW "Build karkinolution_view target" OFF)
+
 enable_testing()
 
 # ---------------- Dependencies ----------------
-# Sanitizer flags are NOT applied here: dependencies stay uninstrumented
-# (faster builds, less RAM, and no noise from third-party code).
 
-set(FASTNOISE2_TOOLS OFF CACHE BOOL "" FORCE)
-
-add_subdirectory(
-"${CMAKE_SOURCE_DIR}/dependencies/FastNoise2"
-)
-
-add_library(asio INTERFACE)
-
-target_include_directories(asio INTERFACE
-"${CMAKE_SOURCE_DIR}/dependencies/asio/asio/include"
-)
-
-set(MAGIC_ENUM_OPT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(MAGIC_ENUM_OPT_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
-
-add_subdirectory(
-"${CMAKE_SOURCE_DIR}/dependencies/magic_enum"
-)
-
-set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(
-    "${CMAKE_SOURCE_DIR}/dependencies/raylib"
-)
-
-option(KARKINOLUTION_BUILD_VIEW "Build karkinolution_view target" OFF)
+find_package(FastNoise2 CONFIG REQUIRED)
+find_package(asio CONFIG REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
+find_package(raylib CONFIG REQUIRED)
 
 # ---------------- Sanitizers ----------------
-# add_compile_options / add_link_options only affect targets created AFTER
-# this point, so everything above stays uninstrumented.
 
 if (SANITIZER STREQUAL "address")
     set(_san_flags -fsanitize=address,undefined)
@@ -125,38 +101,40 @@ target_link_libraries(opsiamethystos
 # ---------------- Library ----------------
 
 file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
-"${CMAKE_SOURCE_DIR}/karkinolution/*.cpp"
+    "${CMAKE_SOURCE_DIR}/karkinolution/*.cpp"
 )
+
 list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/view/.*")
 
 add_library(karkinolution)
 
 set_target_properties(karkinolution PROPERTIES
-POSITION_INDEPENDENT_CODE ON
+    POSITION_INDEPENDENT_CODE ON
 )
 
 target_sources(karkinolution
-PRIVATE
+    PRIVATE
         ${KARKINOLUTION_SOURCES}
 )
 
 target_include_directories(karkinolution PUBLIC
-"${CMAKE_SOURCE_DIR}"
+    "${CMAKE_SOURCE_DIR}"
 )
 
 target_link_libraries(karkinolution
-PUBLIC
-FastNoise
-asio
-magic_enum::magic_enum
-karkinolution_shared
+    PUBLIC
+        FastNoise2::FastNoise
+        asio::asio
+        magic_enum::magic_enum
+        karkinolution_shared
 )
+
 # ---------------- Main executable ----------------
 
 add_executable(karkinolution_app main.cpp)
 
 target_link_libraries(karkinolution_app PRIVATE
-karkinolution
+    karkinolution
 )
 
 # ---------------- View executable ----------------
@@ -165,9 +143,14 @@ if (KARKINOLUTION_BUILD_VIEW)
     file(GLOB_RECURSE KARKINOLUTION_VIEW_SOURCES CONFIGURE_DEPENDS
         "${CMAKE_SOURCE_DIR}/karkinolution/view/*.cpp"
     )
-    list(FILTER KARKINOLUTION_VIEW_SOURCES EXCLUDE REGEX ".*/panel/layout/layout.cpp")
 
-    add_executable(karkinolution_view ${KARKINOLUTION_VIEW_SOURCES})
+    list(FILTER KARKINOLUTION_VIEW_SOURCES
+        EXCLUDE REGEX ".*/panel/layout/layout.cpp"
+    )
+
+    add_executable(karkinolution_view
+        ${KARKINOLUTION_VIEW_SOURCES}
+    )
 
     target_link_libraries(karkinolution_view PRIVATE
         karkinolution

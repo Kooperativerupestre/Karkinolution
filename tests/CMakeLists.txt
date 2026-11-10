@@ -1,15 +1,12 @@
-enable_testing()
-
-add_subdirectory(
-    "${CMAKE_SOURCE_DIR}/dependencies/googletest"
-    "${CMAKE_CURRENT_BINARY_DIR}/googletest"
-)
+find_package(GTest CONFIG REQUIRED)
 
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-list(FILTER TEST_SOURCES EXCLUDE REGEX ".*/view/gui/panel/panel.cpp$")
+list(FILTER TEST_SOURCES
+    EXCLUDE REGEX ".*/view/gui/panel/panel.cpp$"
+)
 
 add_executable(karkinolution_tests
     ${TEST_SOURCES}
