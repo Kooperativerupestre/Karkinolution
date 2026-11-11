@@ -107,7 +107,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)" && ln -sfn build-tidy build'
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-tidy && ln -sfn build-tidy build && cmake --build --preset ci-tidy --parallel "$(nproc)"'
 
       - name: Run style check
         run: |
@@ -168,9 +168,11 @@ jobs:
 
       - name: Configure
         run: |
+          mkdir -p "$RUNNER_TEMP/conan-cache"
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -182,6 +184,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -192,6 +195,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             ${{ env.DOCKER_IMAGE }} \
             ctest --preset ci
@@ -225,9 +229,11 @@ jobs:
 
       - name: Configure
         run: |
+          mkdir -p "$RUNNER_TEMP/conan-cache"
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -239,6 +245,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -249,6 +256,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             ${{ env.DOCKER_IMAGE }} \
             ctest --preset ci-sanitizers
@@ -285,9 +293,11 @@ jobs:
 
       - name: Configure
         run: |
+          mkdir -p "$RUNNER_TEMP/conan-cache"
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -298,6 +308,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -308,6 +319,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             ${{ env.DOCKER_IMAGE }} \
             ctest --preset ci-tsan
