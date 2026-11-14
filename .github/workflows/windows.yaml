@@ -1,0 +1,78 @@
+name: Windows
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 21 * * *'
+      timezone: 'America/Sao_Paulo'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    name: Simulator (MSVC)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: Install Conan
+        shell: pwsh
+        run: python -m pip install conan
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          conan profile detect --force
+          conan install . --build=missing -s build_type=Debug -s compiler.cppstd=23
+
+      - name: Configure with MSVC
+        shell: pwsh
+        run: |
+          cmake -S . -B build-windows -G Ninja `
+            -DCMAKE_BUILD_TYPE=Debug `
+            -DCMAKE_C_COMPILER=cl `
+            -DCMAKE_CXX_COMPILER=cl `
+            -DCMAKE_TOOLCHAIN_FILE=build/Debug/generators/conan_toolchain.cmake
+
+      - name: Build simulator
+        shell: pwsh
+        run: cmake --build build-windows --target karkinolution_app --parallel 2
+
+      - name: Run simulator
+        shell: pwsh
+        run: |
+          $process = Start-Process `
+            -FilePath .\build-windows\karkinolution_app.exe `
+            -WorkingDirectory .\build-windows `
+            -PassThru
+
+          try {
+            Start-Sleep -Seconds 5
+
+            if ($process.HasExited) {
+              throw "The simulator exited before the smoke-test interval with code $($process.ExitCode)."
+            }
+          }
+          finally {
+            if (-not $process.HasExited) {
+              Stop-Process -Id $process.Id -Force
+            }
+
+            $process.WaitForExit()
+          }
