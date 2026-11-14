@@ -225,4 +225,84 @@ namespace Karkinolution::Networking::ClientSide::Client {
 		});
 		future.get();
 	}
+
+	RuntimeClient::RuntimeClient(Config config, std::string name)
+		: io()
+		, guard(io.get_executor())
+		, config(std::move(config))
+		, name(std::move(name))
+		, client(std::in_place, io, this->config, this->name)
+		, runner([this] {
+			io.run();
+		}) {}
+
+	RuntimeClient::~RuntimeClient() noexcept {
+		disconnect();
+		guard.reset();
+		if (runner.joinable()) {
+			runner.join();
+		}
+	}
+
+	bool RuntimeClient::is_connected() const noexcept {
+		return client.has_value() && client->is_connected();
+	}
+
+	bool RuntimeClient::connect() noexcept {
+		try {
+			if (is_connected()) {
+				return true;
+			}
+			client.emplace(io, config, name);
+			client->connect();
+			return client->is_connected();
+		} catch (...) {
+			client.reset();
+			return false;
+		}
+	}
+
+	bool RuntimeClient::disconnect() noexcept {
+		try {
+			if (client) {
+				if (client->is_connected()) {
+					client->disconnect();
+				}
+				client->stop_new_async_operations();
+				client->wait_until_zero_async_operations();
+				client.reset();
+			}
+			return true;
+		} catch (...) {
+			return false;
+		}
+	}
+
+	ResponseResult RuntimeClient::request(const RequestData &data) {
+		if (!client || !client->is_connected()) {
+			throw ClientError("RuntimeClient is not connected");
+		}
+		return client->request(data);
+	}
+
+	Protocol::SystemResponseResult RuntimeClient::request(const SystemRequestData &data) {
+		if (!client || !client->is_connected()) {
+			throw ClientError("RuntimeClient is not connected");
+		}
+		return client->request(data);
+	}
+
+	RequestId RuntimeClient::send_without_waiting(const RequestData &data) {
+		if (!client || !client->is_connected()) {
+			throw ClientError("RuntimeClient is not connected");
+		}
+		return client->send_without_waiting(data);
+	}
+
+	ResponseResult RuntimeClient::pop_response(RequestId id) {
+		if (!client) {
+			throw ClientError("RuntimeClient has no active client");
+		}
+		return client->pop_response(id);
+	}
 } // namespace Karkinolution::Networking::ClientSide::Client
