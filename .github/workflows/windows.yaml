@@ -37,7 +37,9 @@ jobs:
 
       - name: Install Ninja
         shell: pwsh
-        run: choco install ninja --yes --no-progress
+        run: |
+          choco install ninja --yes --no-progress
+          ninja --version
 
       - name: Install dependencies
         shell: pwsh
@@ -45,14 +47,17 @@ jobs:
           conan profile detect --force
           conan install . --build=missing -s build_type=Debug -s compiler.cppstd=23 -of build-windows
 
-      - name: Configure with MSVC
+      - name: Verify Conan toolchain
         shell: pwsh
         run: |
-          cmake -S . -B build-windows -G Ninja `
-            -DCMAKE_BUILD_TYPE=Debug `
-            -DCMAKE_C_COMPILER=cl `
-            -DCMAKE_CXX_COMPILER=cl `
-            -DCMAKE_TOOLCHAIN_FILE=build-windows/conan_toolchain.cmake
+          if (-not (Test-Path build-windows/conan_toolchain.cmake)) {
+            Get-ChildItem build-windows -Recurse
+            throw "Conan toolchain file was not generated at build-windows/conan_toolchain.cmake."
+          }
+
+      - name: Configure with MSVC
+        shell: pwsh
+        run: cmake -S . -B build-windows -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_TOOLCHAIN_FILE=build-windows/conan_toolchain.cmake
 
       - name: Build unit tests
         shell: pwsh
