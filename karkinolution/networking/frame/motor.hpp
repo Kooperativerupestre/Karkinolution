@@ -43,7 +43,10 @@ namespace Karkinolution {
 				template <KShared::Binary::ByteRange T>
 				Models::SystemOutput::SystemOutput
 				make_system_output(SystemOutputSubTypes sub_type, SystemCall::Id call_id, const T &payload) {
-					return {Parser::calculate_declared_size(payload.size(), Type::SystemOutput, sub_type),
+					return {Parser::calculate_declared_size(
+								payload.size(),
+								Type::SystemOutput,
+								Detail::SubTypeVariant{std::in_place_type<SystemOutputSubTypes>, sub_type}),
 							call_id,
 							copy_payload(payload),
 							sub_type};
@@ -51,11 +54,15 @@ namespace Karkinolution {
 
 				template <KShared::Binary::ByteRange T>
 				Models::SystemCall::SystemCall
-				make_system_call(SystemCallSubTypes sub_type, SystemCall::Id id, const T &payload) {
+				make_system_call(SystemCallSubTypes                         sub_type,
+								 SystemCall::Id                             id,
+								 const T                                   &payload,
+								 const Models::SystemCall::SystemCallExtra &extra = std::monostate{}) {
 					return {Parser::calculate_declared_size(payload.size(), Type::SystemCall, sub_type),
-							id,
 							copy_payload(payload),
-							sub_type};
+							id,
+							sub_type,
+							extra};
 				}
 
 				Models::SystemOutput::SystemOutput make_none_system_output(SystemCall::Id call_id);
@@ -65,8 +72,10 @@ namespace Karkinolution {
 				make_raw_system_output(SystemOutputSubTypes sub_type, SystemCall::Id call_id, const T &payload) {
 					std::vector<std::byte> frame;
 
-					const auto declared_size =
-						Parser::calculate_declared_size(payload.size(), Type::SystemOutput, sub_type);
+					const auto declared_size = Parser::calculate_declared_size(
+						payload.size(),
+						Type::SystemOutput,
+						Detail::SubTypeVariant{std::in_place_type<SystemOutputSubTypes>, sub_type});
 
 					frame.reserve(declared_size + Layout::DeclaredSize::SIZE);
 
@@ -91,7 +100,10 @@ namespace Karkinolution {
 
 				template <KShared::Binary::ByteRange T>
 				std::vector<std::byte>
-				make_raw_system_call(SystemCallSubTypes sub_type, SystemCall::Id id, const T &payload) {
+				make_raw_system_call(SystemCallSubTypes                         sub_type,
+									 SystemCall::Id                             id,
+									 const T                                   &payload,
+									 const Models::SystemCall::SystemCallExtra &extra = std::monostate{}) {
 					std::vector<std::byte> frame;
 
 					const auto declared_size =
@@ -114,6 +126,13 @@ namespace Karkinolution {
 					// id
 
 					KShared::Binary::Utils::append_bytes(frame, KShared::Binary::Serializer::serialize(id));
+					if (sub_type == SystemCallSubTypes::CREATE_WORLD) {
+						Models::SystemCall::SystemCall{declared_size, copy_payload(payload), id, sub_type, extra};
+						KShared::Binary::Utils::append_bytes(
+							frame,
+							KShared::Binary::Serializer::serialize(
+								std::get<Models::SystemCall::CreateWorldExtra>(extra).auto_connect));
+					}
 					frame.insert(frame.end(), payload.begin(), payload.end());
 					return frame;
 				}

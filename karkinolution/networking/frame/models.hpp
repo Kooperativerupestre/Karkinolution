@@ -4,6 +4,8 @@
 #include "karkinolution/networking/frame/core_aliases.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
+#include <stdexcept>
+#include <utility>
 #include <variant>
 
 namespace Karkinolution {
@@ -11,6 +13,24 @@ namespace Karkinolution {
 		namespace Frames {
 			namespace Models {
 				namespace SystemCall {
+					// The extra is kept separate from the payload because it changes the fixed frame header.
+					struct CreateWorldExtra {
+							bool auto_connect;
+					};
+
+					using SystemCallExtra = std::variant<CreateWorldExtra, std::monostate>;
+
+					inline void validate_sub_type_and_extra(SystemCallSubTypes sub_type, const SystemCallExtra &extra) {
+						if (sub_type == SystemCallSubTypes::CREATE_WORLD
+							&& !std::holds_alternative<CreateWorldExtra>(extra)) {
+							throw std::invalid_argument("Create world system calls require CreateWorldExtra");
+						}
+						if (sub_type != SystemCallSubTypes::CREATE_WORLD
+							&& !std::holds_alternative<std::monostate>(extra)) {
+							throw std::invalid_argument("Only create world system calls may have an extra");
+						}
+					}
+
 					class SystemCall {
 						private:
 
@@ -18,6 +38,7 @@ namespace Karkinolution {
 							std::vector<std::byte> payload;
 							Frames::SystemCall::Id id;
 							SystemCallSubTypes     sub_type;
+							SystemCallExtra        extra;
 
 						public:
 
@@ -37,14 +58,22 @@ namespace Karkinolution {
 								return sub_type;
 							}
 
+							const SystemCallExtra &get_extra() const {
+								return extra;
+							}
+
 							SystemCall(DeclaredSize                 declared_size,
 									   const std::vector<std::byte> payload,
 									   Frames::SystemCall::Id       id,
-									   SystemCallSubTypes           sub_type)
+									   SystemCallSubTypes           sub_type,
+									   SystemCallExtra              extra = std::monostate{})
 								: declared_size(declared_size)
 								, payload(payload)
 								, id(id)
-								, sub_type(sub_type) {}
+								, sub_type(sub_type)
+								, extra(std::move(extra)) {
+								validate_sub_type_and_extra(sub_type, this->extra);
+							}
 					};
 				} // namespace SystemCall
 

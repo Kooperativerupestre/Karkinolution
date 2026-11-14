@@ -27,6 +27,16 @@ namespace Karkinolution::Networking::Frames {
 				call.get_id(),
 				Interpreter::SRI::serialize(
 					simulation.config(Interpreter::SystemCall::DSI::get_config(call.get_payload()), world_lease)));
+		} else if (sub_type == Frames::SystemCallSubTypes::CREATE_WORLD) {
+			const auto &extra = std::get<Frames::Models::SystemCall::CreateWorldExtra>(call.get_extra());
+			const auto  created =
+				simulation.create_world(Interpreter::SystemCall::DSI::get_create_world(call.get_payload()),
+										extra.auto_connect,
+										world_lease);
+			return Motor::make_system_output(
+				Frames::SystemOutputSubTypes::WorldCreated,
+				call.get_id(),
+				Interpreter::SystemOutput::SRI::make_world_created({.world_created = created}));
 		}
 		KShared::Functional::unreachable_or_throw("Invalid sub type of SystemCall");
 	}

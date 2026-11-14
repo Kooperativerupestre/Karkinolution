@@ -17,6 +17,29 @@ namespace Karkinolution::Networking::ServerSide::Simulation {
 		return registry.contains(id);
 	}
 
+	bool Simulation::create_world(const World::WorldPreset               &preset,
+								  bool                                    auto_connect,
+								  ConnectionId                            connection_id,
+								  std::optional<GiftLease<World::World>> &world_lease) {
+		std::lock_guard lock{mutex};
+		World::World    world{preset};
+		const auto      world_id = world.get_id();
+		if (!worlds.add(std::move(world))) {
+			return false;
+		}
+
+		if (auto_connect) {
+			auto lease = worlds.take(world_id);
+			if (!lease) {
+				worlds.remove(world_id);
+				return false;
+			}
+			registry[world_id] = connection_id;
+			world_lease.emplace(std::move(lease.value()));
+		}
+		return true;
+	}
+
 	std::vector<World::WorldId> Simulation::get_all_world_ids() const {
 		std::lock_guard lock{mutex};
 		return worlds.get_all_world_ids();

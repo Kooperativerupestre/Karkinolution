@@ -156,6 +156,19 @@ A SO resolves the following problem: How can we know which sub type the serializ
 .payload -> Bytes
 .sub_type (or sub_type())
 
+## Create-world system call
+
+`SystemCall::CREATE_WORLD` is a non-generic system-call subtype. Its fixed header extends the base system-call header
+with one boolean byte, `AutoConnect`, immediately after the call id. Its payload is the serialized `WorldPreset`:
+
+- `seed`: 4 bytes;
+- `size`: the existing KShared `Size` interpreter layout (16 bytes);
+- `epsilon`: 4 bytes.
+
+The server creates the world and, when `AutoConnect` is true, acquires its lease for the requesting connection while
+holding the shared simulation mutex. This makes creation and connection one atomic operation with respect to other
+connections. The response payload is a separate one-byte boolean indicating whether creation succeeded.
+
 ## Frame Size Calculations
 
 - The declared size counts bytes after the declared-size field, including the remaining fixed header and payload.

@@ -8,6 +8,25 @@
 #include <vector>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::System {
+	template <HasSystemRequest T>
+	bool create_world(T &client, const Karkinolution::World::WorldPreset &preset, bool auto_connect) {
+		const auto payload = Karkinolution::Networking::Frames::Interpreter::SystemCall::SRI::make_create_world(preset);
+		const Client::SystemRequestData request{
+			.sub_type = Karkinolution::Networking::Frames::SystemCallSubTypes::CREATE_WORLD,
+			.payload  = {payload.begin(), payload.end()},
+			.extra    = Karkinolution::Networking::Frames::Models::SystemCall::CreateWorldExtra{auto_connect}};
+		const auto result = client.request(request);
+		if (!result || !result.value().has_value()) {
+			return false;
+		}
+		const auto &output = result.value().value();
+		if (output.get_sub_type() != Karkinolution::Networking::Frames::SystemOutputSubTypes::WorldCreated) {
+			throw ClientError("Unexpected system output subtype for create world");
+		}
+		return Karkinolution::Networking::Frames::Interpreter::DSI::get_world_created(output.get_payload())
+			.world_created;
+	}
+
 	template <HasSystemRequest T> std::optional<bool> config(T &client, Karkinolution::World::WorldId world_id) {
 		const auto payload = Karkinolution::Networking::Frames::Interpreter::SystemCall::SRI::make_config(world_id);
 		const Client::SystemRequestData request{.sub_type =

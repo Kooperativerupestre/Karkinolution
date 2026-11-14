@@ -105,11 +105,17 @@ namespace Karkinolution {
 				template <KShared::Binary::ByteRange T>
 				Models::SystemCall::SystemCall parse_system_call_frame(const T &bytes) {
 					const auto sub_type = std::get<SystemCallSubTypes>(Internal::get_sub_type(bytes));
+					Models::SystemCall::SystemCallExtra extra = std::monostate{};
+					if (sub_type == SystemCallSubTypes::CREATE_WORLD) {
+						extra = Models::SystemCall::CreateWorldExtra{
+							.auto_connect = SystemCall::ST::CreateWorld::get_auto_connect(bytes)};
+					}
 
 					return {Internal::get_declared_size(bytes),
 							get_payload(bytes),
 							SystemCall::get_id(bytes),
-							sub_type};
+							sub_type,
+							extra};
 				}
 
 				template <KShared::Binary::ByteRange T>

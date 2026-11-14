@@ -5,6 +5,7 @@
 #include "karkinolution/world/world.hpp"
 #include "shared/binary/byte_utils.hpp"
 #include "shared/binary/deserializer.hpp"
+#include "shared/binary/interpreters/unit.hpp"
 #include "shared/binary/serializer.hpp"
 
 #include <karkinolution/networking/frame/interpreter.hpp>
@@ -12,6 +13,31 @@
 
 namespace Karkinolution {
 	namespace Networking::Frames::Interpreter {
+		WorldPreset::SRI::Bytes WorldPreset::SRI::serialize(const World::WorldPreset &preset) {
+			WorldPreset::SRI::Bytes bytes{};
+			KShared::Binary::Utils::append_bytes(bytes,
+												 KShared::Binary::Serializer::serialize(preset.seed),
+												 WorldPreset::SRI::Layout::Seed::OFFSET);
+			KShared::Binary::Utils::append_bytes(bytes,
+												 UnitsSRI::serialize_size(preset.size),
+												 WorldPreset::SRI::Layout::Size::OFFSET);
+			KShared::Binary::Utils::append_bytes(bytes,
+												 KShared::Binary::Serializer::convert_float(preset.epsilon),
+												 WorldPreset::SRI::Layout::Epsilon::OFFSET);
+			return bytes;
+		}
+
+		World::WorldPreset WorldPreset::DSI::deserialize(const std::vector<std::byte> &bytes, std::size_t offset) {
+			return World::WorldPreset{
+				.seed =
+					KShared::Binary::Deserializer::deserialize<int>(bytes,
+																	offset + WorldPreset::SRI::Layout::Seed::OFFSET),
+				.size = UnitsDSI::deserialize_size(bytes, offset + WorldPreset::SRI::Layout::Size::OFFSET),
+				.epsilon =
+					KShared::Binary::Deserializer::read_float(bytes,
+															  offset + WorldPreset::SRI::Layout::Epsilon::OFFSET)};
+		}
+
 		std::vector<std::byte> SRI::serialize(const std::vector<World::WorldId> &world_ids) {
 			return Binary::Types::List::SRI::serialize<sizeof(World::WorldId)>(world_ids, [](const World::WorldId id) {
 				return KShared::Binary::Serializer::serialize(id);
@@ -70,6 +96,10 @@ namespace Karkinolution {
 						offset + SRI::Layout::ConfigOutput::CouldConnect::OFFSET)};
 		}
 
+		DSI::WorldCreatedOutput DSI::get_world_created(const std::vector<std::byte> &bytes, std::size_t offset) {
+			return {.world_created = KShared::Binary::Deserializer::read_bool(bytes, offset)};
+		}
+
 		// OTHERS
 
 		std::array<std::byte, SystemCall::SRI::Layout::Config::TOTAL_SIZE>
@@ -81,15 +111,32 @@ namespace Karkinolution {
 			return bytes;
 		}
 
+		WorldPreset::SRI::Bytes SystemCall::SRI::make_create_world(const World::WorldPreset &preset) {
+			return WorldPreset::SRI::serialize(preset);
+		}
+
 		World::WorldId SystemCall::DSI::get_config(const std::vector<std::byte> &bytes, std::size_t offset) {
 			return KShared::Binary::Deserializer::deserialize<World::WorldId>(
 				bytes,
 				offset + SystemCall::SRI::Layout::Config::WorldId::OFFSET);
 		}
 
+		World::WorldPreset SystemCall::DSI::get_create_world(const std::vector<std::byte> &bytes, std::size_t offset) {
+			return WorldPreset::DSI::deserialize(bytes, offset);
+		}
+
 		std::array<std::byte, SRI::Layout::ConfigOutput::TotalSize>
 		SystemOutput::SRI::make_config_output(const ConfigOutput &output) {
 			return Interpreter::SRI::serialize(output);
+		}
+
+		std::array<std::byte, sizeof(bool)>
+		SystemOutput::SRI::make_world_created(const DSI::WorldCreatedOutput &output) {
+			std::array<std::byte, sizeof(bool)> bytes{};
+			KShared::Binary::Utils::append_bytes(bytes,
+												 KShared::Binary::Serializer::serialize(output.world_created),
+												 0);
+			return bytes;
 		}
 	} // namespace Networking::Frames::Interpreter
 } // namespace Karkinolution

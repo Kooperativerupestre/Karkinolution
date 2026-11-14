@@ -31,6 +31,13 @@ namespace Karkinolution {
 
 							inline constexpr std::size_t FIXED_HEADER_SIZE = Payload::END;
 						} // namespace GetAllWorldIds
+
+						namespace CreateWorld {
+							using AutoConnect = KShared::Binary::Field<Id::END, sizeof(bool)>;
+							using Payload     = KShared::Binary::Field<AutoConnect::END, 0>;
+
+							inline constexpr std::size_t FIXED_HEADER_SIZE = Payload::END;
+						} // namespace CreateWorld
 					} // namespace ST
 				} // namespace SystemCall
 
@@ -51,6 +58,12 @@ namespace Karkinolution {
 
 							inline constexpr std::size_t FIXED_HEADER_SIZE = Payload::END;
 						} // namespace AllWorldIds
+
+						namespace WorldCreated {
+							using Payload = KShared::Binary::Field<CallId::END, 0>;
+
+							inline constexpr std::size_t FIXED_HEADER_SIZE = Payload::END;
+						} // namespace WorldCreated
 					} // namespace ST
 				} // namespace SystemOutput
 			} // namespace Layout

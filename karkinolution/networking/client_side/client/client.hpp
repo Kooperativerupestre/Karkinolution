@@ -46,8 +46,9 @@ namespace Karkinolution::Networking::ClientSide {
 		};
 
 		struct SystemRequestData {
-				Karkinolution::Networking::Frames::SystemCallSubTypes sub_type;
-				std::vector<std::byte>                                payload;
+				Karkinolution::Networking::Frames::SystemCallSubTypes                  sub_type;
+				std::vector<std::byte>                                                 payload;
+				Karkinolution::Networking::Frames::Models::SystemCall::SystemCallExtra extra = std::monostate{};
 		};
 
 		struct Config {

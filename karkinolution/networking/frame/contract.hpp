@@ -31,16 +31,18 @@ namespace Karkinolution {
 			namespace SystemCall {
 				using Id = KShared::Core::Id::BaseIdType;
 				enum class SubType : uint8_t {
-					// Can have more fields than SystemCall base?
-
 					CONFIG            = 0, // Yes
-					GET_ALL_WORLD_IDS = 4  // No
+					GET_ALL_WORLD_IDS = 4, // No
+					// This subtype is dedicated because AutoConnect extends the base header.
+					CREATE_WORLD = 5 // Yes
 				};
 
 				namespace ST {
 					namespace Config {}
 
 					namespace GetAllWorldIds {}
+
+					namespace CreateWorld {}
 				} // namespace ST
 			} // namespace SystemCall
 
@@ -53,7 +55,8 @@ namespace Karkinolution {
 					AllWorldIds  = 1, // No
 					WorldState   = 2, // Yes
 					None         = 3, // No
-					ConfigOutput = 4  // No
+					ConfigOutput = 4, // No
+					WorldCreated = 5  // No
 				};
 			} // namespace SystemOutput
 

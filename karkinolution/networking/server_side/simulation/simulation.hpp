@@ -32,6 +32,11 @@ namespace Karkinolution::Networking::ServerSide::Simulation {
 				: worlds(worlds) {}
 
 			bool has_world(World::WorldId id) const;
+			// Creation and optional acquisition must share this lock or another connection can claim the new world.
+			bool create_world(const World::WorldPreset               &preset,
+							  bool                                    auto_connect,
+							  ConnectionId                            connection_id,
+							  std::optional<GiftLease<World::World>> &world_lease);
 
 			std::vector<World::WorldId>            get_all_world_ids() const;
 			std::optional<GiftLease<World::World>> take_world(World::WorldId id, ConnectionId connection_id);

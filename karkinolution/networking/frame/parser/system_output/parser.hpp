@@ -5,6 +5,7 @@
 #include "karkinolution/networking/frame/parser/system_output/core.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
+#include <karkinolution/networking/frame/parser/system_output/sub_types/world_created.hpp>
 #include <karkinolution/networking/frame/parser/system_output/sub_types/world_state.hpp>
 #include <shared/binary/byte_range.hpp>
 
@@ -24,6 +25,8 @@ namespace Karkinolution {
 								return generic_calculate_declared_size(payload_size);
 							case SystemOutputSubTypes::ConfigOutput:
 								return generic_calculate_declared_size(payload_size);
+							case SystemOutputSubTypes::WorldCreated:
+								return ST::WorldCreated::calculate_declared_size(payload_size);
 						}
 
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemOutput (frame)");
@@ -40,6 +43,8 @@ namespace Karkinolution {
 								return generic_calculate_payload_size(declared_size);
 							case SystemOutputSubTypes::ConfigOutput:
 								return generic_calculate_payload_size(declared_size);
+							case SystemOutputSubTypes::WorldCreated:
+								return ST::WorldCreated::calculate_payload_size(declared_size);
 						}
 
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemOutput (frame)");
@@ -62,6 +67,8 @@ namespace Karkinolution {
 								return generic_get_payload(bytes);
 							case SystemOutputSubTypes::ConfigOutput:
 								return generic_get_payload(bytes);
+							case SystemOutputSubTypes::WorldCreated:
+								return ST::WorldCreated::get_payload(bytes);
 						}
 
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemOutput (frame)");

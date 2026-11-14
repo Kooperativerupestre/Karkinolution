@@ -6,6 +6,7 @@
 
 #include <karkinolution/networking/frame/parser/system_call/core.hpp>
 #include <karkinolution/networking/frame/parser/system_call/sub_types/config.hpp>
+#include <karkinolution/networking/frame/parser/system_call/sub_types/create_world.hpp>
 #include <shared/binary/byte_range.hpp>
 
 namespace Karkinolution {
@@ -20,6 +21,8 @@ namespace Karkinolution {
 								return ST::Config::calculate_declared_size(payload_size);
 							case SystemCallSubTypes::GET_ALL_WORLD_IDS:
 								return generic_calculate_declared_size(payload_size);
+							case SystemCallSubTypes::CREATE_WORLD:
+								return ST::CreateWorld::calculate_declared_size(payload_size);
 						}
 
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemCall (frame)");
@@ -32,6 +35,8 @@ namespace Karkinolution {
 								return ST::Config::calculate_payload_size(declared_size);
 							case SystemCallSubTypes::GET_ALL_WORLD_IDS:
 								return generic_calculate_payload_size(declared_size);
+							case SystemCallSubTypes::CREATE_WORLD:
+								return ST::CreateWorld::calculate_payload_size(declared_size);
 						}
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemCall (frame)");
 					}
@@ -48,6 +53,8 @@ namespace Karkinolution {
 							return ST::Config::get_payload(bytes);
 						} else if (sub_type == SystemCallSubTypes::GET_ALL_WORLD_IDS) {
 							return generic_get_payload(bytes);
+						} else if (sub_type == SystemCallSubTypes::CREATE_WORLD) {
+							return ST::CreateWorld::get_payload(bytes);
 						}
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemCall (frame))");
 					}

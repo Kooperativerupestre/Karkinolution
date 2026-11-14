@@ -90,7 +90,10 @@ namespace Karkinolution::Networking::ClientSide::Client {
 		Validator::validate_is_connected(*this);
 		const auto request_id = next_request_id.fetch_add(1);
 		const auto frame      = Karkinolution::Networking::Scope::Motor::make_system_frame(
-            Karkinolution::Networking::Frames::Motor::make_raw_system_call(data.sub_type, request_id, data.payload));
+            Karkinolution::Networking::Frames::Motor::make_raw_system_call(data.sub_type,
+                                                                           request_id,
+                                                                           data.payload,
+                                                                           data.extra));
 		protocol_session.register_system_request(request_id);
 		asio::post(strand_, [this, frame] {
 			protocol_session.enqueue_request(frame);
