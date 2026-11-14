@@ -63,6 +63,8 @@ namespace Opsiamethystos {
 						// Text is measured and stored locally; origin is added only for rendering
 						// so indexed/current bounds remain stable during panel dragging.
 						void draw(const Geometry::Position &origin) const;
+						void draw_centered_in(const Geometry::Rectangle &container,
+											  const Geometry::Position  &origin = {0, 0}) const;
 				};
 			} // namespace LowLevel
 		} // namespace Components

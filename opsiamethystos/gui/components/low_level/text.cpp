@@ -60,3 +60,13 @@ void Opsiamethystos::Gui::Components::LowLevel::Text::draw(const Geometry::Posit
 			 font_size.value(),
 			 Opsiamethystos::Gui::Colors::translate(color));
 }
+
+void Opsiamethystos::Gui::Components::LowLevel::Text::draw_centered_in(const Geometry::Rectangle &container,
+																	   const Geometry::Position  &origin) const {
+	const auto measured = measure_(text_, font_size.value());
+	DrawText(text_.c_str(),
+			 static_cast<int>(container.position.x - measured.width / 2.0 + origin.x),
+			 static_cast<int>(container.position.y - measured.height / 2.0 + origin.y),
+			 font_size.value(),
+			 Opsiamethystos::Gui::Colors::translate(color));
+}

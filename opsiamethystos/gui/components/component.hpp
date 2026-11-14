@@ -135,6 +135,11 @@ namespace Opsiamethystos {
 					const AllComponents &get_data() const noexcept {
 						return data_;
 					}
+
+					[[nodiscard]]
+					AllComponents &get_data() noexcept {
+						return data_;
+					}
 			};
 		} // namespace Components
 	} // namespace Gui
