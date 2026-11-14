@@ -149,14 +149,14 @@ Running `conan install . --build=missing -s build_type=Debug` generates the tool
 ## Style and tidy checks
 
 ```bash
-karkinolution style check src/karkinolution main.cpp
-karkinolution tidy check src/karkinolution main.cpp --build-dir build
+karkinolution style check karkinolution app
+karkinolution tidy check karkinolution app --build-dir build
 ```
 
 Check only the files changed since a Git ref (compared against the merge base):
 
 ```bash
-karkinolution tidy check src/karkinolution main.cpp --build-dir build --changed-since origin/main
+karkinolution tidy check karkinolution app --build-dir build --changed-since origin/main
 ```
 
 `tidy check` needs `build/compile_commands.json`, which is regenerated on every configure.
