@@ -69,9 +69,9 @@ namespace Karkinolution::Organisms::Entities::Creature::Brain::Perception {
 	using PerceptionNatureRegistry = std::unordered_map<Karkinolution::Organisms::Nature::NatureId, PerceivedNature>;
 	using PerceptionSoilRegistry   = std::unordered_map<Karkinolution::Terrain::Soil::SoilPieceId, PerceivedSoil>;
 
-	using EntityFilter = std::move_only_function<bool(const PerceivedEntity &)>;
-	using SoilFilter   = std::move_only_function<bool(const PerceivedSoil &)>;
-	using NatureFilter = std::move_only_function<bool(const PerceivedNature &)>;
+	using EntityFilter = std::function<bool(const PerceivedEntity &)>;
+	using SoilFilter   = std::function<bool(const PerceivedSoil &)>;
+	using NatureFilter = std::function<bool(const PerceivedNature &)>;
 
 	class Perception;
 

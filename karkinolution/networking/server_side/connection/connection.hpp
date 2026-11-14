@@ -4,6 +4,7 @@
 #include "shared/functional/unique_gift.hpp"
 
 #include <atomic>
+#include <functional>
 #include <karkinolution/global_aliasses.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <karkinolution/networking/connection_id.hpp>
@@ -31,7 +32,7 @@ namespace Karkinolution::Networking::ServerSide::Connection {
 			Connection(Socket socket, Simulation::Simulation &simulation);
 
 			void                                        start();
-			std::move_only_function<void(Connection &)> on_closed;
+			std::function<void(Connection &)> on_closed;
 			void                                        close();
 
 			ConnectionId get_id() const {
