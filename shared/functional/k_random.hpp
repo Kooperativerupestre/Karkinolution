@@ -5,6 +5,7 @@
 #include <array>
 #include <random>
 #include <ranges>
+#include <vector>
 
 using KShared::Math::LV::CT::NormalizedValue;
 using KShared::Math::Vec::Vec2;
