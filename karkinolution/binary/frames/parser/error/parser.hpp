@@ -13,17 +13,16 @@ namespace Karkinolution::Binary::Frames::Parser {
 			return Internal::calculate_payload_size(declared_size, ProtocolLayout::Error::Payload::OFFSET);
 		}
 
-		template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+		template <KShared::Binary::ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
 			return Internal::calculate_payload_size(bytes, ProtocolLayout::Error::Payload::OFFSET);
 		}
 
-		template <ByteRange T> RequestId get_request_id(const T &bytes) {
-			return Karkinolution::Binary::Deserializer::deserialize<RequestId>(
-				bytes,
-				ProtocolLayout::Error::RequestId::OFFSET);
+		template <KShared::Binary::ByteRange T> RequestId get_request_id(const T &bytes) {
+			return KShared::Binary::Deserializer::deserialize<RequestId>(bytes,
+																		 ProtocolLayout::Error::RequestId::OFFSET);
 		}
 
-		template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+		template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 			std::vector<std::byte> payload;
 
 			payload.insert(payload.end(),

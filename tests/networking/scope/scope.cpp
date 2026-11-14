@@ -24,6 +24,6 @@ TEST(ScopeFrames, PrefixesServerAndWorldFramesWithOnlyTheirScopeByte) {
 }
 
 TEST(ScopeParser, RejectsEmptyAndUnknownScopeFrames) {
-	EXPECT_THROW(Scope::Parser::get_type(std::vector<std::byte>{}), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(Scope::Parser::get_type(std::vector<std::byte>{std::byte{0xFF}}), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(Scope::Parser::get_type(std::vector<std::byte>{}), KShared::Binary::ByteError);
+	EXPECT_THROW(Scope::Parser::get_type(std::vector<std::byte>{std::byte{0xFF}}), KShared::Binary::ByteError);
 }

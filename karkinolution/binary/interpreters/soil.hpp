@@ -1,13 +1,13 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
-#include "karkinolution/binary/interpreters/geometry.hpp"
 #include "karkinolution/binary/interpreters/identity.hpp"
 #include "karkinolution/binary/interpreters/models/soil.hpp"
 #include "karkinolution/binary/interpreters/properties.hpp"
-#include "karkinolution/binary/interpreters/vec.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
+#include "shared/binary/fields.hpp"
+#include "shared/binary/interpreters/geometry.hpp"
+#include "shared/binary/interpreters/vec.hpp"
 #include "shared/core/id.hpp"
 #include "shared/math/units.hpp"
 
@@ -23,18 +23,18 @@ namespace Karkinolution {
 			namespace SRI {
 				namespace Soil {
 					namespace Layout {
-						using Type                      = Field<0, 1>;
-						using PropertiesCount           = Next<Type, 1>;
-						using PropertiesData            = Next<PropertiesCount, 8>;
-						using RequiredCapabilitiesCount = Next<PropertiesData, 1>;
-						using RequiredCapabilitiesData  = Next<RequiredCapabilitiesCount, 10>;
-						using HasDamage                 = Next<RequiredCapabilitiesData, 1>;
-						using Damage                    = Next<HasDamage, 4>;
-						using HasMovementCost           = Next<Damage, 1>;
-						using MovementCost              = Next<HasMovementCost, 4>;
-						using Radius                    = Next<MovementCost, 8>;
-						using Position                  = Next<Radius, 24>;
-						using Id                        = Next<Position, 8>;
+						using Type                      = KShared::Binary::Field<0, 1>;
+						using PropertiesCount           = KShared::Binary::Next<Type, 1>;
+						using PropertiesData            = KShared::Binary::Next<PropertiesCount, 8>;
+						using RequiredCapabilitiesCount = KShared::Binary::Next<PropertiesData, 1>;
+						using RequiredCapabilitiesData  = KShared::Binary::Next<RequiredCapabilitiesCount, 10>;
+						using HasDamage                 = KShared::Binary::Next<RequiredCapabilitiesData, 1>;
+						using Damage                    = KShared::Binary::Next<HasDamage, 4>;
+						using HasMovementCost           = KShared::Binary::Next<Damage, 1>;
+						using MovementCost              = KShared::Binary::Next<HasMovementCost, 4>;
+						using Radius                    = KShared::Binary::Next<MovementCost, 8>;
+						using Position                  = KShared::Binary::Next<Radius, 24>;
+						using Id                        = KShared::Binary::Next<Position, 8>;
 
 						inline constexpr std::size_t TOTAL_SIZE = Id::END;
 

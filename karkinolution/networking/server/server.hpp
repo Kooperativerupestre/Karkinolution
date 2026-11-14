@@ -30,13 +30,13 @@ namespace Karkinolution::Networking::Server {
 
 			std::vector<std::unique_ptr<Connection::Connection>> connections;
 
-			void                                             accept();
-			void                                             remove_connection(Connection::Connection &connection);
-			Karkinolution::World::WorldStorage              &world_storage_;
-			Simulation::Simulation                           simulation_;
-			Acceptor                                         acceptor_;
-			IoContext                                       &io_context;
-			asio::signal_set                                 signals_;
+			void                                accept();
+			void                                remove_connection(Connection::Connection &connection);
+			Karkinolution::World::WorldStorage &world_storage_;
+			Simulation::Simulation              simulation_;
+			Acceptor                            acceptor_;
+			IoContext                          &io_context;
+			asio::signal_set                    signals_;
 	};
 
 } // namespace Karkinolution::Networking::Server

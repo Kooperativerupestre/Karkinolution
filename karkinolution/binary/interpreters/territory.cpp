@@ -1,16 +1,16 @@
 #include "karkinolution/binary/interpreters/territory.hpp"
 
-#include "karkinolution/binary/byte_utils.hpp"
-#include "karkinolution/binary/deserializer.hpp"
-#include "karkinolution/binary/interpreters/unit.hpp"
-#include "karkinolution/binary/serializer.hpp"
+#include "shared/binary/byte_utils.hpp"
+#include "shared/binary/deserializer.hpp"
+#include "shared/binary/interpreters/unit.hpp"
+#include "shared/binary/serializer.hpp"
 
 TerritorySRI::BytesArrays::Territory
 TerritorySRI::serialize_territory(const Karkinolution::Binary::Interpreters::Models::Territory::Territory &territory) {
 	TerritorySRI::BytesArrays::Territory bytes{};
 
 	const auto size_bytes = UnitsSRI::serialize_size(territory.size);
-	Karkinolution::Binary::Utils::append_bytes(bytes, size_bytes, TerritorySRI::Layout::Size::OFFSET);
+	KShared::Binary::Utils::append_bytes(bytes, size_bytes, TerritorySRI::Layout::Size::OFFSET);
 
 	return bytes;
 }

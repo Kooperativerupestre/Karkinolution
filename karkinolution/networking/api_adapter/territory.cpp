@@ -7,11 +7,11 @@
 #include <karkinolution/networking/api_adapter/territory.hpp>
 
 ResponseFrame Karkinolution::Networking::APIBYA::Territory::see_territory(const Karkinolution::World::World &world,
-																					  Binary::RequestId request_id) {
+																		  Binary::RequestId request_id) {
 	const auto territory = Karkinolution::API::Territory::see_territory(world);
 	const auto payload   = TerritorySRI::serialize_territory(territory);
 	return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::TERRITORY,
 															   request_id,
 															   payload,
-																				Binary::ResponseCardinality::ONE);
+															   Binary::ResponseCardinality::ONE);
 }

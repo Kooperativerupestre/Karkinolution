@@ -9,7 +9,7 @@ namespace Karkinolution {
 					namespace ST {
 
 						namespace Want {
-							template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+							template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 								std::vector<std::byte> payload;
 								payload.insert(payload.end(),
 											   bytes.begin() + ProtocolLayout::Request::Want::Payload::OFFSET,
@@ -32,7 +32,8 @@ namespace Karkinolution {
 									ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);
 							}
 
-							template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							template <KShared::Binary::ByteRange T>
+							constexpr std::uint32_t calculate_payload_size(const T &bytes) {
 								return Internal::calculate_payload_size(
 									bytes,
 									ProtocolLayout::Request::Want::FIXED_HEADER_SIZE);

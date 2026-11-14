@@ -1,9 +1,9 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
 #include "karkinolution/networking/simulation/config_output.hpp"
 #include "karkinolution/networking/simulation/world_state.hpp"
 #include "karkinolution/world/world.hpp"
+#include "shared/binary/fields.hpp"
 
 #include <array>
 #include <cstddef>
@@ -29,14 +29,14 @@ namespace Karkinolution {
 
 					namespace Layout {
 						namespace WorldState {
-							using HasOwnerId = Binary::Field<0, 1>;
-							using OwnerId    = Binary::Next<HasOwnerId, sizeof(World::WorldId)>;
+							using HasOwnerId = KShared::Binary::Field<0, 1>;
+							using OwnerId    = KShared::Binary::Next<HasOwnerId, sizeof(World::WorldId)>;
 
 							inline constexpr std::size_t TotalSize = OwnerId::END;
 						} // namespace WorldState
 
 						namespace ConfigOutput {
-							using CouldConnect = Binary::Field<0, 1>;
+							using CouldConnect = KShared::Binary::Field<0, 1>;
 
 							inline constexpr std::size_t TotalSize = CouldConnect::END;
 						} // namespace ConfigOutput
@@ -62,7 +62,7 @@ namespace Karkinolution {
 					namespace SRI {
 						namespace Layout {
 							namespace Config {
-								using WorldId                           = Binary::Field<0, sizeof(World::WorldId)>;
+								using WorldId = KShared::Binary::Field<0, sizeof(World::WorldId)>;
 								inline constexpr std::size_t TOTAL_SIZE = WorldId::END;
 							} // namespace Config
 						} // namespace Layout

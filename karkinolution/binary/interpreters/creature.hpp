@@ -1,15 +1,15 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/models/creature.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
+#include "shared/binary/fields.hpp"
 #include "shared/core/id.hpp"
 
 #include <array>
 #include <cstdlib>
-#include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
+#include <shared/binary/interpreters/vec.hpp>
 #include <vector>
 
 namespace Karkinolution {
@@ -34,13 +34,13 @@ namespace Karkinolution {
 					namespace Layout {
 						inline std::size_t constexpr MAX_NAME_SIZE = 64;
 
-						using Gender                            = Field<0, 1>;
-						using Specie                            = Next<Gender, 1>;
-						using PositionX                         = Next<Specie, VecSRI::Layout::AXIS_SIZE>;
-						using PositionY                         = Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
-						using NameSize                          = Next<PositionY, 1>;
-						using Name                              = Next<NameSize, MAX_NAME_SIZE>;
-						using Id                                = Next<Name, 8>;
+						using Gender    = KShared::Binary::Field<0, 1>;
+						using Specie    = KShared::Binary::Next<Gender, 1>;
+						using PositionX = KShared::Binary::Next<Specie, VecSRI::Layout::AXIS_SIZE>;
+						using PositionY = KShared::Binary::Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
+						using NameSize  = KShared::Binary::Next<PositionY, 1>;
+						using Name      = KShared::Binary::Next<NameSize, MAX_NAME_SIZE>;
+						using Id        = KShared::Binary::Next<Name, 8>;
 						inline constexpr std::size_t TOTAL_SIZE = Id::END;
 					} // namespace Layout
 
@@ -59,15 +59,15 @@ namespace Karkinolution {
 					namespace Request {
 						namespace Layout {
 							namespace CreateCreature {
-								using HasGender   = Field<0, 1>;
-								using Gender      = Next<HasGender, 1>;
-								using HasSpecies  = Next<Gender, 1>;
-								using Species     = Next<HasSpecies, 1>;
-								using HasPosition = Next<Species, 1>;
-								using Position    = Next<HasPosition, VecSRI::Layout::TOTAL_SIZE>;
-								using HasName     = Next<Position, 1>;
-								using NameSize    = Next<HasName, 1>;
-								using Name        = Next<HasName, Creature::Layout::MAX_NAME_SIZE>;
+								using HasGender   = KShared::Binary::Field<0, 1>;
+								using Gender      = KShared::Binary::Next<HasGender, 1>;
+								using HasSpecies  = KShared::Binary::Next<Gender, 1>;
+								using Species     = KShared::Binary::Next<HasSpecies, 1>;
+								using HasPosition = KShared::Binary::Next<Species, 1>;
+								using Position    = KShared::Binary::Next<HasPosition, VecSRI::Layout::TOTAL_SIZE>;
+								using HasName     = KShared::Binary::Next<Position, 1>;
+								using NameSize    = KShared::Binary::Next<HasName, 1>;
+								using Name        = KShared::Binary::Next<HasName, Creature::Layout::MAX_NAME_SIZE>;
 
 								inline constexpr std::size_t TOTAL_SIZE = Name::SIZE;
 							} // namespace CreateCreature

@@ -13,12 +13,12 @@ namespace Karkinolution::Networking {
 			asio::io_context io_context;
 
 			std::optional<Server::Server> server;
-			World::WorldStorage world_storage;
+			World::WorldStorage           world_storage;
 
 		public:
 
 			void stop_server();
 			void create(const World::WorldPreset &preset);
-		};
+	};
 
 } // namespace Karkinolution::Networking

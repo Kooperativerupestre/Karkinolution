@@ -55,12 +55,12 @@ namespace Karkinolution {
 						KShared::Functional::unreachable_or_throw();
 					}
 
-					template <ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					std::uint32_t calculate_payload_size(const T &bytes, RequestSubTypes sub_type) {
 						return calculate_payload_size(get_declared_size(bytes), sub_type);
 					}
 
-					template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+					template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 
 						const auto sub_type = std::get<RequestSubTypes>(get_sub_type(bytes));
 

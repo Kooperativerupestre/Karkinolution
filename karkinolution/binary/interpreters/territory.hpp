@@ -1,8 +1,8 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/models/territory.hpp"
-#include "karkinolution/binary/interpreters/unit.hpp"
+#include "shared/binary/fields.hpp"
+#include "shared/binary/interpreters/unit.hpp"
 #include "shared/math/units.hpp"
 
 #include <array>
@@ -24,7 +24,7 @@ namespace Karkinolution {
 					 */
 
 					namespace Layout {
-						using Size = Field<0, UnitsSRI::Layout::TOTAL_SIZE>;
+						using Size = KShared::Binary::Field<0, UnitsSRI::Layout::TOTAL_SIZE>;
 
 						inline size_t constexpr TOTAL_SIZE = Size::END;
 					} // namespace Layout

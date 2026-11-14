@@ -1,7 +1,7 @@
 #pragma once
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/deserializer.hpp"
 #include "karkinolution/networking/frame/layout.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/deserializer.hpp"
 
 #include <karkinolution/networking/frame/contract.hpp>
 #include <karkinolution/networking/frame/parser/internal.hpp>
@@ -11,13 +11,13 @@ namespace Karkinolution {
 		namespace Frames {
 			namespace Parser {
 				namespace SystemCall {
-					template <Binary::ByteRange T> Frames::SystemCall::Id get_id(const T &bytes) {
-						return Binary::Deserializer::deserialize<Frames::SystemCall::Id>(
+					template <KShared::Binary::ByteRange T> Frames::SystemCall::Id get_id(const T &bytes) {
+						return KShared::Binary::Deserializer::deserialize<Frames::SystemCall::Id>(
 							bytes,
 							Layout::SystemCall::Id::OFFSET);
 					}
 
-					template <Binary::ByteRange T> std::vector<std::byte> generic_get_payload(const T &bytes) {
+					template <KShared::Binary::ByteRange T> std::vector<std::byte> generic_get_payload(const T &bytes) {
 						std::vector<std::byte> payload;
 
 						payload.insert(
@@ -37,7 +37,7 @@ namespace Karkinolution {
 						return Internal::calculate_payload_size(declared_size, Layout::SystemCall::FIXED_HEADER_SIZE);
 					}
 
-					template <Binary::ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					constexpr std::uint32_t generic_calculate_payload_size(const T &bytes) {
 						return Internal::calculate_payload_size(bytes, Layout::SystemCall::FIXED_HEADER_SIZE);
 					}

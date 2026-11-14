@@ -1,29 +1,31 @@
 #pragma once
 
 
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/frames/errors.hpp"
 #include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/frames/processor.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/byte_utils.hpp"
 
 #include <array>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/binary/protocol/layouts.hpp>
-#include <karkinolution/binary/serializer.hpp>
+#include <karkinolution/binary/protocol/utils.hpp>
 #include <karkinolution/networking/scope/layout.hpp>
+#include <shared/binary/deserializer.hpp>
+#include <shared/binary/serializer.hpp>
 #include <vector>
 
 namespace Karkinolution {
 	namespace Binary {
 		namespace Frames {
 			namespace Motor {
-				template <ByteRange Payload> std::vector<std::byte> copy_payload(const Payload &payload) {
+				template <KShared::Binary::ByteRange Payload>
+				std::vector<std::byte> copy_payload(const Payload &payload) {
 					std::vector<std::byte> copied_payload;
 					copied_payload.reserve(payload.size());
 					for (std::size_t index = 0; index < payload.size(); ++index) {
@@ -34,21 +36,26 @@ namespace Karkinolution {
 
 				void constexpr append_declared_size(std::vector<std::byte>              &frame,
 													Protocol::Aliases::FrameDeclaredSize declared_size) {
-					Utils::append_bytes(frame,
-										Serializer::serialize<Protocol::Aliases::FrameDeclaredSize>(declared_size));
+					KShared::Binary::Utils::append_bytes(
+						frame,
+						KShared::Binary::Serializer::serialize<Protocol::Aliases::FrameDeclaredSize>(declared_size));
 				}
 
 				void constexpr append_type(std::vector<std::byte> &frame, BinaryTypes type) {
-					Utils::append_bytes(frame, Serializer::serialize(static_cast<Protocol::Aliases::FrameType>(type)));
+					KShared::Binary::Utils::append_bytes(
+						frame,
+						KShared::Binary::Serializer::serialize(static_cast<Protocol::Aliases::FrameType>(type)));
 				}
 
 				void constexpr append_sub_type(std::vector<std::byte> &frame, Protocol::Detail::CodeVariant sub_type) {
-					Utils::append_bytes(frame, Serializer::serialize(Utils::cast_numeric(sub_type)));
+					KShared::Binary::Utils::append_bytes(
+						frame,
+						KShared::Binary::Serializer::serialize(Utils::cast_numeric(sub_type)));
 				}
 
 				ResponseFrame make_none_response(RequestId request_id);
 
-				template <ByteRange Payload>
+				template <KShared::Binary::ByteRange Payload>
 				ResponseFrame make_response(Protocol::Response::Code sub_type,
 											RequestId                request_id,
 											const Payload           &payload,
@@ -63,7 +70,7 @@ namespace Karkinolution {
 						cardinality};
 				}
 
-				template <ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				ErrorFrame make_error(Karkinolution::Binary::Protocol::Error::Code sub_type,
 									  RequestId                                    request_id,
 									  const T                                     &payload) {
@@ -75,7 +82,7 @@ namespace Karkinolution {
 									  copy_payload(payload)};
 				}
 
-				template <ByteRange Payload>
+				template <KShared::Binary::ByteRange Payload>
 				RequestFrame make_request(RequestSubTypes                      sub_type,
 										  RequestId                            id,
 										  Resource                             resource,
@@ -93,7 +100,7 @@ namespace Karkinolution {
 						extra};
 				}
 
-				template <ByteRange T>
+				template <KShared::Binary::ByteRange T>
 
 				std::vector<std::byte> make_raw_response(ResponseCardinality cardinality,
 														 ResponseSubTypes    sub_type,
@@ -125,21 +132,20 @@ namespace Karkinolution {
 					// request id
 
 
-					Karkinolution::Binary::Utils::append_bytes(
-						frame,
-						Karkinolution::Binary::Serializer::serialize<RequestId>(request_id));
+					KShared::Binary::Utils::append_bytes(frame,
+														 KShared::Binary::Serializer::serialize<RequestId>(request_id));
 
 
-					Karkinolution::Binary::Utils::append_bytes(
+					KShared::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Response::Cardinality>(
+						KShared::Binary::Serializer::serialize<Protocol::Aliases::Response::Cardinality>(
 							static_cast<Protocol::Aliases::Response::Cardinality>(cardinality)));
 					// payload
 					frame.insert(frame.end(), payload.begin(), payload.end());
 					return frame;
 				}
 
-				template <ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				std::vector<std::byte> make_raw_error(ErrorSubTypes sub_type, RequestId request_id, const T &payload) {
 					const auto declared_size =
 						Frames::Parser::calculate_declared_size(payload.size(), BinaryTypes::Error, sub_type);
@@ -162,16 +168,15 @@ namespace Karkinolution {
 					// request id
 
 
-					Karkinolution::Binary::Utils::append_bytes(
-						frame,
-						Karkinolution::Binary::Serializer::serialize<RequestId>(request_id));
+					KShared::Binary::Utils::append_bytes(frame,
+														 KShared::Binary::Serializer::serialize<RequestId>(request_id));
 
 					// payload
 					frame.insert(frame.end(), payload.begin(), payload.end());
 					return frame;
 				}
 
-				template <ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				std::vector<std::byte>
 				make_response_raw_bytes(BinaryTypes                                   type,
 										std::variant<ErrorSubTypes, ResponseSubTypes> sub_type,
@@ -196,7 +201,7 @@ namespace Karkinolution {
 					throw FrameInvariantError("Response raw bytes require a response or error frame type");
 				}
 
-				template <ByteRange Payload>
+				template <KShared::Binary::ByteRange Payload>
 				std::vector<std::byte> make_request_raw_bytes(RequestSubTypes                      sub_type,
 															  RequestId                            id,
 															  Resource                             resource,
@@ -229,21 +234,21 @@ namespace Karkinolution {
 
 					// id
 
-					Karkinolution::Binary::Utils::append_bytes(
+					KShared::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<RequestId>(request.get_id()));
+						KShared::Binary::Serializer::serialize<RequestId>(request.get_id()));
 
 					// resource
-					Karkinolution::Binary::Utils::append_bytes(
+					KShared::Binary::Utils::append_bytes(
 						frame,
-						Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameResource>(
+						KShared::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameResource>(
 							static_cast<Protocol::Aliases::Request::FrameResource>(request.get_resource())));
 
 					if (request.get_sub_type() == RequestSubTypes::SEE) {
 						const auto target = std::get<Models::Request::SeeExtra>(request.get_extra()).target;
-						Karkinolution::Binary::Utils::append_bytes(
+						KShared::Binary::Utils::append_bytes(
 							frame,
-							Karkinolution::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameSeeTarget>(
+							KShared::Binary::Serializer::serialize<Protocol::Aliases::Request::FrameSeeTarget>(
 								static_cast<Protocol::Aliases::Request::FrameSeeTarget>(target)));
 					}
 

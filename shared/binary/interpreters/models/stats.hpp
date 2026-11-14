@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Binary {
 		namespace Interpreters {
 			namespace Models {
@@ -12,4 +12,4 @@ namespace Karkinolution {
 			} // namespace Models
 		} // namespace Interpreters
 	} // namespace Binary
-} // namespace Karkinolution
+} // namespace KShared

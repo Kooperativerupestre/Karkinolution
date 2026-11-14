@@ -1,13 +1,13 @@
 #pragma once
 
-#include "karkinolution/binary/interpreters/unit.hpp"
-#include "karkinolution/binary/serializer.hpp"
+#include "shared/binary/interpreters/unit.hpp"
+#include "shared/binary/serializer.hpp"
 #include "shared/math/geometry/models.hpp"
 
 #include <cstddef>
 #include <vector>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Binary {
 		namespace Interpreters {
 			namespace SRI {
@@ -44,7 +44,7 @@ namespace Karkinolution {
 			} // namespace DSI
 		} // namespace Interpreters
 	} // namespace Binary
-} // namespace Karkinolution
+} // namespace KShared
 
-namespace GeometrySRI = Karkinolution::Binary::Interpreters::SRI::Geometry;
-namespace GeometryDSI = Karkinolution::Binary::Interpreters::DSI::Geometry;
+namespace GeometrySRI = KShared::Binary::Interpreters::SRI::Geometry;
+namespace GeometryDSI = KShared::Binary::Interpreters::DSI::Geometry;

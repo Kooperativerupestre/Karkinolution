@@ -11,16 +11,28 @@
 
 ## Directory Structure
 
+### Shared binary primitives
+
+Reusable byte primitives live under `shared/binary/` in the `KShared::Binary` namespace. This layer contains byte-range
+constraints, byte append/padding helpers, generic serialization/deserialization, binary errors, supported-type
+constraints, field layout helpers, and type-name helpers. It must not depend on protocol contracts or frame models, so
+the core, networking, SDK, and other modules can use the same binary mechanics.
+
+Protocol-specific aliases, validators, numeric-type mappings, interpreters, and frames remain under
+`karkinolution/binary/` in the `Karkinolution::Binary` namespace and may depend on `KShared::Binary`.
+
 - **Core**:
-  - `src/karkinolution/binary/serializer.[hpp|cpp]`
-  - `src/karkinolution/binary/deserializer.hpp`
+  - `src/shared/binary/serializer.[hpp|cpp]`
+  - `src/shared/binary/deserializer.hpp`
 - **Interpreters**:
-  - `src/karkinolution/binary/interpreters/<name>.[hpp|cpp]`
+  - Domain interpreters: `src/karkinolution/binary/interpreters/<name>.[hpp|cpp]`
+  - Shared mathematical interpreters: `src/shared/binary/interpreters/<name>.[hpp|cpp]`
   - Each `<name>.hpp` contains SRI and DSI definitions, as well as the global aliases `namespace <Name>SRI` and `namespace <Name>DSI` at the bottom of the file.
   - Each `<name>.cpp` contains both SRI and DSI function implementations.
 - **Interpreter models**:
   - Domain model types are declared in `src/karkinolution/binary/interpreters/models/<name>.hpp`.
-  - Their namespace is `Karkinolution::Binary::Interpreters::Models::<Domain>`.
+  - Domain model namespace is `Karkinolution::Binary::Interpreters::Models::<Domain>`.
+  - Shared mathematical model namespace is `KShared::Binary::Interpreters::Models::<Domain>`.
   - DSI declarations and implementations refer to these models; model types are not nested inside DSI namespaces.
 
 ---

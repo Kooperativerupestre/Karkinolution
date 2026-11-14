@@ -3,7 +3,7 @@
 #include <concepts>
 #include <cstdint>
 
-namespace Karkinolution::Binary {
+namespace KShared::Binary {
 
 	template <typename T>
 	concept ByteRange = requires(const T &buffer, std::size_t offset) {
@@ -11,4 +11,4 @@ namespace Karkinolution::Binary {
 		{ buffer[offset] } -> std::convertible_to<std::byte>;
 	};
 
-} // namespace Karkinolution::Binary
+} // namespace KShared::Binary

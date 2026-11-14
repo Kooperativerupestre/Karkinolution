@@ -4,6 +4,7 @@
 #include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
+#include "karkinolution/binary/protocol/utils.hpp"
 #include "karkinolution/networking/api_adapter/corpse.hpp"
 
 #include <karkinolution/binary/frames/processor.hpp>
@@ -50,6 +51,6 @@ ResponseFrame Karkinolution::Binary::Frames::Processor::process(const RequestFra
 
 	KShared::Functional::unreachable_or_throw(
 		std::format("Non implemented yey: request sub type {} and request resource {}",
-					Binary::Utils::cast_numeric(sub_type),
-					Binary::Utils::cast_numeric(resource)));
+					Karkinolution::Binary::Utils::cast_numeric(sub_type),
+					Karkinolution::Binary::Utils::cast_numeric(resource)));
 }

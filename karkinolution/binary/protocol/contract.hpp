@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <shared/binary/numeric_type.hpp>
 #include <type_traits>
 #include <variant>
 
@@ -103,16 +104,7 @@ namespace Karkinolution::Binary::Protocol {
 		// Territory and None allow only One; other response types allow both cardinalities.
 	} // namespace Response
 
-
-	enum class NumericType : uint8_t {
-		FLOAT  = 1,
-		DOUBLE = 2,
-		UINT8  = 3,
-		UINT16 = 4,
-		UINT32 = 5,
-		UINT64 = 6,
-		INT    = 7
-	};
+	using NumericType = KShared::Binary::NumericType;
 
 	namespace Detail {
 

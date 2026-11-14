@@ -1,21 +1,21 @@
 #pragma once
 
-#include "karkinolution/binary/binary_error.hpp"
-#include "karkinolution/binary/binary_supported_types.hpp"
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/byte_utils.hpp"
-#include "karkinolution/binary/type_string.hpp"
+#include "shared/binary/binary_error.hpp"
+#include "shared/binary/binary_supported_types.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/byte_utils.hpp"
+#include "shared/binary/type_string.hpp"
 
 #include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <format>
-#include <karkinolution/binary/errors.hpp>
+#include <shared/binary/errors.hpp>
 #include <string>
 #include <string_view>
 #include <vector>
 
-namespace Karkinolution::Binary::Deserializer {
+namespace KShared::Binary::Deserializer {
 
 	namespace Core {
 
@@ -253,8 +253,7 @@ namespace Karkinolution::Binary::Deserializer {
 		} else if (bytes[offset] == static_cast<std::byte>(0x00)) {
 			return false;
 		} else {
-			throw ByteError(
-				std::format("Invalid bool value: {}", Karkinolution::Binary::Utils::byte_to_int(bytes[offset])));
+			throw ByteError(std::format("Invalid bool value: {}", KShared::Binary::Utils::byte_to_int(bytes[offset])));
 		}
 	}
 
@@ -264,7 +263,7 @@ namespace Karkinolution::Binary::Deserializer {
 		} else if (byte == static_cast<std::byte>(0x00)) {
 			return false;
 		} else {
-			throw ByteError(std::format("Invalid bool value: {}", Karkinolution::Binary::Utils::byte_to_int(byte)));
+			throw ByteError(std::format("Invalid bool value: {}", KShared::Binary::Utils::byte_to_int(byte)));
 		}
 	}
 
@@ -301,4 +300,4 @@ namespace Karkinolution::Binary::Deserializer {
 	}
 
 
-} // namespace Karkinolution::Binary::Deserializer
+} // namespace KShared::Binary::Deserializer

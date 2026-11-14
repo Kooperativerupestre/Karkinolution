@@ -1,21 +1,21 @@
 #pragma once
 #include <karkinolution/binary/binary_validators.hpp>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserializer.hpp>
+#include <shared/binary/deserializer.hpp>
 
 namespace Karkinolution {
 	namespace Binary {
 		namespace Frames {
 			namespace Parser {
 				namespace Request {
-					template <ByteRange T> RequestId get_id(const T &bytes) {
-						return Karkinolution::Binary::Deserializer::deserialize<RequestId>(
+					template <KShared::Binary::ByteRange T> RequestId get_id(const T &bytes) {
+						return KShared::Binary::Deserializer::deserialize<RequestId>(
 							bytes,
 							ProtocolLayout::Request::Id::OFFSET);
 					}
 
-					template <ByteRange T> Resource get_resource(const T &bytes) {
-						auto read = Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::FrameSubType>(
+					template <KShared::Binary::ByteRange T> Resource get_resource(const T &bytes) {
+						auto read = KShared::Binary::Deserializer::deserialize<Protocol::Aliases::FrameSubType>(
 							bytes,
 							ProtocolLayout::Request::Resource::OFFSET);
 

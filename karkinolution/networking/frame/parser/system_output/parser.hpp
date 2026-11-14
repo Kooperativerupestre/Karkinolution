@@ -5,8 +5,8 @@
 #include "karkinolution/networking/frame/parser/system_output/core.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
-#include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/networking/frame/parser/system_output/sub_types/world_state.hpp>
+#include <shared/binary/byte_range.hpp>
 
 namespace Karkinolution {
 	namespace Networking {
@@ -45,12 +45,12 @@ namespace Karkinolution {
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemOutput (frame)");
 					}
 
-					template <Binary::ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					std::uint32_t calculate_payload_size(const T &bytes, SystemOutputSubTypes sub_type) {
 						return calculate_payload_size(get_declared_size(bytes), sub_type);
 					}
 
-					template <Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+					template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 						const auto sub_type = std::get<SystemOutputSubTypes>(Internal::get_sub_type(bytes));
 
 						switch (sub_type) {

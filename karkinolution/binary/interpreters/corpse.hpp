@@ -1,8 +1,8 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/interpreters/identity.hpp"
 #include "karkinolution/binary/interpreters/models/corpse.hpp"
+#include "shared/binary/fields.hpp"
 #include "shared/core/id.hpp"
 #include "shared/math/physic/vec/model.hpp"
 #include "shared/math/units.hpp"
@@ -11,10 +11,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/interpreters/unit.hpp>
-#include <karkinolution/binary/interpreters/vec.hpp>
-#include <karkinolution/binary/serializer.hpp>
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
+#include <shared/binary/interpreters/unit.hpp>
+#include <shared/binary/interpreters/vec.hpp>
+#include <shared/binary/serializer.hpp>
 #include <vector>
 
 namespace Karkinolution {
@@ -38,12 +38,12 @@ namespace Karkinolution {
 					 */
 
 					namespace Layout {
-						using Id        = Field<0, sizeof(KShared::Core::Id::BaseIdType)>;
-						using RawMeat   = Next<Id, 4>;
-						using PositionX = Next<RawMeat, VecSRI::Layout::AXIS_SIZE>;
-						using PositionY = Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
-						using Width     = Next<PositionY, UnitsSRI::Layout::Width::SIZE>;
-						using Height    = Next<Width, Units::Layout::Height::SIZE>;
+						using Id        = KShared::Binary::Field<0, sizeof(KShared::Core::Id::BaseIdType)>;
+						using RawMeat   = KShared::Binary::Next<Id, 4>;
+						using PositionX = KShared::Binary::Next<RawMeat, VecSRI::Layout::AXIS_SIZE>;
+						using PositionY = KShared::Binary::Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
+						using Width     = KShared::Binary::Next<PositionY, UnitsSRI::Layout::Width::SIZE>;
+						using Height    = KShared::Binary::Next<Width, Units::Layout::Height::SIZE>;
 
 						inline constexpr std::size_t TOTAL_SIZE = Height::END;
 					} // namespace Layout
@@ -53,7 +53,7 @@ namespace Karkinolution {
 					} // namespace BytesArrays
 
 					IdBytes serialize_id(KShared::Core::Id::BaseIdType id);
-					Karkinolution::Binary::Serializer::Core::FourBytes
+					KShared::Binary::Serializer::Core::FourBytes
 											 serialize_raw_meat(const Karkinolution::Organisms::RawMeat &raw_meat);
 					VecSRI::BytesArrays::Vec serialize_position(const KShared::Math::Vec::Vec2 &position);
 					Units::BytesArrays::Size serialize_size(const KShared::Math::Units::Size &size);

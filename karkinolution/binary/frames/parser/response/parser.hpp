@@ -17,24 +17,25 @@ namespace Karkinolution {
 																ProtocolLayout::Response::Payload::OFFSET);
 					}
 
-					template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+					template <KShared::Binary::ByteRange T>
+					constexpr std::uint32_t calculate_payload_size(const T &bytes) {
 						return Internal::calculate_payload_size(bytes, ProtocolLayout::Response::Payload::OFFSET);
 					}
 
-					template <ByteRange T> RequestId get_request_id(const T &bytes) {
-						return Karkinolution::Binary::Deserializer::deserialize<RequestId>(
+					template <KShared::Binary::ByteRange T> RequestId get_request_id(const T &bytes) {
+						return KShared::Binary::Deserializer::deserialize<RequestId>(
 							bytes,
 							ProtocolLayout::Response::RequestId::OFFSET);
 					}
 
-					template <ByteRange T> ResponseCardinality get_cardinality(const T &bytes) {
+					template <KShared::Binary::ByteRange T> ResponseCardinality get_cardinality(const T &bytes) {
 						return static_cast<ResponseCardinality>(
-							Karkinolution::Binary::Deserializer::deserialize<Protocol::Aliases::Response::Cardinality>(
+							KShared::Binary::Deserializer::deserialize<Protocol::Aliases::Response::Cardinality>(
 								bytes,
 								ProtocolLayout::Response::Cardinality::OFFSET));
 					}
 
-					template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+					template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 						std::vector<std::byte> payload;
 						payload.insert(
 							payload.end(),

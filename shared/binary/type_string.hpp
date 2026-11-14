@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace Karkinolution::Binary {
+namespace KShared::Binary {
 
 	template <typename T> constexpr std::string_view nameof() {
 		if constexpr (std::is_same_v<T, bool>) {
@@ -39,4 +39,4 @@ namespace Karkinolution::Binary {
 		}
 	}
 
-} // namespace Karkinolution::Binary
+} // namespace KShared::Binary

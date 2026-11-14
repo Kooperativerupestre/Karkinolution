@@ -3,8 +3,8 @@
 #include <format>
 #include <karkinolution/binary/binary_validators.hpp>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/binary/frames/invariants.hpp>
+#include <shared/binary/deserializer.hpp>
 #include <shared/functional/unreachable_or_throw.hpp>
 
 namespace Karkinolution {
@@ -26,39 +26,39 @@ namespace Karkinolution {
 						const auto minimum_declared_size = fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
 
 						if (declared_size < minimum_declared_size) {
-							throw ByteError(std::format("Cannot get payload bytes because size {} < minimum size {}",
-														declared_size,
-														minimum_declared_size));
+							throw KShared::Binary::ByteError(
+								std::format("Cannot get payload bytes because size {} < minimum size {}",
+											declared_size,
+											minimum_declared_size));
 						}
 						return declared_size - minimum_declared_size;
 					}
 
-					template <ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					constexpr std::uint32_t calculate_payload_size(const T &bytes, std::size_t fixed_header_size) {
 						const auto declared_size =
-							Deserializer::read_uint32_t(bytes, ProtocolLayout::DeclaredSize::OFFSET);
+							KShared::Binary::Deserializer::read_uint32_t(bytes, ProtocolLayout::DeclaredSize::OFFSET);
 						return calculate_payload_size(declared_size, fixed_header_size);
 					}
 
-					template <ByteRange T> std::uint32_t get_declared_size(const T &bytes) {
-						return Karkinolution::Binary::Deserializer::read_uint32_t(bytes, 0);
+					template <KShared::Binary::ByteRange T> std::uint32_t get_declared_size(const T &bytes) {
+						return KShared::Binary::Deserializer::read_uint32_t(bytes, 0);
 					}
 
-					template <ByteRange T> BinaryTypes get_type(const T &bytes) {
+					template <KShared::Binary::ByteRange T> BinaryTypes get_type(const T &bytes) {
 						const auto raw =
-							Karkinolution::Binary::Deserializer::read_uint8_t(bytes,
-																			  ProtocolLayout::DeclaredSize::SIZE);
+							KShared::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::DeclaredSize::SIZE);
 
 						Protocol::Validator::validate_type(raw);
 						return static_cast<BinaryTypes>(raw);
 					}
 
-					template <ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					Karkinolution::Binary::Protocol::Detail::CodeVariant get_sub_type(const T &bytes) {
 						Karkinolution::Binary::Protocol::Detail::CodeVariant sub_type;
 						const auto                                           type = get_type(bytes);
 						const auto                                           read =
-							Karkinolution::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
+							KShared::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
 
 						Karkinolution::Binary::Protocol::Validator::validate_sub_type(type, read);
 
@@ -74,15 +74,15 @@ namespace Karkinolution {
 						KShared::Functional::unreachable_or_throw();
 					}
 
-					template <ByteRange T> bool has_size(const T &byte) {
+					template <KShared::Binary::ByteRange T> bool has_size(const T &byte) {
 						return byte.size() >= ProtocolLayout::DeclaredSize::END;
 					}
 
-					template <ByteRange T> bool has_type(const T &byte) {
+					template <KShared::Binary::ByteRange T> bool has_type(const T &byte) {
 						return byte.size() >= ProtocolLayout::Type::END;
 					}
 
-					template <ByteRange T> bool has_sub_type(const T &byte) {
+					template <KShared::Binary::ByteRange T> bool has_sub_type(const T &byte) {
 						return byte.size() >= ProtocolLayout::SubType::END;
 					}
 				} // namespace Internal

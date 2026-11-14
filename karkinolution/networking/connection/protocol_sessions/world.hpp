@@ -1,11 +1,11 @@
 #pragma once
 
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/byte_utils.hpp"
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/motor.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/byte_utils.hpp"
 #include "shared/math/units.hpp"
 
 #include <karkinolution/networking/raw_frame_buffer.hpp>

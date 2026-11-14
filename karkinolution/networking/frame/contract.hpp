@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
+#include "shared/binary/fields.hpp"
 
 #include <cstdint>
 #include <shared/core/id.hpp>

@@ -5,8 +5,8 @@
 #include "karkinolution/binary/protocol/layouts.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
-#include <karkinolution/binary/byte_range.hpp>
 #include <karkinolution/binary/core_aliases.hpp>
+#include <shared/binary/byte_range.hpp>
 #include <utility>
 #include <vector>
 

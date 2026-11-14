@@ -1,7 +1,7 @@
 #include <cstddef>
-#include <karkinolution/binary/serializer.hpp>
+#include <shared/binary/serializer.hpp>
 
-namespace Karkinolution::Binary::Serializer {
+namespace KShared::Binary::Serializer {
 
 	using Core::EightBytes;
 	using Core::FourBytes;
@@ -70,4 +70,4 @@ namespace Karkinolution::Binary::Serializer {
 		}
 	}
 
-} // namespace Karkinolution::Binary::Serializer
+} // namespace KShared::Binary::Serializer

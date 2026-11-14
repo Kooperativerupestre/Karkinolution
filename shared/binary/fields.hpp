@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Karkinolution::Binary {
+namespace KShared::Binary {
 
 	template <std::size_t Offset, std::size_t Size> struct Field {
 			static constexpr std::size_t OFFSET = Offset;
@@ -11,4 +11,4 @@ namespace Karkinolution::Binary {
 
 	template <typename Prev, std::size_t Size> using Next = Field<Prev::END, Size>;
 
-} // namespace Karkinolution::Binary
+} // namespace KShared::Binary

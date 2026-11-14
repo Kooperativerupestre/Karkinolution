@@ -1,11 +1,11 @@
 #pragma once
 
-#include "karkinolution/binary/byte_range.hpp"
 #include "karkinolution/networking/connection/simulation_adapter/simulation_adapter.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/response_queue.hpp"
 #include "karkinolution/networking/system_output_queue.hpp"
 #include "karkinolution/world/world.hpp"
+#include "shared/binary/byte_range.hpp"
 
 #include <karkinolution/networking/frame/models.hpp>
 

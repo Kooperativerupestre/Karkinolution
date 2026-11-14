@@ -1,14 +1,15 @@
 #pragma once
-#include "karkinolution/binary/errors.hpp"
+#include "shared/binary/errors.hpp"
+#include "shared/binary/fields.hpp"
 
 #include <concepts>
 #include <format>
 #include <functional>
-#include <karkinolution/binary/byte_utils.hpp>
-#include <karkinolution/binary/deserializer.hpp>
-#include <karkinolution/binary/serializer.hpp>
 #include <karkinolution/binary/types/function_concepts.hpp>
 #include <ranges>
+#include <shared/binary/byte_utils.hpp>
+#include <shared/binary/deserializer.hpp>
+#include <shared/binary/serializer.hpp>
 #include <vector>
 
 namespace Karkinolution {
@@ -29,8 +30,8 @@ namespace Karkinolution {
 
 				namespace Layout {
 
-					using Size     = Field<0, sizeof(ListSize)>;
-					using Elements = Next<Size, 0>;
+					using Size     = KShared::Binary::Field<0, sizeof(ListSize)>;
+					using Elements = KShared::Binary::Next<Size, 0>;
 
 					// The size of Elements is variable.
 					// Do not use TOTAL_SIZE or END for this field.
@@ -58,23 +59,24 @@ namespace Karkinolution {
 						template <std::size_t SizeofSerializedObject> void validate_size(std::size_t size) {
 
 							if (size > std::numeric_limits<ListSize>::max()) {
-								throw ByteError("The number of elements exceeds the maximum "
-												"representable by ListSize (uint16_t).");
+								throw KShared::Binary::ByteError("The number of elements exceeds the maximum "
+																 "representable by ListSize (uint16_t).");
 							}
 
 							constexpr auto max = std::numeric_limits<std::size_t>::max();
 
 							if (size > (max - sizeof(ListSize)) / SizeofSerializedObject) {
 
-								throw ByteError("The serialized list size exceeds std::size_t limits.");
+								throw KShared::Binary::ByteError(
+									"The serialized list size exceeds std::size_t limits.");
 							}
 						}
 
 						template <typename Size> std::size_t checked_list_size(Size size) {
 
 							if (size > std::numeric_limits<ListSize>::max()) {
-								throw ByteError("The number of elements exceeds the maximum "
-												"representable by ListSize (uint16_t).");
+								throw KShared::Binary::ByteError("The number of elements exceeds the maximum "
+																 "representable by ListSize (uint16_t).");
 							}
 
 							return static_cast<std::size_t>(size);
@@ -84,8 +86,8 @@ namespace Karkinolution {
 
 							if (current_size >= std::numeric_limits<ListSize>::max()) {
 
-								throw ByteError("The number of elements exceeds the maximum "
-												"representable by ListSize (uint16_t).");
+								throw KShared::Binary::ByteError("The number of elements exceeds the maximum "
+																 "representable by ListSize (uint16_t).");
 							}
 
 							constexpr auto max = std::numeric_limits<std::size_t>::max();
@@ -93,13 +95,14 @@ namespace Karkinolution {
 							constexpr auto max_elements = (max - sizeof(ListSize)) / SizeofSerializedObject;
 
 							if (current_size >= max_elements) {
-								throw ByteError("The serialized list size exceeds std::size_t limits.");
+								throw KShared::Binary::ByteError(
+									"The serialized list size exceeds std::size_t limits.");
 							}
 						}
 
 						inline auto make_header(std::size_t size) {
 
-							return Karkinolution::Binary::Serializer::serialize<ListSize>(static_cast<ListSize>(size));
+							return KShared::Binary::Serializer::serialize<ListSize>(static_cast<ListSize>(size));
 						}
 
 						template <std::size_t SizeofSerializedObject>
@@ -112,8 +115,8 @@ namespace Karkinolution {
 							std::vector<std::byte> bytes;
 
 							if (total_size > bytes.max_size()) {
-								throw ByteError("The serialized list exceeds the maximum "
-												"size supported by std::vector<std::byte>.");
+								throw KShared::Binary::ByteError("The serialized list exceeds the maximum "
+																 "size supported by std::vector<std::byte>.");
 							}
 
 							bytes.reserve(total_size);
@@ -121,7 +124,7 @@ namespace Karkinolution {
 							const auto header = make_header(size);
 
 							if (std::ranges::size(header) != sizeof(ListSize)) {
-								throw ByteError("The serialized list header has an unexpected size.");
+								throw KShared::Binary::ByteError("The serialized list header has an unexpected size.");
 							}
 
 							bytes.insert(bytes.end(), std::ranges::begin(header), std::ranges::end(header));
@@ -138,13 +141,13 @@ namespace Karkinolution {
 							const auto serialized_size = std::ranges::size(serialized);
 
 							if (serialized_size != SizeofSerializedObject) {
-								throw ByteError("The serialized object has a different size "
-												"from SizeofSerializedObject.");
+								throw KShared::Binary::ByteError("The serialized object has a different size "
+																 "from SizeofSerializedObject.");
 							}
 
 							if (expected_offset != bytes.size()) {
-								throw ByteError("The serialized element offset does not match "
-												"the end of the output buffer.");
+								throw KShared::Binary::ByteError("The serialized element offset does not match "
+																 "the end of the output buffer.");
 							}
 
 							bytes.insert(bytes.end(), std::ranges::begin(serialized), std::ranges::end(serialized));
@@ -155,15 +158,15 @@ namespace Karkinolution {
 							const auto header = make_header(size);
 
 							if (std::ranges::size(header) != sizeof(ListSize)) {
-								throw ByteError("The serialized list header has an unexpected size.");
+								throw KShared::Binary::ByteError("The serialized list header has an unexpected size.");
 							}
 
 							const auto header_offset = Layout::Size::OFFSET;
 
 							if (header_offset > bytes.size() || bytes.size() - header_offset < sizeof(ListSize)) {
 
-								throw ByteError("The output buffer does not contain enough space "
-												"for the list header.");
+								throw KShared::Binary::ByteError("The output buffer does not contain enough space "
+																 "for the list header.");
 							}
 
 							std::copy(std::ranges::begin(header),
@@ -181,8 +184,8 @@ namespace Karkinolution {
 
 							auto append_element = [&](auto &&element) {
 								if (index >= size) {
-									throw ByteError("The range produced more elements than "
-													"its reported size.");
+									throw KShared::Binary::ByteError("The range produced more elements than "
+																	 "its reported size.");
 								}
 
 								decltype(auto) serialized =
@@ -210,8 +213,8 @@ namespace Karkinolution {
 							}
 
 							if (index != size) {
-								throw ByteError("The range produced fewer elements than "
-												"its reported size.");
+								throw KShared::Binary::ByteError("The range produced fewer elements than "
+																 "its reported size.");
 							}
 
 							return bytes;
@@ -335,10 +338,10 @@ namespace Karkinolution {
 
 					inline ListSize get_size(const std::vector<std::byte> &bytes, std::size_t offset) {
 						if (offset > bytes.size() || bytes.size() - offset < sizeof(ListSize)) {
-							throw ByteError("The list offset is outside the serialized bytes.");
+							throw KShared::Binary::ByteError("The list offset is outside the serialized bytes.");
 						}
 
-						return Karkinolution::Binary::Deserializer::read_uint16_t(bytes, offset);
+						return KShared::Binary::Deserializer::read_uint16_t(bytes, offset);
 					}
 
 					namespace Details {
@@ -350,7 +353,7 @@ namespace Karkinolution {
 
 							if (offset > bytes.size() || bytes.size() - offset < sizeof(ListSize)) {
 
-								throw ByteError("The list offset is outside the serialized bytes.");
+								throw KShared::Binary::ByteError("The list offset is outside the serialized bytes.");
 							}
 
 							const auto size = get_size(bytes, offset);
@@ -359,7 +362,8 @@ namespace Karkinolution {
 
 							if (size > (max - sizeof(ListSize)) / SizeofSerializedObject) {
 
-								throw ByteError("The serialized list size exceeds std::size_t limits.");
+								throw KShared::Binary::ByteError(
+									"The serialized list size exceeds std::size_t limits.");
 							}
 
 							const auto elements_size = static_cast<std::size_t>(size) * SizeofSerializedObject;
@@ -367,8 +371,8 @@ namespace Karkinolution {
 							const auto serialized_size = sizeof(ListSize) + elements_size;
 
 							if (bytes.size() - offset < serialized_size) {
-								throw ByteError("The declared list size exceeds the number "
-												"of available serialized bytes.");
+								throw KShared::Binary::ByteError("The declared list size exceeds the number "
+																 "of available serialized bytes.");
 							}
 
 							std::vector<T> deserialized_values;

@@ -6,7 +6,7 @@
 #include <karkinolution/networking/api_adapter/corpse.hpp>
 
 ResponseFrame Karkinolution::Networking::APIBYA::Corpse::see_corpse(const Karkinolution::World::World &world,
-																					Binary::RequestId                  request_id,
+																	Binary::RequestId                  request_id,
 																	const std::vector<std::byte>      &payload) {
 	const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
 
@@ -20,5 +20,5 @@ ResponseFrame Karkinolution::Networking::APIBYA::Corpse::see_corpse(const Karkin
 	return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CORPSE,
 															   request_id,
 															   corpse_payload,
-																				Binary::ResponseCardinality::ONE);
+															   Binary::ResponseCardinality::ONE);
 }

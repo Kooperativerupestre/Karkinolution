@@ -1,21 +1,21 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
-#include "karkinolution/binary/serializer.hpp"
+#include "shared/binary/fields.hpp"
+#include "shared/binary/serializer.hpp"
 #include "shared/math/units.hpp"
 
 #include <array>
 #include <cstddef>
-#include <karkinolution/binary/interpreters/stats.hpp>
+#include <shared/binary/interpreters/stats.hpp>
 #include <vector>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Binary {
 		namespace Interpreters {
 			namespace SRI {
 				namespace Units {
 
-					using StandardPhysicBytes = Karkinolution::Binary::Serializer::Core::EightBytes;
+					using StandardPhysicBytes = KShared::Binary::Serializer::Core::EightBytes;
 					// respects the invariant of physics types
 					static_assert(sizeof(StandardPhysicBytes) == sizeof(double));
 
@@ -27,8 +27,8 @@ namespace Karkinolution {
 					 *
 					 */
 					namespace Layout {
-						using Width  = Field<0, sizeof(double)>;
-						using Height = Next<Width, sizeof(double)>;
+						using Width  = KShared::Binary::Field<0, sizeof(double)>;
+						using Height = KShared::Binary::Next<Width, sizeof(double)>;
 
 						inline constexpr std::size_t TOTAL_SIZE = Height::END;
 					} // namespace Layout
@@ -82,8 +82,8 @@ namespace Karkinolution {
 			} // namespace DSI
 		} // namespace Interpreters
 	} // namespace Binary
-} // namespace Karkinolution
+} // namespace KShared
 
-namespace UnitsSRI = Karkinolution::Binary::Interpreters::SRI::Units;
-namespace UnitsDSI = Karkinolution::Binary::Interpreters::DSI::Units;
+namespace UnitsSRI = KShared::Binary::Interpreters::SRI::Units;
+namespace UnitsDSI = KShared::Binary::Interpreters::DSI::Units;
 namespace Units    = UnitsSRI;

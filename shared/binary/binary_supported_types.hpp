@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-namespace Karkinolution::Binary {
+namespace KShared::Binary {
 
 	template <typename T>
 	concept BinarySupportedType = std::same_as<T, double> || std::same_as<T, float> || std::same_as<T, std::uint8_t>
@@ -11,4 +11,4 @@ namespace Karkinolution::Binary {
 		|| std::same_as<T, int> || std::same_as<T, std::string> || std::same_as<T, int32_t> || std::same_as<T, int64_t>
 		|| std::same_as<T, int16_t> || std::same_as<T, int8_t> || std::same_as<T, bool>;
 
-} // namespace Karkinolution::Binary
+} // namespace KShared::Binary

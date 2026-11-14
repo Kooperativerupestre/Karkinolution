@@ -1,11 +1,11 @@
 #pragma once
 #include <array>
 #include <cstdint>
-#include <karkinolution/binary/binary_supported_types.hpp>
+#include <shared/binary/binary_supported_types.hpp>
 #include <string>
 #include <vector>
 
-namespace Karkinolution::Binary::Serializer {
+namespace KShared::Binary::Serializer {
 
 	namespace Core {
 		template <typename T>
@@ -111,4 +111,4 @@ namespace Karkinolution::Binary::Serializer {
 		}
 	}
 
-} // namespace Karkinolution::Binary::Serializer
+} // namespace KShared::Binary::Serializer

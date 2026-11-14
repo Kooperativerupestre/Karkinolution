@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 #include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/interpreters/geometry.hpp>
-#include <karkinolution/binary/interpreters/stats.hpp>
-#include <karkinolution/binary/interpreters/unit.hpp>
-#include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/test/utils.hpp>
+#include <shared/binary/interpreters/geometry.hpp>
+#include <shared/binary/interpreters/stats.hpp>
+#include <shared/binary/interpreters/unit.hpp>
+#include <shared/binary/interpreters/vec.hpp>
 #include <shared/functional/k_random.hpp>
 #include <shared/math/physic/vec/model.hpp>
 #include <shared/math/stats/compile_values.hpp>
@@ -534,26 +534,26 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_InsufficientBufferSizeThrow
 	const std::vector<std::byte> empty_buffer;
 	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}, std::byte{0x03}};
 
-	EXPECT_THROW(UnitsDSI::deserialize_area(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_area(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_mass(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_density(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_meter(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_width(short_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(UnitsDSI::deserialize_height(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_area(empty_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_area(short_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_mass(short_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_density(short_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_meter(short_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_width(short_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_height(short_buffer, 0), KShared::Binary::ByteError);
 	const std::vector<std::byte> size_short_buffer(15, std::byte{0x01});
-	EXPECT_THROW(UnitsDSI::deserialize_size(size_short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_size(size_short_buffer, 0), KShared::Binary::ByteError);
 
 	// SharedArea reads a double at offset 1, requiring at least 9 bytes.
 	const std::vector<std::byte> shared_vol_short_buffer(8, std::byte{0x01});
-	EXPECT_THROW(UnitsDSI::deserialize_shared_area(shared_vol_short_buffer, 5), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_shared_area(shared_vol_short_buffer, 5), KShared::Binary::ByteError);
 
 	// Efficiency and Quality read a float at offset 1, requiring at least 5 bytes.
 	const std::vector<std::byte> stat_float_short_buffer(4, std::byte{0x01});
 
-	EXPECT_THROW(UnitsDSI::deserialize_efficiency(stat_float_short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_efficiency(stat_float_short_buffer, 0), KShared::Binary::ByteError);
 
-	EXPECT_THROW(UnitsDSI::deserialize_quality(stat_float_short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(UnitsDSI::deserialize_quality(stat_float_short_buffer, 0), KShared::Binary::ByteError);
 }
 
 // Math: Geometry Roundtrip
@@ -701,22 +701,22 @@ TEST(MathSerializeDeserializeRoundtrip, Geometry_InsufficientBufferSizeThrowsErr
 	const std::vector<std::byte> empty_buffer;
 	const std::vector<std::byte> short_buffer = {std::byte{0x01}, std::byte{0x02}, std::byte{0x03}};
 
-	EXPECT_THROW(GeometryDSI::deserialize_radius(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_radius(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_radius(empty_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_radius(short_buffer, 0), KShared::Binary::ByteError);
 
-	EXPECT_THROW(GeometryDSI::deserialize_circumference(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_circumference(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_circumference(empty_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_circumference(short_buffer, 0), KShared::Binary::ByteError);
 
-	EXPECT_THROW(GeometryDSI::deserialize_diameter(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_diameter(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_diameter(empty_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_diameter(short_buffer, 0), KShared::Binary::ByteError);
 
-	EXPECT_THROW(GeometryDSI::deserialize_area(empty_buffer, 0), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_area(short_buffer, 0), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_area(empty_buffer, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_area(short_buffer, 0), KShared::Binary::ByteError);
 
 	const std::vector<std::byte> valid_size_buffer(sizeof(double), std::byte{0x01});
 
-	EXPECT_THROW(GeometryDSI::deserialize_radius(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_circumference(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_diameter(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
-	EXPECT_THROW(GeometryDSI::deserialize_area(valid_size_buffer, 1), Karkinolution::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_radius(valid_size_buffer, 1), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_circumference(valid_size_buffer, 1), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_diameter(valid_size_buffer, 1), KShared::Binary::ByteError);
+	EXPECT_THROW(GeometryDSI::deserialize_area(valid_size_buffer, 1), KShared::Binary::ByteError);
 }

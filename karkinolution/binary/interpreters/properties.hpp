@@ -1,11 +1,11 @@
 #pragma once
 
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/deserializer.hpp"
-#include "karkinolution/binary/errors.hpp"
-#include "karkinolution/binary/fields.hpp"
-#include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/organism/entities/properties/properties.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/deserializer.hpp"
+#include "shared/binary/errors.hpp"
+#include "shared/binary/fields.hpp"
+#include "shared/binary/serializer.hpp"
 
 #include <array>
 #include <format>
@@ -17,8 +17,8 @@ namespace Karkinolution {
 			namespace SRI {
 				namespace Properties {
 					namespace Layout {
-						using Kind = Field<0, 1>;
-						using Type = Next<Kind, 1>;
+						using Kind = KShared::Binary::Field<0, 1>;
+						using Type = KShared::Binary::Next<Kind, 1>;
 
 						inline constexpr std::size_t TOTAL_SIZE = Type::END;
 					} // namespace Layout
@@ -40,10 +40,10 @@ namespace Karkinolution {
 						BytesArrays::Properties bytes;
 
 						bytes[Layout::Kind::OFFSET] =
-							Karkinolution::Binary::Serializer::convert_uint8_t(property.kind().value);
+							KShared::Binary::Serializer::convert_uint8_t(property.kind().value);
 
 						bytes[Layout::Type::OFFSET] =
-							Karkinolution::Binary::Serializer::convert_uint8_t(property.raw().value);
+							KShared::Binary::Serializer::convert_uint8_t(property.raw().value);
 
 						return bytes;
 					}
@@ -52,21 +52,21 @@ namespace Karkinolution {
 
 			namespace DSI {
 				namespace Properties {
-					template <ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					Karkinolution::Organisms::Entities::GenericProperty constexpr deserialize(const T    &payload,
 																							  std::size_t offset) {
 						Karkinolution::Organisms::Entities::Properties::Kind kind{
-							Karkinolution::Binary::Deserializer::read_uint8_t(payload,
-																			  SRI::Properties::Layout::Kind::OFFSET
-																				  + offset)};
+							KShared::Binary::Deserializer::read_uint8_t(payload,
+																		SRI::Properties::Layout::Kind::OFFSET
+																			+ offset)};
 
 						Karkinolution::Organisms::Entities::Properties::Type type(
-							Karkinolution::Binary::Deserializer::read_uint8_t(payload,
-																			  SRI::Properties::Layout::Type::OFFSET
-																				  + offset));
+							KShared::Binary::Deserializer::read_uint8_t(payload,
+																		SRI::Properties::Layout::Type::OFFSET
+																			+ offset));
 						auto property = Karkinolution::Organisms::Entities::GenericProperty::fromRaw(kind, type);
 						if (!property) {
-							throw ByteError(
+							throw KShared::Binary::ByteError(
 								std::format("Invalid combination of kind {} and type {}", kind.value, type.value));
 						}
 						return property.value();

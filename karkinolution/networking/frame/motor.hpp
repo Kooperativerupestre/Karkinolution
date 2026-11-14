@@ -1,20 +1,21 @@
 #pragma once
 
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/byte_utils.hpp"
-#include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/networking/frame/contract.hpp"
 #include "karkinolution/networking/frame/core_aliases.hpp"
 #include "karkinolution/networking/frame/layout.hpp"
 #include "karkinolution/networking/frame/models.hpp"
 #include "karkinolution/networking/frame/parser/parser.hpp"
 #include "karkinolution/networking/frame/utils.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/byte_utils.hpp"
+#include "shared/binary/serializer.hpp"
 
 namespace Karkinolution {
 	namespace Networking {
 		namespace Frames {
 			namespace Motor {
-				template <Binary::ByteRange Payload> std::vector<std::byte> copy_payload(const Payload &payload) {
+				template <KShared::Binary::ByteRange Payload>
+				std::vector<std::byte> copy_payload(const Payload &payload) {
 					std::vector<std::byte> copied_payload;
 					copied_payload.reserve(payload.size());
 					for (std::size_t index = 0; index < payload.size(); ++index) {
@@ -24,20 +25,22 @@ namespace Karkinolution {
 				}
 
 				void constexpr append_declared_size(std::vector<std::byte> &frame, DeclaredSize declared_size) {
-					Binary::Utils::append_bytes(frame, Binary::Serializer::serialize(declared_size));
+					KShared::Binary::Utils::append_bytes(frame, KShared::Binary::Serializer::serialize(declared_size));
 				}
 
 				void constexpr append_type(std::vector<std::byte> &frame, Type type) {
-					Binary::Utils::append_bytes(frame, Binary::Serializer::serialize(static_cast<uint8_t>(type)));
+					KShared::Binary::Utils::append_bytes(
+						frame,
+						KShared::Binary::Serializer::serialize(static_cast<uint8_t>(type)));
 				}
 
 				void constexpr append_sub_type(std::vector<std::byte> &frame, Detail::SubTypeVariant sub_type) {
-					Binary::Utils::append_bytes(
+					KShared::Binary::Utils::append_bytes(
 						frame,
-						Binary::Serializer::serialize(static_cast<uint8_t>(Utils::cast_numeric(sub_type))));
+						KShared::Binary::Serializer::serialize(static_cast<uint8_t>(Utils::cast_numeric(sub_type))));
 				}
 
-				template <Binary::ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				Models::SystemOutput::SystemOutput
 				make_system_output(SystemOutputSubTypes sub_type, SystemCall::Id call_id, const T &payload) {
 					return {Parser::calculate_declared_size(payload.size(), Type::SystemOutput, sub_type),
@@ -46,7 +49,7 @@ namespace Karkinolution {
 							sub_type};
 				}
 
-				template <Binary::ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				Models::SystemCall::SystemCall
 				make_system_call(SystemCallSubTypes sub_type, SystemCall::Id id, const T &payload) {
 					return {Parser::calculate_declared_size(payload.size(), Type::SystemCall, sub_type),
@@ -57,7 +60,7 @@ namespace Karkinolution {
 
 				Models::SystemOutput::SystemOutput make_none_system_output(SystemCall::Id call_id);
 
-				template <Binary::ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				std::vector<std::byte>
 				make_raw_system_output(SystemOutputSubTypes sub_type, SystemCall::Id call_id, const T &payload) {
 					std::vector<std::byte> frame;
@@ -81,12 +84,12 @@ namespace Karkinolution {
 
 					// call_id
 
-					Binary::Utils::append_bytes(frame, Binary::Serializer::serialize(call_id));
+					KShared::Binary::Utils::append_bytes(frame, KShared::Binary::Serializer::serialize(call_id));
 					frame.insert(frame.end(), payload.begin(), payload.end());
 					return frame;
 				}
 
-				template <Binary::ByteRange T>
+				template <KShared::Binary::ByteRange T>
 				std::vector<std::byte>
 				make_raw_system_call(SystemCallSubTypes sub_type, SystemCall::Id id, const T &payload) {
 					std::vector<std::byte> frame;
@@ -110,7 +113,7 @@ namespace Karkinolution {
 
 					// id
 
-					Binary::Utils::append_bytes(frame, Binary::Serializer::serialize(id));
+					KShared::Binary::Utils::append_bytes(frame, KShared::Binary::Serializer::serialize(id));
 					frame.insert(frame.end(), payload.begin(), payload.end());
 					return frame;
 				}

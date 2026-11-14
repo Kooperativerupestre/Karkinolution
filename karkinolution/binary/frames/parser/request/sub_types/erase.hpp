@@ -8,7 +8,7 @@ namespace Karkinolution {
 				namespace Request {
 					namespace ST {
 						namespace Erase {
-							template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+							template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 								std::vector<std::byte> payload;
 								payload.insert(payload.end(),
 											   bytes.begin() + ProtocolLayout::Request::Erase::Payload::OFFSET,
@@ -31,7 +31,8 @@ namespace Karkinolution {
 									ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);
 							}
 
-							template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							template <KShared::Binary::ByteRange T>
+							constexpr std::uint32_t calculate_payload_size(const T &bytes) {
 								return Internal::calculate_payload_size(
 									bytes,
 									ProtocolLayout::Request::Erase::FIXED_HEADER_SIZE);

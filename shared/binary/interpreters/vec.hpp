@@ -1,13 +1,13 @@
 #pragma once
 
-#include "karkinolution/binary/fields.hpp"
+#include "shared/binary/fields.hpp"
 #include "shared/math/physic/vec/model.hpp"
 
 #include <array>
 #include <cstddef>
 #include <vector>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Binary {
 		namespace Interpreters {
 			namespace SRI {
@@ -15,8 +15,8 @@ namespace Karkinolution {
 					namespace Layout {
 						inline constexpr std::size_t AXIS_SIZE = sizeof(double);
 
-						using X = Field<0, AXIS_SIZE>;
-						using Y = Next<X, AXIS_SIZE>;
+						using X = KShared::Binary::Field<0, AXIS_SIZE>;
+						using Y = KShared::Binary::Next<X, AXIS_SIZE>;
 
 						inline constexpr std::size_t TOTAL_SIZE = Y::END;
 					} // namespace Layout
@@ -43,7 +43,7 @@ namespace Karkinolution {
 			} // namespace DSI
 		} // namespace Interpreters
 	} // namespace Binary
-} // namespace Karkinolution
+} // namespace KShared
 
-namespace VecSRI = Karkinolution::Binary::Interpreters::SRI::Vec;
-namespace VecDSI = Karkinolution::Binary::Interpreters::DSI::Vec;
+namespace VecSRI = KShared::Binary::Interpreters::SRI::Vec;
+namespace VecDSI = KShared::Binary::Interpreters::DSI::Vec;

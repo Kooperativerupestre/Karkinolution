@@ -3,10 +3,10 @@
 
 #include <cstdint>
 #include <format>
-#include <karkinolution/binary/errors.hpp>
 #include <karkinolution/binary/protocol/aliases.hpp>
 #include <karkinolution/binary/protocol/contract.hpp>
 #include <magic_enum/magic_enum.hpp>
+#include <shared/binary/errors.hpp>
 #include <string>
 
 namespace Karkinolution {
@@ -15,14 +15,14 @@ namespace Karkinolution {
 			namespace Validator {
 				constexpr void validate_type(uint8_t value) {
 					if (!magic_enum::enum_contains<BinaryTypes>(value)) {
-						throw ByteError(std::format("Invalid frame type: {}", value));
+						throw KShared::Binary::ByteError(std::format("Invalid frame type: {}", value));
 					}
 				}
 
 				namespace Error {
 					constexpr void validate_sub_type(uint8_t value) {
 						if (!magic_enum::enum_contains<ErrorSubTypes>(value)) {
-							throw ByteError(std::format("Invalid frame error sub type: {}", value));
+							throw KShared::Binary::ByteError(std::format("Invalid frame error sub type: {}", value));
 						}
 					}
 				} // namespace Error
@@ -30,13 +30,13 @@ namespace Karkinolution {
 				namespace Request {
 					constexpr void validate_sub_type(uint8_t value) {
 						if (!magic_enum::enum_contains<RequestSubTypes>(value)) {
-							throw ByteError(std::format("Invalid frame request sub type: {}", value));
+							throw KShared::Binary::ByteError(std::format("Invalid frame request sub type: {}", value));
 						}
 					}
 
 					constexpr void validate_resource(uint8_t value) {
 						if (!magic_enum::enum_contains<Resource>(value)) {
-							throw ByteError(std::format("Invalid frame resource: {}", value));
+							throw KShared::Binary::ByteError(std::format("Invalid frame resource: {}", value));
 						}
 					}
 
@@ -45,7 +45,7 @@ namespace Karkinolution {
 				namespace Response {
 					constexpr void validate_sub_type(uint8_t value) {
 						if (!magic_enum::enum_contains<ResponseSubTypes>(value)) {
-							throw ByteError(std::format("Invalid frame sub type: {}", value));
+							throw KShared::Binary::ByteError(std::format("Invalid frame sub type: {}", value));
 						}
 					}
 				} // namespace Response
@@ -63,7 +63,8 @@ namespace Karkinolution {
 							break;
 
 						default:
-							throw ByteError(std::format("Invalid type: {}", static_cast<uint8_t>(type)));
+							throw KShared::Binary::ByteError(
+								std::format("Invalid type: {}", static_cast<uint8_t>(type)));
 					}
 				}
 
@@ -72,8 +73,9 @@ namespace Karkinolution {
 						if (!(std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, uint8_t>
 							  || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint16_t>
 							  || std::is_same_v<T, uint64_t>)) {
-							throw ByteError("Type doesn't exist as dynamic numeric language (binary) type of "
-											"karkinolution");
+							throw KShared::Binary::ByteError(
+								"Type doesn't exist as dynamic numeric language (binary) type of "
+								"karkinolution");
 						}
 					}
 				} // namespace NumericType

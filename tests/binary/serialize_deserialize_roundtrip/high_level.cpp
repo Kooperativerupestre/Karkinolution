@@ -8,18 +8,18 @@
 #include <gtest/gtest.h>
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
-#include <karkinolution/binary/interpreters/geometry.hpp>
 #include <karkinolution/binary/interpreters/models/soil.hpp>
 #include <karkinolution/binary/interpreters/properties.hpp>
 #include <karkinolution/binary/interpreters/soil.hpp>
 #include <karkinolution/binary/interpreters/territory.hpp>
-#include <karkinolution/binary/interpreters/unit.hpp>
-#include <karkinolution/binary/interpreters/vec.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/test/utils.hpp>
 #include <limits>
+#include <shared/binary/interpreters/geometry.hpp>
+#include <shared/binary/interpreters/unit.hpp>
+#include <shared/binary/interpreters/vec.hpp>
 #include <shared/functional/k_random.hpp>
 
 // Properties: GenericProperty Roundtrip
@@ -43,13 +43,13 @@ TEST(PropertiesSerializeDeserializeRoundtrip, StreamWithOffsets) {
 	std::vector<std::byte> stream = {std::byte{0xAA}, std::byte{0xBB}};
 
 	const size_t offset_swimm = stream.size();
-	Karkinolution::Binary::Utils::append_bytes(
+	KShared::Binary::Utils::append_bytes(
 		stream,
 		PropertiesSRI::serialize(Karkinolution::Organisms::Entities::GenericProperty(
 			Karkinolution::Organisms::Entities::Properties::Capabilities::Move::SWIMM)));
 
 	const size_t offset_walk = stream.size();
-	Karkinolution::Binary::Utils::append_bytes(
+	KShared::Binary::Utils::append_bytes(
 		stream,
 		PropertiesSRI::serialize(Karkinolution::Organisms::Entities::GenericProperty(
 			Karkinolution::Organisms::Entities::Properties::Capabilities::Move::WALK)));
@@ -102,7 +102,7 @@ TEST(PropertiesSerializeDeserializeRoundtrip, ErrorHandling) {
 			bytes.push_back(kind);
 			bytes.push_back(type);
 
-			EXPECT_THROW(PropertiesDSI::deserialize(bytes, kind_offset), Karkinolution::Binary::ByteError);
+			EXPECT_THROW(PropertiesDSI::deserialize(bytes, kind_offset), KShared::Binary::ByteError);
 		}
 	}
 
@@ -191,7 +191,7 @@ TEST(CorpseSerializeDeserializeRoundtrip, FullCorpseSerialization) {
 TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
 	constexpr KShared::Core::Id::BaseIdType corpse_id = 248539453;
 
-	const auto bytes = Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(corpse_id);
+	const auto bytes = KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(corpse_id);
 	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
 	const auto interpreted_id = CorpseDSI::Request::interpret_like_see_corpse(buffer);

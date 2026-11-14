@@ -1,20 +1,20 @@
 #include "karkinolution/binary/interpreters/creature.hpp"
 
-#include "karkinolution/binary/byte_utils.hpp"
-#include "karkinolution/binary/deserializer.hpp"
-#include "karkinolution/binary/errors.hpp"
-#include "karkinolution/binary/serializer.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/creature/ontology.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
+#include "shared/binary/byte_utils.hpp"
+#include "shared/binary/deserializer.hpp"
+#include "shared/binary/errors.hpp"
+#include "shared/binary/serializer.hpp"
 #include "shared/core/error.hpp"
 #include "shared/core/id.hpp"
 
 #include <cstdlib>
 #include <format>
-#include <karkinolution/binary/interpreters/vec.hpp>
 #include <limits>
 #include <magic_enum/magic_enum.hpp>
+#include <shared/binary/interpreters/vec.hpp>
 
 // SRI implementations
 std::byte CreatureSRI::serialize_gender(const Karkinolution::Organisms::Entities::Creature::Gender &gender) {
@@ -23,17 +23,17 @@ std::byte CreatureSRI::serialize_gender(const Karkinolution::Organisms::Entities
 	} else if (gender == Karkinolution::Organisms::Entities::Creature::Gender::MALE) {
 		return std::byte(0x02);
 	}
-	throw Karkinolution::Binary::ByteError(
+	throw KShared::Binary::ByteError(
 		std::format("Invalid creature gender byte: {}", static_cast<unsigned int>(gender)));
 }
 
 std::byte CreatureSRI::serialize_specie(const Karkinolution::Organisms::Entities::Creature::CreatureSpecies &specie) {
-	return Karkinolution::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(specie));
+	return KShared::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(specie));
 }
 
 std::vector<std::byte> CreatureSRI::serialize_name(const std::string &name) {
 	if (name.size() > Layout::MAX_NAME_SIZE) {
-		throw Karkinolution::Binary::ByteError(
+		throw KShared::Binary::ByteError(
 			std::format("The size of the name {} is bigger than allowed {}", name, Layout::MAX_NAME_SIZE));
 	}
 
@@ -41,12 +41,12 @@ std::vector<std::byte> CreatureSRI::serialize_name(const std::string &name) {
 
 	const auto name_size = name.size();
 	if (name_size > std::numeric_limits<uint8_t>::max()) {
-		throw Karkinolution::Binary::ByteError(std::format("The size of name {} exceeds the uint8_t max {}",
-														   name_size,
-														   std::numeric_limits<uint8_t>::max()));
+		throw KShared::Binary::ByteError(std::format("The size of name {} exceeds the uint8_t max {}",
+													 name_size,
+													 std::numeric_limits<uint8_t>::max()));
 	}
-	bytes.push_back(Karkinolution::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(name.size())));
-	Karkinolution::Binary::Utils::append_bytes(bytes, Karkinolution::Binary::Serializer::convert_string(name));
+	bytes.push_back(KShared::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(name.size())));
+	KShared::Binary::Utils::append_bytes(bytes, KShared::Binary::Serializer::convert_string(name));
 	return bytes;
 }
 
@@ -66,23 +66,23 @@ CreatureSRI::serialize_creature(const Karkinolution::Organisms::Entities::Creatu
 
 	const auto vec = VecSRI::serialize_vec(creature.position);
 
-	Karkinolution::Binary::Utils::append_bytes(bytes, vec, Layout::PositionX::OFFSET);
+	KShared::Binary::Utils::append_bytes(bytes, vec, Layout::PositionX::OFFSET);
 
 	// Name
 
 	const auto name = serialize_name(creature.ontology.name);
-	Karkinolution::Binary::Utils::append_bytes(bytes, name, Layout::NameSize::OFFSET);
+	KShared::Binary::Utils::append_bytes(bytes, name, Layout::NameSize::OFFSET);
 
 	// Id
 
-	const auto id = Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(creature.ontology.id);
-	Karkinolution::Binary::Utils::append_bytes(bytes, id, Layout::Id::OFFSET);
+	const auto id = KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(creature.ontology.id);
+	KShared::Binary::Utils::append_bytes(bytes, id, Layout::Id::OFFSET);
 
 	return bytes;
 }
 
 std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(KShared::Core::Id::BaseIdType id) {
-	return Karkinolution::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
+	return KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
 }
 
 std::array<std::byte, CreatureSRI::Request::Layout::CreateCreature::TOTAL_SIZE>
@@ -104,61 +104,61 @@ CreatureSRI::Request::make_create_creature(
 
 
 	if (!gender) {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(false),
-												   Layout::CreateCreature::HasGender::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(false),
+											 Layout::CreateCreature::HasGender::OFFSET);
 	} else {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(true),
-												   Layout::CreateCreature::HasGender::OFFSET);
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   CreatureSRI::serialize_gender(*gender),
-												   Layout::CreateCreature::Gender::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(true),
+											 Layout::CreateCreature::HasGender::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 CreatureSRI::serialize_gender(*gender),
+											 Layout::CreateCreature::Gender::OFFSET);
 	}
 
 	if (!specie) {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(false),
-												   Layout::CreateCreature::HasSpecies::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(false),
+											 Layout::CreateCreature::HasSpecies::OFFSET);
 
 	} else {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(true),
-												   Layout::CreateCreature::HasSpecies::OFFSET);
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   CreatureSRI::serialize_specie(*specie),
-												   Layout::CreateCreature::Species::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(true),
+											 Layout::CreateCreature::HasSpecies::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 CreatureSRI::serialize_specie(*specie),
+											 Layout::CreateCreature::Species::OFFSET);
 	}
 
 	if (!position) {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(false),
-												   Layout::CreateCreature::HasPosition::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(false),
+											 Layout::CreateCreature::HasPosition::OFFSET);
 
 	} else {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(true),
-												   Layout::CreateCreature::HasPosition::OFFSET);
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   VecSRI::serialize_vec(*position),
-												   Layout::CreateCreature::Position::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(true),
+											 Layout::CreateCreature::HasPosition::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 VecSRI::serialize_vec(*position),
+											 Layout::CreateCreature::Position::OFFSET);
 	}
 
 	if (!name) {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(false),
-												   Layout::CreateCreature::HasName::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(false),
+											 Layout::CreateCreature::HasName::OFFSET);
 	} else {
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_bool(false),
-												   Layout::CreateCreature::HasName::OFFSET);
-		Karkinolution::Binary::Utils::append_bytes(
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_bool(false),
+											 Layout::CreateCreature::HasName::OFFSET);
+		KShared::Binary::Utils::append_bytes(
 			bytes,
-			Karkinolution::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(name->size())),
+			KShared::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(name->size())),
 			Layout::CreateCreature::NameSize::OFFSET);
-		Karkinolution::Binary::Utils::append_bytes(bytes,
-												   Karkinolution::Binary::Serializer::convert_string(*name),
-												   Layout::CreateCreature::Name::OFFSET);
+		KShared::Binary::Utils::append_bytes(bytes,
+											 KShared::Binary::Serializer::convert_string(*name),
+											 Layout::CreateCreature::Name::OFFSET);
 	}
 	return bytes;
 }
@@ -169,8 +169,8 @@ Karkinolution::Organisms::Entities::Creature::Gender CreatureDSI::get_gender(con
 	const auto raw_gender = payload[offset];
 	const auto gender     = Karkinolution::Organisms::Entities::Creature::Gender(raw_gender);
 	if (!magic_enum::enum_contains(gender)) {
-		throw Karkinolution::Binary::ByteError(
-			std::format("Invalid gender: {}", Karkinolution::Binary::Utils::byte_to_int(raw_gender)));
+		throw KShared::Binary::ByteError(
+			std::format("Invalid gender: {}", KShared::Binary::Utils::byte_to_int(raw_gender)));
 	}
 	return gender;
 }
@@ -180,8 +180,8 @@ CreatureDSI::get_specie(const std::vector<std::byte> &payload, std::size_t offse
 	const auto raw_specie = payload[offset];
 	const auto specie     = Karkinolution::Organisms::Entities::Creature::CreatureSpecies(raw_specie);
 	if (!magic_enum::enum_contains(specie)) {
-		throw Karkinolution::Binary::ByteError(
-			std::format("Invalid speciie: {}", Karkinolution::Binary::Utils::byte_to_int(raw_specie)));
+		throw KShared::Binary::ByteError(
+			std::format("Invalid speciie: {}", KShared::Binary::Utils::byte_to_int(raw_specie)));
 	}
 	return specie;
 }
@@ -197,21 +197,21 @@ CreatureDSI::get_creature(const std::vector<std::byte> &payload, std::size_t off
 }
 
 uint8_t CreatureDSI::get_name_size(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Binary::Deserializer::read_uint8_t(payload, offset);
+	return KShared::Binary::Deserializer::read_uint8_t(payload, offset);
 }
 
 std::string CreatureDSI::get_name(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto name_size = get_name_size(payload, offset);
-	return Karkinolution::Binary::Deserializer::read_string(payload, offset + sizeof(name_size), name_size);
+	return KShared::Binary::Deserializer::read_string(payload, offset + sizeof(name_size), name_size);
 }
 
 KShared::Core::Id::BaseIdType CreatureDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
-	return Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);
+	return KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);
 }
 
 KShared::Core::Id::BaseIdType CreatureDSI::Request::interpret_like_get_creature(const std::vector<std::byte> &payload) {
 	return KShared::Core::Id::BaseIdType{
-		Karkinolution::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0)};
+		KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0)};
 }
 
 Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint
@@ -221,21 +221,21 @@ CreatureDSI::Request::interpret_like_create_creature(const std::vector<std::byte
 	std::optional<KShared::Math::Vec::Vec2>                                      position = std::nullopt;
 	std::optional<std::string>                                                   name     = std::nullopt;
 
-	const auto has_gender = Karkinolution::Binary::Deserializer::deserialize<bool>(
+	const auto has_gender = KShared::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasGender::OFFSET);
 
-	const auto has_specie = Karkinolution::Binary::Deserializer::deserialize<bool>(
+	const auto has_specie = KShared::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasSpecies::OFFSET);
 
-	const auto has_position = Karkinolution::Binary::Deserializer::deserialize<bool>(
+	const auto has_position = KShared::Binary::Deserializer::deserialize<bool>(
 		payload,
 		CreatureSRI::Request::Layout::CreateCreature::HasPosition::OFFSET);
 
-	const auto has_name = Karkinolution::Binary::Deserializer::deserialize<bool>(
-		payload,
-		CreatureSRI::Request::Layout::CreateCreature::HasName::OFFSET);
+	const auto has_name =
+		KShared::Binary::Deserializer::deserialize<bool>(payload,
+														 CreatureSRI::Request::Layout::CreateCreature::HasName::OFFSET);
 
 	if (has_gender) {
 		gender = CreatureDSI::get_gender(payload, CreatureSRI::Request::Layout::CreateCreature::Gender::OFFSET);

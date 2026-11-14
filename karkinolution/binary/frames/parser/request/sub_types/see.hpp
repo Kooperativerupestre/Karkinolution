@@ -8,15 +8,16 @@ namespace Karkinolution {
 				namespace Request {
 					namespace ST {
 						namespace See {
-							template <ByteRange T> Protocol::Request::SeeTarget get_target(const T &bytes) {
+							template <KShared::Binary::ByteRange T>
+							Protocol::Request::SeeTarget get_target(const T &bytes) {
 								return static_cast<Protocol::Request::SeeTarget>(
-									Karkinolution::Binary::Deserializer::deserialize<
+									KShared::Binary::Deserializer::deserialize<
 										Protocol::Aliases::Request::FrameSeeTarget>(
 										bytes,
 										ProtocolLayout::Request::See::Target::OFFSET));
 							}
 
-							template <ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
+							template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 								std::vector<std::byte> payload;
 								payload.insert(payload.end(),
 											   bytes.begin() + ProtocolLayout::Request::See::Payload::OFFSET,
@@ -39,7 +40,8 @@ namespace Karkinolution {
 									ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 							}
 
-							template <ByteRange T> constexpr std::uint32_t calculate_payload_size(const T &bytes) {
+							template <KShared::Binary::ByteRange T>
+							constexpr std::uint32_t calculate_payload_size(const T &bytes) {
 								return Internal::calculate_payload_size(
 									bytes,
 									ProtocolLayout::Request::See::FIXED_HEADER_SIZE);

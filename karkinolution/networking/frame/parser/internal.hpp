@@ -1,11 +1,12 @@
 #pragma once
-#include "karkinolution/binary/byte_range.hpp"
-#include "karkinolution/binary/errors.hpp"
+#include "karkinolution/networking/frame/core_aliases.hpp"
 #include "karkinolution/networking/frame/layout.hpp"
+#include "shared/binary/byte_range.hpp"
+#include "shared/binary/errors.hpp"
 
 #include <cstdint>
-#include <karkinolution/binary/deserializer.hpp>
 #include <karkinolution/networking/frame/contract.hpp>
+#include <shared/binary/deserializer.hpp>
 
 namespace Karkinolution {
 	namespace Networking {
@@ -13,17 +14,19 @@ namespace Karkinolution {
 			namespace Parser {
 				namespace Internal {
 
-					template <Binary::ByteRange T> DeclaredSize get_declared_size(const T &bytes) {
-						return Binary::Deserializer::deserialize<DeclaredSize>(bytes, Layout::DeclaredSize::OFFSET);
+					template <KShared::Binary::ByteRange T> DeclaredSize get_declared_size(const T &bytes) {
+						return KShared::Binary::Deserializer::deserialize<DeclaredSize>(bytes,
+																						Layout::DeclaredSize::OFFSET);
 					}
 
-					template <Binary::ByteRange T> Type get_type(const T &bytes) {
+					template <KShared::Binary::ByteRange T> Type get_type(const T &bytes) {
 						return static_cast<Type>(
-							Binary::Deserializer::deserialize<uint8_t>(bytes, Layout::Type::OFFSET));
+							KShared::Binary::Deserializer::deserialize<uint8_t>(bytes, Layout::Type::OFFSET));
 					}
 
-					template <Binary::ByteRange T> Detail::SubTypeVariant get_sub_type(const T &bytes) {
-						const auto value = Binary::Deserializer::deserialize<uint8_t>(bytes, Layout::SubType::OFFSET);
+					template <KShared::Binary::ByteRange T> Detail::SubTypeVariant get_sub_type(const T &bytes) {
+						const auto value =
+							KShared::Binary::Deserializer::deserialize<uint8_t>(bytes, Layout::SubType::OFFSET);
 						if (get_type(bytes) == Type::SystemCall) {
 							return static_cast<SystemCallSubTypes>(value);
 						}
@@ -41,7 +44,7 @@ namespace Karkinolution {
 
 
 						if (declared_size < minimum_declared_size) {
-							throw Binary::ByteError(
+							throw KShared::Binary::ByteError(
 								std::format("Cannot get payload bytes because size {} < minimum size {}",
 											declared_size,
 											minimum_declared_size));
@@ -49,10 +52,10 @@ namespace Karkinolution {
 						return declared_size - minimum_declared_size;
 					}
 
-					template <Binary::ByteRange T>
+					template <KShared::Binary::ByteRange T>
 					constexpr std::uint32_t calculate_payload_size(const T &bytes, std::size_t fixed_header_size) {
 						const auto declared_size =
-							Binary::Deserializer::read_uint32_t(bytes, Layout::DeclaredSize::OFFSET);
+							KShared::Binary::Deserializer::read_uint32_t(bytes, Layout::DeclaredSize::OFFSET);
 
 
 						return calculate_payload_size(declared_size, fixed_header_size);

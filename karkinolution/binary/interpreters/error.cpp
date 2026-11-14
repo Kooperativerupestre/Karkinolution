@@ -1,8 +1,8 @@
 #include "karkinolution/binary/interpreters/error.hpp"
 
 #include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/errors.hpp"
-#include "karkinolution/binary/serializer.hpp"
+#include "shared/binary/errors.hpp"
+#include "shared/binary/serializer.hpp"
 #include "shared/core/id.hpp"
 
 #include <cassert>
@@ -10,10 +10,10 @@
 
 std::vector<std::byte> ErrorSRI::serialize_error(const std::string &error) {
 	if (error.size() > ErrorSRI::Layout::ERROR_MAX_SIZE) {
-		throw Karkinolution::Binary::ByteError(
+		throw KShared::Binary::ByteError(
 			std::format("Max error size is {}, {} isn't allowed", ErrorSRI::Layout::ERROR_MAX_SIZE, error.size()));
 	};
-	return Karkinolution::Binary::Serializer::convert_string(error);
+	return KShared::Binary::Serializer::convert_string(error);
 }
 
 SEO ErrorSRI::serialize_creature_was_not_found(KShared::Core::Id::BaseIdType id) {
