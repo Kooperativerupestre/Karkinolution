@@ -33,10 +33,10 @@ int main() {
 
 	KarkinolutionView::Window::init_before_loop(screen_preset);
 
-	Synchronizer synchronizer;
-
 	Panel::Panel panel{
 		GuiGeometry::Rectangle{GuiGeometry::Position{400, 225}, GuiGeometry::Width{800}, GuiGeometry::Height{450}}};
+
+	Synchronizer synchronizer{panel};
 
 	auto button_component =
 		std::make_shared<Components::Component>(Components::AllComponents{Components::LowLevel::Button::RectangleButton{
@@ -56,16 +56,6 @@ int main() {
 			20}});
 	if (!panel.add(button_component)) {
 		throw std::runtime_error("Failed to add connection button to its panel");
-	}
-
-	auto status_label_component =
-		std::make_shared<Components::Component>(Components::AllComponents{Components::LowLevel::Text{
-			GuiGeometry::Rectangle{GuiGeometry::Position{60, -170}, GuiGeometry::Width{300}, GuiGeometry::Height{40}},
-			"Status: Disconnected",
-			Colors::Presets::White,
-			20}});
-	if (!panel.add(status_label_component)) {
-		throw std::runtime_error("Failed to add status label to its panel");
 	}
 
 	std::string connection_button_label{"Connect"};
@@ -111,8 +101,6 @@ int main() {
 		if (connection_label != connection_button_label) {
 			std::get<Components::LowLevel::Button::RectangleButton>(button_component->get_data())
 				.set_text(std::string{connection_label});
-			std::get<Components::LowLevel::Text>(status_label_component->get_data())
-				.set_text(synchronizer.is_connected() ? "Status: Connected" : "Status: Disconnected");
 			connection_button_label = std::string{connection_label};
 		}
 
