@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <shared/core/id.hpp>
+#include <variant>
 
 namespace Karkinolution {
 	namespace Networking {

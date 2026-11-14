@@ -143,7 +143,7 @@ namespace Karkinolution {
 
 				{SoilTypes::WATER,
 				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
-                               return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                               return std::make_unique<SoilPieceComponents::MovementCost>(1.0f);
                            }},
 						   .properties          = {},
 						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::SWIMM}}}};

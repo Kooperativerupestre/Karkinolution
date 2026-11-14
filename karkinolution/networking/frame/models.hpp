@@ -4,6 +4,8 @@
 #include "karkinolution/networking/frame/core_aliases.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
+#include <variant>
+
 namespace Karkinolution {
 	namespace Networking {
 		namespace Frames {
