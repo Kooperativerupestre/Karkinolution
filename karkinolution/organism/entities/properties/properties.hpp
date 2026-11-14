@@ -3,6 +3,7 @@
 
 #include "shared/core/error.hpp"
 
+#include <array>
 #include <cstdint>
 #include <magic_enum/magic_enum.hpp>
 #include <optional>
@@ -115,7 +116,7 @@ namespace Karkinolution {
 					GenericProperty B;
 			};
 
-			inline constexpr PropertyConflict GLOBAL_PROPERTY_CONFLICTS[] = {};
+			inline constexpr std::array<PropertyConflict, 0> GLOBAL_PROPERTY_CONFLICTS{};
 
 
 		} // namespace Entities
