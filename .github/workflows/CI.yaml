@@ -107,7 +107,7 @@ jobs:
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
-            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-tidy && ln -sfn build-tidy build && cmake --build --preset ci-tidy --parallel "$(nproc)"'
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug && cmake --preset ci-tidy && cmake --build --preset ci-tidy --parallel "$(nproc)"'
 
       - name: Run style check
         run: |
@@ -136,6 +136,7 @@ jobs:
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
             uv run karkinolution tidy check karkinolution shared opsiamethystos main.cpp \
+              --build-dir build-tidy \
               --config-file /workspace/.clang-tidy \
               "${changed_since_args[@]}"
 

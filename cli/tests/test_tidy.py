@@ -6,7 +6,13 @@ from pathlib import Path
 import typer
 from unittest import mock
 
-from karkinolution.tidy.commands import check, filter_compile_tokens, run_tidy, sanitize_compile_commands
+from karkinolution.tidy.commands import (
+    check,
+    default_build_dir,
+    filter_compile_tokens,
+    run_tidy,
+    sanitize_compile_commands,
+)
 
 
 class TestTidy(unittest.TestCase):
@@ -222,6 +228,20 @@ class TestTidy(unittest.TestCase):
 
             mock_run_tidy.assert_called_once()
             self.assertEqual(mock_run_tidy.call_args.kwargs["build_dir"], custom_build)
+
+    def test_default_build_dir_prefers_build_tidy_when_build_compile_commands_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            orig_cwd = Path.cwd()
+            import os
+            try:
+                os.chdir(tmpdir)
+                tidy_dir = Path("build-tidy")
+                tidy_dir.mkdir()
+                (tidy_dir / "compile_commands.json").write_text("[]")
+
+                self.assertEqual(default_build_dir(Path("main.cpp")), Path("build-tidy"))
+            finally:
+                os.chdir(orig_cwd)
 
 
 if __name__ == "__main__":
