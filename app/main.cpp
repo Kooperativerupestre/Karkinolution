@@ -1,7 +1,7 @@
+#include "app/screen.hpp"
+#include "app/synchronizer.hpp"
+#include "app/window.hpp"
 #include "karkinolution/networking/client_side/client/alias.hpp"
-#include "karkinolution/view/screen.hpp"
-#include "karkinolution/view/synchronizer.hpp"
-#include "karkinolution/view/window.hpp"
 #include "opsiamethystos/gui/components/component.hpp"
 #include "opsiamethystos/gui/components/low_level/button.hpp"
 #include "opsiamethystos/gui/components/medium_level/grid.hpp"
@@ -10,9 +10,9 @@
 #include "opsiamethystos/raylib_utils/colors.hpp"
 #include "shared/core/color.hpp"
 
+#include <app/presets/aliases.hpp>
+#include <app/presets/grid.hpp>
 #include <array>
-#include <karkinolution/view/presets/aliases.hpp>
-#include <karkinolution/view/presets/grid.hpp>
 #include <opsiamethystos/raylib_utils/colors.hpp>
 #include <random>
 #include <raylib.h>

@@ -18,7 +18,7 @@ if (ENABLE_ASAN AND SANITIZER STREQUAL "")
     set(SANITIZER "address")
 endif ()
 
-option(KARKINOLUTION_BUILD_VIEW "Build karkinolution_view target" OFF)
+option(KARKINOLUTION_BUILD_APP "Build karkinolution_app target" OFF)
 
 enable_testing()
 
@@ -104,7 +104,7 @@ file(GLOB_RECURSE KARKINOLUTION_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/karkinolution/*.cpp"
 )
 
-list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/view/.*")
+list(FILTER KARKINOLUTION_SOURCES EXCLUDE REGEX ".*/main.cpp$")
 
 add_library(karkinolution)
 
@@ -129,30 +129,26 @@ target_link_libraries(karkinolution
         karkinolution_shared
 )
 
-# ---------------- Main executable ----------------
+# ---------------- Core executable ----------------
 
-add_executable(karkinolution_app main.cpp)
+add_executable(karkinolution_core karkinolution/main.cpp)
 
-target_link_libraries(karkinolution_app PRIVATE
+target_link_libraries(karkinolution_core PRIVATE
     karkinolution
 )
 
-# ---------------- View executable ----------------
+# ---------------- Application executable ----------------
 
-if (KARKINOLUTION_BUILD_VIEW)
-    file(GLOB_RECURSE KARKINOLUTION_VIEW_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_SOURCE_DIR}/karkinolution/view/*.cpp"
+if (KARKINOLUTION_BUILD_APP)
+    file(GLOB_RECURSE KARKINOLUTION_APP_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_SOURCE_DIR}/app/*.cpp"
     )
 
-    list(FILTER KARKINOLUTION_VIEW_SOURCES
-        EXCLUDE REGEX ".*/panel/layout/layout.cpp"
+    add_executable(karkinolution_app
+        ${KARKINOLUTION_APP_SOURCES}
     )
 
-    add_executable(karkinolution_view
-        ${KARKINOLUTION_VIEW_SOURCES}
-    )
-
-    target_link_libraries(karkinolution_view PRIVATE
+    target_link_libraries(karkinolution_app PRIVATE
         karkinolution
         opsiamethystos
         raylib

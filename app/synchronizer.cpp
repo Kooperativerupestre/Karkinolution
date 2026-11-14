@@ -1,4 +1,4 @@
-#include "karkinolution/view/synchronizer.hpp"
+#include "app/synchronizer.hpp"
 
 bool KarkinolutionView::Synchronizer::is_connected() const {
 	return client.is_connected();

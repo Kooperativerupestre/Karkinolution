@@ -55,64 +55,64 @@ class TestLaunch(unittest.TestCase):
 
     @mock.patch("karkinolution.run.commands.os")
     @mock.patch("karkinolution.run.commands.subprocess.run")
-    def test_builds_the_app_then_starts_it_from_the_repo_root(
+    def test_builds_the_core_then_starts_it_from_the_repo_root(
         self, mock_run: mock.MagicMock, mock_os: mock.MagicMock
     ) -> None:
         self.configure_build_dir()
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        executable = str(self.build_dir / "karkinolution_app")
+        executable = str(self.build_dir / "karkinolution_core")
 
         launch("debug")
 
         self.assertEqual(
             mock_run.call_args[0][0],
-            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_app"],
+            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_core"],
         )
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])
 
     @mock.patch("karkinolution.run.commands.os")
     @mock.patch("karkinolution.run.commands.subprocess.run")
-    def test_builds_the_app_with_default_preset(
+    def test_builds_the_core_with_default_preset(
         self, mock_run: mock.MagicMock, mock_os: mock.MagicMock
     ) -> None:
         self.configure_build_dir()
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        executable = str(self.build_dir / "karkinolution_app")
+        executable = str(self.build_dir / "karkinolution_core")
 
         launch()
 
         self.assertEqual(
             mock_run.call_args[0][0],
-            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_app"],
+            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_core"],
         )
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])
 
     @mock.patch("karkinolution.run.commands.os")
     @mock.patch("karkinolution.run.commands.subprocess.run")
-    def test_builds_the_view_target_with_view_preset(
+    def test_builds_the_app_target_with_app_preset(
         self, mock_run: mock.MagicMock, mock_os: mock.MagicMock
     ) -> None:
         presets = json.loads((self.root / "CMakePresets.json").read_text(encoding="utf-8"))
         presets["configurePresets"].append({
-            "name": "view-debug",
+            "name": "app-debug",
             "inherits": ["base", "clang"],
-            "binaryDir": "${sourceDir}/build-view",
-            "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "KARKINOLUTION_BUILD_VIEW": True},
+            "binaryDir": "${sourceDir}/build-app",
+            "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "KARKINOLUTION_BUILD_APP": True},
         })
         (self.root / "CMakePresets.json").write_text(json.dumps(presets), encoding="utf-8")
-        view_dir = self.root / "build-view"
-        view_dir.mkdir()
-        (view_dir / "CMakeCache.txt").write_text("")
+        app_dir = self.root / "build-app"
+        app_dir.mkdir()
+        (app_dir / "CMakeCache.txt").write_text("")
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        executable = str(view_dir / "karkinolution_view")
+        executable = str(app_dir / "karkinolution_app")
 
-        launch("view-debug")
+        launch("app-debug")
 
         self.assertEqual(
             mock_run.call_args[0][0],
-            ["cmake", "--build", str(view_dir), "--target", "karkinolution_view"],
+            ["cmake", "--build", str(app_dir), "--target", "karkinolution_app"],
         )
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])

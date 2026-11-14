@@ -5,8 +5,8 @@ import typer
 
 from karkinolution.presets import binary_dir, find_repo_root, load_configure_presets, resolve_preset
 
+CORE_TARGET = "karkinolution_core"
 APP_TARGET = "karkinolution_app"
-VIEW_TARGET = "karkinolution_view"
 
 
 def launch(preset: str = "debug", target: str | None = None) -> None:
@@ -21,7 +21,7 @@ def launch(preset: str = "debug", target: str | None = None) -> None:
         )
         raise typer.Exit(code=1)
 
-    selected_target = target or (VIEW_TARGET if "view" in preset else APP_TARGET)
+    selected_target = target or (APP_TARGET if "app" in preset else CORE_TARGET)
     targets = [selected_target]
 
     cmd = ["cmake", "--build", str(build_dir)]

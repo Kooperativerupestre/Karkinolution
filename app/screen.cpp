@@ -1,5 +1,5 @@
 
-#include <karkinolution/view/screen.hpp>
+#include <app/screen.hpp>
 #include <stdexcept>
 
 KarkinolutionView::Screen::StateView::StateView(const State &state)

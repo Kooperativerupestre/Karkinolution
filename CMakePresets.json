@@ -111,7 +111,7 @@
       "binaryDir": "${sourceDir}/build-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "KARKINOLUTION_BUILD_VIEW": true
+        "KARKINOLUTION_BUILD_APP": true
       }
     },
     {
@@ -126,7 +126,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_FLAGS": "-march=native",
-        "KARKINOLUTION_BUILD_VIEW": true
+        "KARKINOLUTION_BUILD_APP": true
       }
     },
     {
@@ -163,7 +163,7 @@
       "inherits": "ci-base",
       "binaryDir": "${sourceDir}/build-tidy",
       "cacheVariables": {
-        "KARKINOLUTION_BUILD_VIEW": true
+        "KARKINOLUTION_BUILD_APP": true
       }
     },
     {
@@ -215,17 +215,17 @@
       "binaryDir": "${sourceDir}/build-ci-libcxx-tsan"
     },
     {
-      "name": "view-debug",
-      "displayName": "Debug with View (raylib)",
+      "name": "app-debug",
+      "displayName": "Debug with Application (raylib)",
       "inherits": [
         "base",
         "clang",
         "conan-debug"
       ],
-      "binaryDir": "${sourceDir}/build-view",
+      "binaryDir": "${sourceDir}/build-app",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "KARKINOLUTION_BUILD_VIEW": true
+        "KARKINOLUTION_BUILD_APP": true
       }
     }
   ],
@@ -238,16 +238,16 @@
       "name": "release",
       "configurePreset": "release",
       "targets": [
-        "karkinolution_app",
-        "karkinolution_view"
+        "karkinolution_core",
+        "karkinolution_app"
       ]
     },
     {
       "name": "native",
       "configurePreset": "native",
       "targets": [
-        "karkinolution_app",
-        "karkinolution_view"
+        "karkinolution_core",
+        "karkinolution_app"
       ]
     },
     {
@@ -262,8 +262,8 @@
       "name": "ci-tidy",
       "configurePreset": "ci-tidy",
       "targets": [
-        "karkinolution_app",
-        "karkinolution_view"
+        "karkinolution_core",
+        "karkinolution_app"
       ]
     },
     {
@@ -272,7 +272,7 @@
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
-        "karkinolution_app"
+        "karkinolution_core"
       ]
     },
     {
@@ -281,7 +281,7 @@
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
-        "karkinolution_app"
+        "karkinolution_core"
       ]
     },
     {
@@ -290,7 +290,7 @@
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
-        "karkinolution_app"
+        "karkinolution_core"
       ]
     },
     {
@@ -299,7 +299,7 @@
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
-        "karkinolution_app"
+        "karkinolution_core"
       ]
     },
     {
@@ -308,7 +308,7 @@
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
-        "karkinolution_app"
+        "karkinolution_core"
       ]
     },
     {
@@ -317,14 +317,14 @@
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
-        "karkinolution_app"
+        "karkinolution_core"
       ]
     },
     {
-      "name": "view-debug",
-      "configurePreset": "view-debug",
+      "name": "app-debug",
+      "configurePreset": "app-debug",
       "targets": [
-        "karkinolution_view"
+        "karkinolution_app"
       ]
     },
     {

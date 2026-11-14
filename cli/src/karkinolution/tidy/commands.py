@@ -128,8 +128,8 @@ def run_tidy(
 
 
 def default_build_dir(file: Path) -> Path:
-    if "view" in file.parts and (Path("build-view") / "compile_commands.json").is_file():
-        return Path("build-view")
+    if "app" in file.parts and (Path("build-app") / "compile_commands.json").is_file():
+        return Path("build-app")
     if not (Path("build") / "compile_commands.json").is_file() and (Path("build-tidy") / "compile_commands.json").is_file():
         return Path("build-tidy")
     return Path("build")

@@ -21,14 +21,14 @@ karkinolution run
 
 `setup` checks the environment and submodules before configuring. It does not install tools or initialize submodules;
 when something is missing, it reports the issue and a suggested fix. `run` requires a configured preset, builds
-`karkinolution_app` by default, and starts it.
+`karkinolution_core` by default, and starts it.
 
 To use another preset or executable:
 
 ```bash
-karkinolution setup --preset view-debug
-karkinolution run --preset view-debug
-karkinolution run --preset debug --target karkinolution_app
+karkinolution setup --preset app-debug
+karkinolution run --preset app-debug
+karkinolution run --preset debug --target karkinolution_core
 ```
 
 Presets and their build directories are defined in [`CMakePresets.json`](CMakePresets.json). See
@@ -45,7 +45,7 @@ karkinolution style format karkinolution/binary/interpreters
 ```
 
 Run `clang-tidy` checks or apply its available fixes. Tidy needs a configured build with
-`compile_commands.json`; the CLI detects `build` by default and uses `build-view` for paths under `view` when that
+`compile_commands.json`; the CLI detects `build` by default and uses `build-app` for paths under `app` when that
 database exists. Pass `--build-dir` to select another build directory.
 
 ```bash

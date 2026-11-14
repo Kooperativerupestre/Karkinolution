@@ -1,16 +1,16 @@
 # Development Commands
 
 Run from the repository root. Builds are configured through [`CMakePresets.json`](../CMakePresets.json).
-Append `--parallel $(nproc)` to any build command for parallel compilation.
+Use `--parallel 2` for local builds so only one build runs with bounded concurrency.
 
 ## Presets
 
 | Preset | Build directory | Purpose |
 |---|---|---|
 | `debug` | `build` | Everyday development (`clang`) |
-| `view-debug` | `build-view` | Debug with `karkinolution_view` and raylib |
-| `release` | `build-release` | Optimized build (includes server and `karkinolution_view`) |
-| `native` | `build-native` | Optimized with `-march=native` (includes server and `karkinolution_view`). Benchmarking only, not portable. |
+| `app-debug` | `build-app` | Debug with `karkinolution_app` and raylib |
+| `release` | `build-release` | Optimized build (includes `karkinolution_core` and `karkinolution_app`) |
+| `native` | `build-native` | Optimized with `-march=native` (includes `karkinolution_core` and `karkinolution_app`). Benchmarking only, not portable. |
 | `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
 | `ci-tidy`, `ci`, `ci-sanitizers`, `ci-tsan` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Used by CI with `clang-21` and ccache |
 | `shared-debug` | `build` | Build only `karkinolution_shared` (Debug) |
@@ -39,7 +39,7 @@ FastNoise2, asio, GoogleTest, magic_enum, and raylib are submodules. Raylib is e
 ### Run
 
 ```bash
-./build/karkinolution_app
+./build/karkinolution_core
 ctest --preset debug
 ctest --preset debug -R '<regex>'
 ```
@@ -49,7 +49,7 @@ ctest --preset debug -R '<regex>'
 ### Build a single target
 
 ```bash
-cmake --build build --target karkinolution_app
+cmake --build build --target karkinolution_core
 cmake --build build --target karkinolution_tests
 ```
 

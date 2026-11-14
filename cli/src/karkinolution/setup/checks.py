@@ -10,7 +10,7 @@ GENERATOR_TOOLS = {"Ninja": "ninja"}
 
 SUBMODULE_PATH_PATTERN = re.compile(r"^\s*path\s*=\s*(\S+)\s*$", re.MULTILINE)
 
-VIEW_ONLY_SUBMODULES = frozenset({"raylib"})
+APP_ONLY_SUBMODULES = frozenset({"raylib"})
 
 
 @dataclass(frozen=True)
@@ -59,8 +59,8 @@ def declared_submodules(root: Path) -> list[str]:
 
 def required_submodules(root: Path, resolved: Preset) -> list[str]:
     submodules = declared_submodules(root)
-    if cache_value(resolved, "KARKINOLUTION_BUILD_VIEW") != "ON":
-        return [s for s in submodules if Path(s).name not in VIEW_ONLY_SUBMODULES]
+    if cache_value(resolved, "KARKINOLUTION_BUILD_APP") != "ON":
+        return [s for s in submodules if Path(s).name not in APP_ONLY_SUBMODULES]
     return submodules
 
 

@@ -1,7 +1,7 @@
-#include "karkinolution/view/presets/screen.hpp"
+#include "app/presets/screen.hpp"
 #include "shared/core/color.hpp"
 
-#include <karkinolution/view/window.hpp>
+#include <app/window.hpp>
 #include <opsiamethystos/raylib_utils/colors.hpp>
 #include <raylib.h>
 

@@ -1,6 +1,6 @@
 #pragma once
-#include <karkinolution/view/presets/grid.hpp>
-#include <karkinolution/view/presets/screen.hpp>
+#include <app/presets/grid.hpp>
+#include <app/presets/screen.hpp>
 
 namespace KPresets {
 	using Grid   = KarkinolutionView::Presets::Grid;

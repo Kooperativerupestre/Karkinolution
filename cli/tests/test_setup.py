@@ -25,7 +25,7 @@ RESOLVED = {
 
 RESOLVED_WITH_VIEW = {
     **RESOLVED,
-    "cacheVariables": {**RESOLVED["cacheVariables"], "KARKINOLUTION_BUILD_VIEW": True},
+    "cacheVariables": {**RESOLVED["cacheVariables"], "KARKINOLUTION_BUILD_APP": True},
 }
 
 GITMODULES = """[submodule "dependencies/FastNoise2"]

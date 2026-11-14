@@ -1,7 +1,7 @@
 #pragma once
 
+#include "app/screen.hpp"
 #include "karkinolution/networking/client_side/client/client.hpp"
-#include "karkinolution/view/screen.hpp"
 #include "opsiamethystos/gui/panel/panel.hpp"
 
 namespace KarkinolutionView {
