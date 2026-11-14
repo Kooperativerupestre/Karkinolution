@@ -135,10 +135,12 @@ docker build -f Dockerfile.ci -t karkinolution-ci .
 
 ### Configure, build, test
 
-The project toolchain is C++26 with Clang 21 and GCC 16's libstdc++. The CI
-presets use `clang-21` and ccache, which are installed in the image; the
-presets explicitly select libstdc++ through `-stdlib=libstdc++
---gcc-toolchain=/usr`.
+The project toolchain is C++23 with Clang 21 and GCC 16's libstdc++. C++23 is
+the portable project baseline because the code does not require C++26-only
+facilities and the MSVC toolchain used by the Windows CI cannot enable the
+C++26 dialect through the CMake version used there. The CI presets use
+`clang-21` and ccache, which are installed in the image; the presets explicitly
+select libstdc++ through `-stdlib=libstdc++ --gcc-toolchain=/usr`.
 
 ```bash
 docker run --rm -v "$PWD:/workspace" -w /workspace karkinolution-ci cmake --preset ci

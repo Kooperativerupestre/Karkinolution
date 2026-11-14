@@ -17,14 +17,16 @@ Run every command from the repository root. This page covers the first run. The 
 
 ## 1. Get the code
 
-The official project toolchain is C++26, Clang 21, and libstdc++ 16. Verify
+The official project toolchain is C++23, Clang 21, and libstdc++ 16. C++23 is
+used because the project does not depend on C++26-only facilities and the MSVC
+toolchain available on Windows does not currently support the C++26 dialect in
+the CMake version used by CI. Verify
 that Clang selects GCC 16 before configuring:
 
 ```bash
-clang++-21 -std=c++26 -E -x c++ /dev/null -v
-find /usr/include/c++ -name inplace_vector
-printf '#include <inplace_vector>\nint main() { std::inplace_vector<int, 1> values; }\n' | \
-  clang++-21 --gcc-toolchain=/usr -stdlib=libstdc++ -std=c++26 -x c++ -fsyntax-only -
+clang++-21 -std=c++23 -E -x c++ /dev/null -v
+printf '#include <expected>\nint main() { std::expected<int, int> value = 1; }\n' | \
+  clang++-21 --gcc-toolchain=/usr -stdlib=libstdc++ -std=c++23 -x c++ -fsyntax-only -
 ```
 
 Clone the repository:

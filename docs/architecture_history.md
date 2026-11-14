@@ -209,19 +209,21 @@ I added raygui because I did not want to reinvent GUI elements from scratch. Tha
 
 I did not like ImGui's system. Its way of working was so far from what I intended for Karkinolution that the cost of building an abstraction on top of ImGui's abstractions was equal to or greater than the cost of creating my own components.
 
-# 1.5 - C++26 toolchain
+# 1.5 - C++23 standardization after the C++26 experiment
 
 ## Why did I standardize on Clang 21 with GCC 16's libstdc++?
 
-The project now targets C++26, so the compiler and standard library must be
-selected as one tested toolchain. Clang 21 provides the project compiler while
-GCC 16 provides the libstdc++ implementation required by C++26 facilities such
-as `std::inplace_vector`. Docker and CI use the same combination and verify the
-selected GCC installation before building.
+The project experimented with C++26, but the codebase does not depend on
+C++26-only facilities. C++23 is therefore the better portability baseline:
+it is mature across the project's compilers and dependencies, while the MSVC
+toolchain used by the Windows CI does not support the C++26 dialect in the
+CMake version used there. Keeping C++23 also avoids requiring a newer standard
+library only to satisfy the language-mode setting.
 
-`std::inplace_vector` is not being applied mechanically to existing vectors.
-The view's entity and patch collections still need explicit domain capacity
-decisions before they can safely use fixed-capacity storage.
+Clang 21 with GCC 16's libstdc++ remains the tested Linux toolchain, but both
+Linux and Windows now target C++23. This preserves the existing use of C++23
+facilities such as `std::expected`, `std::format`, ranges, and `std::flat_map`
+without making C++26 support a build requirement.
 
 ## Why I created the Karkinolution::Functional?
 
