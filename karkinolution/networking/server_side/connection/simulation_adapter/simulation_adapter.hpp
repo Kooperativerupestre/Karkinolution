@@ -31,6 +31,9 @@ namespace Karkinolution::Networking::ServerSide::Connection::SimulationAdapter {
 				return simulation.get_world_state(id);
 			}
 
+			/// Leases the specified world from WorldStorage for this connection.
+			/// If successful, moves the GiftLease into world_lease and activates world acquisition.
+			/// If the world does not exist or is already held by another connection, returns false.
 			ConfigOutput config(World::WorldId new_world_id, std::optional<GiftLease<World::World>> &world_lease) {
 				auto lease = simulation.take_world(new_world_id, connection_id);
 
