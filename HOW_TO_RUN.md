@@ -10,8 +10,9 @@ Run every command from the repository root. This page covers the first run. The 
 * Clang 21 with GCC 16's libstdc++ headers and libraries. The presets select
   `clang-21` and configure `-stdlib=libstdc++ --gcc-toolchain=/usr`.
 * Git
-* [`uv`](https://docs.astral.sh/uv/), only if you use the CLI
-* Network access on the first configure (see [What CMake downloads for you](#what-cmake-downloads-for-you))
+* [Conan 2.x](https://conan.io/) (`conan>=2.34.0`, available via `pip`, system packages, or `uv`)
+* [`uv`](https://docs.astral.sh/uv/) (optional, if using uv for Python/Conan tooling)
+* Network access on the first install/configure to fetch Conan packages
 * Pass this requirements file [requirements.hpp](src/karkinolution/core/requirements.hpp)
 
 ## 1. Get the code
@@ -26,20 +27,40 @@ printf '#include <inplace_vector>\nint main() { std::inplace_vector<int, 1> valu
   clang++-21 --gcc-toolchain=/usr -stdlib=libstdc++ -std=c++26 -x c++ -fsyntax-only -
 ```
 
-Five dependencies are Git submodules, so a plain `git clone` is not enough:
+Clone the repository:
 
 ```bash
-git clone --recurse-submodules https://github.com/Kooperativerupestre/karkinolution.git
+git clone https://github.com/Kooperativerupestre/karkinolution.git
 cd karkinolution
 ```
 
-Already cloned without `--recurse-submodules`:
+## 2. Initialize dependencies with Conan
+
+The project manages external C++ dependencies using [Conan 2](conanfile.py).
+
+Detect your default Conan profile (first time only) and install the packages:
 
 ```bash
-git submodule update --init dependencies/FastNoise2 dependencies/asio dependencies/googletest dependencies/magic_enum dependencies/raylib
+# Detect default profile if not done yet
+conan profile detect --force
+
+# Install dependencies for Debug (used by debug, sanitizers, tsan, view-debug presets)
+conan install . --build=missing -s build_type=Debug
+
+# Or for Release (used by release, native presets)
+conan install . --build=missing -s build_type=Release
 ```
 
-## 2. Configure and build
+> **Using `uv`:**
+> If you run Conan in a virtual environment via `uv`:
+> ```bash
+> uv run conan profile detect --force
+> uv run conan install . --build=missing -s build_type=Debug
+> ```
+
+Conan generates the toolchain and dependencies files under `build/Debug/generators/conan_toolchain.cmake` (or `build/Release/generators/conan_toolchain.cmake`), which are automatically referenced by `CMakePresets.json`.
+
+## 3. Configure and build
 
 Pick one. Both use the `debug` preset from [`CMakePresets.json`](CMakePresets.json).
 
@@ -49,8 +70,8 @@ Pick one. Both use the `debug` preset from [`CMakePresets.json`](CMakePresets.js
 karkinolution setup
 ```
 
-`setup` checks the tools and submodules, then configures. If something is missing, it only reports the problem and the
-exact command to fix it. It never installs or initializes anything for you.
+`setup` checks the tools, then configures. If something is missing, it reports the problem and the
+exact command to fix it.
 
 **With CMake directly:**
 
@@ -62,7 +83,7 @@ cmake --build --preset debug
 Configure once. After that, `cmake --build --preset debug` is enough: `.cpp` files are collected with
 `CONFIGURE_DEPENDS`, so new source files are picked up on the next build.
 
-## 3. Run the server
+## 4. Run the server
 
 ```bash
 karkinolution run
@@ -78,7 +99,7 @@ cmake --build build --target karkinolution_app
 * The server listens on port `9000` ([`port.hpp`](karkinolution/networking/port.hpp)).
 * More networking questions: [`help.md`](karkinolution/networking/help.md).
 
-## 4. Run the view
+## 5. Run the view
 
 **With the CLI:**
 
@@ -103,35 +124,25 @@ cmake --build --preset release
 ./build-release/karkinolution_view
 ```
 
-## 5. Run the tests
+## 6. Run the tests
 
 ```bash
 ctest --preset debug
 ```
 
-## What CMake downloads for you
+## Dependencies (Conan)
 
-Some dependencies arrive on their own at configure time, others do not.
+External dependencies are managed through [Conan 2](conanfile.py):
 
-| Dependency | How it arrives | Needs a manual step? |
+| Dependency | Version | Purpose |
 |---|---|---|
-| FastSIMD | Fetched by FastNoise2's own CMake (CPM) | No |
-| FastNoise2 | Git submodule | Yes: `git submodule update --init` |
-| asio | Git submodule | Yes: `git submodule update --init` |
-| GoogleTest `v1.17.0` | Git submodule | Yes: `git submodule update --init` |
-| magic_enum `v0.9.8` | Git submodule | Yes: `git submodule update --init` |
-| raylib | Git submodule | Yes: `git submodule update --init` (needed for `view-debug`, `release`, and `native`) |
+| FastNoise2 | `1.1.1` | Noise generation |
+| asio | `1.38.2` | Networking and asynchronous I/O |
+| GoogleTest | `1.18.0` | Unit and integration testing |
+| magic_enum | `0.9.8` | Enum reflection utilities |
+| raylib | `6.0` | Graphical view / windowing |
 
-Downloaded sources are stored in `build/_deps/`, so deleting `build/` means downloading them again.
-
-If `dependencies/FastNoise2` is empty, `cmake --preset debug` stops with:
-
-```
-CMake Error at CMakeLists.txt:22 (add_subdirectory):
-  ... does not contain a CMakeLists.txt file.
-```
-
-`karkinolution setup` catches this earlier and prints the `git submodule update --init` command to run.
+Running `conan install . --build=missing -s build_type=Debug` generates the toolchain files in `build/Debug/generators/` required before running `cmake --preset ...`.
 
 ## Style and tidy checks
 
