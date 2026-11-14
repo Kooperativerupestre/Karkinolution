@@ -101,9 +101,11 @@ jobs:
 
       - name: Build compilation database
         run: |
+          mkdir -p "$RUNNER_TEMP/conan-cache"
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e CCACHE_DIR=/workspace/.ccache \
             ${{ env.DOCKER_IMAGE }} \
@@ -132,6 +134,7 @@ jobs:
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             -w /workspace \
             -e HOME=/tmp \
             ${{ env.DOCKER_IMAGE }} \
