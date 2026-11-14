@@ -3,6 +3,7 @@
 #include "karkinolution/binary/protocol/contract.hpp"
 
 #include <cstdint>
+#include <shared/core/id.hpp>
 #include <type_traits>
 
 namespace Karkinolution::Binary::Protocol::Aliases {

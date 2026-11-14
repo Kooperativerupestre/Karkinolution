@@ -5,6 +5,11 @@ namespace {
 
 	namespace Frames = Karkinolution::Binary::Frames;
 	namespace Models = Frames::Models;
+	using Karkinolution::Binary::ErrorSubTypes;
+	using Karkinolution::Binary::RequestSubTypes;
+	using Karkinolution::Binary::Resource;
+	using Karkinolution::Binary::ResponseCardinality;
+	using Karkinolution::Binary::ResponseSubTypes;
 
 } // namespace
 

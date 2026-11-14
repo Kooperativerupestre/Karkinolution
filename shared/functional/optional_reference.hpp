@@ -25,9 +25,13 @@ namespace KShared {
 			public:
 
 				// Constructors
-				constexpr OptionalReference() noexcept = default;
+				constexpr OptionalReference() noexcept {
+					ptr = nullptr;
+				}
 
-				constexpr OptionalReference(std::nullptr_t) noexcept {}
+				constexpr OptionalReference(std::nullptr_t) noexcept {
+					ptr = nullptr;
+				}
 
 				constexpr OptionalReference(T &value) noexcept
 					: ptr(std::addressof(value)) {}
@@ -91,26 +95,25 @@ namespace KShared {
 				[[nodiscard]]
 				constexpr T &reference() const {
 					if (!has_reference()) {
-						throw BadOptionalReferenceAccessError("");
+						throw BadOptionalReferenceAccessError(
+							"OptionalReference::reference() called on an empty OptionalReference");
 					}
 					return *ptr;
 				}
 
 				[[nodiscard]]
 				constexpr T &operator*() const noexcept {
-
+					assert(has_reference() && "OptionalReference::operator* called on an empty OptionalReference");
 					return *ptr;
 				}
 
 				[[nodiscard]]
 				constexpr T* operator->() const noexcept {
+					assert(has_reference() && "OptionalReference::operator-> called on an empty OptionalReference");
 					return ptr;
 				}
 
-				template <typename U>
-					requires std::convertible_to<U*, T*>
-				[[nodiscard]]
-				constexpr T &reference_or(U &fallback) const noexcept {
+				constexpr T &reference_or(T &fallback) const noexcept {
 					return has_reference() ? *ptr : fallback;
 				}
 
@@ -132,6 +135,20 @@ namespace KShared {
 				[[nodiscard]]
 				constexpr bool operator!=(std::nullptr_t) const noexcept {
 					return has_reference();
+				}
+
+				friend void swap(OptionalReference &a, OptionalReference &b) noexcept {
+					a.swap(b);
+				}
+
+				friend constexpr bool operator==(std::nullptr_t, const OptionalReference &opt) noexcept {
+					return !opt.has_reference();
+				}
+
+				template <typename U>
+					requires std::convertible_to<U*, T*> || std::convertible_to<T*, U*>
+				[[nodiscard]] bool has_same_reference(const OptionalReference<U> &opt_ref) const noexcept {
+					return get() == opt_ref.get();
 				}
 		};
 	} // namespace Functional

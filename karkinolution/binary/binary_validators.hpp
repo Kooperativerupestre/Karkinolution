@@ -61,6 +61,7 @@ namespace Karkinolution {
 						case BinaryTypes::Error:
 							Error::validate_sub_type(value);
 							break;
+
 						default:
 							throw ByteError(std::format("Invalid type: {}", static_cast<uint8_t>(type)));
 					}

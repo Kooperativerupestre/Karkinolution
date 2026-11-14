@@ -1,5 +1,6 @@
-#include "karkinolution/networking/server.hpp"
+#include "karkinolution/networking/server/server.hpp"
 #include "karkinolution/world/world.hpp"
+#include "karkinolution/world/world_storage.hpp"
 
 #include <asio/io_context.hpp>
 #include <karkinolution/networking/port.hpp>
@@ -19,7 +20,9 @@ int main() {
 		.epsilon = 5.0f};
 
 	Karkinolution::World::World       world{preset};
-	Karkinolution::Networking::Server server(io_context, Karkinolution::Networking::PORT, world);
+	Karkinolution::World::WorldStorage storage;
+	storage.add(std::move(world));
+	Karkinolution::Networking::Server::Server server(io_context, Karkinolution::Networking::PORT, storage);
 
 	io_context.run();
 

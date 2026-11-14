@@ -10,6 +10,13 @@ namespace {
 
 	namespace Frames = Karkinolution::Binary::Frames;
 	namespace Layout = Karkinolution::Binary::Protocol::Layout;
+	using Karkinolution::Binary::BinaryTypes;
+	using Karkinolution::Binary::ErrorSubTypes;
+	using Karkinolution::Binary::RequestId;
+	using Karkinolution::Binary::RequestSubTypes;
+	using Karkinolution::Binary::Resource;
+	using Karkinolution::Binary::ResponseCardinality;
+	using Karkinolution::Binary::ResponseSubTypes;
 
 	constexpr RequestId request_id = 0x0102030405060708ULL;
 
@@ -25,20 +32,11 @@ namespace {
 	}
 
 	std::vector<std::byte> make_response() {
-		return Frames::Motor::make_response_raw_bytes(
-			BinaryTypes::Response,
-			std::variant<ErrorSubTypes, ResponseSubTypes>{ResponseSubTypes::SOIL},
-			request_id,
-			payload,
-			ResponseCardinality::ALL);
+		return Frames::Motor::make_raw_response(ResponseCardinality::ALL, ResponseSubTypes::SOIL, request_id, payload);
 	}
 
 	std::vector<std::byte> make_error() {
-		return Frames::Motor::make_response_raw_bytes(
-			BinaryTypes::Error,
-			std::variant<ErrorSubTypes, ResponseSubTypes>{ErrorSubTypes::CORPSE_WAS_NOT_FOUND},
-			request_id,
-			payload);
+		return Frames::Motor::make_raw_error(ErrorSubTypes::CORPSE_WAS_NOT_FOUND, request_id, payload);
 	}
 
 	template <typename Range> std::vector<std::byte> prefix(const Range &bytes, std::size_t size) {

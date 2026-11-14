@@ -3,6 +3,7 @@
 #include "karkinolution/binary/fields.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
+#include "shared/core/id.hpp"
 
 #include <cstddef>
 
@@ -13,6 +14,8 @@ namespace Karkinolution::Binary::Protocol {
 		using SubType      = Next<Type, sizeof(Aliases::FrameSubType)>;
 
 		inline constexpr std::size_t TOTAL_HEADER_SIZE = SubType::END;
+
+		// SL = Sub types layouts
 
 		namespace Request {
 			using Id       = Next<SubType, sizeof(Aliases::RequestId)>;

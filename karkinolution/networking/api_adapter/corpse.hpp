@@ -7,5 +7,5 @@
 
 namespace Karkinolution::Networking::APIBYA::Corpse {
 	ResponseFrame
-	see_corpse(const Karkinolution::World::World &world, RequestId request_id, const std::vector<std::byte> &payload);
+	see_corpse(const Karkinolution::World::World &world, Binary::RequestId request_id, const std::vector<std::byte> &payload);
 } // namespace Karkinolution::Networking::APIBYA::Corpse

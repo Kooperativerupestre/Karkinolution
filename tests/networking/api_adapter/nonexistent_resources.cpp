@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/frames/analyzer.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/frames/processor.hpp>
@@ -8,6 +9,10 @@
 #include <karkinolution/test/utils.hpp>
 
 namespace {
+	using ::RequestFrame;
+	using Karkinolution::Binary::RequestId;
+	using Karkinolution::Binary::RequestSubTypes;
+	using Karkinolution::Binary::Resource;
 
 	template <typename Payload> RequestFrame make_see_request(Resource resource, const Payload &payload) {
 		return Karkinolution::Binary::Frames::Motor::make_request(

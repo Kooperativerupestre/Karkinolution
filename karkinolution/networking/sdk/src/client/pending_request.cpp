@@ -6,6 +6,7 @@
 #include <chrono>
 #include <karkinolution/networking/sdk/src/client/pending_request.hpp>
 #include <karkinolution/networking/sdk/src/error.hpp>
+#include <stdexcept>
 
 namespace KarkinolutionSDK::Protocol {
 
@@ -203,6 +204,70 @@ namespace KarkinolutionSDK::Protocol {
 
 		for (const auto &request : requests) {
 			request->fail(RequestFailure::DISCONNECTION);
+		}
+	}
+
+	bool SystemPendingRequests::add_request(RequestId id) {
+		auto pending    = std::make_shared<Pending>();
+		pending->future = pending->promise.get_future();
+		std::lock_guard lock{mtx};
+		return promises.emplace(id, std::move(pending)).second;
+	}
+
+	bool SystemPendingRequests::add_response(const SystemOutput &response) {
+		std::shared_ptr<Pending> pending;
+		{
+			std::lock_guard lock{mtx};
+			const auto      it = promises.find(response.get_call_id());
+			if (it == promises.end()) {
+				throw CPPSdkError(std::format("Invalid system response id {}", response.get_call_id()));
+			}
+			pending = it->second;
+		}
+		if (pending->failure) {
+			return false;
+		}
+		pending->promise.set_value(response);
+		return true;
+	}
+
+	SystemResponseResult SystemPendingRequests::await_response(RequestId id) {
+		std::shared_ptr<Pending> pending;
+		{
+			std::lock_guard lock{mtx};
+			const auto      it = promises.find(id);
+			if (it == promises.end()) {
+				throw CPPSdkError(std::format("Invalid system request id {}", id));
+			}
+			pending = it->second;
+		}
+		if (pending->failure) {
+			return std::unexpected(*pending->failure);
+		}
+		if (pending->future.wait_for(std::chrono::seconds(RESPONSE_WAITING_TIME_OUT_SECONDS))
+			== std::future_status::timeout) {
+			std::lock_guard lock{mtx};
+			promises.erase(id);
+			return std::unexpected(RequestFailure::CANCEL);
+		}
+		std::optional<SystemOutput> response;
+		try {
+			response.emplace(pending->future.get());
+		} catch (const std::exception &) {
+			std::lock_guard lock{mtx};
+			promises.erase(id);
+			return std::unexpected(RequestFailure::DISCONNECTION);
+		}
+		std::lock_guard lock{mtx};
+		promises.erase(id);
+		return response;
+	}
+
+	void SystemPendingRequests::fail_all_by_disconnection() {
+		std::lock_guard lock{mtx};
+		for (auto &[id, pending] : promises) {
+			pending->failure = RequestFailure::DISCONNECTION;
+			pending->promise.set_exception(std::make_exception_ptr(std::runtime_error("Client disconnected")));
 		}
 	}
 

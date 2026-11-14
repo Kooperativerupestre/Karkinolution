@@ -76,17 +76,16 @@ TEST(UniqueGiftTest, GiftLeaseCanBeGivenBackExplicitly) {
 	UniqueGift<int> gift{42};
 	auto            lease = gift.take();
 
-	gift.give_back(lease);
+	lease.release();
 
 	EXPECT_FALSE(gift.was_taken());
-	EXPECT_THROW(lease.get(), BadOptionalReferenceAccessError);
+	EXPECT_THROW(lease.get(), BadGiftAccess);
 }
 
 TEST(UniqueGiftTest, GiftLeaseGetThrowsAfterTheValueWasGivenBack) {
 	UniqueGift<int> gift{42};
 	auto            lease = gift.take();
+	lease.release();
 
-	gift.give_back(lease);
-
-	EXPECT_THROW(static_cast<const GiftLease<int> &>(lease).get(), BadOptionalReferenceAccessError);
+	EXPECT_THROW(static_cast<const GiftLease<int> &>(lease).get(), BadGiftAccess);
 }

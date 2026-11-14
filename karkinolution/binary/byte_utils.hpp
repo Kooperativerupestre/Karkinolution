@@ -83,6 +83,10 @@ namespace Karkinolution {
 				}
 			}
 
+			inline void append_bytes(std::vector<std::byte> &bytes, std::byte value, std::size_t offset) {
+				bytes[offset] = value;
+			}
+
 			inline void append_bytes(std::deque<std::byte> &bytes, std::byte value) {
 				bytes.push_back(value);
 			}

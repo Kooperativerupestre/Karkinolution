@@ -7,7 +7,7 @@
 
 namespace Karkinolution::Networking::APIBYA::Creature {
 	ResponseFrame
-	see_creature(const Karkinolution::World::World &world, RequestId request_id, const std::vector<std::byte> &payload);
+	see_creature(const Karkinolution::World::World &world, Binary::RequestId request_id, const std::vector<std::byte> &payload);
 	ResponseFrame
-	create_creature(Karkinolution::World::World &world, RequestId request_id, const std::vector<std::byte> &payload);
+	create_creature(Karkinolution::World::World &world, Binary::RequestId request_id, const std::vector<std::byte> &payload);
 } // namespace Karkinolution::Networking::APIBYA::Creature

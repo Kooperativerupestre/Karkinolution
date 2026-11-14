@@ -1,7 +1,7 @@
 #pragma once
 #include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/networking/frame/core_aliases.hpp"
 #include "karkinolution/networking/port.hpp"
-#include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
 #include "karkinolution/networking/sdk/src/client/protocol_session.hpp"
@@ -20,6 +20,10 @@
 #include <string>
 
 namespace KarkinolutionSDK {
+	using RequestId       = Karkinolution::Binary::RequestId;
+	using RequestSubTypes = Karkinolution::Binary::RequestSubTypes;
+	using Resource        = Karkinolution::Binary::Resource;
+
 	struct SendingState {
 			std::vector<std::byte> bytes;
 			bool                   is_sending = false;
@@ -33,6 +37,11 @@ namespace KarkinolutionSDK {
 				Resource                                                     resource;
 				std::vector<std::byte>                                       payload;
 				Karkinolution::Binary::Frames::Models::Request::RequestExtra extra;
+		};
+
+		struct SystemRequestData {
+				Karkinolution::Networking::Frames::SystemCallSubTypes sub_type;
+				std::vector<std::byte>                                payload;
 		};
 
 		struct Config {
@@ -106,7 +115,8 @@ namespace KarkinolutionSDK {
 				// The request function makes a request, and blocks the thread until it gets a
 				// response
 
-				ResponseResult request(const RequestData &data);
+				ResponseResult                 request(const RequestData &data);
+				Protocol::SystemResponseResult request(const SystemRequestData &data);
 
 				// This function stores the request in a queue, it doesn't block the thread
 				RequestId send_without_waiting(const RequestData &data);

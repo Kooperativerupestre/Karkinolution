@@ -13,7 +13,7 @@
 #include <karkinolution/networking/api_adapter/creature.hpp>
 
 ResponseFrame Karkinolution::Networking::APIBYA::Creature::see_creature(const Karkinolution::World::World &world,
-																		RequestId                          request_id,
+				Binary::RequestId                  request_id,
 																		const std::vector<std::byte>      &payload) {
 
 	const auto id = CreatureDSI::Request::interpret_like_get_creature(payload);
@@ -27,14 +27,14 @@ ResponseFrame Karkinolution::Networking::APIBYA::Creature::see_creature(const Ka
 	}
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
-	return Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::CREATURE,
+	return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CREATURE,
 															   request_id,
 															   creature_payload,
-															   ResponseCardinality::ONE);
+																																								Binary::ResponseCardinality::ONE);
 }
 
 ResponseFrame Karkinolution::Networking::APIBYA::Creature::create_creature(Karkinolution::World::World  &world,
-																		   RequestId                     request_id,
+																																													Binary::RequestId                request_id,
 																		   const std::vector<std::byte> &payload) {
 	const auto blueprint = CreatureDSI::Request::interpret_like_create_creature(payload);
 
@@ -49,8 +49,8 @@ ResponseFrame Karkinolution::Networking::APIBYA::Creature::create_creature(Karki
 
 	const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
-	return Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::CREATURE,
+	return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CREATURE,
 															   request_id,
 															   creature_payload,
-															   ResponseCardinality::ONE);
+																																												Binary::ResponseCardinality::ONE);
 }

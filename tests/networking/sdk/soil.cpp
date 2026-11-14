@@ -8,6 +8,9 @@
 #include <ranges>
 #include <unordered_set>
 
+using Karkinolution::Binary::RequestId;
+using Karkinolution::Binary::ResponseCardinality;
+using Karkinolution::Binary::ResponseSubTypes;
 using Karkinolution::Terrain::Soil::SoilPiece;
 using Karkinolution::World::World;
 using KShared::Core::Id::BaseIdType;

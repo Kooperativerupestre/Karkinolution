@@ -13,7 +13,7 @@
 #include <ranges>
 
 ResponseFrame Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolution::World::World &world,
-																RequestId                          request_id,
+						Binary::RequestId                  request_id,
 																const std::vector<std::byte>      &payload) {
 	const auto id = SoilDSI::Request::interpret_like_get_soil(payload);
 
@@ -23,14 +23,14 @@ ResponseFrame Karkinolution::Networking::APIBYA::Soil::see_soil(const Karkinolut
 		return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 	}
 	const auto soil_payload = SoilSRI::serialize_soil(*soil);
-	return Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::SOIL,
+	return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::SOIL,
 															   request_id,
 															   soil_payload,
-															   ResponseCardinality::ONE);
+																				Binary::ResponseCardinality::ONE);
 }
 
 ResponseFrame Karkinolution::Networking::APIBYA::Soil::see_all_soils(const Karkinolution::World::World &world,
-																	 RequestId                          request_id,
+						 Binary::RequestId                  request_id,
 																	 const std::vector<std::byte>      &payload) {
 	const auto &all_soils = Karkinolution::API::Soil::see_all_soils(world);
 
@@ -40,8 +40,8 @@ ResponseFrame Karkinolution::Networking::APIBYA::Soil::see_all_soils(const Karki
 			return SoilSRI::serialize_soil(soil);
 		});
 
-	return Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::SOIL,
+	return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::SOIL,
 															   request_id,
 															   r_payload,
-															   ResponseCardinality::ALL);
+																				Binary::ResponseCardinality::ALL);
 }

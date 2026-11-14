@@ -1,15 +1,17 @@
-#include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/global_aliasses.hpp"
+#include "karkinolution/networking/connection/connection.hpp"
 #include "karkinolution/networking/port.hpp"
+#include "karkinolution/world/world_storage.hpp"
+#include "shared/core/id.hpp"
 
 #include <asio/write.hpp>
 #include <csignal>
 #include <iomanip>
 #include <iostream>
-#include <karkinolution/networking/server.hpp>
+#include <karkinolution/networking/server/server.hpp>
 #include <span>
 
-namespace Karkinolution::Networking {
-
+namespace Karkinolution::Networking::Server {
 	void Server::stop() {
 		std::cout << "Stopping server...\n";
 
@@ -26,8 +28,9 @@ namespace Karkinolution::Networking {
 		io_context.stop();
 	}
 
-	Server::Server(IoContext &io_context, Port port, Karkinolution::World::World &world)
-		: world(world)
+	Server::Server(IoContext &io_context, Port port, Karkinolution::World::WorldStorage &world)
+		: world_storage_(world)
+		, simulation_(world_storage_)
 		, io_context(io_context)
 		, acceptor_(io_context)
 		, signals_(io_context, SIGINT, SIGTERM) {
@@ -50,10 +53,10 @@ namespace Karkinolution::Networking {
 		accept();
 	}
 
-	void Server::remove_connection(Connection &dead_connection) {
+	void Server::remove_connection(Connection::Connection &dead_connection) {
 		auto it = std::find_if(connections.begin(),
 							   connections.end(),
-							   [&dead_connection](const std::unique_ptr<Connection> &connection) {
+							   [&dead_connection](const std::unique_ptr<Connection::Connection> &connection) {
 								   return connection.get() == &dead_connection;
 							   });
 
@@ -71,9 +74,9 @@ namespace Karkinolution::Networking {
 
 			std::cout << "Connected 🦀\n";
 
-			auto connection = std::make_unique<Connection>(std::move(socket), world);
+			auto connection = std::make_unique<Connection::Connection>(std::move(socket), simulation_);
 
-			connection->on_closed = [this](Connection &connection) {
+			connection->on_closed = [this](Connection::Connection &connection) {
 				asio::post(acceptor_.get_executor(), [this, &connection] {
 					remove_connection(connection);
 				});
@@ -91,4 +94,4 @@ namespace Karkinolution::Networking {
 		std::cout << "Server was killed 🦀\n";
 	}
 
-} // namespace Karkinolution::Networking
+} // namespace Karkinolution::Networking::Server

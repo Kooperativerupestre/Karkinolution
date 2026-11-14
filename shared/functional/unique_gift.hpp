@@ -2,7 +2,10 @@
 #include "shared/core/error.hpp"
 #include "shared/functional/optional_reference.hpp"
 
+#include <atomic>
+#include <cassert>
 #include <mutex>
+#include <shared/functional/terminate.hpp>
 
 namespace KShared {
 	namespace Functional {
@@ -59,12 +62,24 @@ namespace KShared {
 				~GiftLease();
 
 				T &get() {
+					if (!ref.has_reference()) {
+						throw BadGiftAccess("GiftLease::get() called on a lease that was already given back");
+					}
 					return ref.reference();
 				}
 
 				const T &get() const {
+					if (!ref.has_reference()) {
+						throw BadGiftAccess("GiftLease::get() called on a lease that was already given back");
+					}
 					return ref.reference();
 				}
+
+				bool has_gift() const {
+					return ref.has_reference();
+				}
+
+				bool release();
 		};
 
 		template <typename T> class UniqueGift {
@@ -75,7 +90,14 @@ namespace KShared {
 				mutable std::mutex mutex;
 				T                  value;
 
-				bool was_taken_ = false;
+				std::atomic<bool> was_taken_ = false;
+
+				void give_back(GiftLease<T> &gift_lease) {
+					assert(&gift_lease.original_gift == this && "give_back called with lease from another gift");
+					std::lock_guard lock{mutex};
+					gift_lease.ref.reset();
+					was_taken_ = false;
+				}
 
 			public:
 
@@ -87,15 +109,9 @@ namespace KShared {
 				UniqueGift(T &&value)
 					: value(std::move(value)) {}
 
-				void give_back(GiftLease<T> &gift_lease) {
-					std::lock_guard lock{mutex};
-					gift_lease.ref.reset();
-					was_taken_ = false;
-				}
-
-				~UniqueGift() noexcept {
-					if (was_taken_) {
-						std::terminate();
+				~UniqueGift() {
+					if (was_taken_.load(std::memory_order_relaxed)) {
+						terminate("Tried to delete an UniqueGift while it was taken");
 					}
 				}
 
@@ -105,12 +121,14 @@ namespace KShared {
 				}
 
 				GiftLease<T> take() {
-					std::lock_guard lock{mutex};
+					{
+						std::lock_guard lock{mutex};
 
-					if (was_taken_) {
-						throw BadGiftAccess("Cannot take a gift if it is already taken");
+						if (was_taken_) {
+							throw BadGiftAccess("Cannot take a gift if it is already taken");
+						}
+						was_taken_ = true;
 					}
-					was_taken_ = true;
 					return GiftLease<T>{*this, value};
 				}
 		};
@@ -119,6 +137,14 @@ namespace KShared {
 			if (ref.has_reference()) {
 				original_gift.give_back(*this);
 			}
+		}
+
+		template <typename T> bool GiftLease<T>::release() {
+			if (ref.has_reference()) {
+				original_gift.give_back(*this);
+				return true;
+			}
+			return false;
 		}
 	} // namespace Functional
 } // namespace KShared

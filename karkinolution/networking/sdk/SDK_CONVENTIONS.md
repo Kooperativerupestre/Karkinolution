@@ -9,6 +9,11 @@ SDK interpreters are the public-facing API of the SDK. Each function in an inter
 3. **Parses** the binary response using the domain DSI.
 4. **Returns** the parsed response.
 
+System and world interpreters use separate namespaces. `KarkinolutionSDK::Interpreters::System` handles scoped system
+calls, such as world configuration. Existing domain interpreters are exposed below
+`KarkinolutionSDK::Interpreters::World`; they retain their domain-specific behavior and use world-scoped requests. The
+scope prefix belongs to the client transport and is not part of an interpreter payload.
+
 ### File layout
 
 One `.hpp` / `.cpp` pair per domain — no subdirectory nesting.

@@ -16,7 +16,6 @@
 namespace Karkinolution::Organisms::Entities::Creature::Brain::Motor {
 	void BrainMotor::run(Karkinolution::Organisms::Entities::Creature::Brain::Brain &brain, const Creature &creature) {
 		const auto stop = Physiology::BrainPhysiology::should_stop_intent(brain);
-
 		if (stop) {
 			brain.switch_intent(
 				Karkinolution::Organisms::Entities::Creature::Brain::Instincts::Instincts::take(creature));

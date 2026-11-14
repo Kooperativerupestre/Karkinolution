@@ -14,7 +14,7 @@ namespace Karkinolution::Binary::Protocol {
 	enum class Type : uint8_t {
 		Request  = 1,
 		Error    = 2,
-		Response = 3
+		Response = 3,
 	};
 
 	namespace Request {

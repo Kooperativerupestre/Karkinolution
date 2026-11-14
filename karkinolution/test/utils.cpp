@@ -18,14 +18,15 @@ Karkinolution::World::World TestUtils::make_small_world() {
 	return {preset};
 }
 
-std::vector<std::byte> TestUtils::make_see_creature_frame(RequestId id, KShared::Core::Id::BaseIdType creature_id)
+std::vector<std::byte> TestUtils::make_see_creature_frame(Karkinolution::Binary::RequestId id,
+																												  KShared::Core::Id::BaseIdType creature_id)
 
 {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);
 	return Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(
-		RequestSubTypes::SEE,
+		Karkinolution::Binary::RequestSubTypes::SEE,
 		id,
-		Resource::CREATURE,
+		Karkinolution::Binary::Resource::CREATURE,
 		std::vector<std::byte>(payload.begin(), payload.end()),
 		Karkinolution::Binary::Frames::Models::Request::SeeExtra{
 			.target = Karkinolution::Binary::Protocol::Request::SeeTarget::ONE});
@@ -35,9 +36,9 @@ KarkinolutionSDK::Client::RequestData
 TestUtils::make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id) {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);
 	const auto built   = Karkinolution::Binary::Frames::Motor::make_request(
-        RequestSubTypes::SEE,
+		Karkinolution::Binary::RequestSubTypes::SEE,
         KarkinolutionSDK::Interpreters::GENERIC_INTERPRETER_ID,
-        Resource::CREATURE,
+		Karkinolution::Binary::Resource::CREATURE,
         std::vector<std::byte>(payload.begin(), payload.end()),
         Karkinolution::Binary::Frames::Models::Request::SeeExtra{
 			  .target = Karkinolution::Binary::Protocol::Request::SeeTarget::ONE});

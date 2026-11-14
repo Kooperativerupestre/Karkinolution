@@ -1,7 +1,9 @@
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/sdk/src/client/client.hpp"
-#include "karkinolution/networking/server.hpp"
+#include "karkinolution/networking/sdk/src/interpreters/system.hpp"
+#include "karkinolution/networking/server/server.hpp"
 #include "karkinolution/test/utils.hpp"
+#include "karkinolution/world/world_storage.hpp"
 
 #include <exception>
 #include <gtest/gtest.h>
@@ -13,14 +15,23 @@
 
 using Karkinolution::Networking::IoContext;
 using Karkinolution::Networking::PORT;
-using Karkinolution::Networking::Server;
 using Karkinolution::World::World;
+using Karkinolution::World::WorldId;
+using Karkinolution::World::WorldStorage;
+using ServerType = Karkinolution::Networking::Server::Server;
 
 TEST_F(ClientTest, ServerE2E) {
 	IoContext server_io;
 
-	World  world = TestUtils::make_small_world();
-	Server server{server_io, PORT, world};
+	WorldStorage         storage;
+	std::vector<WorldId> world_ids;
+	world_ids.reserve(8);
+	for (int index = 0; index < 8; ++index) {
+		World world = TestUtils::make_small_world();
+		world_ids.push_back(world.get_id());
+		ASSERT_TRUE(storage.add(std::move(world)));
+	}
+	ServerType application_server{server_io, PORT, storage};
 
 	std::thread server_thread{[&] {
 		server_io.run();
@@ -32,13 +43,14 @@ TEST_F(ClientTest, ServerE2E) {
 	std::vector<std::thread> threads;
 
 	for (int i = 0; i < N; ++i) {
-		threads.emplace_back([&] {
+		threads.emplace_back([&, world_id = world_ids[i]] {
 			KarkinolutionSDK::Client::Client client{
 				io,
 				KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
 
 			try {
 				client.connect();
+				EXPECT_TRUE(KarkinolutionSDK::Interpreters::System::config(client, world_id).value_or(false));
 				auto output = client.request(TestUtils::make_see_creature_request_data(45));
 
 				if (!output || !output.value().has_value()) {
@@ -62,7 +74,7 @@ TEST_F(ClientTest, ServerE2E) {
 	}
 
 	asio::post(server_io, [&] {
-		server.stop();
+		application_server.stop();
 	});
 
 	server_thread.join();
@@ -73,8 +85,11 @@ TEST_F(ClientTest, ServerE2E) {
 TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 	IoContext server_io;
 
-	World  world = TestUtils::make_small_world();
-	Server server{server_io, PORT, world};
+	WorldStorage storage;
+	World        world    = TestUtils::make_small_world();
+	const auto   world_id = world.get_id();
+	ASSERT_TRUE(storage.add(std::move(world)));
+	ServerType application_server{server_io, PORT, storage};
 
 	std::thread server_thread{[&] {
 		server_io.run();
@@ -90,6 +105,7 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 
 			try {
 				client.connect();
+				EXPECT_TRUE(KarkinolutionSDK::Interpreters::System::config(client, world_id).value_or(false));
 				auto output = client.request(TestUtils::make_see_creature_request_data(45));
 				succeeded   = output && output.value().has_value();
 			} catch (const std::exception &error) {
@@ -114,7 +130,7 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 	const bool second_request_succeeded = make_request();
 
 	asio::post(server_io, [&] {
-		server.stop();
+		application_server.stop();
 	});
 
 	server_thread.join();
@@ -126,9 +142,12 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 	IoContext server_io;
 
-	World      world               = TestUtils::make_small_world();
-	const auto expected_soil_count = world.see_territory().registry().size();
-	Server     server{server_io, PORT, world};
+	WorldStorage storage;
+	World        world               = TestUtils::make_small_world();
+	const auto   world_id            = world.get_id();
+	const auto   expected_soil_count = world.see_territory().registry().size();
+	ASSERT_TRUE(storage.add(std::move(world)));
+	ServerType application_server{server_io, PORT, storage};
 
 	std::thread server_thread{[&] {
 		server_io.run();
@@ -142,6 +161,9 @@ TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 
 		try {
 			client.connect();
+			const auto world_ids = KarkinolutionSDK::Interpreters::System::get_all_world_ids(client);
+			EXPECT_EQ(world_ids, std::vector<Karkinolution::World::WorldId>{world_id});
+			EXPECT_TRUE(KarkinolutionSDK::Interpreters::System::config(client, world_id).value_or(false));
 			soil_count = KarkinolutionSDK::Interpreters::Soil::see_all_soils(client).size();
 			succeeded  = true;
 		} catch (const std::exception &error) {
@@ -153,7 +175,7 @@ TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 	}
 
 	asio::post(server_io, [&] {
-		server.stop();
+		application_server.stop();
 	});
 
 	server_thread.join();

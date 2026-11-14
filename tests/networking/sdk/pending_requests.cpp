@@ -8,6 +8,10 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/sdk/src/error.hpp>
 
+using Karkinolution::Binary::ErrorSubTypes;
+using Karkinolution::Binary::RequestId;
+using Karkinolution::Binary::ResponseCardinality;
+using Karkinolution::Binary::ResponseSubTypes;
 using KarkinolutionSDK::CPPSdkError;
 using KarkinolutionSDK::Protocol::FutureRequest;
 using KarkinolutionSDK::Protocol::PendingRequests;

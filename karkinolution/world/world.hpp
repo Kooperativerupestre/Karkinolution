@@ -23,6 +23,8 @@ namespace Karkinolution {
 				float                      epsilon;
 		};
 
+		using WorldId = KShared::Core::Id::BaseIdType;
+
 		class World {
 				// Note: Friend class for testing purposes, enabling test suites to inspect
 				// internal components and verify invariant enforcement and atomicity.
@@ -36,7 +38,7 @@ namespace Karkinolution {
 				Karkinolution::Terrain::Territory                    territory;
 				int                                                  time = 0;
 
-				KShared::Core::Id::BaseIdType id = KShared::Core::Id::gen_id();
+				WorldId id = KShared::Core::Id::gen_id();
 
 			public:
 

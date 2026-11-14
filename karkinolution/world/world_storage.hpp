@@ -73,6 +73,7 @@ namespace Karkinolution {
 				bool remove(BaseIdType id);
 
 				std::optional<GiftLease<World>> take(BaseIdType id);
+				std::vector<WorldId>            get_all_world_ids() const;
 				EntryState                      get_state(BaseIdType id) const;
 		};
 	} // namespace World

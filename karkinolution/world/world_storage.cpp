@@ -7,6 +7,17 @@
 #include <mutex>
 
 namespace Karkinolution::World {
+	std::vector<WorldId> WorldStorage::get_all_world_ids() const {
+		std::lock_guard      lock{mutex};
+		std::vector<WorldId> ids;
+
+		ids.reserve(entries.size());
+		for (const auto &entry : entries) {
+			ids.push_back(entry->world_id());
+		}
+		return ids;
+	}
+
 	std::optional<size_t> WorldStorage::get_entries_index_unlocked(BaseIdType id) const {
 		for (size_t i = 0; i < entries.size(); i++) {
 			if (entries[i]->world_id() == id) {
@@ -77,7 +88,11 @@ namespace Karkinolution::World {
 			return std::nullopt;
 		}
 
-		return entries[index.value()]->gift().take();
+		auto &gift = entries[index.value()]->gift();
+		if (gift.was_taken()) {
+			return std::nullopt;
+		}
+		return gift.take();
 	}
 
 	EntryState WorldStorage::get_state(BaseIdType id) const {

@@ -1,18 +1,17 @@
 
-#include "karkinolution/networking/protocol_session.hpp"
-
 #include "karkinolution/binary/frames/motor.hpp"
+#include "karkinolution/networking/connection/protocol_sessions/world.hpp"
 #include "karkinolution/world/world.hpp"
 
 #include <gtest/gtest.h>
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/test/utils.hpp>
 
-using Karkinolution::Networking::ProtocolSession;
+using Karkinolution::Networking::Connection::ProtocolSessions::WorldSession;
 
 TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {
-	auto            world = TestUtils::make_small_world();
-	ProtocolSession session{world};
+	auto         world = TestUtils::make_small_world();
+	WorldSession session{world};
 
 	const auto frame = TestUtils::make_see_creature_frame(7, 45);
 	session.receive(frame);
@@ -24,8 +23,8 @@ TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {
 }
 
 TEST(ProtocolSessionTest, FrameSplitAcrossTwoReceivesProducesOneResponse) {
-	auto            world = TestUtils::make_small_world();
-	ProtocolSession session{world};
+	auto         world = TestUtils::make_small_world();
+	WorldSession session{world};
 
 	const auto frame = TestUtils::make_see_creature_frame(8, 45);
 	const auto half  = frame.size() / 2;

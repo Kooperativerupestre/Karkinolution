@@ -1,7 +1,7 @@
 #include "karkinolution/binary/frames/parser.hpp"
-#include "karkinolution/networking/protocol_session.hpp"
 #include "karkinolution/networking/sdk/src/client/alias.hpp"
 #include "karkinolution/networking/sdk/src/client/pending_request.hpp"
+#include "karkinolution/networking/sdk/src/client/protocol_session.hpp"
 #include "karkinolution/networking/sdk/src/error.hpp"
 
 #include <asio/bind_executor.hpp>
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/asio_types.hpp>
+#include <karkinolution/networking/frame/motor.hpp>
+#include <karkinolution/networking/scope/motor.hpp>
 #include <karkinolution/networking/sdk/src/client/client.hpp>
 #include <thread>
 
@@ -73,11 +75,12 @@ namespace KarkinolutionSDK::Client {
 		KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
 
 		const auto request_id = next_request_id.fetch_add(1);
-		auto       raw_frame  = Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
-                                                                                      request_id,
-                                                                                      data.resource,
-                                                                                      data.payload,
-                                                                                      data.extra);
+		auto       raw_frame  = Karkinolution::Networking::Scope::Motor::make_world_frame(
+            Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
+                                                                         request_id,
+                                                                         data.resource,
+                                                                         data.payload,
+                                                                         data.extra));
 
 
 		protocol_session.register_request(request_id);
@@ -87,6 +90,26 @@ namespace KarkinolutionSDK::Client {
 		});
 
 		return request_id;
+	}
+
+	Protocol::SystemResponseResult Client::request(const SystemRequestData &data) {
+		KarkinolutionSDK::Client::Validator::validate_is_connected(*this);
+		const auto request_id = next_request_id.fetch_add(1);
+		const auto frame      = Karkinolution::Networking::Scope::Motor::make_system_frame(
+            Karkinolution::Networking::Frames::Motor::make_raw_system_call(data.sub_type, request_id, data.payload));
+		protocol_session.register_system_request(request_id);
+		asio::post(strand_, [this, frame] {
+			protocol_session.enqueue_request(frame);
+			send();
+		});
+		const auto output = protocol_session.await_system_response(request_id);
+		if (!output) {
+			if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+				throw ClientError("Tried to request with the client disconnected");
+			}
+			return std::unexpected(Protocol::RequestFailure::CANCEL);
+		}
+		return output;
 	}
 
 	void Client::send() {

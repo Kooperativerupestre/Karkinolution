@@ -5,10 +5,12 @@
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/binary/frames/parser.hpp>
+#include <karkinolution/networking/frame/models.hpp>
 #include <mutex>
 
 namespace KarkinolutionSDK {
 	namespace Protocol {
+		using RequestId                                                = Karkinolution::Binary::RequestId;
 		inline std::size_t constexpr RESPONSE_WAITING_TIME_OUT_SECONDS = 5;
 
 		enum class RequestFailure : uint8_t {
@@ -65,6 +67,29 @@ namespace KarkinolutionSDK {
 				ResponseResult pop_response(RequestId id);
 				ResponseResult await_response(RequestId id);
 				void           fail_all_by_disconnection();
+		};
+
+		using SystemOutput         = Karkinolution::Networking::Frames::Models::SystemOutput::SystemOutput;
+		using SystemResponseResult = std::expected<std::optional<SystemOutput>, RequestFailure>;
+
+		class SystemPendingRequests {
+			private:
+
+				struct Pending {
+						std::promise<SystemOutput>    promise;
+						std::future<SystemOutput>     future;
+						std::optional<RequestFailure> failure;
+				};
+
+				std::mutex                                              mtx;
+				std::unordered_map<RequestId, std::shared_ptr<Pending>> promises;
+
+			public:
+
+				bool                 add_request(RequestId id);
+				bool                 add_response(const SystemOutput &response);
+				SystemResponseResult await_response(RequestId id);
+				void                 fail_all_by_disconnection();
 		};
 	} // namespace Protocol
 } // namespace KarkinolutionSDK
