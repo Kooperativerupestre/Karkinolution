@@ -77,18 +77,18 @@ namespace {
 			return cp - (U'a' - U'A');
 		}
 
-		static const std::unordered_map<char32_t, char32_t> lowercase_to_uppercase = {{U'á', U'Á'},
-																					  {U'é', U'É'},
-																					  {U'í', U'Í'},
-																					  {U'ó', U'Ó'},
-																					  {U'ú', U'Ú'},
-																					  {U'ý', U'Ý'},
-																					  {U'ā', U'Ā'},
-																					  {U'ē', U'Ē'},
-																					  {U'ī', U'Ī'},
-																					  {U'ō', U'Ō'},
-																					  {U'ū', U'Ū'},
-																					  {U'ȳ', U'Ȳ'}};
+		static const std::unordered_map<char32_t, char32_t> lowercase_to_uppercase = {{U'\u00E1', U'\u00C1'},
+																					  {U'\u00E9', U'\u00C9'},
+																					  {U'\u00ED', U'\u00CD'},
+																					  {U'\u00F3', U'\u00D3'},
+																					  {U'\u00FA', U'\u00DA'},
+																					  {U'\u00FD', U'\u00DD'},
+																					  {U'\u0101', U'\u0100'},
+																					  {U'\u0113', U'\u0112'},
+																					  {U'\u012B', U'\u012A'},
+																					  {U'\u014D', U'\u014C'},
+																					  {U'\u016B', U'\u016A'},
+																					  {U'\u0233', U'\u0232'}};
 
 		if (auto it = lowercase_to_uppercase.find(cp); it != lowercase_to_uppercase.end()) {
 			return it->second;
