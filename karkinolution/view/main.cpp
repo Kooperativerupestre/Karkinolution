@@ -1,5 +1,4 @@
 #include "karkinolution/networking/client_side/client/alias.hpp"
-#include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/screen.hpp"
 #include "karkinolution/view/synchronizer.hpp"
 #include "karkinolution/view/window.hpp"

@@ -44,6 +44,17 @@ frames to `ClientError`. Interpreter functions may also return `std::nullopt` wh
 not exist. Currently, interpreters also map a cancelled or missing low-level result to `std::nullopt`, so callers using
 an interpreter cannot distinguish a timeout from an absent entity.
 
+## RuntimeClient (RAII wrapper)
+
+For consumers that do not want to manage an `asio::io_context`, background runner thread, or multi-step teardown
+manually, use `RuntimeClient` (aliased as `KarkinolutionRuntimeClient` in
+`karkinolution/networking/client_side/client/alias.hpp`).
+
+`RuntimeClient` encapsulates its own internal `asio::io_context` and worker thread, offering full RAII safety:
+- `connect()` and `disconnect()` safely catch and handle errors without leaking exceptions.
+- The destructor automatically disconnects, halts asynchronous operations, joins the background worker thread, and destroys resources safely.
+- Satisfies client-side interpreter concepts such as `HasRequest` and `HasSystemRequest`, enabling transparent use with domain interpreters.
+
 ## Requests and concurrency
 
 `request()` is synchronous and blocks the calling thread. For non-blocking submission, use

@@ -11,6 +11,7 @@
 #include "shared/core/error.hpp"
 #include "shared/core/id.hpp"
 
+#include <asio/executor_work_guard.hpp>
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/strand.hpp>
@@ -20,7 +21,9 @@
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <mutex>
+#include <optional>
 #include <string>
+#include <thread>
 
 namespace Karkinolution::Networking::ClientSide {
 	using RequestId       = Karkinolution::Binary::RequestId;
@@ -184,6 +187,54 @@ namespace Karkinolution::Networking::ClientSide {
 
 				AsyncOperationsRunning current_async_operations_running;
 				std::atomic<bool>      stopped_new_async_operations = false;
+		};
+
+		/// Isso é a interface mais acessível para quando o consumidor nao quer ter que lidar com io context
+		/// diretamente, ele simplesmente usa essa classe e e agraciado pelo RAII.
+		///
+		/// This is the most accessible interface for callers who do not want to manage an io_context directly;
+		/// they use this class and benefit from RAII lifecycle management.
+		class RuntimeClient {
+			public:
+
+				explicit RuntimeClient(Config config = {}, std::string name = "RuntimeClient");
+				~RuntimeClient() noexcept;
+
+				RuntimeClient(const RuntimeClient &)            = delete;
+				RuntimeClient &operator=(const RuntimeClient &) = delete;
+				RuntimeClient(RuntimeClient &&)                 = delete;
+				RuntimeClient &operator=(RuntimeClient &&)      = delete;
+
+				[[nodiscard]]
+				bool is_connected() const noexcept;
+
+				bool connect() noexcept;
+				bool disconnect() noexcept;
+
+				ResponseResult                 request(const RequestData &data);
+				Protocol::SystemResponseResult request(const SystemRequestData &data);
+
+				RequestId      send_without_waiting(const RequestData &data);
+				ResponseResult pop_response(RequestId id);
+
+				[[nodiscard]]
+				const Config &get_config() const noexcept {
+					return config;
+				}
+
+				[[nodiscard]]
+				const std::string &get_name() const noexcept {
+					return name;
+				}
+
+			private:
+
+				asio::io_context                                           io;
+				asio::executor_work_guard<asio::io_context::executor_type> guard;
+				Config                                                     config;
+				std::string                                                name;
+				std::optional<Client>                                      client;
+				std::thread                                                runner;
 		};
 
 		namespace Validator {
