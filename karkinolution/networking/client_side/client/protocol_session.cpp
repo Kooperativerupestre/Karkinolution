@@ -13,7 +13,6 @@
 #include <format>
 #include <iostream>
 #include <karkinolution/binary/frames/motor.hpp>
-#include <unistd.h>
 
 namespace Karkinolution::Networking::ClientSide::Protocol {
 	void ProtocolSession::receive(std::span<const std::byte> bytes) {

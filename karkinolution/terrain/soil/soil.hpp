@@ -121,7 +121,7 @@ namespace Karkinolution {
 			inline std::unordered_map<SoilTypes, Blueprint> blueprints = {
 				{SoilTypes::DIRT,
 				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
-                               return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                               return std::make_unique<SoilPieceComponents::MovementCost>(1.0f);
                            }},
 						   .properties          = {},
 						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::WALK}
@@ -130,13 +130,13 @@ namespace Karkinolution {
 
 				{SoilTypes::SAND,
 				 Blueprint{.default_components = {[]() -> std::unique_ptr<Component> {
-							   return std::make_unique<SoilPieceComponents::MovementCost>(2);
+							   return std::make_unique<SoilPieceComponents::MovementCost>(2.0f);
 						   }},
 						   .properties         = {}}},
 
 				{SoilTypes::ROCK,
 				 Blueprint{.default_components  = {[]() -> std::unique_ptr<Component> {
-                               return std::make_unique<SoilPieceComponents::MovementCost>(1);
+                               return std::make_unique<SoilPieceComponents::MovementCost>(1.0f);
                            }},
 						   .properties          = {SoilProperties::DANGEROUS},
 						   .required_properties = {Organisms::Entities::Properties::Capabilities::Move::WALK}}},
