@@ -31,9 +31,9 @@ namespace Karkinolution::Networking::ServerSide::Connection {
 
 			Connection(Socket socket, Simulation::Simulation &simulation);
 
-			void                                        start();
+			void                              start();
 			std::function<void(Connection &)> on_closed;
-			void                                        close();
+			void                              close();
 
 			ConnectionId get_id() const {
 				return id;
