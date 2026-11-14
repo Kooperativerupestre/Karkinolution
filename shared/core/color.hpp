@@ -2,6 +2,8 @@
 
 #include "shared/math/stats/compile_values.hpp"
 
+#include <array>
+
 namespace KShared {
 	namespace Colors {
 
