@@ -1,11 +1,8 @@
-
-
-#include "karkinolution/networking/sdk/src/client/client.hpp"
+#include "karkinolution/networking/client_side/client/client.hpp"
 
 #include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/view/client/client.hpp"
 #include "shared/core/error.hpp"
-
-#include <karkinolution/view/client/client.hpp>
 
 bool KarkinolutionView::Client::Client::is_connected() const {
 	return client->is_connected();
@@ -27,7 +24,7 @@ bool KarkinolutionView::Client::Client::disconnect() {
 	return !client->is_connected();
 }
 
-KarkinolutionSDK::Client::ResponseResult
-KarkinolutionView::Client::Client::request(const KarkinolutionSDK::Client::RequestData &data) {
+Karkinolution::Networking::ClientSide::Client::ResponseResult
+KarkinolutionView::Client::Client::request(const Karkinolution::Networking::ClientSide::Client::RequestData &data) {
 	return client->request(data);
 }

@@ -1,0 +1,18 @@
+#include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/binary/protocol/aliases.hpp"
+
+#include <karkinolution/api/territory.hpp>
+#include <karkinolution/binary/frames/motor.hpp>
+#include <karkinolution/binary/interpreters/territory.hpp>
+#include <karkinolution/networking/server_side/api_adapter/territory.hpp>
+
+namespace Karkinolution::Networking::ServerSide::APIBYA::Territory {
+	ResponseFrame see_territory(const Karkinolution::World::World &world, Binary::RequestId request_id) {
+		const auto territory = Karkinolution::API::Territory::see_territory(world);
+		const auto payload   = TerritorySRI::serialize_territory(territory);
+		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::TERRITORY,
+																   request_id,
+																   payload,
+																   Binary::ResponseCardinality::ONE);
+	}
+} // namespace Karkinolution::Networking::ServerSide::APIBYA::Territory

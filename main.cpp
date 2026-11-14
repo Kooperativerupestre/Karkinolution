@@ -1,4 +1,4 @@
-#include "karkinolution/networking/server/server.hpp"
+#include "karkinolution/networking/server_side/server/server.hpp"
 #include "karkinolution/world/world.hpp"
 #include "karkinolution/world/world_storage.hpp"
 
@@ -19,10 +19,10 @@ int main() {
 											  .height = KShared::Math::Units::Height{100.0}},
 		.epsilon = 5.0f};
 
-	Karkinolution::World::World       world{preset};
+	Karkinolution::World::World        world{preset};
 	Karkinolution::World::WorldStorage storage;
 	storage.add(std::move(world));
-	Karkinolution::Networking::Server::Server server(io_context, Karkinolution::Networking::PORT, storage);
+	Karkinolution::Networking::ServerSide::Server::Server server(io_context, Karkinolution::Networking::PORT, storage);
 
 	io_context.run();
 

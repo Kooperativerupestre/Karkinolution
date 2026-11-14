@@ -1,24 +1,25 @@
+#include "karkinolution/networking/client_side/client/client.hpp"
+#include "karkinolution/networking/client_side/interpreters/soil.hpp"
+#include "karkinolution/networking/client_side/interpreters/system.hpp"
 #include "karkinolution/networking/port.hpp"
-#include "karkinolution/networking/sdk/src/client/client.hpp"
-#include "karkinolution/networking/sdk/src/interpreters/system.hpp"
-#include "karkinolution/networking/server/server.hpp"
+#include "karkinolution/networking/server_side/server/server.hpp"
 #include "karkinolution/test/utils.hpp"
 #include "karkinolution/world/world_storage.hpp"
 
 #include <exception>
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>
-#include <karkinolution/networking/sdk/src/client/client.hpp>
-#include <karkinolution/networking/sdk/src/interpreters/soil.hpp>
 #include <latch>
 #include <networking/server_fixture.hpp>
 
 using Karkinolution::Networking::IoContext;
 using Karkinolution::Networking::PORT;
+using Karkinolution::Networking::ClientSide::Client::Client;
+using Karkinolution::Networking::ClientSide::Client::Config;
 using Karkinolution::World::World;
 using Karkinolution::World::WorldId;
 using Karkinolution::World::WorldStorage;
-using ServerType = Karkinolution::Networking::Server::Server;
+using ServerType = Karkinolution::Networking::ServerSide::Server::Server;
 
 TEST_F(ClientTest, ServerE2E) {
 	IoContext server_io;
@@ -44,13 +45,11 @@ TEST_F(ClientTest, ServerE2E) {
 
 	for (int i = 0; i < N; ++i) {
 		threads.emplace_back([&, world_id = world_ids[i]] {
-			KarkinolutionSDK::Client::Client client{
-				io,
-				KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
+			Client client{io, Config{.host = "127.0.0.1", .port = PORT}};
 
 			try {
 				client.connect();
-				EXPECT_TRUE(KarkinolutionSDK::Interpreters::System::config(client, world_id).value_or(false));
+				EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
 				auto output = client.request(TestUtils::make_see_creature_request_data(45));
 
 				if (!output || !output.value().has_value()) {
@@ -99,13 +98,11 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 		bool succeeded = false;
 
 		{
-			KarkinolutionSDK::Client::Client client{
-				io,
-				KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
+			Client client{io, Config{.host = "127.0.0.1", .port = PORT}};
 
 			try {
 				client.connect();
-				EXPECT_TRUE(KarkinolutionSDK::Interpreters::System::config(client, world_id).value_or(false));
+				EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
 				auto output = client.request(TestUtils::make_see_creature_request_data(45));
 				succeeded   = output && output.value().has_value();
 			} catch (const std::exception &error) {
@@ -156,15 +153,14 @@ TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 	std::size_t soil_count = 0;
 	bool        succeeded  = false;
 	{
-		KarkinolutionSDK::Client::Client client{io,
-												KarkinolutionSDK::Client::Config{.host = "127.0.0.1", .port = PORT}};
+		Client client{io, Config{.host = "127.0.0.1", .port = PORT}};
 
 		try {
 			client.connect();
-			const auto world_ids = KarkinolutionSDK::Interpreters::System::get_all_world_ids(client);
+			const auto world_ids = SystemInterpreter::get_all_world_ids(client);
 			EXPECT_EQ(world_ids, std::vector<Karkinolution::World::WorldId>{world_id});
-			EXPECT_TRUE(KarkinolutionSDK::Interpreters::System::config(client, world_id).value_or(false));
-			soil_count = KarkinolutionSDK::Interpreters::Soil::see_all_soils(client).size();
+			EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
+			soil_count = SoilInterpreter::see_all_soils(client).size();
 			succeeded  = true;
 		} catch (const std::exception &error) {
 			ADD_FAILURE() << "Fetching all soils failed: " << error.what();

@@ -1,6 +1,6 @@
 #pragma once
-#include "karkinolution/networking/sdk/src/client/alias.hpp"
-#include "karkinolution/networking/sdk/src/client/client.hpp"
+#include "karkinolution/networking/client_side/client/alias.hpp"
+#include "karkinolution/networking/client_side/client/client.hpp"
 
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>

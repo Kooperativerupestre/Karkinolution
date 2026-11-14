@@ -37,7 +37,7 @@ Because there is no loss based on the biggest size of the territory and things. 
 | Methods | `snake_case` | `get_creature()` | |
 | Classes | `PascalCase` | `Creature` | |
 | Structs | `PascalCase` | `CreatureData` | |
-| Namespaces | `PascalCase` | `Karkinolution::SDK` | |
+| Namespaces | `PascalCase` | `Karkinolution::Networking::ClientSide` | |
 | Concepts | `PascalCase` | `Serializable` | |
 | Type aliases | `PascalCase` | `CreatureId` | |
 | Constants | `UPPER_SNAKE_CASE` | `MAX_CONNECTIONS` | |

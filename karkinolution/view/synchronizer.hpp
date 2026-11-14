@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/networking/sdk/src/client/client.hpp"
+#include "karkinolution/networking/client_side/client/client.hpp"
 #include "karkinolution/view/client/client.hpp"
 #include "karkinolution/view/screen.hpp"
 #include "karkinolution/view/world/world.hpp"
@@ -24,11 +24,9 @@ namespace KarkinolutionView {
 			bool connect();
 			bool disconnect();
 
-
 			void draw();
 
-
-			KarkinolutionSDK::Client::ResponseResult
-			request_and_sync(const KarkinolutionSDK::Client::RequestData &data);
+			Karkinolution::Networking::ClientSide::Client::ResponseResult
+			request_and_sync(const Karkinolution::Networking::ClientSide::Client::RequestData &data);
 	};
 } // namespace KarkinolutionView

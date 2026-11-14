@@ -1,7 +1,7 @@
 #include "karkinolution/binary/types/list.hpp"
-#include "karkinolution/networking/connection/id.hpp"
-#include "karkinolution/networking/simulation/config_output.hpp"
-#include "karkinolution/networking/simulation/world_state.hpp"
+#include "karkinolution/networking/config_output.hpp"
+#include "karkinolution/networking/connection_id.hpp"
+#include "karkinolution/networking/world_state.hpp"
 #include "karkinolution/world/world.hpp"
 #include "shared/binary/byte_utils.hpp"
 #include "shared/binary/deserializer.hpp"
@@ -18,7 +18,7 @@ namespace Karkinolution {
 			});
 		}
 
-		std::array<std::byte, SRI::Layout::WorldState::TotalSize> SRI::serialize(const Simulation::WorldState &state) {
+		std::array<std::byte, SRI::Layout::WorldState::TotalSize> SRI::serialize(const WorldState &state) {
 			std::array<std::byte, SRI::Layout::WorldState::TotalSize> bytes;
 
 			KShared::Binary::Utils::append_bytes(bytes,
@@ -32,8 +32,7 @@ namespace Karkinolution {
 			return bytes;
 		}
 
-		std::array<std::byte, SRI::Layout::ConfigOutput::TotalSize>
-		SRI::serialize(const Simulation::ConfigOutput &output) {
+		std::array<std::byte, SRI::Layout::ConfigOutput::TotalSize> SRI::serialize(const ConfigOutput &output) {
 			std::array<std::byte, SRI::Layout::ConfigOutput::TotalSize> bytes{};
 
 			KShared::Binary::Utils::append_bytes(bytes,
@@ -42,18 +41,18 @@ namespace Karkinolution {
 			return bytes;
 		}
 
-		Simulation::WorldState DSI::get_world_state(const std::vector<std::byte> &bytes, std::size_t offset) {
+		WorldState DSI::get_world_state(const std::vector<std::byte> &bytes, std::size_t offset) {
 			const bool has_owner_id =
 				KShared::Binary::Deserializer::read_bool(bytes, SRI::Layout::WorldState::HasOwnerId::OFFSET + offset);
 
-			std::optional<Connection::ConnectionId> id;
+			std::optional<ConnectionId> id;
 
 			if (has_owner_id) {
-				id = KShared::Binary::Deserializer::deserialize<Connection::ConnectionId>(
-					bytes,
-					SRI::Layout::WorldState::OwnerId::OFFSET + offset);
+				id = KShared::Binary::Deserializer::deserialize<ConnectionId>(bytes,
+																			  SRI::Layout::WorldState::OwnerId::OFFSET
+																				  + offset);
 			}
-			return Simulation::WorldState{.owner = id};
+			return WorldState{.owner = id};
 		}
 
 		std::vector<World::WorldId> DSI::get_world_ids(const std::vector<std::byte> &bytes, std::size_t offset) {
@@ -65,7 +64,7 @@ namespace Karkinolution {
 				0);
 		}
 
-		Simulation::ConfigOutput DSI::get_config_output(const std::vector<std::byte> &bytes, std::size_t offset) {
+		ConfigOutput DSI::get_config_output(const std::vector<std::byte> &bytes, std::size_t offset) {
 			return {.could_connect = KShared::Binary::Deserializer::deserialize<bool>(
 						bytes,
 						offset + SRI::Layout::ConfigOutput::CouldConnect::OFFSET)};
@@ -89,7 +88,7 @@ namespace Karkinolution {
 		}
 
 		std::array<std::byte, SRI::Layout::ConfigOutput::TotalSize>
-		SystemOutput::SRI::make_config_output(const Simulation::ConfigOutput &output) {
+		SystemOutput::SRI::make_config_output(const ConfigOutput &output) {
 			return Interpreter::SRI::serialize(output);
 		}
 	} // namespace Networking::Frames::Interpreter

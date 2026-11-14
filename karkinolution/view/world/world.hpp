@@ -1,7 +1,7 @@
 #pragma once
 #include "karkinolution/binary/interpreters/models/soil.hpp"
-#include "karkinolution/networking/sdk/src/client/alias.hpp"
-#include "karkinolution/networking/sdk/src/client/client.hpp"
+#include "karkinolution/networking/client_side/client/alias.hpp"
+#include "karkinolution/networking/client_side/client/client.hpp"
 #include "karkinolution/view/client/client.hpp"
 #include "shared/core/id.hpp"
 #include "shared/math/units.hpp"

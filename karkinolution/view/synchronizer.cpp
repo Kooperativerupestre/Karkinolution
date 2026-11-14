@@ -1,8 +1,7 @@
 #include "karkinolution/view/synchronizer.hpp"
 
-#include "karkinolution/networking/sdk/src/client/client.hpp"
+#include "karkinolution/networking/client_side/client/client.hpp"
 
-#include <karkinolution/view/synchronizer.hpp>
 #include <stdexcept>
 
 bool KarkinolutionView::Synchronizer::is_connected() const {
@@ -27,8 +26,8 @@ bool KarkinolutionView::Synchronizer::disconnect() {
 	return true;
 }
 
-KarkinolutionSDK::Client::ResponseResult
-KarkinolutionView::Synchronizer::request_and_sync(const KarkinolutionSDK::Client::RequestData &data) {
+Karkinolution::Networking::ClientSide::Client::ResponseResult KarkinolutionView::Synchronizer::request_and_sync(
+	const Karkinolution::Networking::ClientSide::Client::RequestData &data) {
 	if (!world) {
 		throw std::logic_error("Cannot synchronize before the world is initialized");
 	}

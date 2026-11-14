@@ -16,7 +16,7 @@
 Reusable byte primitives live under `shared/binary/` in the `KShared::Binary` namespace. This layer contains byte-range
 constraints, byte append/padding helpers, generic serialization/deserialization, binary errors, supported-type
 constraints, field layout helpers, and type-name helpers. It must not depend on protocol contracts or frame models, so
-the core, networking, SDK, and other modules can use the same binary mechanics.
+the core, networking, client-side, and other modules can use the same binary mechanics.
 
 Protocol-specific aliases, validators, numeric-type mappings, interpreters, and frames remain under
 `karkinolution/binary/` in the `Karkinolution::Binary` namespace and may depend on `KShared::Binary`.

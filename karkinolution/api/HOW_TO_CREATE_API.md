@@ -2,10 +2,10 @@
 
 This guide describes how to expose a Karkinolution domain operation to a remote client. The layers below have separate
 responsibilities: the domain API works with domain data, binary interpreters own serialization, the API binary adapter
-connects the protocol to the domain API, and SDK interpreters expose the operation to clients.
+connects the protocol to the domain API, and client-side interpreters expose the operation to clients.
 
-Not every domain API needs a network interface. Add the binary, server, and SDK layers only when the operation must be
-available to a remote client.
+Not every domain API needs a network interface. Add the binary, server, and client-side layers only when the operation
+must be available to a remote client.
 
 ## 1. Define the domain API
 
@@ -52,18 +52,19 @@ binary response.
 The API binary adapter's responsibility and rationale are described in
 [`APIBYA.md`](../networking/api_adapter/APIBYA.md).
 
-## 4. Expose the operation in the SDK
+## 4. Expose the operation in the client-side interpreter
 
-Add a domain SDK interpreter under `src/karkinolution/networking/sdk/src/interpreters/`.
+Add a domain client-side interpreter under `src/karkinolution/networking/client_side/interpreters/`.
 
 - Build the request using the binary SRI and the protocol's resource, operation, target, payload, and extra fields.
-- Send it through the SDK client and use the DSI to interpret the response payload.
+- Send it through the client and use the DSI to interpret the response payload.
 - Check the response subtype and cardinality expected by the operation. Surface protocol and server errors according to
-  the SDK conventions; preserve the operation's defined absent-result behavior.
-- Follow [`SDK_CONVENTIONS.md`](../networking/sdk/SDK_CONVENTIONS.md) for SDK responsibilities and error handling.
+  the client-side conventions; preserve the operation's defined absent-result behavior.
+- Follow [`CLIENT_CONVENTIONS.md`](../networking/client_side/CLIENT_CONVENTIONS.md) for interpreter responsibilities
+  and error handling.
 
-If a client-facing view API exists for the feature, add a view querier that delegates to the SDK interpreter. The view
-must not independently rebuild protocol requests or decode binary payloads.
+If a client-facing view API exists for the feature, add a view querier that delegates to the client-side interpreter.
+The view must not independently rebuild protocol requests or decode binary payloads.
 
 ## 5. Verify the complete path
 
@@ -90,5 +91,5 @@ Tests must match the claim they make.
 | Request/response code and frame invariants | Protocol contract and frame models |
 | Server request dispatch | Frame processor |
 | Binary request to domain API to binary response | API binary adapter |
-| Remote request and response interpretation | SDK domain interpreter |
+| Remote request and response interpretation | Client-side domain interpreter |
 | Optional client-facing view query | View querier |
