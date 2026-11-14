@@ -2,6 +2,7 @@
 #include "shared/math/physic/vec/model.hpp"
 #include "shared/math/stats/compile_values.hpp"
 
+#include <array>
 #include <random>
 #include <ranges>
 
