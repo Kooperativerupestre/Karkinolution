@@ -125,7 +125,7 @@ namespace Opsiamethystos {
 												font_size),
 									  std::move(callback),
 									  std::move(style),
-									  std::move(label_text),
+									  label_text,
 									  label_color,
 									  font_size) {}
 
