@@ -1,3 +1,4 @@
+#include <bit>
 #include <cstddef>
 #include <shared/binary/serializer.hpp>
 
