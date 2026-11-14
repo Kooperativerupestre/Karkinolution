@@ -6,6 +6,7 @@
 #include <karkinolution/organism/nature/grass/grass.hpp>
 #include <karkinolution/organism/nature/identity.hpp>
 #include <unordered_map>
+#include <variant>
 
 namespace Karkinolution {
 	namespace Organisms {
