@@ -1,41 +1,88 @@
 version: "1.0"
 project: "Karkino / Karkinolution (Karkino is an abbreviation)"
 
-# Mandatory reading order for incoming agents before performing any work
+# Build tooling notes
+tooling:
+  package_manager: "uv (Python dependency management)"
+  build_system: "CMake with CMakePresets. For build commands, presets, and how to run the project, consult HOW_TO_RUN.md."
+
+# Reading categories: mandatory, conditional, and optional
 workflow:
   required_reading:
     - file: "CONTRIBUTING.md"
       purpose: "Commit message conventions: type(scope): imperative description."
+      when: "Always — read before any work."
+
     - file: "docs/rules.md"
       purpose: "Core architectural boundaries, naming, model/physiology/motor, comments, doc standards."
-    - file: "docs/commands.md"
-      purpose: "Presets and build/test/run commands."
-    - file: "docs/VISION.md"
-      purpose: "Project goals, simulation focus, and the boundary between simulation and visualization."
+      when: "Always — read before any work."
+
     - file: "docs/skills/"
       purpose: "Operational skills that govern development and agent behavior."
-    - file: "docs/CLIENT.md"
-      purpose: "Public client-side boundary, client lifecycle, request behavior, and supported integration model."
+      when: "Always — read before any work."
+
     - file: "karkinolution/CONVENTIONS.md"
       purpose: "Project-wide naming, units, numeric types, and client/simulator responsibilities."
-    - file: "karkinolution/binary/BINARY_CONVENTIONS.md"
-      purpose: "SRI/DSI structure, binary layouts, offset responsibility, and protocol test requirements."
-    - file: "karkinolution/networking/client_side/CLIENT_CONVENTIONS.md"
-      purpose: "Client-side interpreter structure, namespaces, request flow, and error handling."
-    - file: "app/CONVENTIONS.md"
-      purpose: "View namespace conventions and rendering-boundary rules."
-    - file: "opsiamethystos/gui/README.md"
-      purpose: "Opsiaméthystos GUI architecture and rendering dependency boundaries."
-    - file: "opsiamethystos/gui/components/README.md"
-      purpose: "Opsiaméthystos GUI component invariants, immutable geometry, and component state rules."
-    - file: "opsiamethystos/math/geometry/README.md"
-      purpose: "Geometric center, extent, containment, and intersection conventions in Opsiaméthystos."
-    - file: "opsiamethystos/gui/panel/README.md"
-      purpose: "Panel ownership, quadtree consistency, collision queries, and rendering responsibilities in Opsiaméthystos."
+      when: "Always — read before any work."
+
+    - file: "docs/HOW_TO_DOCUMENTATE.md"
+      purpose: "Documentation standards: what to document, how to structure it, and what to avoid."
+      when: "Always — read before any work."
+
     - file: "tests/HOW_TO_CREATE_TESTS.md"
       purpose: "Test purpose, organization, and verification requirements."
+      when: "Always — read before any work."
+
+    - file: "HOW_TO_RUN.md"
+      purpose: "How to build and run the project using CMakePresets and uv. Authoritative reference for build/test/run commands."
+      when: "Always — consult whenever build, run, or preset details are needed."
+
+  conditional_reading:
+    - file: "docs/commands.md"
+      purpose: "Preset names and common build/test/run commands."
+      when: "Read when you need a quick reference for available presets and commands. Good to read proactively."
+
+    - file: "docs/CLIENT.md"
+      purpose: "Public client-side boundary, client lifecycle, request behavior, and supported integration model."
+      when: "Read when the task involves using or integrating with the client API."
+
+    - file: "karkinolution/networking/client_side/CLIENT_CONVENTIONS.md"
+      purpose: "Client-side interpreter structure, namespaces, request flow, and error handling."
+      when: "Read when the task involves implementing or modifying client-side interpreters or client internals."
+
+    - file: "karkinolution/binary/BINARY_CONVENTIONS.md"
+      purpose: "SRI/DSI structure, binary layouts, offset responsibility, and protocol test requirements."
+      when: "Read when the task involves binary protocol, SRI/DSI, frame encoding, or binary validators."
+
     - file: "karkinolution/api/HOW_TO_CREATE_API.md"
       purpose: "Architecture and verification requirements for client-accessible APIs."
+      when: "Read when the task requires creating or modifying a client-accessible API."
+
+    - file: "app/CONVENTIONS.md"
+      purpose: "View namespace conventions and rendering-boundary rules."
+      when: "Read when the task involves the app/view layer or rendering boundaries."
+
+    - file: "opsiamethystos/gui/README.md"
+      purpose: "Opsiaméthystos GUI architecture and rendering dependency boundaries."
+      when: "Read when the task involves the opsiamethystos module."
+
+    - file: "opsiamethystos/gui/components/README.md"
+      purpose: "Opsiaméthystos GUI component invariants, immutable geometry, and component state rules."
+      when: "Read when the task involves opsiamethystos GUI components."
+
+    - file: "opsiamethystos/math/geometry/README.md"
+      purpose: "Geometric center, extent, containment, and intersection conventions in Opsiaméthystos."
+      when: "Read when the task involves opsiamethystos geometry or math."
+
+    - file: "opsiamethystos/gui/panel/README.md"
+      purpose: "Panel ownership, quadtree consistency, collision queries, and rendering responsibilities in Opsiaméthystos."
+      when: "Read when the task involves opsiamethystos panels or the quadtree."
+
+  optional_reading:
+    - file: "docs/VISION.md"
+      purpose: "Project goals, simulation focus, and the boundary between simulation and visualization."
+      when: "Cosmetic / informational only. Not required for implementation tasks."
+
   principles:
     - rule: "Document every architectural or protocol decision in the relevant documentation file before or alongside code implementation."
     - rule: "Document the rationale behind architectural decisions and the stable principles they protect. Do not record transient implementation facts, and do not duplicate source code in documentation."
