@@ -148,8 +148,9 @@ namespace KShared {
 				}
 
 				template <std::floating_point T> T generate() {
-					const auto limit = std::numeric_limits<T>();
-					return std::uniform_real_distribution<T>(limit.lowest(), limit.max())(gen);
+					const auto limit     = std::numeric_limits<T>();
+					const auto magnitude = std::uniform_real_distribution<T>(0, limit.max())(gen);
+					return std::bernoulli_distribution(0.5)(gen) ? -magnitude : magnitude;
 				}
 
 				template <std::integral T> T generate() {
