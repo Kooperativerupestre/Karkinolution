@@ -327,3 +327,81 @@ jobs:
             -w /workspace \
             ${{ env.DOCKER_IMAGE }} \
             ctest --preset ci-tsan
+
+  libcxx:
+    name: libc++ (${{ matrix.name }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Unit Tests
+            preset: ci-libcxx
+            ccache-key: clang21-libcxx
+          - name: Sanitizers
+            preset: ci-libcxx-sanitizers
+            ccache-key: clang21-libcxx-asan-ubsan
+          - name: Thread Sanitizer
+            preset: ci-libcxx-tsan
+            ccache-key: clang21-libcxx-tsan
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2.24
+        with:
+          key: ${{ matrix.ccache-key }}
+          max-size: 1G
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Configure ASLR for ThreadSanitizer
+        if: matrix.preset == 'ci-libcxx-tsan'
+        run: sudo sysctl -w vm.mmap_rnd_bits=28
+
+      - name: Build CI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.ci
+          tags: ${{ env.DOCKER_IMAGE }}
+          load: true
+          cache-from: type=gha,scope=karkinolution-ci
+          cache-to: type=gha,mode=max,scope=karkinolution-ci
+
+      - name: Configure
+        run: |
+          mkdir -p "$RUNNER_TEMP/conan-cache"
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
+            -w /workspace \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            sh -c 'conan profile detect --force && conan install . --build=missing -s build_type=Debug -pr:h conan/profiles/clang-libcxx && cmake --preset ${{ matrix.preset }}'
+
+      - name: Build tests
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
+            -w /workspace \
+            -e CCACHE_DIR=/workspace/.ccache \
+            ${{ env.DOCKER_IMAGE }} \
+            cmake --build --preset ${{ matrix.preset }} --parallel "$(nproc)"
+
+      - name: Test
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" \
+            -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
+            -w /workspace \
+            ${{ env.DOCKER_IMAGE }} \
+            ctest --preset ${{ matrix.preset }}

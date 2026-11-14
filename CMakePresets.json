@@ -53,6 +53,28 @@
       }
     },
     {
+      "name": "libcxx",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-21",
+        "CMAKE_CXX_COMPILER": "clang++-21",
+        "CMAKE_CXX_FLAGS": "-stdlib=libc++"
+      }
+    },
+    {
+      "name": "ci-libcxx-base",
+      "hidden": true,
+      "inherits": [
+        "base",
+        "libcxx",
+        "ccache",
+        "conan-debug"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
       "name": "ci-base",
       "hidden": true,
       "inherits": [
@@ -169,6 +191,30 @@
       "binaryDir": "${sourceDir}/build-ci-tsan"
     },
     {
+      "name": "ci-libcxx",
+      "displayName": "CI: Debug build for unit tests with libc++",
+      "inherits": "ci-libcxx-base",
+      "binaryDir": "${sourceDir}/build-ci-libcxx"
+    },
+    {
+      "name": "ci-libcxx-sanitizers",
+      "displayName": "CI: Debug with AddressSanitizer and UBSan with libc++",
+      "inherits": [
+        "ci-libcxx-base",
+        "sanitizer-address"
+      ],
+      "binaryDir": "${sourceDir}/build-ci-libcxx-sanitizers"
+    },
+    {
+      "name": "ci-libcxx-tsan",
+      "displayName": "CI: Debug with ThreadSanitizer with libc++",
+      "inherits": [
+        "ci-libcxx-base",
+        "sanitizer-thread"
+      ],
+      "binaryDir": "${sourceDir}/build-ci-libcxx-tsan"
+    },
+    {
       "name": "view-debug",
       "displayName": "Debug with View (raylib)",
       "inherits": [
@@ -241,6 +287,33 @@
     {
       "name": "ci-tsan",
       "configurePreset": "ci-tsan",
+      "targets": [
+        "karkinolution_tests",
+        "opsiamethystos_tests",
+        "karkinolution_app"
+      ]
+    },
+    {
+      "name": "ci-libcxx",
+      "configurePreset": "ci-libcxx",
+      "targets": [
+        "karkinolution_tests",
+        "opsiamethystos_tests",
+        "karkinolution_app"
+      ]
+    },
+    {
+      "name": "ci-libcxx-sanitizers",
+      "configurePreset": "ci-libcxx-sanitizers",
+      "targets": [
+        "karkinolution_tests",
+        "opsiamethystos_tests",
+        "karkinolution_app"
+      ]
+    },
+    {
+      "name": "ci-libcxx-tsan",
+      "configurePreset": "ci-libcxx-tsan",
       "targets": [
         "karkinolution_tests",
         "opsiamethystos_tests",
@@ -426,6 +499,27 @@
         "tsan-environment"
       ],
       "configurePreset": "ci-tsan"
+    },
+    {
+      "name": "ci-libcxx",
+      "inherits": "test-base",
+      "configurePreset": "ci-libcxx"
+    },
+    {
+      "name": "ci-libcxx-sanitizers",
+      "inherits": [
+        "test-base",
+        "sanitizer-environment"
+      ],
+      "configurePreset": "ci-libcxx-sanitizers"
+    },
+    {
+      "name": "ci-libcxx-tsan",
+      "inherits": [
+        "test-base",
+        "tsan-environment"
+      ],
+      "configurePreset": "ci-libcxx-tsan"
     }
   ]
 }
