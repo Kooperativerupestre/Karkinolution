@@ -13,7 +13,7 @@ namespace Opsiamethystos {
 												 .width  = static_cast<float>(bounds.width.value()),
 												 .height = static_cast<float>(bounds.height.value())},
 									 Colors::translate(style_.get(state)));
-					label.draw(origin);
+					label.draw_centered_in(bounds, origin);
 				}
 
 				void Button::RectangleButton::run() {
