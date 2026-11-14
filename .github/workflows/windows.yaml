@@ -39,7 +39,13 @@ jobs:
         shell: pwsh
         run: |
           choco install ninja --yes --no-progress
-          ninja --version
+          $ninja = (Get-Command ninja).Source
+          if (-not $ninja) {
+            throw "Ninja was not found after installation."
+          }
+
+          & $ninja --version
+          "NINJA_PATH=$ninja" >> $env:GITHUB_ENV
 
       - name: Install dependencies
         shell: pwsh
@@ -57,7 +63,9 @@ jobs:
 
       - name: Configure with MSVC
         shell: pwsh
-        run: cmake -S . -B build-windows -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_TOOLCHAIN_FILE=build-windows/build/generators/conan_toolchain.cmake
+        run: |
+          $toolchain = (Resolve-Path build-windows/build/generators/conan_toolchain.cmake).Path
+          cmake -S . -B build-windows -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl "-DCMAKE_TOOLCHAIN_FILE=$toolchain" "-DCMAKE_MAKE_PROGRAM=$env:NINJA_PATH"
 
       - name: Build unit tests
         shell: pwsh
