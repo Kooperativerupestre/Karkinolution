@@ -138,7 +138,6 @@ namespace Karkinolution::Networking::ClientSide::Client {
 										}
 										clear_sending_state();
 
-										std::cout << "Request sent 🦀\n";
 										send();
 										current_async_operations_running.decrement();
 									}));
