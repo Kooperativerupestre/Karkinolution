@@ -42,7 +42,11 @@ namespace Karkinolution::Networking::ClientSide::World {
 		if (!has_soil(soil.id)) {
 			return false;
 		}
-		assert(remove_soil(soil.id));
+		const bool removed = remove_soil(soil.id);
+		assert(removed);
+		if (!removed) {
+			return false;
+		}
 		return add(soil);
 	}
 
@@ -115,7 +119,11 @@ namespace Karkinolution::Networking::ClientSide::World {
 		if (!has_creature(creature.id)) {
 			return false;
 		}
-		assert(remove_creature(creature.id));
+		const bool removed = remove_creature(creature.id);
+		assert(removed);
+		if (!removed) {
+			return false;
+		}
 		return add(creature);
 	}
 
@@ -123,7 +131,11 @@ namespace Karkinolution::Networking::ClientSide::World {
 		if (!has_corpse(corpse.id)) {
 			return false;
 		}
-		assert(remove_corpse(corpse.id));
+		const bool removed = remove_corpse(corpse.id);
+		assert(removed);
+		if (!removed) {
+			return false;
+		}
 		return add(corpse);
 	}
 

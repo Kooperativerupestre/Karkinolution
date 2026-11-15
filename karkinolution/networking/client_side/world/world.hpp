@@ -37,11 +37,19 @@ namespace Karkinolution::Networking::ClientSide::World {
 				const auto output = Interpreters::Soil::see_soil(client, id);
 
 				if (!output) {
-					assert(remove_soil(id));
+					const bool removed = remove_soil(id);
+					assert(removed);
+					if (!removed) {
+						return SyncOutput::DOES_NOT_EXIST;
+					}
 					return SyncOutput::REMOVED;
 				}
 
-				assert(update(*output));
+				const bool updated = update(*output);
+				assert(updated);
+				if (!updated) {
+					return SyncOutput::DOES_NOT_EXIST;
+				}
 				return SyncOutput::UPDATED;
 			}
 
@@ -103,11 +111,19 @@ namespace Karkinolution::Networking::ClientSide::World {
 				const auto output = Interpreters::Creature::see_creature(client, id);
 
 				if (!output) {
-					assert(remove_creature(id));
+					const bool removed = remove_creature(id);
+					assert(removed);
+					if (!removed) {
+						return SyncOutput::DOES_NOT_EXIST;
+					}
 					return SyncOutput::REMOVED;
 				}
 
-				assert(update(*output));
+				const bool updated = update(*output);
+				assert(updated);
+				if (!updated) {
+					return SyncOutput::DOES_NOT_EXIST;
+				}
 				return SyncOutput::UPDATED;
 			}
 
@@ -119,11 +135,19 @@ namespace Karkinolution::Networking::ClientSide::World {
 				const auto output = Interpreters::Corpse::see_corpse(client, id);
 
 				if (!output) {
-					assert(remove_corpse(id));
+					const bool removed = remove_corpse(id);
+					assert(removed);
+					if (!removed) {
+						return SyncOutput::DOES_NOT_EXIST;
+					}
 					return SyncOutput::REMOVED;
 				}
 
-				assert(update(*output));
+				const bool updated = update(*output);
+				assert(updated);
+				if (!updated) {
+					return SyncOutput::DOES_NOT_EXIST;
+				}
 				return SyncOutput::UPDATED;
 			}
 
