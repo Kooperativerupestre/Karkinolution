@@ -99,7 +99,6 @@ namespace Karkinolution::Networking::ClientSide::World {
 
 			bool remove_creature(OrganismId id);
 			bool remove_corpse(OrganismId id);
-			bool update(const Corpse &corpse);
 
 			template <HasRequest T> SyncOutput sync_creature(T &client, OrganismId id) {
 				if (!has_creature(id)) {
@@ -140,6 +139,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool add(const Creature &creature);
 			bool add(const Corpse &corpse);
 			bool update(const Creature &creature);
+			bool update(const Corpse &corpse);
 
 			bool has_creature(OrganismId id) const;
 			bool has_corpse(OrganismId id) const;
@@ -206,6 +206,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool add(const Creature &creature);
 			bool add(const Corpse &corpse);
 			bool update(const Creature &creature);
+			bool update(const Corpse &corpse);
 
 			bool has_creature(OrganismId id) const;
 			bool has_corpse(OrganismId id) const;

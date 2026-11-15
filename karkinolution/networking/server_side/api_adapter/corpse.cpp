@@ -13,11 +13,28 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 
 		auto corpse = Karkinolution::API::Corpse::see_corpse(world, id);
 
-		if (corpse == nullptr) {
+		if (!corpse) {
 			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 		}
 		const auto corpse_payload = CorpseSRI::serialize_corpse(*corpse);
 
+		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CORPSE,
+																   request_id,
+																   corpse_payload,
+																   Binary::ResponseCardinality::ONE);
+	}
+
+	ResponseFrame tick_corpse(Karkinolution::World::World  &world,
+							  Binary::RequestId             request_id,
+							  const std::vector<std::byte> &payload) {
+		const auto id     = CorpseDSI::Request::interpret_like_see_corpse(payload);
+		const auto corpse = Karkinolution::API::Corpse::tick(world, id);
+
+		if (!corpse) {
+			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+		}
+
+		const auto corpse_payload = CorpseSRI::serialize_corpse(*corpse);
 		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CORPSE,
 																   request_id,
 																   corpse_payload,

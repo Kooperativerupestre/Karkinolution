@@ -103,3 +103,6 @@ Tests must match the claim they make.
 `OptionalReference<const Creature>` to the creature's state after the tick. It returns an empty reference when the
 creature does not exist before the tick or is removed during it. The const reference prevents callers from bypassing
 the world and creature motors when mutating simulation state.
+
+`Karkinolution::API::Corpse::tick(world, id)` follows the same contract for corpses: it returns the updated corpse as a
+const `OptionalReference`, or an empty reference when the corpse does not exist before the tick or disappears during it.

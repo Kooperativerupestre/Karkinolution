@@ -52,6 +52,35 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 
 		return CorpseDSI::get_corpse(frame.get_payload(), 0);
 	}
+
+	template <HasRequest T>
+	std::optional<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse>
+	tick_corpse(T &client, KShared::Core::Id::BaseIdType id) {
+		const auto payload = CorpseSRI::Request::make_see_corpse(id);
+		const auto built =
+			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::CYCLE,
+															   GENERIC_INTERPRETER_ID,
+															   Resource::CORPSE,
+															   std::vector<std::byte>(payload.begin(), payload.end()),
+															   CycleExtra{});
+
+		const Client::RequestData data{.sub_type = built.get_sub_type(),
+									   .resource = built.get_resource(),
+									   .payload  = built.get_payload(),
+									   .extra    = built.get_extra()};
+
+		const auto result = client.request(data);
+		if (!result || !result.value().has_value()) {
+			return std::nullopt;
+		}
+
+		const auto &frame = require_response_frame(result.value().value());
+		if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
+			return std::nullopt;
+		}
+
+		return CorpseDSI::get_corpse(frame.get_payload(), 0);
+	}
 } // namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse
 
 namespace CorpseInterpreter = Karkinolution::Networking::ClientSide::Interpreters::Corpse;

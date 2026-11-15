@@ -49,6 +49,8 @@ namespace Karkinolution::Binary::Frames::Processor {
 				return Networking::ServerSide::APIBYA::Creature::tick_creature(world,
 																			   frame.get_id(),
 																			   frame.get_payload());
+			} else if (resource == Resource::CORPSE) {
+				return Networking::ServerSide::APIBYA::Corpse::tick_corpse(world, frame.get_id(), frame.get_payload());
 			}
 		}
 

@@ -9,4 +9,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 	ResponseFrame see_corpse(const Karkinolution::World::World &world,
 							 Binary::RequestId                  request_id,
 							 const std::vector<std::byte>      &payload);
+	ResponseFrame tick_corpse(Karkinolution::World::World  &world,
+							  Binary::RequestId             request_id,
+							  const std::vector<std::byte> &payload);
 } // namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse
