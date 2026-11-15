@@ -46,7 +46,7 @@ if (KARKINOLUTION_CORE_TEST_SOURCES)
     )
 
     target_link_libraries(karkinolution_core_tests PRIVATE
-        karkinolution
+        karkinolution_core
         GTest::gtest_main
     )
 
@@ -73,7 +73,7 @@ if (KSHARED_TEST_SOURCES)
     )
 
     target_link_libraries(kshared_tests PRIVATE
-        karkinolution_shared
+        kshared
         GTest::gtest_main
     )
 

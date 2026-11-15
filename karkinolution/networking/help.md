@@ -7,7 +7,7 @@ Font: [Port](/src/karkinolution/networking/port.hpp)
 # How do I start the server?
 
 ```bash
-./build/karkinolution_core
+./build/karkinolution_server
 ```
 
 How do I compile? [Commands](../../../docs/commands.md)

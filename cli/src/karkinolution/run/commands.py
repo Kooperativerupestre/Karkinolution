@@ -5,7 +5,7 @@ import typer
 
 from karkinolution.presets import binary_dir, find_repo_root, load_configure_presets, resolve_preset
 
-CORE_TARGET = "karkinolution_core"
+CORE_TARGET = "karkinolution_server"
 APP_TARGET = "karkinolution_app"
 
 

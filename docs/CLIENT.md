@@ -2,21 +2,21 @@
 
 ## Build and link
 
-The client-side networking layer is built as part of the `karkinolution` CMake target; there is no separate installable
+The client-side networking layer is built as part of the `karkinolution_core` CMake target; there is no separate installable
 package or library target.
 
 From the repository root, build the library with:
 
 ```bash
 cmake --preset debug
-cmake --build --preset debug --target karkinolution
+cmake --build --preset debug --target karkinolution_core
 ```
 
 In a CMake client that includes this repository as a subdirectory, link against the target:
 
 ```cmake
 add_subdirectory(path/to/Karkinolution)
-target_link_libraries(my_client PRIVATE karkinolution)
+target_link_libraries(my_client PRIVATE karkinolution_core kshared)
 ```
 
 The target provides the repository's `src` include root and its required dependencies. The client and domain

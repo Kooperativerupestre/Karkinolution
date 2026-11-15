@@ -9,14 +9,14 @@ Use `--parallel 2` for local builds so only one build runs with bounded concurre
 |---|---|---|
 | `debug` | `build` | Everyday development (`clang`) |
 | `app-debug` | `build-app` | Debug with `karkinolution_app` and raylib |
-| `release` | `build-release` | Optimized build (includes `karkinolution_core` and `karkinolution_app`) |
-| `native` | `build-native` | Optimized with `-march=native` (includes `karkinolution_core` and `karkinolution_app`). Benchmarking only, not portable. |
+| `release` | `build-release` | Optimized build (includes `karkinolution_server`, `karkinolution_client`, and `karkinolution_app`) |
+| `native` | `build-native` | Optimized with `-march=native` (includes `karkinolution_server`, `karkinolution_client`, and `karkinolution_app`). Benchmarking only, not portable. |
 | `sanitizers` | `build-sanitizers` | Debug with AddressSanitizer and UBSan |
 | `ci-tidy`, `ci`, `ci-sanitizers`, `ci-tsan` | `build-tidy`, `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Used by CI with `clang-21` and ccache |
-| `shared-debug` | `build` | Build only `karkinolution_shared` (Debug) |
-| `shared-sanitizers` | `build-sanitizers` | Build only `karkinolution_shared` with AddressSanitizer and UBSan |
-| `shared-tsan` | `build-tsan` | Build only `karkinolution_shared` with ThreadSanitizer |
-| `shared-ci`, `shared-ci-sanitizers`, `shared-ci-tsan` | `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Build only `karkinolution_shared` in CI variants |
+| `shared-debug` | `build` | Build only `kshared` (Debug) |
+| `shared-sanitizers` | `build-sanitizers` | Build only `kshared` with AddressSanitizer and UBSan |
+| `shared-tsan` | `build-tsan` | Build only `kshared` with ThreadSanitizer |
+| `shared-ci`, `shared-ci-sanitizers`, `shared-ci-tsan` | `build-ci`, `build-ci-sanitizers`, `build-ci-tsan` | Build only `kshared` in CI variants |
 | `opsiamethystos-debug` | `build` | Build only `opsiamethystos` (Debug) |
 | `opsiamethystos-sanitizers` | `build-sanitizers` | Build only `opsiamethystos` with AddressSanitizer and UBSan |
 | `opsiamethystos-tsan` | `build-tsan` | Build only `opsiamethystos` with ThreadSanitizer |
@@ -39,7 +39,7 @@ FastNoise2, asio, GoogleTest, magic_enum, and raylib are submodules. Raylib is e
 ### Run
 
 ```bash
-./build/karkinolution_core
+./build/karkinolution_server
 ctest --preset debug
 ctest --preset debug -R '<regex>'
 ```
@@ -49,7 +49,8 @@ ctest --preset debug -R '<regex>'
 ### Build a single target
 
 ```bash
-cmake --build build --target karkinolution_core
+cmake --build build --target karkinolution_server
+cmake --build build --target karkinolution_client
 cmake --build build --target karkinolution_tests
 ```
 

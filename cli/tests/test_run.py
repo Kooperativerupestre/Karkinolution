@@ -60,13 +60,13 @@ class TestLaunch(unittest.TestCase):
     ) -> None:
         self.configure_build_dir()
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        executable = str(self.build_dir / "karkinolution_core")
+        executable = str(self.build_dir / "karkinolution_server")
 
         launch("debug")
 
         self.assertEqual(
             mock_run.call_args[0][0],
-            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_core"],
+            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_server"],
         )
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])
@@ -78,13 +78,13 @@ class TestLaunch(unittest.TestCase):
     ) -> None:
         self.configure_build_dir()
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        executable = str(self.build_dir / "karkinolution_core")
+        executable = str(self.build_dir / "karkinolution_server")
 
         launch()
 
         self.assertEqual(
             mock_run.call_args[0][0],
-            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_core"],
+            ["cmake", "--build", str(self.build_dir), "--target", "karkinolution_server"],
         )
         mock_os.chdir.assert_called_once_with(self.root)
         mock_os.execv.assert_called_once_with(executable, [executable])

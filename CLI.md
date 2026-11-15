@@ -21,14 +21,14 @@ karkinolution run
 
 `setup` checks the environment and submodules before configuring. It does not install tools or initialize submodules;
 when something is missing, it reports the issue and a suggested fix. `run` requires a configured preset, builds
-`karkinolution_core` by default, and starts it.
+`karkinolution_server` by default, and starts it.
 
 To use another preset or executable:
 
 ```bash
 karkinolution setup --preset app-debug
 karkinolution run --preset app-debug
-karkinolution run --preset debug --target karkinolution_core
+karkinolution run --preset debug --target karkinolution_server
 ```
 
 Presets and their build directories are defined in [`CMakePresets.json`](CMakePresets.json). See

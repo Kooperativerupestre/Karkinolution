@@ -91,15 +91,22 @@ Configure once. After that, `cmake --build --preset debug` is enough: `.cpp` fil
 karkinolution run
 ```
 
-`run` builds `karkinolution_core` and starts it. It is the same as:
+`run` builds `karkinolution_server` and starts it. It is the same as:
 
 ```bash
-cmake --build build --target karkinolution_core
-./build/karkinolution_core
+cmake --build build --target karkinolution_server
+./build/karkinolution_server
 ```
 
 * The server listens on port `9000` ([`port.hpp`](karkinolution/networking/port.hpp)).
 * More networking questions: [`help.md`](karkinolution/networking/help.md).
+
+The starter client executable initializes the client and connects to the local server:
+
+```bash
+cmake --build build --target karkinolution_client
+./build/karkinolution_client
+```
 
 ## 5. Run the view
 
@@ -118,7 +125,7 @@ cmake --build --preset app-debug
 ./build-app/karkinolution_app
 ```
 
-When building in `release` mode, both `karkinolution_core` and `karkinolution_app` are built:
+When building in `release` mode, the server, client, core library, shared library, and app are built:
 
 ```bash
 cmake --preset release
