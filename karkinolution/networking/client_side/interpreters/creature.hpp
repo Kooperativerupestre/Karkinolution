@@ -76,6 +76,35 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 
 		return CreatureDSI::get_creature(frame.get_payload(), 0);
 	}
+
+	template <HasRequest T>
+	std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
+	tick_creature(T &client, KShared::Core::Id::BaseIdType id) {
+		const auto payload = CreatureSRI::Request::make_see_creature(id);
+		const auto built =
+			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::CYCLE,
+															   GENERIC_INTERPRETER_ID,
+															   Resource::CREATURE,
+															   std::vector<std::byte>(payload.begin(), payload.end()),
+															   CycleExtra{});
+
+		const Client::RequestData data{.sub_type = built.get_sub_type(),
+									   .resource = built.get_resource(),
+									   .payload  = built.get_payload(),
+									   .extra    = built.get_extra()};
+
+		const auto result = client.request(data);
+		if (!result || !result.value().has_value()) {
+			return std::nullopt;
+		}
+
+		const auto &frame = require_response_frame(result.value().value());
+		if (Karkinolution::Binary::Frames::Analyzer::is_none(frame)) {
+			return std::nullopt;
+		}
+
+		return CreatureDSI::get_creature(frame.get_payload(), 0);
+	}
 } // namespace Karkinolution::Networking::ClientSide::Interpreters::Creature
 
 namespace CreatureInterpreter = Karkinolution::Networking::ClientSide::Interpreters::Creature;

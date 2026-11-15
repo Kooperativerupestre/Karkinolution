@@ -44,6 +44,12 @@ namespace Karkinolution::Binary::Frames::Processor {
 																				 frame.get_id(),
 																				 frame.get_payload());
 			}
+		} else if (sub_type == RequestSubTypes::CYCLE) {
+			if (resource == Resource::CREATURE) {
+				return Networking::ServerSide::APIBYA::Creature::tick_creature(world,
+																			   frame.get_id(),
+																			   frame.get_payload());
+			}
 		}
 
 		KShared::Functional::unreachable_or_throw(

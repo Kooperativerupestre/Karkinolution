@@ -23,6 +23,10 @@ namespace Karkinolution::Organisms::Entities::Creature {
 		return energy.ratio();
 	}
 
+	[[nodiscard]] NormalizedValue<float> Body::hungry() const noexcept {
+		return metabolism.hungry();
+	}
+
 	[[nodiscard]] KShared::Math::Units::Mass MorphologyPart::density() const noexcept {
 		if (area().value == KShared::Math::Approx<float>(0.0f)) {
 			return 0.0f;

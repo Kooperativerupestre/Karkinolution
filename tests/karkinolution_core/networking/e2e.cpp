@@ -1,6 +1,9 @@
+#include "karkinolution/api/creature.hpp"
 #include "karkinolution/networking/client_side/client/client.hpp"
+#include "karkinolution/networking/client_side/interpreters/creature.hpp"
 #include "karkinolution/networking/client_side/interpreters/soil.hpp"
 #include "karkinolution/networking/client_side/interpreters/system.hpp"
+#include "karkinolution/networking/client_side/world/commanders/creature.hpp"
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/server_side/server/server.hpp"
 #include "karkinolution/test/utils.hpp"
@@ -16,6 +19,8 @@ using Karkinolution::Networking::IoContext;
 using Karkinolution::Networking::PORT;
 using Karkinolution::Networking::ClientSide::Client::Client;
 using Karkinolution::Networking::ClientSide::Client::Config;
+using Karkinolution::Networking::ClientSide::World::Commanders::Creature::tick_creature;
+using LocalWorld = Karkinolution::Networking::ClientSide::World::World;
 using Karkinolution::World::World;
 using Karkinolution::World::WorldId;
 using Karkinolution::World::WorldStorage;
@@ -79,6 +84,54 @@ TEST_F(ClientTest, ServerE2E) {
 	server_thread.join();
 
 	EXPECT_EQ(failures.load(), 0);
+}
+
+TEST_F(ClientTest, CreatureTickReturnsUpdatedCreatureAndUpdatesLocalWorld) {
+	IoContext server_io;
+
+	World      server_world = TestUtils::make_small_world();
+	const auto created      = Karkinolution::API::Creature::make_creature(server_world,
+                                                                     std::nullopt,
+                                                                     std::nullopt,
+                                                                     std::nullopt,
+                                                                     std::nullopt);
+	ASSERT_TRUE(created);
+	const auto creature_id = created->ontology.id;
+
+	WorldStorage storage;
+	ASSERT_TRUE(storage.add(std::move(server_world)));
+	ServerType application_server{server_io, PORT, storage};
+
+	std::thread server_thread{[&] {
+		server_io.run();
+	}};
+
+	LocalWorld local_world;
+	bool       succeeded = false;
+	{
+		Client client{io, Config{.host = "127.0.0.1", .port = PORT}};
+		try {
+			client.connect();
+			ASSERT_TRUE(SystemInterpreter::config(client, storage.get_all_world_ids().front()).value_or(false));
+			EXPECT_FALSE(CreatureInterpreter::tick_creature(client, KShared::Core::Id::gen_id()));
+			const auto initial = CreatureInterpreter::see_creature(client, creature_id);
+			ASSERT_TRUE(initial);
+			ASSERT_TRUE(local_world.add(*initial));
+			succeeded = tick_creature(client, local_world, creature_id);
+		} catch (const std::exception &error) {
+			ADD_FAILURE() << "Creature tick failed: " << error.what();
+		}
+		client.stop_new_async_operations();
+		client.wait_until_zero_async_operations();
+	}
+
+	asio::post(server_io, [&] {
+		application_server.stop();
+	});
+	server_thread.join();
+
+	EXPECT_TRUE(succeeded);
+	EXPECT_TRUE(local_world.has_creature(creature_id));
 }
 
 TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {

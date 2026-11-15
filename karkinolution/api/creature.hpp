@@ -5,14 +5,19 @@
 
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/world/world.hpp>
+#include <shared/functional/optional_reference.hpp>
 
 namespace Karkinolution::API::Creature {
-	const Karkinolution::Organisms::Entities::Creature::Creature* see_creature(const Karkinolution::World::World &world,
-																			   KShared::Core::Id::BaseIdType      id);
-	const Karkinolution::Organisms::Entities::Creature::Creature*
-	make_creature(Karkinolution::World::World                                                 &world,
-				  std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
-				  std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-				  const std::optional<KShared::Math::Vec::Vec2>                               &position,
-				  const std::optional<std::string>                                            &name);
+	using CreatureReference =
+		KShared::Functional::OptionalReference<const Karkinolution::Organisms::Entities::Creature::Creature>;
+
+	CreatureReference see_creature(const Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
+	CreatureReference make_creature(Karkinolution::World::World                                                 &world,
+									std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
+									std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
+									const std::optional<KShared::Math::Vec::Vec2> &position,
+									const std::optional<std::string>              &name);
+
+	// Runs one creature tick and returns the updated creature, or an empty reference if it does not exist anymore.
+	CreatureReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 } // namespace Karkinolution::API::Creature

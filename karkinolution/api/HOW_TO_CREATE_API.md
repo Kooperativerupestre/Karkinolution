@@ -16,6 +16,9 @@ Start with the operation the domain needs, independent of how it will be transpo
   follow the conventions of the domain being changed rather than introducing a new style.
 - Accept and return domain values or domain model references as appropriate. Do not expose frame types, protocol codes,
   or serialized bytes from this layer.
+- When an operation may not find or retain a domain object, return `KShared::Functional::OptionalReference<const T>`.
+  Use an empty reference (`nullptr`) for absence and a const reference for a present result; document whether the
+  reference represents the state before or after the operation.
 - Keep protocol-specific concerns, such as request IDs and response cardinality, out of the domain API.
 
 ## 2. Define the binary representation
@@ -93,3 +96,10 @@ Tests must match the claim they make.
 | Binary request to domain API to binary response | API binary adapter |
 | Remote request and response interpretation | Client-side domain interpreter |
 | Optional client-facing view query | View querier |
+
+## Creature API tick semantics
+
+`Karkinolution::API::Creature::tick(world, id)` executes one creature motor tick and returns an
+`OptionalReference<const Creature>` to the creature's state after the tick. It returns an empty reference when the
+creature does not exist before the tick or is removed during it. The const reference prevents callers from bypassing
+the world and creature motors when mutating simulation state.

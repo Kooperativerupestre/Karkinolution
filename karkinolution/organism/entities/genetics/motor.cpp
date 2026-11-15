@@ -282,6 +282,37 @@ namespace Karkinolution::Organisms::Entities::Genetic {
 												   Disturbs::StandardContexts::morphology_scramble)};
 		}
 
+		Properties::PropertiesContainer crossover(const Properties::PropertiesContainer &c1,
+												  const Properties::PropertiesContainer &c2) {
+			Properties::PropertiesContainer output = c1;
+			for (const auto &property : c2.value) {
+				output.add(property);
+			}
+			return output;
+		}
+
+		CoreGenome crossover(const CoreGenome &g1, const CoreGenome &g2) {
+			return CoreGenome{.properties = crossover(g1.properties, g2.properties),
+							  .vision_radius =
+								  Creature::VisionRadius{KShared::Functional::KRandom::RandomGenerators::inheritance(
+									  g1.vision_radius.value,
+									  g2.vision_radius.value)},
+							  .temperament = KShared::Functional::KRandom::choice({g1.temperament, g2.temperament}),
+							  .specie      = KShared::Functional::KRandom::choice({g1.specie, g2.specie})};
+		}
+
+		CreatureGenome crossover(const CreatureGenome &g1, const CreatureGenome &g2) {
+			return CreatureGenome{.metabolism   = scramble(g1.metabolism, g2.metabolism),
+								  .vital        = scramble(g1.vital, g2.vital),
+								  .morphology   = scramble(g1.morphology, g2.morphology),
+								  .reproductive = scramble(g1.reproductive, g2.reproductive)};
+		}
+
+		EmbryoGenome crossover(const EmbryoGenome &g1, const EmbryoGenome &g2) {
+			return EmbryoGenome{.body       = scramble(g1.body, g2.body),
+								.morphology = scramble(g1.morphology, g2.morphology)};
+		}
+
 		Genome crossover(const Genome &g1, const Genome &g2) {
 			return Genome{
 				.creature_genome = crossover(g1.creature_genome, g2.creature_genome),

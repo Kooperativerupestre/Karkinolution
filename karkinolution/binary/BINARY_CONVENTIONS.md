@@ -178,6 +178,12 @@ connections. The response payload is a separate one-byte boolean indicating whet
 - The parser-level size dispatchers receive the frame type and `Protocol::Detail::CodeVariant` subtype and route to the
   corresponding request-operation, response, or error calculation.
 
+## Creature cycle operation
+
+`CYCLE CREATURE <id>` uses the existing eight-byte creature ID payload and the `CYCLE` request operation. The server
+executes one creature motor tick through `CreatureAPI::tick`. A present creature is returned as a `CREATURE` response
+with cardinality `ONE`; an unknown or removed creature returns a `NONE` response.
+
 ## Frame Detection
 
 - `Parser::has_frame` returns `NO` for an empty buffer, `INCOMPLETE` when bytes are present but do not yet contain a

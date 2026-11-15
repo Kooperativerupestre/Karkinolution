@@ -84,6 +84,7 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 		// code
 		if (Physiology::is_dead(creature)) {
 			world.remove(creature.build_id());
+			return;
 		}
 
 		grow(creature, organisms);

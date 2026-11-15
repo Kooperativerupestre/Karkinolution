@@ -19,7 +19,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 
 		auto creature = Karkinolution::API::Creature::see_creature(world, id);
 
-		if (creature == nullptr) {
+		if (!creature) {
 			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 		}
 		const auto creature_payload = CreatureSRI::serialize_creature(*creature);
@@ -40,12 +40,29 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 																	blueprint.specie,
 																	blueprint.position,
 																	blueprint.name);
-		if (creature == nullptr) {
+		if (!creature) {
 			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 		}
 
 		const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 
+		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CREATURE,
+																   request_id,
+																   creature_payload,
+																   Binary::ResponseCardinality::ONE);
+	}
+
+	ResponseFrame tick_creature(Karkinolution::World::World  &world,
+								Binary::RequestId             request_id,
+								const std::vector<std::byte> &payload) {
+		const auto id       = CreatureDSI::Request::interpret_like_get_creature(payload);
+		const auto creature = Karkinolution::API::Creature::tick(world, id);
+
+		if (!creature) {
+			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+		}
+
+		const auto creature_payload = CreatureSRI::serialize_creature(*creature);
 		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CREATURE,
 																   request_id,
 																   creature_payload,

@@ -26,4 +26,12 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature {
 
 		return world.add(*output);
 	}
+
+	template <HasRequest T> bool tick_creature(T &client, World &world, OrganismId id) {
+		const auto output = Interpreters::Creature::tick_creature(client, id);
+		if (!output) {
+			return false;
+		}
+		return world.update(*output);
+	}
 } // namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature
