@@ -82,21 +82,39 @@ CreatureSRI::serialize_creature(const Karkinolution::Organisms::Entities::Creatu
 	KShared::Binary::Utils::append_bytes(bytes,
 										 UnitsSRI::serialize_size(creature.body.morphology.size),
 										 Layout::Size::OFFSET);
+	KShared::Binary::Utils::append_bytes(bytes,
+										 UnitsSRI::serialize_mass(creature.body.morphology.mass),
+										 Layout::Mass::OFFSET);
 
 	// Life
 	KShared::Binary::Utils::append_bytes(bytes,
 										 StatsSRI::serialize_limited_value(creature.body.vital.life),
 										 Layout::Life::OFFSET);
 
+	KShared::Binary::Utils::append_bytes(bytes,
+										 StatsSRI::serialize_normalized_value(creature.body.vital.health),
+										 Layout::Health::OFFSET);
+
 	// Energy
 	KShared::Binary::Utils::append_bytes(bytes,
 										 StatsSRI::serialize_limited_value(creature.body.metabolism.energy),
 										 Layout::Energy::OFFSET);
+	KShared::Binary::Utils::append_bytes(bytes,
+										 StatsSRI::serialize_limited_value(creature.body.metabolism.reserved),
+										 Layout::ReservedEnergy::OFFSET);
 
 	// Age
 	KShared::Binary::Utils::append_bytes(bytes,
 										 KShared::Binary::Serializer::convert_float(creature.body.age.value),
 										 Layout::Age::OFFSET);
+
+	KShared::Binary::Utils::append_bytes(bytes,
+										 KShared::Binary::Serializer::convert_uint32_t(creature.brain.intent().time),
+										 Layout::IntentTime::OFFSET);
+	KShared::Binary::Utils::append_bytes(
+		bytes,
+		KShared::Binary::Serializer::convert_uint8_t(static_cast<std::uint8_t>(creature.brain.intent().type)),
+		Layout::IntentType::OFFSET);
 
 	return bytes;
 }
@@ -209,19 +227,28 @@ CreatureDSI::get_specie(const std::vector<std::byte> &payload, std::size_t offse
 Karkinolution::Binary::Interpreters::Models::Creature::Creature
 CreatureDSI::get_creature(const std::vector<std::byte> &payload, std::size_t offset) {
 	return Karkinolution::Binary::Interpreters::Models::Creature::Creature{
-		.gender   = get_gender(payload, offset + CreatureSRI::Layout::Gender::OFFSET),
-		.specie   = get_specie(payload, offset + CreatureSRI::Layout::Specie::OFFSET),
-		.position = VecDSI::get_vec(payload, offset + CreatureSRI::Layout::PositionX::OFFSET),
-		.name     = get_name(payload, offset + CreatureSRI::Layout::NameSize::OFFSET),
-		.id       = get_id(payload, offset + CreatureSRI::Layout::Id::OFFSET),
-		.size     = get_size(payload, offset + CreatureSRI::Layout::Size::OFFSET),
-		.life     = get_life(payload, offset + CreatureSRI::Layout::Life::OFFSET),
-		.energy   = get_energy(payload, offset + CreatureSRI::Layout::Energy::OFFSET),
-		.age      = get_age(payload, offset + CreatureSRI::Layout::Age::OFFSET)};
+		.gender     = get_gender(payload, offset + CreatureSRI::Layout::Gender::OFFSET),
+		.specie     = get_specie(payload, offset + CreatureSRI::Layout::Specie::OFFSET),
+		.position   = VecDSI::get_vec(payload, offset + CreatureSRI::Layout::PositionX::OFFSET),
+		.name       = get_name(payload, offset + CreatureSRI::Layout::NameSize::OFFSET),
+		.id         = get_id(payload, offset + CreatureSRI::Layout::Id::OFFSET),
+		.morphology = {.size = get_size(payload, offset + CreatureSRI::Layout::Size::OFFSET),
+					   .mass = get_mass(payload, offset + CreatureSRI::Layout::Mass::OFFSET)},
+		.vital      = {.life   = get_life(payload, offset + CreatureSRI::Layout::Life::OFFSET),
+					   .health = get_health(payload, offset + CreatureSRI::Layout::Health::OFFSET)},
+		.metabolism = {.energy = get_energy(payload, offset + CreatureSRI::Layout::Energy::OFFSET),
+					   .reserved_energy =
+						   get_reserved_energy(payload, offset + CreatureSRI::Layout::ReservedEnergy::OFFSET)},
+		.brain      = {.intent = get_intent(payload, offset + CreatureSRI::Layout::IntentTime::OFFSET)},
+		.age        = get_age(payload, offset + CreatureSRI::Layout::Age::OFFSET)};
 }
 
 KShared::Math::Units::Size CreatureDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
 	return UnitsDSI::deserialize_size(payload, offset);
+}
+
+KShared::Math::Units::Mass CreatureDSI::get_mass(const std::vector<std::byte> &payload, std::size_t offset) {
+	return UnitsDSI::deserialize_mass(payload, offset);
 }
 
 KShared::Binary::Interpreters::Models::Stats::StatValue<float>
@@ -230,12 +257,34 @@ CreatureDSI::get_life(const std::vector<std::byte> &payload, std::size_t offset)
 }
 
 KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+CreatureDSI::get_health(const std::vector<std::byte> &payload, std::size_t offset) {
+	return StatsDSI::get_stats<float>(payload, offset);
+}
+
+KShared::Binary::Interpreters::Models::Stats::StatValue<float>
 CreatureDSI::get_energy(const std::vector<std::byte> &payload, std::size_t offset) {
+	return StatsDSI::get_stats<float>(payload, offset);
+}
+
+KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+CreatureDSI::get_reserved_energy(const std::vector<std::byte> &payload, std::size_t offset) {
 	return StatsDSI::get_stats<float>(payload, offset);
 }
 
 float CreatureDSI::get_age(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Binary::Deserializer::read_float(payload, offset);
+}
+
+Karkinolution::Binary::Interpreters::Models::Creature::IntentData
+CreatureDSI::get_intent(const std::vector<std::byte> &payload, std::size_t offset) {
+	const auto raw_type = KShared::Binary::Deserializer::read_uint8_t(payload,
+																	  offset + CreatureSRI::Layout::IntentType::OFFSET
+																		  - CreatureSRI::Layout::IntentTime::OFFSET);
+	const auto type     = Karkinolution::Organisms::Entities::Creature::Brain::Intents::IntentTypes(raw_type);
+	if (!magic_enum::enum_contains(type)) {
+		throw KShared::Binary::ByteError(std::format("Invalid creature intent type: {}", raw_type));
+	}
+	return {.time = KShared::Binary::Deserializer::read_uint32_t(payload, offset), .type = type};
 }
 
 uint8_t CreatureDSI::get_name_size(const std::vector<std::byte> &payload, std::size_t offset) {

@@ -260,13 +260,22 @@ TEST(CreatureSerializeDeserializeRoundtrip, FullCreatureSerialization) {
 	EXPECT_DOUBLE_EQ(copy.position.y, position.y);
 
 	EXPECT_EQ(copy.name, name);
-	EXPECT_DOUBLE_EQ(copy.size.width.value, creature.body.morphology.size.width.value);
-	EXPECT_DOUBLE_EQ(copy.size.height.value, creature.body.morphology.size.height.value);
-	EXPECT_FLOAT_EQ(copy.life.value, creature.body.vital.life.value());
-	EXPECT_FLOAT_EQ(copy.life.max, creature.body.vital.life.max());
-	EXPECT_FLOAT_EQ(copy.life.min, creature.body.vital.life.min());
-	EXPECT_FLOAT_EQ(copy.energy.value, creature.body.metabolism.energy.value());
-	EXPECT_FLOAT_EQ(copy.energy.max, creature.body.metabolism.energy.max());
-	EXPECT_FLOAT_EQ(copy.energy.min, creature.body.metabolism.energy.min());
+	EXPECT_DOUBLE_EQ(copy.morphology.size.width.value, creature.body.morphology.size.width.value);
+	EXPECT_DOUBLE_EQ(copy.morphology.size.height.value, creature.body.morphology.size.height.value);
+	EXPECT_DOUBLE_EQ(copy.morphology.mass.value, creature.body.morphology.mass.value);
+	EXPECT_FLOAT_EQ(copy.vital.life.value, creature.body.vital.life.value());
+	EXPECT_FLOAT_EQ(copy.vital.life.max, creature.body.vital.life.max());
+	EXPECT_FLOAT_EQ(copy.vital.life.min, creature.body.vital.life.min());
+	EXPECT_FLOAT_EQ(copy.vital.health.value, creature.body.vital.health.value());
+	EXPECT_FLOAT_EQ(copy.vital.health.max, 1.0f);
+	EXPECT_FLOAT_EQ(copy.vital.health.min, 0.0f);
+	EXPECT_FLOAT_EQ(copy.metabolism.energy.value, creature.body.metabolism.energy.value());
+	EXPECT_FLOAT_EQ(copy.metabolism.energy.max, creature.body.metabolism.energy.max());
+	EXPECT_FLOAT_EQ(copy.metabolism.energy.min, creature.body.metabolism.energy.min());
+	EXPECT_FLOAT_EQ(copy.metabolism.reserved_energy.value, creature.body.metabolism.reserved.value());
+	EXPECT_FLOAT_EQ(copy.metabolism.reserved_energy.max, creature.body.metabolism.reserved.max());
+	EXPECT_FLOAT_EQ(copy.metabolism.reserved_energy.min, 0.0f);
 	EXPECT_FLOAT_EQ(copy.age, creature.body.age.value);
+	EXPECT_EQ(copy.brain.intent.time, creature.brain.intent().time);
+	EXPECT_EQ(copy.brain.intent.type, creature.brain.intent().type);
 }

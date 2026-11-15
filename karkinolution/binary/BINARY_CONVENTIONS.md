@@ -192,26 +192,12 @@ with cardinality `ONE`; an unknown or removed creature returns a `NONE` response
 `CYCLE SOIL <id>` follows the same layout and response cardinality. The server executes one soil motor tick and returns
 the updated soil as a `SOIL` response, or `NONE` when the soil ID is absent.
 
-## Creature response payload
+## Domain-specific payload layouts
 
-The `CREATURE` response payload is a fixed layout. The fields after the identity data expose the current simulation
-state needed by a client to represent a creature without reproducing server-side simulation logic:
-
-- `gender`: 1 byte;
-- `specie`: 1 byte;
-- `position`: 16 bytes, two big-endian `double` values (`x`, then `y`);
-- `name size`: 1 byte;
-- `name`: 64 bytes reserved for the UTF-8 name;
-- `id`: 8-byte signed integer;
-- `size`: 16 bytes, two big-endian `double` values (`width`, then `height`);
-- `life`: 25-byte `Stats` value containing numeric type, current value, maximum, and minimum;
-- `energy`: 25-byte `Stats` value containing numeric type, current value, maximum, and minimum;
-- `age`: 4-byte big-endian `float`.
-
-The `life` and `energy` fields preserve their limits so clients can display normalized progress without inferring
-server-side maxima. `size` and `age` are current creature state, not genetic averages or derived presentation values.
-The total creature payload size is 169 bytes. Auxiliary high-level DSI getters receive the absolute field offset from
-the enclosing payload; they do not add the field offset a second time.
+Exact payload layouts belong beside the SRI declaration that owns them. For example, the `CREATURE` response layout,
+its grouped transport data, field offsets, and total size are documented in the `CREATURE PROTOCOL` block in
+`karkinolution/binary/interpreters/creature.hpp`. This document defines reusable binary rules; it does not duplicate
+domain-specific layouts.
 
 ## Frame Detection
 

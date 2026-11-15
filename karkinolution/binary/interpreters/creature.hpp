@@ -7,6 +7,7 @@
 #include "shared/core/id.hpp"
 
 #include <array>
+#include <cstdint>
 #include <cstdlib>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <shared/binary/interpreters/stats.hpp>
@@ -30,28 +31,38 @@ namespace Karkinolution {
 					 * [26 - name size]
 					 * [27 -> 90 - name]
 					 * [91 -> 98 - id]
-					 * [99 -> 114 - size]
-					 * [115 -> 139 - life: numeric type, value, max, min]
-					 * [140 -> 164 - energy: numeric type, value, max, min]
-					 * [165 -> 168 - age]
+					 * [99 -> 114 - morphology.size]
+					 * [115 -> 122 - morphology.mass]
+					 * [123 -> 147 - vital.life: numeric type, value, max, min]
+					 * [148 -> 172 - vital.health: numeric type, value, max, min]
+					 * [173 -> 197 - metabolism.energy: numeric type, value, max, min]
+					 * [198 -> 222 - metabolism.reserved_energy: numeric type, value, max, min]
+					 * [223 -> 226 - age]
+					 * [227 -> 230 - brain.intent.time]
+					 * [231 - brain.intent.type]
 					 *
 					 */
 
 					namespace Layout {
 						inline std::size_t constexpr MAX_NAME_SIZE = 64;
 
-						using Gender    = KShared::Binary::Field<0, 1>;
-						using Specie    = KShared::Binary::Next<Gender, 1>;
-						using PositionX = KShared::Binary::Next<Specie, VecSRI::Layout::AXIS_SIZE>;
-						using PositionY = KShared::Binary::Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
-						using NameSize  = KShared::Binary::Next<PositionY, 1>;
-						using Name      = KShared::Binary::Next<NameSize, MAX_NAME_SIZE>;
-						using Id        = KShared::Binary::Next<Name, 8>;
-						using Size      = KShared::Binary::Next<Id, UnitsSRI::Layout::TOTAL_SIZE>;
-						using Life      = KShared::Binary::Next<Size, StatsSRI::Layout::TOTAL_SIZE>;
-						using Energy    = KShared::Binary::Next<Life, StatsSRI::Layout::TOTAL_SIZE>;
-						using Age       = KShared::Binary::Next<Energy, sizeof(float)>;
-						inline constexpr std::size_t TOTAL_SIZE = Age::END;
+						using Gender         = KShared::Binary::Field<0, 1>;
+						using Specie         = KShared::Binary::Next<Gender, 1>;
+						using PositionX      = KShared::Binary::Next<Specie, VecSRI::Layout::AXIS_SIZE>;
+						using PositionY      = KShared::Binary::Next<PositionX, VecSRI::Layout::AXIS_SIZE>;
+						using NameSize       = KShared::Binary::Next<PositionY, 1>;
+						using Name           = KShared::Binary::Next<NameSize, MAX_NAME_SIZE>;
+						using Id             = KShared::Binary::Next<Name, 8>;
+						using Size           = KShared::Binary::Next<Id, UnitsSRI::Layout::TOTAL_SIZE>;
+						using Mass           = KShared::Binary::Next<Size, sizeof(double)>;
+						using Life           = KShared::Binary::Next<Mass, StatsSRI::Layout::TOTAL_SIZE>;
+						using Health         = KShared::Binary::Next<Life, StatsSRI::Layout::TOTAL_SIZE>;
+						using Energy         = KShared::Binary::Next<Health, StatsSRI::Layout::TOTAL_SIZE>;
+						using ReservedEnergy = KShared::Binary::Next<Energy, StatsSRI::Layout::TOTAL_SIZE>;
+						using Age            = KShared::Binary::Next<ReservedEnergy, sizeof(float)>;
+						using IntentTime     = KShared::Binary::Next<Age, sizeof(std::uint32_t)>;
+						using IntentType     = KShared::Binary::Next<IntentTime, sizeof(std::uint8_t)>;
+						inline constexpr std::size_t TOTAL_SIZE = IntentType::END;
 					} // namespace Layout
 
 					namespace BytesArrays {
@@ -108,11 +119,18 @@ namespace Karkinolution {
 					Interpreters::Models::Creature::Creature get_creature(const std::vector<std::byte> &payload,
 																		  std::size_t                   offset);
 					KShared::Math::Units::Size get_size(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Math::Units::Mass get_mass(const std::vector<std::byte> &payload, std::size_t offset);
 					KShared::Binary::Interpreters::Models::Stats::StatValue<float>
 					get_life(const std::vector<std::byte> &payload, std::size_t offset);
 					KShared::Binary::Interpreters::Models::Stats::StatValue<float>
-						  get_energy(const std::vector<std::byte> &payload, std::size_t offset);
+					get_health(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+					get_energy(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+						  get_reserved_energy(const std::vector<std::byte> &payload, std::size_t offset);
 					float get_age(const std::vector<std::byte> &payload, std::size_t offset);
+					Interpreters::Models::Creature::IntentData get_intent(const std::vector<std::byte> &payload,
+																		  std::size_t                   offset);
 
 					namespace Request {
 
