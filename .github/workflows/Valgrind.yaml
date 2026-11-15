@@ -73,7 +73,7 @@ jobs:
             ${{ env.DOCKER_IMAGE }} \
             cmake \
               --build /workspace/build-valgrind \
-              --target karkinolution_tests \
+              --target karkinolution_core_tests kshared_tests \
               --parallel "$(nproc)"
 
       - name: Run Valgrind
@@ -83,9 +83,15 @@ jobs:
             -v "$PWD:/workspace" \
             -v "$RUNNER_TEMP/conan-cache:/tmp/.conan2" \
             ${{ env.DOCKER_IMAGE }} \
+            sh -c 'valgrind \
+              --leak-check=full \
+              --show-leak-kinds=all \
+              --track-origins=yes \
+              --error-exitcode=1 \
+              /workspace/build-valgrind/tests/karkinolution_core_tests && \
             valgrind \
               --leak-check=full \
               --show-leak-kinds=all \
               --track-origins=yes \
               --error-exitcode=1 \
-              /workspace/build-valgrind/tests/karkinolution_tests
+              /workspace/build-valgrind/tests/kshared_tests'

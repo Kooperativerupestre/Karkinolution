@@ -69,7 +69,7 @@ jobs:
 
       - name: Build unit tests
         shell: pwsh
-        run: cmake --build build-windows --target karkinolution_tests opsiamethystos_tests --parallel 2
+        run: cmake --build build-windows --target karkinolution_core_tests kshared_tests opsiamethystos_tests --parallel 2
 
       - name: Run unit tests
         shell: pwsh
