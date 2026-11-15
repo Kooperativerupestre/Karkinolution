@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+using Karkinolution::API::Soil::erase;
 using Karkinolution::API::Soil::see_soil;
 using Karkinolution::API::Soil::tick;
 using Karkinolution::World::World;
@@ -23,4 +24,13 @@ TEST(SoilAPI, TicksAndReturnsUpdatedSoilThroughOptionalReference) {
 
 	ASSERT_TRUE(output);
 	EXPECT_EQ(output->id, soil_id);
+}
+
+TEST(SoilAPI, EraseReturnsWhetherSoilWasRemoved) {
+	World      world   = TestUtils::make_small_world();
+	const auto soil_id = world.see_territory().registry().begin()->first;
+
+	EXPECT_TRUE(erase(world, soil_id));
+	EXPECT_FALSE(erase(world, soil_id));
+	EXPECT_EQ(see_soil(world, soil_id), nullptr);
 }

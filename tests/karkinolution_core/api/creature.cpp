@@ -5,6 +5,7 @@
 
 #include <gtest/gtest.h>
 
+using Karkinolution::API::Creature::erase;
 using Karkinolution::API::Creature::make_creature;
 using Karkinolution::API::Creature::see_creature;
 using Karkinolution::API::Creature::tick;
@@ -34,4 +35,15 @@ TEST(CreatureAPI, CreatesAndTicksCreatureThroughOptionalReferences) {
 	ASSERT_TRUE(ticked);
 	EXPECT_EQ(ticked.get(), before_tick.get());
 	EXPECT_GT(ticked->brain.intent().time, intent_time_before_tick);
+}
+
+TEST(CreatureAPI, EraseReturnsWhetherCreatureWasRemoved) {
+	World      world       = TestUtils::make_small_world();
+	const auto creature_id = gen_id();
+	auto       creature    = CreatureConstructor::from_blueprint(CreatureBlueprint{.id = creature_id});
+	ASSERT_TRUE(world.add(std::move(creature)));
+
+	EXPECT_TRUE(erase(world, creature_id));
+	EXPECT_FALSE(erase(world, creature_id));
+	EXPECT_EQ(see_creature(world, creature_id), nullptr);
 }

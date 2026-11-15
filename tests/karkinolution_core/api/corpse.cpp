@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+using Karkinolution::API::Corpse::erase;
 using Karkinolution::API::Corpse::see_corpse;
 using Karkinolution::API::Corpse::tick;
 using Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint;
@@ -34,4 +35,16 @@ TEST(CorpseAPI, TicksAndReturnsUpdatedCorpseThroughOptionalReference) {
 	ASSERT_TRUE(output);
 	EXPECT_EQ(output->id, corpse_id);
 	EXPECT_FLOAT_EQ(output->raw_meat.value, initial_raw_meat * 0.1f);
+}
+
+TEST(CorpseAPI, EraseReturnsWhetherCorpseWasRemoved) {
+	World      world     = TestUtils::make_small_world();
+	auto       creature  = CreatureConstructor::from_blueprint(CreatureBlueprint{});
+	auto       corpse    = CorpsePhysiology::generate_corpse(creature);
+	const auto corpse_id = corpse.id;
+	ASSERT_TRUE(world.add(std::move(corpse)));
+
+	EXPECT_TRUE(erase(world, corpse_id));
+	EXPECT_FALSE(erase(world, corpse_id));
+	EXPECT_EQ(see_corpse(world, corpse_id), nullptr);
 }
