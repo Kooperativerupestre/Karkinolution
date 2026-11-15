@@ -12,9 +12,9 @@
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/models/soil.hpp>
 #include <karkinolution/binary/interpreters/soil.hpp>
-#include <karkinolution/binary/types/list.hpp>
 #include <optional>
 #include <shared/binary/deserializer.hpp>
+#include <shared/binary/types/list.hpp>
 #include <vector>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {

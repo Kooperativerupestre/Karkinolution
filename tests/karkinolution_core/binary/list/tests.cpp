@@ -1,6 +1,6 @@
 #include <cstdint>
 #include <gtest/gtest.h>
-#include <karkinolution/binary/types/list.hpp>
+#include <shared/binary/types/list.hpp>
 #include <vector>
 
 TEST(ListSerialize, WritesHeaderAndElementsInOrder) {

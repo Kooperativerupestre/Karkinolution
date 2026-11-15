@@ -8,9 +8,9 @@
 #include <karkinolution/api/soil.hpp>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/binary/interpreters/soil.hpp>
-#include <karkinolution/binary/types/list.hpp>
 #include <karkinolution/networking/server_side/api_adapter/soil.hpp>
 #include <ranges>
+#include <shared/binary/types/list.hpp>
 
 namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 	ResponseFrame see_soil(const Karkinolution::World::World &world,
@@ -59,7 +59,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 								const std::vector<std::byte>      &payload) {
 		const auto &all_soils = Karkinolution::API::Soil::see_all_soils(world);
 
-		std::vector<std::byte> r_payload = Binary::Types::List::SRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
+		std::vector<std::byte> r_payload = KShared::Binary::Types::List::SRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(
 			std::views::values(all_soils),
 			[](const Karkinolution::Terrain::Soil::SoilPiece &soil) {
 				return SoilSRI::serialize_soil(soil);

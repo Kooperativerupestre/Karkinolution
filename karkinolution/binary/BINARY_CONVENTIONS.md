@@ -24,6 +24,11 @@ Protocol-specific aliases, validators, numeric-type mappings, interpreters, and 
 - **Core**:
   - `src/shared/binary/serializer.[hpp|cpp]`
   - `src/shared/binary/deserializer.hpp`
+- **Generic binary types**:
+  - `src/shared/binary/types/function_concepts.hpp`
+  - `src/shared/binary/types/list.hpp`
+  - Generic list serialization belongs to `KShared::Binary::Types`; it must not depend on Karkinolution protocol
+    contracts or domain models.
 - **Interpreters**:
   - Domain interpreters: `src/karkinolution/binary/interpreters/<name>.[hpp|cpp]`
   - Shared mathematical interpreters: `src/shared/binary/interpreters/<name>.[hpp|cpp]`

@@ -4,7 +4,7 @@
 #include <functional>
 #include <ranges>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Binary {
 		namespace Types {
 			template <typename F, typename T>
@@ -17,4 +17,4 @@ namespace Karkinolution {
 			};
 		} // namespace Types
 	} // namespace Binary
-} // namespace Karkinolution
+} // namespace KShared

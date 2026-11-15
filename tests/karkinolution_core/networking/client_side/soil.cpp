@@ -4,8 +4,8 @@
 #include "karkinolution/test/utils.hpp"
 
 #include <gtest/gtest.h>
-#include <karkinolution/binary/types/list.hpp>
 #include <ranges>
+#include <shared/binary/types/list.hpp>
 #include <unordered_set>
 
 using Karkinolution::Binary::RequestId;

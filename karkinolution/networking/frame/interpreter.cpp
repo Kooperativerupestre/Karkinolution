@@ -1,4 +1,3 @@
-#include "karkinolution/binary/types/list.hpp"
 #include "karkinolution/networking/config_output.hpp"
 #include "karkinolution/networking/connection_id.hpp"
 #include "karkinolution/networking/world_state.hpp"
@@ -7,6 +6,7 @@
 #include "shared/binary/deserializer.hpp"
 #include "shared/binary/interpreters/unit.hpp"
 #include "shared/binary/serializer.hpp"
+#include "shared/binary/types/list.hpp"
 
 #include <karkinolution/networking/frame/interpreter.hpp>
 #include <vector>
@@ -39,9 +39,11 @@ namespace Karkinolution {
 		}
 
 		std::vector<std::byte> SRI::serialize(const std::vector<World::WorldId> &world_ids) {
-			return Binary::Types::List::SRI::serialize<sizeof(World::WorldId)>(world_ids, [](const World::WorldId id) {
-				return KShared::Binary::Serializer::serialize(id);
-			});
+			return KShared::Binary::Types::List::SRI::serialize<sizeof(World::WorldId)>(
+				world_ids,
+				[](const World::WorldId id) {
+					return KShared::Binary::Serializer::serialize(id);
+				});
 		}
 
 		std::array<std::byte, SRI::Layout::WorldState::TotalSize> SRI::serialize(const WorldState &state) {
@@ -82,7 +84,7 @@ namespace Karkinolution {
 		}
 
 		std::vector<World::WorldId> DSI::get_world_ids(const std::vector<std::byte> &bytes, std::size_t offset) {
-			return Binary::Types::List::DSI::deserialize<sizeof(World::WorldId)>(
+			return KShared::Binary::Types::List::DSI::deserialize<sizeof(World::WorldId)>(
 				bytes,
 				[offset](const std::vector<std::byte> &bytes, std::size_t p_offset) {
 					return KShared::Binary::Deserializer::deserialize<World::WorldId>(bytes, p_offset + offset);

@@ -5,14 +5,14 @@
 #include <concepts>
 #include <format>
 #include <functional>
-#include <karkinolution/binary/types/function_concepts.hpp>
 #include <ranges>
 #include <shared/binary/byte_utils.hpp>
 #include <shared/binary/deserializer.hpp>
 #include <shared/binary/serializer.hpp>
+#include <shared/binary/types/function_concepts.hpp>
 #include <vector>
 
-namespace Karkinolution {
+namespace KShared {
 	namespace Binary {
 		namespace Types {
 
@@ -449,8 +449,8 @@ namespace Karkinolution {
 			} // namespace List
 		} // namespace Types
 	} // namespace Binary
-} // namespace Karkinolution
+} // namespace KShared
 
 
-namespace ListTDSI = Karkinolution::Binary::Types::List::DSI;
-namespace ListTSRI = Karkinolution::Binary::Types::List::SRI;
+namespace ListTDSI = KShared::Binary::Types::List::DSI;
+namespace ListTSRI = KShared::Binary::Types::List::SRI;
