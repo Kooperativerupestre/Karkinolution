@@ -30,7 +30,6 @@ namespace Karkinolution::Networking::ClientSide::World {
 			std::optional<KShared::Math::Units::Size> size;
 
 			bool remove_soil(SoilId id);
-			bool update(const Soil &soil);
 
 			template <HasRequest T> SyncOutput sync_soil(T &client, SoilId id) {
 				if (!has_soil(id)) {
@@ -61,6 +60,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			Territory() {}
 
 			bool add(const Soil &soil);
+			bool update(const Soil &soil);
 
 			bool has_soil(SoilId id) const;
 
@@ -140,6 +140,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool add(const Corpse &corpse);
 			bool update(const Creature &creature);
 			bool update(const Corpse &corpse);
+			bool update(const Soil &soil);
 
 			bool has_creature(OrganismId id) const;
 			bool has_corpse(OrganismId id) const;
@@ -207,6 +208,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool add(const Corpse &corpse);
 			bool update(const Creature &creature);
 			bool update(const Corpse &corpse);
+			bool update(const Soil &soil);
 
 			bool has_creature(OrganismId id) const;
 			bool has_corpse(OrganismId id) const;

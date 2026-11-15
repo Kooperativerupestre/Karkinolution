@@ -51,6 +51,8 @@ namespace Karkinolution::Binary::Frames::Processor {
 																			   frame.get_payload());
 			} else if (resource == Resource::CORPSE) {
 				return Networking::ServerSide::APIBYA::Corpse::tick_corpse(world, frame.get_id(), frame.get_payload());
+			} else if (resource == Resource::SOIL) {
+				return Networking::ServerSide::APIBYA::Soil::tick_soil(world, frame.get_id(), frame.get_payload());
 			}
 		}
 

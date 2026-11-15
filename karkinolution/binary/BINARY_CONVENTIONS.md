@@ -184,6 +184,9 @@ connections. The response payload is a separate one-byte boolean indicating whet
 executes one creature motor tick through `CreatureAPI::tick`. A present creature is returned as a `CREATURE` response
 with cardinality `ONE`; an unknown or removed creature returns a `NONE` response.
 
+`CYCLE SOIL <id>` follows the same layout and response cardinality. The server executes one soil motor tick and returns
+the updated soil as a `SOIL` response, or `NONE` when the soil ID is absent.
+
 ## Frame Detection
 
 - `Parser::has_frame` returns `NO` for an empty buffer, `INCOMPLETE` when bytes are present but do not yet contain a

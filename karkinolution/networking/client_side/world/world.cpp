@@ -150,6 +150,10 @@ namespace Karkinolution::Networking::ClientSide::World {
 		return entities.update(corpse);
 	}
 
+	bool World::update(const Soil &soil) {
+		return territory.update(soil);
+	}
+
 	bool World::has_creature(OrganismId id) const {
 		return entities.has_creature(id);
 	}

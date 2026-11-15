@@ -20,9 +20,25 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 
 		auto soil = Karkinolution::API::Soil::see_soil(world, id);
 
-		if (soil == nullptr) {
+		if (!soil) {
 			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
 		}
+		const auto soil_payload = SoilSRI::serialize_soil(*soil);
+		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::SOIL,
+																   request_id,
+																   soil_payload,
+																   Binary::ResponseCardinality::ONE);
+	}
+
+	ResponseFrame
+	tick_soil(Karkinolution::World::World &world, Binary::RequestId request_id, const std::vector<std::byte> &payload) {
+		const auto id   = SoilDSI::Request::interpret_like_get_soil(payload);
+		const auto soil = Karkinolution::API::Soil::tick(world, id);
+
+		if (!soil) {
+			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+		}
+
 		const auto soil_payload = SoilSRI::serialize_soil(*soil);
 		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::SOIL,
 																   request_id,

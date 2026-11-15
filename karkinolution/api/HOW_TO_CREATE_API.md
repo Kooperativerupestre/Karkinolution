@@ -106,3 +106,6 @@ the world and creature motors when mutating simulation state.
 
 `Karkinolution::API::Corpse::tick(world, id)` follows the same contract for corpses: it returns the updated corpse as a
 const `OptionalReference`, or an empty reference when the corpse does not exist before the tick or disappears during it.
+
+`Karkinolution::API::Soil::tick(world, id)` follows the same contract for soil pieces: it returns the updated soil as a
+const `OptionalReference`, or an empty reference when the soil piece does not exist.
