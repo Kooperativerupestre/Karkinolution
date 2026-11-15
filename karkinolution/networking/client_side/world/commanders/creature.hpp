@@ -34,4 +34,11 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature {
 		}
 		return world.update(*output);
 	}
+
+	template <HasRequest T> bool erase_creature(T &client, World &world, OrganismId id) {
+		if (!Interpreters::Creature::erase_creature(client, id)) {
+			return false;
+		}
+		return world.remove_creature(id);
+	}
 } // namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature

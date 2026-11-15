@@ -11,6 +11,7 @@
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/binary/interpreters/models/creature.hpp>
 #include <optional>
+#include <shared/binary/deserializer.hpp>
 #include <shared/core/id.hpp>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
@@ -104,6 +105,29 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 		}
 
 		return CreatureDSI::get_creature(frame.get_payload(), 0);
+	}
+
+	template <HasRequest T> bool erase_creature(T &client, KShared::Core::Id::BaseIdType id) {
+		const auto payload = CreatureSRI::Request::make_see_creature(id);
+		const auto built =
+			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::ERASE,
+															   GENERIC_INTERPRETER_ID,
+															   Resource::CREATURE,
+															   std::vector<std::byte>(payload.begin(), payload.end()),
+															   EraseExtra{});
+		const Client::RequestData data{.sub_type = built.get_sub_type(),
+									   .resource = built.get_resource(),
+									   .payload  = built.get_payload(),
+									   .extra    = built.get_extra()};
+		const auto                result = client.request(data);
+		if (!result || !result.value().has_value()) {
+			return false;
+		}
+		const auto &frame = require_response_frame(result.value().value());
+		if (frame.get_sub_type() != Binary::ResponseSubTypes::BOOLEAN || frame.get_payload().size() != 1) {
+			throw ClientError("Unexpected response for erasing creature");
+		}
+		return KShared::Binary::Deserializer::read_bool(frame.get_payload()[0]);
 	}
 } // namespace Karkinolution::Networking::ClientSide::Interpreters::Creature
 

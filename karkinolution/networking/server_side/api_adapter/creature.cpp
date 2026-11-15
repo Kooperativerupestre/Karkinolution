@@ -68,4 +68,16 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 																   creature_payload,
 																   Binary::ResponseCardinality::ONE);
 	}
+
+	ResponseFrame erase_creature(Karkinolution::World::World  &world,
+								 Binary::RequestId             request_id,
+								 const std::vector<std::byte> &payload) {
+		const auto id = CreatureDSI::Request::interpret_like_get_creature(payload);
+		if (!Karkinolution::API::Creature::erase(world, id)) {
+			return Karkinolution::Binary::Frames::Motor::make_boolean_response(
+				request_id,
+				Karkinolution::API::Creature::erase(world, id));
+		}
+		return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+	}
 } // namespace Karkinolution::Networking::ServerSide::APIBYA::Creature

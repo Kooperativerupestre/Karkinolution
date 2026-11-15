@@ -54,6 +54,7 @@ namespace Karkinolution {
 				}
 
 				ResponseFrame make_none_response(RequestId request_id);
+				ResponseFrame make_boolean_response(RequestId request_id, bool value);
 
 				template <KShared::Binary::ByteRange Payload>
 				ResponseFrame make_response(Protocol::Response::Code sub_type,

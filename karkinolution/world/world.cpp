@@ -15,7 +15,7 @@ namespace Karkinolution::World {
 		}
 		entities_registry.remove(id);
 		entity_map.remove(id);
-		return false;
+		return true;
 	}
 
 	bool Karkinolution::World::World::add(Organisms::Entities::Entity &&entity) {

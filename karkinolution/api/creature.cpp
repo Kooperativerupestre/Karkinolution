@@ -51,4 +51,8 @@ namespace Karkinolution::API::Creature {
 		return see_creature(world, id);
 	}
 
+	bool erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id) {
+		return world.remove(Karkinolution::Organisms::Entities::create_creature_id(id));
+	}
+
 } // namespace Karkinolution::API::Creature

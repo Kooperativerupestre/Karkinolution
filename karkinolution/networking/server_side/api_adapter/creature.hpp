@@ -15,4 +15,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame tick_creature(Karkinolution::World::World  &world,
 								Binary::RequestId             request_id,
 								const std::vector<std::byte> &payload);
+	ResponseFrame erase_creature(Karkinolution::World::World  &world,
+								 Binary::RequestId             request_id,
+								 const std::vector<std::byte> &payload);
 } // namespace Karkinolution::Networking::ServerSide::APIBYA::Creature

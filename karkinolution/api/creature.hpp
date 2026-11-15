@@ -20,4 +20,7 @@ namespace Karkinolution::API::Creature {
 
 	// Runs one creature tick and returns the updated creature, or an empty reference if it does not exist anymore.
 	CreatureReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
+
+	// Erases a creature and returns whether the creature existed and was removed.
+	bool erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 } // namespace Karkinolution::API::Creature

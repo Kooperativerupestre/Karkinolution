@@ -93,6 +93,7 @@ namespace Karkinolution::Binary::Protocol {
 			CORPSE   = 1,
 			NONE     = 3,
 			SOIL     = 4,
+			BOOLEAN  = 6,
 			// A world has one territory, so TERRITORY responses only support cardinality ONE.
 			TERRITORY = 5
 		};

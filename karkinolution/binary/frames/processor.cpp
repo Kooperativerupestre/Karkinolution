@@ -54,6 +54,12 @@ namespace Karkinolution::Binary::Frames::Processor {
 			} else if (resource == Resource::SOIL) {
 				return Networking::ServerSide::APIBYA::Soil::tick_soil(world, frame.get_id(), frame.get_payload());
 			}
+		} else if (sub_type == RequestSubTypes::ERASE) {
+			if (resource == Resource::CREATURE) {
+				return Networking::ServerSide::APIBYA::Creature::erase_creature(world,
+																				frame.get_id(),
+																				frame.get_payload());
+			}
 		}
 
 		KShared::Functional::unreachable_or_throw(

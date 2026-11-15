@@ -141,7 +141,7 @@ namespace Karkinolution {
 								throw FrameError("Territory responses must have cardinality One");
 							}
 						} else if (sub_type != ResponseSubTypes::CREATURE && sub_type != ResponseSubTypes::CORPSE
-								   && sub_type != ResponseSubTypes::SOIL) {
+								   && sub_type != ResponseSubTypes::SOIL && sub_type != ResponseSubTypes::BOOLEAN) {
 							throw FrameError("Invalid response subtype");
 						}
 
