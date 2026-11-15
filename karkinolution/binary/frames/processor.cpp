@@ -26,8 +26,6 @@ namespace Karkinolution::Binary::Frames::Processor {
 																			  frame.get_id(),
 																			  frame.get_payload());
 			} else if (resource == Resource::CORPSE) {
-				return Networking::ServerSide::APIBYA::Corpse::erase_corpse(world, frame.get_id(), frame.get_payload());
-			} else if (resource == Resource::CORPSE) {
 				return Networking::ServerSide::APIBYA::Corpse::see_corpse(world, frame.get_id(), frame.get_payload());
 			} else if (resource == Resource::SOIL) {
 				if (extra.target == Protocol::Request::SeeTarget::ONE) {
@@ -45,6 +43,10 @@ namespace Karkinolution::Binary::Frames::Processor {
 				return Networking::ServerSide::APIBYA::Creature::create_creature(world,
 																				 frame.get_id(),
 																				 frame.get_payload());
+			} else if (resource == Resource::CORPSE) {
+				return Networking::ServerSide::APIBYA::Corpse::erase_corpse(world, frame.get_id(), frame.get_payload());
+			} else if (resource == Resource::SOIL) {
+				return Networking::ServerSide::APIBYA::Soil::erase_soil(world, frame.get_id(), frame.get_payload());
 			}
 		} else if (sub_type == RequestSubTypes::CYCLE) {
 			if (resource == Resource::CREATURE) {

@@ -11,6 +11,8 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 						   const std::vector<std::byte>      &payload);
 	ResponseFrame
 	tick_soil(Karkinolution::World::World &world, Binary::RequestId request_id, const std::vector<std::byte> &payload);
+	ResponseFrame
+	erase_soil(Karkinolution::World::World &world, Binary::RequestId request_id, const std::vector<std::byte> &payload);
 	ResponseFrame see_all_soils(const Karkinolution::World::World &world,
 								Binary::RequestId                  request_id,
 								const std::vector<std::byte>      &payload);

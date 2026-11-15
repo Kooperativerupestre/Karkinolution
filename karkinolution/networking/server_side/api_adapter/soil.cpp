@@ -46,6 +46,14 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 																   Binary::ResponseCardinality::ONE);
 	}
 
+	ResponseFrame erase_soil(Karkinolution::World::World  &world,
+							 Binary::RequestId             request_id,
+							 const std::vector<std::byte> &payload) {
+		const auto id = SoilDSI::Request::interpret_like_get_soil(payload);
+		return Karkinolution::Binary::Frames::Motor::make_boolean_response(request_id,
+																		   Karkinolution::API::Soil::erase(world, id));
+	}
+
 	ResponseFrame see_all_soils(const Karkinolution::World::World &world,
 								Binary::RequestId                  request_id,
 								const std::vector<std::byte>      &payload) {

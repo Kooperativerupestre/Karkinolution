@@ -28,3 +28,7 @@ Karkinolution::API::Soil::SoilReference Karkinolution::API::Soil::tick(Karkinolu
 	Karkinolution::Terrain::Soil::Motor::SoilPieceMotor::run(*soil);
 	return see_soil(world, id);
 }
+
+bool Karkinolution::API::Soil::erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id) {
+	return world.see_territory().remove(Karkinolution::Terrain::Soil::SoilPieceId{id});
+}

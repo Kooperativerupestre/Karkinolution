@@ -13,6 +13,7 @@ namespace Karkinolution {
 
 			SoilReference see_soil(const Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 			SoilReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
+			bool          erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 
 			inline const auto &see_all_soils(const Karkinolution::World::World &world) {
 				return world.see_territory().registry();
