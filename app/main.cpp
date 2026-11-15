@@ -2,25 +2,21 @@
 #include "app/synchronizer.hpp"
 #include "app/window.hpp"
 #include "karkinolution/networking/client_side/client/alias.hpp"
+#include "opsiamethystos/gui/components/board.hpp"
 #include "opsiamethystos/gui/components/component.hpp"
 #include "opsiamethystos/gui/components/low_level/button.hpp"
-#include "opsiamethystos/gui/components/medium_level/grid.hpp"
 #include "opsiamethystos/gui/panel/panel.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "opsiamethystos/raylib_utils/colors.hpp"
 #include "shared/core/color.hpp"
 
 #include <app/presets/aliases.hpp>
-#include <app/presets/grid.hpp>
-#include <array>
 #include <opsiamethystos/raylib_utils/colors.hpp>
-#include <random>
 #include <raylib.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <vector>
 
 namespace GuiGeometry = Opsiamethystos::Gui::Geometry;
 namespace Colors      = KShared::Colors;
@@ -60,34 +56,13 @@ int main() {
 
 	std::string connection_button_label{"Connect"};
 
-	auto grid_component = std::make_shared<Components::Component>(
-		Components::AllComponents{Opsiamethystos::Gui::Components::MediumLevel::Grid{
-			GuiGeometry::Rectangle{GuiGeometry::Position{0, 35}, GuiGeometry::Width{400}, GuiGeometry::Height{240}},
-			GuiGeometry::Thickness{5},
-			GuiGeometry::Width{50},
-			GuiGeometry::Height{40},
-			Colors::Presets::DarkGray}});
-	if (!panel.add(grid_component)) {
-		throw std::runtime_error("Failed to add the demo grid to its panel");
-	}
-	const auto &grid = std::get<Opsiamethystos::Gui::Components::MediumLevel::Grid>(grid_component->get_data());
-
-	const std::array<KShared::Colors::Color, 8> cell_colors{Colors::Presets::Red,
-															Colors::Presets::Orange,
-															Colors::Presets::Yellow,
-															Colors::Presets::Green,
-															Colors::Presets::Blue,
-															Colors::Presets::Purple,
-															Colors::Presets::Pink,
-															Colors::Presets::Teal};
-	std::mt19937                                random_engine{std::random_device{}()};
-	std::uniform_int_distribution<std::size_t>  random_color{0, cell_colors.size() - 1};
-	std::vector<KShared::Colors::Color>         grid_colors;
-	grid_colors.reserve(static_cast<std::size_t>(grid.rows().value() * grid.columns().value()));
-	for (int row = 0; row < grid.rows().value(); ++row) {
-		for (int column = 0; column < grid.columns().value(); ++column) {
-			grid_colors.push_back(cell_colors[random_color(random_engine)]);
-		}
+	Components::Board board{
+		GuiGeometry::Rectangle{GuiGeometry::Position{0, 35}, GuiGeometry::Width{400}, GuiGeometry::Height{240}}};
+	if (!board.draw_rectangle(board.get_bounds(), Colors::Presets::Black)
+		|| !board.draw_circle(GuiGeometry::Circle{{-120, 35}, GuiGeometry::Radius{35}}, Colors::Presets::Red)
+		|| !board.draw_circle(GuiGeometry::Circle{{0, 35}, GuiGeometry::Radius{35}}, Colors::Presets::Green)
+		|| !board.draw_circle(GuiGeometry::Circle{{120, 35}, GuiGeometry::Radius{35}}, Colors::Presets::Blue)) {
+		throw std::runtime_error("Failed to draw demo primitive on board");
 	}
 
 	while (!WindowShouldClose()) {
@@ -96,6 +71,7 @@ int main() {
 		KarkinolutionView::Window::init_inside_loop();
 
 		synchronizer.draw();
+		board.draw(panel.origin());
 
 		const std::string_view connection_label = synchronizer.is_connected() ? "Disconnect" : "Connect";
 		if (connection_label != connection_button_label) {
@@ -113,25 +89,12 @@ int main() {
 			}
 
 			std::visit(
-				[&grid_colors, &panel](auto &visible_component) {
-					using VisibleComponent = std::remove_cvref_t<decltype(visible_component)>;
-					if constexpr (std::is_same_v<VisibleComponent, Components::LowLevel::Button::RectangleButton>) {
+				[&panel](auto &visible_component) {
+					if constexpr (std::is_same_v<std::remove_cvref_t<decltype(visible_component)>,
+												 Components::LowLevel::Button::RectangleButton>) {
 						visible_component.run(panel.origin());
 					} else if constexpr (requires { visible_component.draw(panel.origin()); }) {
 						visible_component.draw(panel.origin());
-					}
-
-					if constexpr (std::is_same_v<VisibleComponent,
-												 Opsiamethystos::Gui::Components::MediumLevel::Grid>) {
-						std::size_t color_index = 0;
-						for (int row = 0; row < visible_component.rows().value(); ++row) {
-							for (int column = 0; column < visible_component.columns().value(); ++column) {
-								visible_component.draw_cell(GuiGeometry::Column{column},
-															GuiGeometry::Row{row},
-															grid_colors[color_index++],
-															panel.origin());
-							}
-						}
 					}
 				},
 				component->get_data());

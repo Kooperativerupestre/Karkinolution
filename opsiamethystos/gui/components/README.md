@@ -21,3 +21,12 @@ drawing and hit-testing. The current bound is centered in the maximum bound and
 must always fit inside it. The maximum bound is stable between layout passes
 and changes only through the panel. Updating text must leave both the old text
 and current bound unchanged when the new text does not fit.
+
+## Board ownership
+
+A `Board` is a free-positioning drawing surface, not a layout container. Its
+primitive drawing methods retain caller-selected positions and render in call
+order, so later primitives can overlap earlier ones. A primitive is rejected
+when its complete geometric bound is outside the board rectangle; touching the
+boundary is valid. This gives the board a strict drawing boundary without
+introducing layout policy.

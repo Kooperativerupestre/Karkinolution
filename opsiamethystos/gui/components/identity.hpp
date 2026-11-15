@@ -9,6 +9,7 @@ namespace Opsiamethystos {
 		namespace Components {
 			enum class ComponentType : uint8_t {
 				BUTTON,
+				BOARD,
 				GRID,
 				CIRCLE,
 				LINE,
