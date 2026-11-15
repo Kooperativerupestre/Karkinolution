@@ -40,4 +40,13 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 																   corpse_payload,
 																   Binary::ResponseCardinality::ONE);
 	}
+
+	ResponseFrame erase_corpse(Karkinolution::World::World  &world,
+							   Binary::RequestId             request_id,
+							   const std::vector<std::byte> &payload) {
+		const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
+		return Karkinolution::Binary::Frames::Motor::make_boolean_response(
+			request_id,
+			Karkinolution::API::Corpse::erase(world, id));
+	}
 } // namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse

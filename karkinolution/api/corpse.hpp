@@ -14,6 +14,7 @@ namespace Karkinolution {
 
 			CorpseReference see_corpse(const Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 			CorpseReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
+			bool            erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 		} // namespace Corpse
 	} // namespace API
 } // namespace Karkinolution

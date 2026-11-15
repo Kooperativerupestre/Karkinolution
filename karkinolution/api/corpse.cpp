@@ -27,3 +27,7 @@ Karkinolution::API::Corpse::CorpseReference Karkinolution::API::Corpse::tick(Kar
 
 	return see_corpse(world, id);
 }
+
+bool Karkinolution::API::Corpse::erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id) {
+	return world.remove(Karkinolution::Organisms::Entities::create_corpse_id(id));
+}

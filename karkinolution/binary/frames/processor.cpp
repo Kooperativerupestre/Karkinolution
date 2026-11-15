@@ -26,6 +26,8 @@ namespace Karkinolution::Binary::Frames::Processor {
 																			  frame.get_id(),
 																			  frame.get_payload());
 			} else if (resource == Resource::CORPSE) {
+				return Networking::ServerSide::APIBYA::Corpse::erase_corpse(world, frame.get_id(), frame.get_payload());
+			} else if (resource == Resource::CORPSE) {
 				return Networking::ServerSide::APIBYA::Corpse::see_corpse(world, frame.get_id(), frame.get_payload());
 			} else if (resource == Resource::SOIL) {
 				if (extra.target == Protocol::Request::SeeTarget::ONE) {

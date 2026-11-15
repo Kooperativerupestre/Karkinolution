@@ -13,4 +13,11 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Corpse {
 		}
 		return world.update(*output);
 	}
+
+	template <HasRequest T> bool erase_corpse(T &client, World &world, OrganismId id) {
+		if (!Interpreters::Corpse::erase_corpse(client, id)) {
+			return false;
+		}
+		return world.remove_corpse(id);
+	}
 } // namespace Karkinolution::Networking::ClientSide::World::Commanders::Corpse

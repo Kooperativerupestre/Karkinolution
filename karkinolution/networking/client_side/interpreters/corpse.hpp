@@ -10,6 +10,7 @@
 #include <karkinolution/binary/interpreters/corpse.hpp>
 #include <karkinolution/binary/interpreters/models/corpse.hpp>
 #include <optional>
+#include <shared/binary/deserializer.hpp>
 #include <shared/core/id.hpp>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
@@ -80,6 +81,29 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 		}
 
 		return CorpseDSI::get_corpse(frame.get_payload(), 0);
+	}
+
+	template <HasRequest T> bool erase_corpse(T &client, KShared::Core::Id::BaseIdType id) {
+		const auto payload = CorpseSRI::Request::make_see_corpse(id);
+		const auto built =
+			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::ERASE,
+															   GENERIC_INTERPRETER_ID,
+															   Resource::CORPSE,
+															   std::vector<std::byte>(payload.begin(), payload.end()),
+															   EraseExtra{});
+		const Client::RequestData data{.sub_type = built.get_sub_type(),
+									   .resource = built.get_resource(),
+									   .payload  = built.get_payload(),
+									   .extra    = built.get_extra()};
+		const auto                result = client.request(data);
+		if (!result || !result.value().has_value()) {
+			return false;
+		}
+		const auto &frame = require_response_frame(result.value().value());
+		if (frame.get_sub_type() != Binary::ResponseSubTypes::BOOLEAN || frame.get_payload().size() != 1) {
+			throw ClientError("Unexpected response for erasing corpse");
+		}
+		return KShared::Binary::Deserializer::read_bool(frame.get_payload()[0]);
 	}
 } // namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse
 
