@@ -260,4 +260,13 @@ TEST(CreatureSerializeDeserializeRoundtrip, FullCreatureSerialization) {
 	EXPECT_DOUBLE_EQ(copy.position.y, position.y);
 
 	EXPECT_EQ(copy.name, name);
+	EXPECT_DOUBLE_EQ(copy.size.width.value, creature.body.morphology.size.width.value);
+	EXPECT_DOUBLE_EQ(copy.size.height.value, creature.body.morphology.size.height.value);
+	EXPECT_FLOAT_EQ(copy.life.value, creature.body.vital.life.value());
+	EXPECT_FLOAT_EQ(copy.life.max, creature.body.vital.life.max());
+	EXPECT_FLOAT_EQ(copy.life.min, creature.body.vital.life.min());
+	EXPECT_FLOAT_EQ(copy.energy.value, creature.body.metabolism.energy.value());
+	EXPECT_FLOAT_EQ(copy.energy.max, creature.body.metabolism.energy.max());
+	EXPECT_FLOAT_EQ(copy.energy.min, creature.body.metabolism.energy.min());
+	EXPECT_FLOAT_EQ(copy.age, creature.body.age.value);
 }

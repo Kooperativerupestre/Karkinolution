@@ -9,6 +9,8 @@
 #include <array>
 #include <cstdlib>
 #include <karkinolution/organism/entities/creature/creature.hpp>
+#include <shared/binary/interpreters/stats.hpp>
+#include <shared/binary/interpreters/unit.hpp>
 #include <shared/binary/interpreters/vec.hpp>
 #include <vector>
 
@@ -27,7 +29,11 @@ namespace Karkinolution {
 					 * # end position
 					 * [26 - name size]
 					 * [27 -> 90 - name]
-					 * [91 -> 99 - id]
+					 * [91 -> 98 - id]
+					 * [99 -> 114 - size]
+					 * [115 -> 139 - life: numeric type, value, max, min]
+					 * [140 -> 164 - energy: numeric type, value, max, min]
+					 * [165 -> 168 - age]
 					 *
 					 */
 
@@ -41,7 +47,11 @@ namespace Karkinolution {
 						using NameSize  = KShared::Binary::Next<PositionY, 1>;
 						using Name      = KShared::Binary::Next<NameSize, MAX_NAME_SIZE>;
 						using Id        = KShared::Binary::Next<Name, 8>;
-						inline constexpr std::size_t TOTAL_SIZE = Id::END;
+						using Size      = KShared::Binary::Next<Id, UnitsSRI::Layout::TOTAL_SIZE>;
+						using Life      = KShared::Binary::Next<Size, StatsSRI::Layout::TOTAL_SIZE>;
+						using Energy    = KShared::Binary::Next<Life, StatsSRI::Layout::TOTAL_SIZE>;
+						using Age       = KShared::Binary::Next<Energy, sizeof(float)>;
+						inline constexpr std::size_t TOTAL_SIZE = Age::END;
 					} // namespace Layout
 
 					namespace BytesArrays {
@@ -97,6 +107,12 @@ namespace Karkinolution {
 					KShared::Core::Id::BaseIdType get_id(const std::vector<std::byte> &payload, std::size_t offset);
 					Interpreters::Models::Creature::Creature get_creature(const std::vector<std::byte> &payload,
 																		  std::size_t                   offset);
+					KShared::Math::Units::Size get_size(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+					get_life(const std::vector<std::byte> &payload, std::size_t offset);
+					KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+						  get_energy(const std::vector<std::byte> &payload, std::size_t offset);
+					float get_age(const std::vector<std::byte> &payload, std::size_t offset);
 
 					namespace Request {
 

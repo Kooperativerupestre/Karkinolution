@@ -49,6 +49,18 @@ TEST(DSIOffsetInvariantsHighLevel, CreatureAuxiliaryGettersDoNotAutoAddOffset) {
 
 		EXPECT_EQ(CreatureDSI::get_id(payload, offset), expected_id);
 	}
+
+	{
+		const KShared::Math::Units::Size original_size{4.0, 5.0};
+		const auto                       size_bytes = UnitsSRI::serialize_size(original_size);
+		std::vector<std::byte>           payload    = {std::byte{0x12}, std::byte{0x34}};
+		const std::size_t                offset     = payload.size();
+		KShared::Binary::Utils::append_bytes(payload, size_bytes);
+
+		const auto size = CreatureDSI::get_size(payload, offset);
+		EXPECT_DOUBLE_EQ(size.width.value, original_size.width.value);
+		EXPECT_DOUBLE_EQ(size.height.value, original_size.height.value);
+	}
 }
 
 TEST(DSIOffsetInvariantsHighLevel, SoilAuxiliaryGettersDoNotAutoAddOffset) {

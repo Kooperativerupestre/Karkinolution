@@ -78,6 +78,26 @@ CreatureSRI::serialize_creature(const Karkinolution::Organisms::Entities::Creatu
 	const auto id = KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(creature.ontology.id);
 	KShared::Binary::Utils::append_bytes(bytes, id, Layout::Id::OFFSET);
 
+	// Size
+	KShared::Binary::Utils::append_bytes(bytes,
+										 UnitsSRI::serialize_size(creature.body.morphology.size),
+										 Layout::Size::OFFSET);
+
+	// Life
+	KShared::Binary::Utils::append_bytes(bytes,
+										 StatsSRI::serialize_limited_value(creature.body.vital.life),
+										 Layout::Life::OFFSET);
+
+	// Energy
+	KShared::Binary::Utils::append_bytes(bytes,
+										 StatsSRI::serialize_limited_value(creature.body.metabolism.energy),
+										 Layout::Energy::OFFSET);
+
+	// Age
+	KShared::Binary::Utils::append_bytes(bytes,
+										 KShared::Binary::Serializer::convert_float(creature.body.age.value),
+										 Layout::Age::OFFSET);
+
 	return bytes;
 }
 
@@ -193,7 +213,29 @@ CreatureDSI::get_creature(const std::vector<std::byte> &payload, std::size_t off
 		.specie   = get_specie(payload, offset + CreatureSRI::Layout::Specie::OFFSET),
 		.position = VecDSI::get_vec(payload, offset + CreatureSRI::Layout::PositionX::OFFSET),
 		.name     = get_name(payload, offset + CreatureSRI::Layout::NameSize::OFFSET),
-		.id       = get_id(payload, offset + CreatureSRI::Layout::Id::OFFSET)};
+		.id       = get_id(payload, offset + CreatureSRI::Layout::Id::OFFSET),
+		.size     = get_size(payload, offset + CreatureSRI::Layout::Size::OFFSET),
+		.life     = get_life(payload, offset + CreatureSRI::Layout::Life::OFFSET),
+		.energy   = get_energy(payload, offset + CreatureSRI::Layout::Energy::OFFSET),
+		.age      = get_age(payload, offset + CreatureSRI::Layout::Age::OFFSET)};
+}
+
+KShared::Math::Units::Size CreatureDSI::get_size(const std::vector<std::byte> &payload, std::size_t offset) {
+	return UnitsDSI::deserialize_size(payload, offset);
+}
+
+KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+CreatureDSI::get_life(const std::vector<std::byte> &payload, std::size_t offset) {
+	return StatsDSI::get_stats<float>(payload, offset);
+}
+
+KShared::Binary::Interpreters::Models::Stats::StatValue<float>
+CreatureDSI::get_energy(const std::vector<std::byte> &payload, std::size_t offset) {
+	return StatsDSI::get_stats<float>(payload, offset);
+}
+
+float CreatureDSI::get_age(const std::vector<std::byte> &payload, std::size_t offset) {
+	return KShared::Binary::Deserializer::read_float(payload, offset);
 }
 
 uint8_t CreatureDSI::get_name_size(const std::vector<std::byte> &payload, std::size_t offset) {
