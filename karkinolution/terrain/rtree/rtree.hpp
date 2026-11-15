@@ -370,12 +370,13 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 			RStarTreeMotor::FindSoilPieceOutput<IdType> find(IdType id);
 
-			bool exists_impl(const RtreeNode<IdType> &node, IdType id) const;
-	};
+			bool   exists_impl(const RtreeNode<IdType> &node, IdType id) const;
+			size_t leaf_depth() const;
 
-	// ============================================================
-	// RStarTree implementation
-	// ============================================================
+			// ============================================================
+			// RStarTree implementation
+			// ============================================================
+	};
 
 	template <typename IdType>
 	RStarTree<IdType>::RStarTree()
@@ -466,6 +467,17 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		}
 
 		return best_index;
+	}
+
+	template <typename IdType> size_t RStarTree<IdType>::leaf_depth() const {
+		size_t                   depth = 0;
+		const RtreeNode<IdType>* node  = root_.get();
+
+		while (node->type != NodeType::LEAF) {
+			node = std::get<std::unique_ptr<RtreeNode<IdType>>>(node->entries[0].content).get();
+			++depth;
+		}
+		return depth;
 	}
 
 	template <typename IdType>
@@ -693,9 +705,10 @@ namespace Karkinolution::Terrain::Trees::RTree {
 				}
 			}
 		}
-
+		const size_t depth_when_removed = path_size - 1;
 		for (auto &e : removed_entries) {
-			reinsert_orphan(std::move(e.entry), e.depth);
+			const size_t shift = leaf_depth() - depth_when_removed;
+			reinsert_orphan(std::move(e.entry), e.depth + shift);
 		}
 
 		if (root_->entries.size() > MAX_ENTRIES) {
