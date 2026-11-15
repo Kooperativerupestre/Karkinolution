@@ -270,8 +270,9 @@
       "name": "ci",
       "configurePreset": "ci",
       "targets": [
-        "karkinolution_tests",
         "opsiamethystos_tests",
+        "karkinolution_core_tests",
+        "kshared_tests",
         "karkinolution_core"
       ]
     },
@@ -279,8 +280,9 @@
       "name": "ci-sanitizers",
       "configurePreset": "ci-sanitizers",
       "targets": [
-        "karkinolution_tests",
         "opsiamethystos_tests",
+        "karkinolution_core_tests",
+        "kshared_tests",
         "karkinolution_core"
       ]
     },
@@ -288,8 +290,9 @@
       "name": "ci-tsan",
       "configurePreset": "ci-tsan",
       "targets": [
-        "karkinolution_tests",
         "opsiamethystos_tests",
+        "karkinolution_core_tests",
+        "kshared_tests",
         "karkinolution_core"
       ]
     },
@@ -297,8 +300,9 @@
       "name": "ci-libcxx",
       "configurePreset": "ci-libcxx",
       "targets": [
-        "karkinolution_tests",
         "opsiamethystos_tests",
+        "karkinolution_core_tests",
+        "kshared_tests",
         "karkinolution_core"
       ]
     },
@@ -306,8 +310,9 @@
       "name": "ci-libcxx-sanitizers",
       "configurePreset": "ci-libcxx-sanitizers",
       "targets": [
-        "karkinolution_tests",
         "opsiamethystos_tests",
+        "karkinolution_core_tests",
+        "kshared_tests",
         "karkinolution_core"
       ]
     },
@@ -315,8 +320,9 @@
       "name": "ci-libcxx-tsan",
       "configurePreset": "ci-libcxx-tsan",
       "targets": [
-        "karkinolution_tests",
         "opsiamethystos_tests",
+        "karkinolution_core_tests",
+        "kshared_tests",
         "karkinolution_core"
       ]
     },
@@ -328,11 +334,66 @@
       ]
     },
     {
+      "name": "core-debug",
+      "displayName": "core: Debug build of karkinolution_core",
+      "configurePreset": "debug",
+      "targets": [
+        "karkinolution_core",
+        "karkinolution_core_tests"
+      ]
+    },
+    {
+      "name": "core-sanitizers",
+      "displayName": "core: Debug with AddressSanitizer and UBSan",
+      "configurePreset": "sanitizers",
+      "targets": [
+        "karkinolution_core",
+        "karkinolution_core_tests"
+      ]
+    },
+    {
+      "name": "core-tsan",
+      "displayName": "core: Debug with ThreadSanitizer",
+      "configurePreset": "tsan",
+      "targets": [
+        "karkinolution_core",
+        "karkinolution_core_tests"
+      ]
+    },
+    {
+      "name": "core-ci",
+      "displayName": "core: CI Debug build",
+      "configurePreset": "ci",
+      "targets": [
+        "karkinolution_core",
+        "karkinolution_core_tests"
+      ]
+    },
+    {
+      "name": "core-ci-sanitizers",
+      "displayName": "core: CI Debug with AddressSanitizer and UBSan",
+      "configurePreset": "ci-sanitizers",
+      "targets": [
+        "karkinolution_core",
+        "karkinolution_core_tests"
+      ]
+    },
+    {
+      "name": "core-ci-tsan",
+      "displayName": "core: CI Debug with ThreadSanitizer",
+      "configurePreset": "ci-tsan",
+      "targets": [
+        "karkinolution_core",
+        "karkinolution_core_tests"
+      ]
+    },
+    {
       "name": "shared-debug",
       "displayName": "shared: Debug build of karkinolution_shared",
       "configurePreset": "debug",
       "targets": [
-        "karkinolution_shared"
+        "karkinolution_shared",
+        "kshared_tests"
       ]
     },
     {
@@ -340,7 +401,8 @@
       "displayName": "shared: Debug with AddressSanitizer and UBSan",
       "configurePreset": "sanitizers",
       "targets": [
-        "karkinolution_shared"
+        "karkinolution_shared",
+        "kshared_tests"
       ]
     },
     {
@@ -348,7 +410,8 @@
       "displayName": "shared: Debug with ThreadSanitizer",
       "configurePreset": "tsan",
       "targets": [
-        "karkinolution_shared"
+        "karkinolution_shared",
+        "kshared_tests"
       ]
     },
     {
@@ -356,7 +419,8 @@
       "displayName": "shared: CI Debug build",
       "configurePreset": "ci",
       "targets": [
-        "karkinolution_shared"
+        "karkinolution_shared",
+        "kshared_tests"
       ]
     },
     {
@@ -364,7 +428,8 @@
       "displayName": "shared: CI Debug with AddressSanitizer and UBSan",
       "configurePreset": "ci-sanitizers",
       "targets": [
-        "karkinolution_shared"
+        "karkinolution_shared",
+        "kshared_tests"
       ]
     },
     {
@@ -372,7 +437,8 @@
       "displayName": "shared: CI Debug with ThreadSanitizer",
       "configurePreset": "ci-tsan",
       "targets": [
-        "karkinolution_shared"
+        "karkinolution_shared",
+        "kshared_tests"
       ]
     },
     {

@@ -137,21 +137,41 @@ target_link_libraries(karkinolution_core PRIVATE
     karkinolution
 )
 
-# ---------------- Application executable ----------------
+# ---------------- Application library and executable ----------------
 
 if (KARKINOLUTION_BUILD_APP)
     file(GLOB_RECURSE KARKINOLUTION_APP_SOURCES CONFIGURE_DEPENDS
         "${CMAKE_SOURCE_DIR}/app/*.cpp"
     )
 
-    add_executable(karkinolution_app
-        ${KARKINOLUTION_APP_SOURCES}
+    list(FILTER KARKINOLUTION_APP_SOURCES EXCLUDE REGEX ".*/main.cpp$")
+
+    add_library(karkinolution_app_lib)
+
+    set_target_properties(karkinolution_app_lib PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
     )
 
+    target_sources(karkinolution_app_lib
+        PRIVATE
+            ${KARKINOLUTION_APP_SOURCES}
+    )
+
+    target_include_directories(karkinolution_app_lib PUBLIC
+        "${CMAKE_SOURCE_DIR}"
+    )
+
+    target_link_libraries(karkinolution_app_lib
+        PUBLIC
+            karkinolution
+            opsiamethystos
+            raylib
+    )
+
+    add_executable(karkinolution_app app/main.cpp)
+
     target_link_libraries(karkinolution_app PRIVATE
-        karkinolution
-        opsiamethystos
-        raylib
+        karkinolution_app_lib
     )
 endif ()
 

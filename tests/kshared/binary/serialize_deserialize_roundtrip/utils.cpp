@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <karkinolution/test/utils.hpp>
 #include <shared/binary/byte_utils.hpp>
 
 // ByteUtils: Zero Padding

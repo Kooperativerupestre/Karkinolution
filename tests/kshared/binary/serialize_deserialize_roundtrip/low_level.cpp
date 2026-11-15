@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <karkinolution/test/utils.hpp>
+#include <kshared/test_utils.hpp>
 #include <shared/binary/deserializer.hpp>
 #include <shared/binary/serializer.hpp>
 
