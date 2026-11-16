@@ -9,7 +9,7 @@
 #include <string_view>
 
 namespace {
-	namespace Geometry   = Opsiamethystos::Gui::Geometry;
+	namespace Geometry   = Opsiamethystos::Math::Geometry;
 	namespace Components = Opsiamethystos::Gui::Components;
 	namespace Drivers    = Components::Drivers;
 	namespace LowLevel   = Components::LowLevel;

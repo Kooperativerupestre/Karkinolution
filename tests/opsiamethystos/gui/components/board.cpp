@@ -3,7 +3,7 @@
 #include <shared/core/color.hpp>
 
 namespace {
-	namespace Geometry   = Opsiamethystos::Gui::Geometry;
+	namespace Geometry   = Opsiamethystos::Math::Geometry;
 	namespace Components = Opsiamethystos::Gui::Components;
 	using KShared::Colors::Presets::White;
 

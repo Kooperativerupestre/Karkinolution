@@ -8,41 +8,41 @@
 
 namespace Opsiamethystos {
 	namespace Render {
-		void draw_rectangle(const Gui::Geometry::Rectangle &rectangle, const KShared::Colors::Color &color);
-		void draw_rectangle_lines(const Gui::Geometry::Rectangle &rectangle,
-								  const Gui::Geometry::Thickness &thickness,
-								  const KShared::Colors::Color   &color);
+		void draw_rectangle(const Math::Geometry::Rectangle &rectangle, const KShared::Colors::Color &color);
+		void draw_rectangle_lines(const Math::Geometry::Rectangle &rectangle,
+								  const Math::Geometry::Thickness &thickness,
+								  const KShared::Colors::Color    &color);
 
 		// [4 ~ 12] is well for segments
 		// the minimum is clamped to 4 because is the miminum of raylib
-		void draw_rounded_rectangle(const Gui::Geometry::Rectangle       &rectangle,
+		void draw_rounded_rectangle(const Math::Geometry::Rectangle      &rectangle,
 									const NormalizedValue<float>          roundness,
 									const GenericLimitedValue<int, 60, 4> segments,
 									const KShared::Colors::Color         &color);
-		void draw_rounded_rectangle_lines(const Gui::Geometry::Rectangle       &rectangle,
+		void draw_rounded_rectangle_lines(const Math::Geometry::Rectangle      &rectangle,
 										  const NormalizedValue<float>          roundness,
 										  const GenericLimitedValue<int, 60, 4> segments,
-										  const Gui::Geometry::Thickness       &thickness,
+										  const Math::Geometry::Thickness      &thickness,
 										  const KShared::Colors::Color         &color);
-		void draw_circle(const Gui::Geometry::Circle &circle, const KShared::Colors::Color &color);
+		void draw_circle(const Math::Geometry::Circle &circle, const KShared::Colors::Color &color);
 
-		void draw_ring(const Gui::Geometry::Radius    &radius,
-					   const Gui::Geometry::Position  &position,
-					   const Gui::Geometry::Thickness &thickness,
-					   const KShared::Colors::Color   &color);
-		void draw_ring(const Gui::Geometry::Circle    &circle,
-					   const Gui::Geometry::Thickness &thickness,
-					   const KShared::Colors::Color   &color);
-		void draw_line(const Gui::Geometry::Position  &begin,
-					   const Gui::Geometry::Position  &end,
-					   const Gui::Geometry::Thickness &thickness,
-					   const KShared::Colors::Color   &color);
-		void draw_triangle(const Gui::Geometry::Triangle &triangle, const KShared::Colors::Color &color);
-		void draw_triangle_lines(const Gui::Geometry::Triangle  &triangle,
-								 const Gui::Geometry::Thickness &thickness,
-								 const KShared::Colors::Color   &color);
+		void draw_ring(const Math::Geometry::Radius    &radius,
+					   const Math::Geometry::Position  &position,
+					   const Math::Geometry::Thickness &thickness,
+					   const KShared::Colors::Color    &color);
+		void draw_ring(const Math::Geometry::Circle    &circle,
+					   const Math::Geometry::Thickness &thickness,
+					   const KShared::Colors::Color    &color);
+		void draw_line(const Math::Geometry::Position  &begin,
+					   const Math::Geometry::Position  &end,
+					   const Math::Geometry::Thickness &thickness,
+					   const KShared::Colors::Color    &color);
+		void draw_triangle(const Math::Geometry::Triangle &triangle, const KShared::Colors::Color &color);
+		void draw_triangle_lines(const Math::Geometry::Triangle  &triangle,
+								 const Math::Geometry::Thickness &thickness,
+								 const KShared::Colors::Color    &color);
 		void draw_simple_text(const std::string               &string,
-							  const Gui::Geometry::Position   &position,
+							  const Math::Geometry::Position  &position,
 							  const GreaterThanZeroValue<int> &font_size,
 							  const KShared::Colors::Color    &color);
 		void draw_simple_text(const Graphics::Models::SimpleText &simple_text);

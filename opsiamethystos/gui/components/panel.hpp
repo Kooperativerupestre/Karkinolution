@@ -20,15 +20,15 @@ namespace Opsiamethystos {
 
 					[[nodiscard]]
 					bool can_contain(const LowLevel::Rectangle &component) const {
-						return Geometry::can_contain(form_.get_bounds(), component.get_bounds());
+						return Math::Geometry::can_contain(form_.get_bounds(), component.get_bounds());
 					}
 
 					[[nodiscard]]
 					bool can_contain(const LowLevel::Circle &component) const {
-						return Geometry::can_contain(form_.get_bounds(), component.get_bounds());
+						return Math::Geometry::can_contain(form_.get_bounds(), component.get_bounds());
 					}
 
-					void draw_bounds(Geometry::Thickness thickness) const;
+					void draw_bounds(Math::Geometry::Thickness thickness) const;
 					void fill_background(const KShared::Colors::Color &color) const;
 			};
 		} // namespace Components

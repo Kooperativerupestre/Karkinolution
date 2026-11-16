@@ -1,12 +1,7 @@
 #pragma once
-#include "shared/core/error.hpp"
-#include "shared/core/id.hpp"
 
-#include <algorithm>
 #include <cstdint>
 #include <opsiamethystos/math/geometry/geometry.hpp>
-#include <unordered_map>
-#include <variant>
 
 namespace Opsiamethystos {
 	namespace Gui {
@@ -19,15 +14,15 @@ namespace Opsiamethystos {
 						RIGHT,
 						MIDDLE
 					};
-					Geometry::Position get_cursor_position();
+					Math::Geometry::Position get_cursor_position();
 
-					bool is_cursor_inside(const Gui::Geometry::Position &cursor_position,
-										  const Geometry::Rectangle     &rectangle);
-					bool is_cursor_inside(const Gui::Geometry::Position &cursor_position,
-										  const Geometry::Circle        &circle);
+					bool is_cursor_inside(const Math::Geometry::Position  &cursor_position,
+										  const Math::Geometry::Rectangle &rectangle);
+					bool is_cursor_inside(const Math::Geometry::Position &cursor_position,
+										  const Math::Geometry::Circle   &circle);
 
-					bool is_cursor_inside(const Gui::Geometry::Rectangle &rectangle);
-					bool is_cursor_inside(const Gui::Geometry::Circle &circle);
+					bool is_cursor_inside(const Math::Geometry::Rectangle &rectangle);
+					bool is_cursor_inside(const Math::Geometry::Circle &circle);
 
 					enum class ButtonEvents : uint8_t {
 						IS_PRESSED,

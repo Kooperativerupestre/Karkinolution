@@ -9,18 +9,18 @@ namespace Opsiamethystos {
 		namespace Components {
 			namespace LowLevel {
 				namespace {
-					Geometry::Rectangle make_text_max_bound(const Geometry::Circle &circle) {
+					Math::Geometry::Rectangle make_text_max_bound(const Math::Geometry::Circle &circle) {
 						const auto radius = circle.radius.value();
 						if (radius <= 0.0f) {
 							throw std::invalid_argument("A circle label requires a positive circle radius");
 						}
 
 						const double side = static_cast<double>(radius) * std::sqrt(2.0);
-						return {circle.position, Geometry::Width{side}, Geometry::Height{side}};
+						return {circle.position, Math::Geometry::Width{side}, Math::Geometry::Height{side}};
 					}
 				} // namespace
 
-				CircleLabel::CircleLabel(const Geometry::Circle       &bounds,
+				CircleLabel::CircleLabel(const Math::Geometry::Circle &bounds,
 										 std::string                   text,
 										 const KShared::Colors::Color &circle_color,
 										 const KShared::Colors::Color &text_color,
@@ -36,7 +36,7 @@ namespace Opsiamethystos {
 					draw({0, 0});
 				}
 
-				void CircleLabel::draw(const Geometry::Position &origin) const {
+				void CircleLabel::draw(const Math::Geometry::Position &origin) const {
 					circle_.draw(origin);
 					text_.draw(origin);
 				}

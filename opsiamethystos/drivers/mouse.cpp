@@ -26,26 +26,26 @@ namespace Opsiamethystos {
 					std::unreachable();
 				}
 
-				Geometry::Position Mouse::get_cursor_position() {
+				Math::Geometry::Position Mouse::get_cursor_position() {
 					const auto p = GetMousePosition();
 					return {p.x, p.y};
 				}
 
-				bool Mouse::is_cursor_inside(const Gui::Geometry::Position &cursor_position,
-											 const Geometry::Rectangle     &rectangle) {
-					return Geometry::can_contain(rectangle, cursor_position);
+				bool Mouse::is_cursor_inside(const Math::Geometry::Position  &cursor_position,
+											 const Math::Geometry::Rectangle &rectangle) {
+					return Math::Geometry::can_contain(rectangle, cursor_position);
 				}
 
-				bool Mouse::is_cursor_inside(const Gui::Geometry::Position &cursor_position,
-											 const Geometry::Circle        &circle) {
-					return Geometry::can_contain(circle, cursor_position);
+				bool Mouse::is_cursor_inside(const Math::Geometry::Position &cursor_position,
+											 const Math::Geometry::Circle   &circle) {
+					return Math::Geometry::can_contain(circle, cursor_position);
 				}
 
-				bool Mouse::is_cursor_inside(const Geometry::Rectangle &rectangle) {
+				bool Mouse::is_cursor_inside(const Math::Geometry::Rectangle &rectangle) {
 					return is_cursor_inside(get_cursor_position(), rectangle);
 				}
 
-				bool Mouse::is_cursor_inside(const Gui::Geometry::Circle &circle) {
+				bool Mouse::is_cursor_inside(const Math::Geometry::Circle &circle) {
 					return is_cursor_inside(get_cursor_position(), circle);
 				}
 

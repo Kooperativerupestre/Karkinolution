@@ -13,8 +13,6 @@
 
 #include <algorithm>
 #include <concepts>
-#include <cstdint>
-#include <optional>
 #include <type_traits>
 #include <typeindex>
 #include <utility>
@@ -35,7 +33,7 @@ namespace Opsiamethystos {
 											   LowLevel::RectangleLabel,
 											   LowLevel::Text,
 											   MediumLevel::Grid>;
-			using Bound         = std::variant<Geometry::Circle, Geometry::Rectangle>;
+			using Bound         = std::variant<Math::Geometry::Circle, Math::Geometry::Rectangle>;
 
 			class Component {
 				private:
@@ -45,7 +43,7 @@ namespace Opsiamethystos {
 					// Slot mutation is centralized here so the panel cannot update the index
 					// without updating the component, or vice versa. Components that do not
 					// accept rectangular layout slots fail instead of being silently mutated.
-					bool set_slot(const Geometry::Rectangle &slot) {
+					bool set_slot(const Math::Geometry::Rectangle &slot) {
 						return std::visit(
 							[&slot](auto &component) {
 								if constexpr (requires { component.set_slot(slot); }) {
@@ -104,15 +102,17 @@ namespace Opsiamethystos {
 					// The quadtree is intentionally rectangular. A circle therefore contributes
 					// its conservative AABB; exact circle/rectangle intersection is checked by
 					// Panel after the broad-phase query.
-					[[nodiscard]] Geometry::Rectangle get_index_bounds() const {
+					[[nodiscard]] Math::Geometry::Rectangle get_index_bounds() const {
 						return std::visit(
-							[](const auto &component) -> Geometry::Rectangle {
+							[](const auto &component) -> Math::Geometry::Rectangle {
 								using Bounds = std::remove_cvref_t<decltype(component.get_bounds())>;
-								if constexpr (std::same_as<Bounds, Geometry::Circle>) {
+								if constexpr (std::same_as<Bounds, Math::Geometry::Circle>) {
 									const auto   circle = component.get_bounds();
 									const double diameter =
 										std::max(1e-6, static_cast<double>(circle.radius.value()) * 2.0);
-									return {circle.position, Geometry::Width{diameter}, Geometry::Height{diameter}};
+									return {circle.position,
+											Math::Geometry::Width{diameter},
+											Math::Geometry::Height{diameter}};
 								} else {
 									return component.get_bounds();
 								}

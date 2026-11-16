@@ -1,27 +1,23 @@
-#include "app/screen.hpp"
 #include "app/synchronizer.hpp"
 #include "app/window.hpp"
-#include "karkinolution/networking/client_side/client/alias.hpp"
 #include "opsiamethystos/gui/components/board.hpp"
 #include "opsiamethystos/gui/components/component.hpp"
 #include "opsiamethystos/gui/components/low_level/button.hpp"
 #include "opsiamethystos/gui/panel/panel.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
-#include "opsiamethystos/raylib_utils/colors.hpp"
 #include "shared/core/color.hpp"
 
 #include <app/presets/aliases.hpp>
-#include <opsiamethystos/raylib_utils/colors.hpp>
 #include <raylib.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-namespace GuiGeometry = Opsiamethystos::Gui::Geometry;
-namespace Colors      = KShared::Colors;
-namespace Components  = Opsiamethystos::Gui::Components;
-namespace Panel       = Opsiamethystos::Gui::Panel;
+namespace MathGeometry = Opsiamethystos::Math::Geometry;
+namespace Colors       = KShared::Colors;
+namespace Components   = Opsiamethystos::Gui::Components;
+namespace Panel        = Opsiamethystos::Gui::Panel;
 using KarkinolutionView::Synchronizer;
 
 int main() {
@@ -30,13 +26,15 @@ int main() {
 	KarkinolutionView::Window::init_before_loop(screen_preset);
 
 	Panel::Panel panel{
-		GuiGeometry::Rectangle{GuiGeometry::Position{400, 225}, GuiGeometry::Width{800}, GuiGeometry::Height{450}}};
+		MathGeometry::Rectangle{MathGeometry::Position{400, 225}, MathGeometry::Width{800}, MathGeometry::Height{450}}};
 
 	Synchronizer synchronizer{panel};
 
 	auto button_component =
 		std::make_shared<Components::Component>(Components::AllComponents{Components::LowLevel::Button::RectangleButton{
-			GuiGeometry::Rectangle{GuiGeometry::Position{-280, -170}, GuiGeometry::Width{160}, GuiGeometry::Height{40}},
+			MathGeometry::Rectangle{MathGeometry::Position{-280, -170},
+									MathGeometry::Width{160},
+									MathGeometry::Height{40}},
 			[&synchronizer] {
 				if (synchronizer.is_connected()) {
 					synchronizer.disconnect();
@@ -57,11 +55,11 @@ int main() {
 	std::string connection_button_label{"Connect"};
 
 	Components::Board board{
-		GuiGeometry::Rectangle{GuiGeometry::Position{0, 35}, GuiGeometry::Width{400}, GuiGeometry::Height{240}}};
+		MathGeometry::Rectangle{MathGeometry::Position{0, 35}, MathGeometry::Width{400}, MathGeometry::Height{240}}};
 	if (!board.draw_rectangle(board.get_bounds(), Colors::Presets::Black)
-		|| !board.draw_circle(GuiGeometry::Circle{{-120, 35}, GuiGeometry::Radius{35}}, Colors::Presets::Red)
-		|| !board.draw_circle(GuiGeometry::Circle{{0, 35}, GuiGeometry::Radius{35}}, Colors::Presets::Green)
-		|| !board.draw_circle(GuiGeometry::Circle{{120, 35}, GuiGeometry::Radius{35}}, Colors::Presets::Blue)) {
+		|| !board.draw_circle(MathGeometry::Circle{{-120, 35}, MathGeometry::Radius{35}}, Colors::Presets::Red)
+		|| !board.draw_circle(MathGeometry::Circle{{0, 35}, MathGeometry::Radius{35}}, Colors::Presets::Green)
+		|| !board.draw_circle(MathGeometry::Circle{{120, 35}, MathGeometry::Radius{35}}, Colors::Presets::Blue)) {
 		throw std::runtime_error("Failed to draw demo primitive on board");
 	}
 
@@ -80,9 +78,9 @@ int main() {
 			connection_button_label = std::string{connection_label};
 		}
 
-		for (const auto id : panel.collides(GuiGeometry::Rectangle{GuiGeometry::Position{0, 0},
-																   GuiGeometry::Width{800},
-																   GuiGeometry::Height{450}})) {
+		for (const auto id : panel.collides(MathGeometry::Rectangle{MathGeometry::Position{0, 0},
+																	MathGeometry::Width{800},
+																	MathGeometry::Height{450}})) {
 			const auto component = panel.get(id);
 			if (!component) {
 				throw std::logic_error("Panel collision returned an unknown component");

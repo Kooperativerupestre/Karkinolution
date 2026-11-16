@@ -8,7 +8,7 @@
 #include <utility>
 
 Opsiamethystos::Gui::Components::LowLevel::Text::Text(
-	const Opsiamethystos::Gui::Geometry::Rectangle                          &max_bound,
+	const Opsiamethystos::Math::Geometry::Rectangle                         &max_bound,
 	std::string                                                              text,
 	const KShared::Colors::Color                                            &color,
 	GreaterThanZeroValue<int>                                                font_size,
@@ -23,12 +23,12 @@ Opsiamethystos::Gui::Components::LowLevel::Text::Text(
 }
 
 void Opsiamethystos::Gui::Components::LowLevel::Text::set_text(std::string text) {
-	const auto                text_size = measure_(text, font_size.value());
-	const Geometry::Rectangle candidate_bound{max_bound_.position,
-											  Geometry::Width{text_size.width},
-											  Geometry::Height{text_size.height}};
+	const auto                      text_size = measure_(text, font_size.value());
+	const Math::Geometry::Rectangle candidate_bound{max_bound_.position,
+													Math::Geometry::Width{text_size.width},
+													Math::Geometry::Height{text_size.height}};
 
-	if (!Geometry::can_contain(max_bound_, candidate_bound)) {
+	if (!Math::Geometry::can_contain(max_bound_, candidate_bound)) {
 		throw std::invalid_argument("Text does not fit inside its maximum bound");
 	}
 
@@ -36,12 +36,12 @@ void Opsiamethystos::Gui::Components::LowLevel::Text::set_text(std::string text)
 	current_bound_ = candidate_bound;
 }
 
-bool Opsiamethystos::Gui::Components::LowLevel::Text::set_slot(const Geometry::Rectangle &slot) {
-	const auto                text_size = measure_(text_, font_size.value());
-	const Geometry::Rectangle candidate_bound{slot.position,
-											  Geometry::Width{text_size.width},
-											  Geometry::Height{text_size.height}};
-	if (!Geometry::can_contain(slot, candidate_bound)) {
+bool Opsiamethystos::Gui::Components::LowLevel::Text::set_slot(const Math::Geometry::Rectangle &slot) {
+	const auto                      text_size = measure_(text_, font_size.value());
+	const Math::Geometry::Rectangle candidate_bound{slot.position,
+													Math::Geometry::Width{text_size.width},
+													Math::Geometry::Height{text_size.height}};
+	if (!Math::Geometry::can_contain(slot, candidate_bound)) {
 		return false;
 	}
 
@@ -54,22 +54,22 @@ void Opsiamethystos::Gui::Components::LowLevel::Text::draw() const {
 	draw({0, 0});
 }
 
-void Opsiamethystos::Gui::Components::LowLevel::Text::draw(const Geometry::Position &origin) const {
+void Opsiamethystos::Gui::Components::LowLevel::Text::draw(const Math::Geometry::Position &origin) const {
 	Render::draw_simple_text(text_,
-							 Geometry::Position{static_cast<float>(current_bound_.left().value + origin.x),
-												static_cast<float>(current_bound_.top().value + origin.y)},
+							 Math::Geometry::Position{static_cast<float>(current_bound_.left().value + origin.x),
+													  static_cast<float>(current_bound_.top().value + origin.y)},
 							 font_size,
 							 color);
 }
 
-void Opsiamethystos::Gui::Components::LowLevel::Text::draw_centered_in(const Geometry::Rectangle &container,
-																	   const Geometry::Position  &origin) const {
+void Opsiamethystos::Gui::Components::LowLevel::Text::draw_centered_in(const Math::Geometry::Rectangle &container,
+																	   const Math::Geometry::Position  &origin) const {
 	const auto measured = measure_(text_, font_size.value());
 
 	Render::draw_simple_text(
 		text_,
-		Geometry::Position{static_cast<float>(container.position.x - measured.width / 2.0 + origin.x),
-						   static_cast<float>(container.position.y - measured.height / 2.0 + origin.y)},
+		Math::Geometry::Position{static_cast<float>(container.position.x - measured.width / 2.0 + origin.x),
+								 static_cast<float>(container.position.y - measured.height / 2.0 + origin.y)},
 		font_size,
 		color);
 };

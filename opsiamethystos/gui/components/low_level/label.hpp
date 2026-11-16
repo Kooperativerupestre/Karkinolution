@@ -21,19 +21,19 @@ namespace Opsiamethystos {
 
 					public:
 
-						RectangleLabel(const Geometry::Rectangle    &bounds,
-									   std::string                   text,
-									   const KShared::Colors::Color &rectangle_color,
-									   const KShared::Colors::Color &text_color,
-									   GreaterThanZeroValue<int>     font_size);
+						RectangleLabel(const Math::Geometry::Rectangle &bounds,
+									   std::string                      text,
+									   const KShared::Colors::Color    &rectangle_color,
+									   const KShared::Colors::Color    &text_color,
+									   GreaterThanZeroValue<int>        font_size);
 
 						[[nodiscard]]
-						Geometry::Rectangle get_bounds() const {
+						Math::Geometry::Rectangle get_bounds() const {
 							return rectangle_.get_bounds();
 						}
 
 						[[nodiscard]]
-						Geometry::Rectangle get_current_bounds() const {
+						Math::Geometry::Rectangle get_current_bounds() const {
 							return text_.get_current_bounds();
 						}
 
@@ -46,7 +46,7 @@ namespace Opsiamethystos {
 
 						// Both children must accept the same slot. Restoring the rectangle when
 						// text rejects it keeps the compound component atomic.
-						bool set_slot(const Geometry::Rectangle &slot) {
+						bool set_slot(const Math::Geometry::Rectangle &slot) {
 							const auto old_slot = rectangle_.get_bounds();
 							if (!rectangle_.set_slot(slot)) {
 								return false;
@@ -61,7 +61,7 @@ namespace Opsiamethystos {
 						void draw() const;
 						// The origin is forwarded to both children so their local geometry stays
 						// unchanged while the panel moves in its parent.
-						void draw(const Geometry::Position &origin) const;
+						void draw(const Math::Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel
 		} // namespace Components

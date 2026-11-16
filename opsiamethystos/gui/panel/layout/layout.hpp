@@ -97,8 +97,8 @@ namespace Opsiamethystos {
 				};
 
 				struct Assignment {
-						Components::ComponentId id;
-						Geometry::Rectangle     slot;
+						Components::ComponentId   id;
+						Math::Geometry::Rectangle slot;
 				};
 
 				struct LayoutResult {

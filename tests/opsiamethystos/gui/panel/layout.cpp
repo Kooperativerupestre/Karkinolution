@@ -3,7 +3,7 @@
 #include <opsiamethystos/gui/panel/layout/layout.hpp>
 
 namespace Layout   = Opsiamethystos::Gui::Panel::Layout;
-namespace Geometry = Opsiamethystos::Gui::Geometry;
+namespace Geometry = Opsiamethystos::Math::Geometry;
 using Opsiamethystos::Gui::Components::ComponentType;
 using Opsiamethystos::Gui::Components::gen_id;
 

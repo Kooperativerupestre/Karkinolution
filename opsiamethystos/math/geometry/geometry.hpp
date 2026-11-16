@@ -9,7 +9,7 @@
 using namespace KShared::Math::LV::CT;
 
 namespace Opsiamethystos {
-	namespace Gui {
+	namespace Math {
 		namespace Geometry {
 
 			class Position {
@@ -421,5 +421,5 @@ namespace Opsiamethystos {
 				return true;
 			}
 		} // namespace Geometry
-	} // namespace Gui
+	} // namespace Math
 } // namespace Opsiamethystos

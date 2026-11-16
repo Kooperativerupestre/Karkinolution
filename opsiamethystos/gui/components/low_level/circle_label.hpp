@@ -21,19 +21,19 @@ namespace Opsiamethystos {
 
 					public:
 
-						CircleLabel(const Geometry::Circle       &bounds,
+						CircleLabel(const Math::Geometry::Circle &bounds,
 									std::string                   text,
 									const KShared::Colors::Color &circle_color,
 									const KShared::Colors::Color &text_color,
 									GreaterThanZeroValue<int>     font_size);
 
 						[[nodiscard]]
-						Geometry::Circle get_bounds() const {
+						Math::Geometry::Circle get_bounds() const {
 							return circle_.get_bounds();
 						}
 
 						[[nodiscard]]
-						Geometry::Rectangle get_current_bounds() const {
+						Math::Geometry::Rectangle get_current_bounds() const {
 							return text_.get_current_bounds();
 						}
 
@@ -46,16 +46,16 @@ namespace Opsiamethystos {
 
 						// Circle fitting and text fitting are one compound update. The old circle
 						// is reconstructed if the text cannot fit the proposed slot.
-						bool set_slot(const Geometry::Rectangle &slot) {
+						bool set_slot(const Math::Geometry::Rectangle &slot) {
 							const auto old_slot = circle_.get_bounds();
 							if (!circle_.set_slot(slot)) {
 								return false;
 							}
 							if (!text_.set_slot(slot)) {
-								const auto old_rectangle = Geometry::Rectangle{
+								const auto old_rectangle = Math::Geometry::Rectangle{
 									old_slot.position,
-									Geometry::Width{static_cast<double>(old_slot.radius.value()) * 2.0},
-									Geometry::Height{static_cast<double>(old_slot.radius.value()) * 2.0}};
+									Math::Geometry::Width{static_cast<double>(old_slot.radius.value()) * 2.0},
+									Math::Geometry::Height{static_cast<double>(old_slot.radius.value()) * 2.0}};
 								circle_.set_slot(old_rectangle);
 								return false;
 							}
@@ -64,7 +64,7 @@ namespace Opsiamethystos {
 
 						void draw() const;
 						// Both the fitted circle and centered text receive the same translation.
-						void draw(const Geometry::Position &origin) const;
+						void draw(const Math::Geometry::Position &origin) const;
 				};
 			} // namespace LowLevel
 		} // namespace Components

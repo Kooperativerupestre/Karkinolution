@@ -4,7 +4,7 @@
 
 #include <opsiamethystos/gui/components/panel.hpp>
 
-void Opsiamethystos::Gui::Components::Panel::draw_bounds(Opsiamethystos::Gui::Geometry::Thickness thickness) const {
+void Opsiamethystos::Gui::Components::Panel::draw_bounds(Math::Geometry::Thickness thickness) const {
 	form_.draw_bounds(thickness);
 }
 

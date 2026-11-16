@@ -84,12 +84,12 @@ namespace Opsiamethystos {
 
 				for (const auto &assignment : result.assignments) {
 					const auto entry = components_.find(assignment.id);
-					if (entry == components_.end() || !Geometry::can_contain(bounds_, assignment.slot)) {
+					if (entry == components_.end() || !Math::Geometry::can_contain(bounds_, assignment.slot)) {
 						return {.applied = false, .overflowed = result.overflowed};
 					}
 				}
 
-				std::vector<std::pair<Components::ComponentId, Geometry::Rectangle>> applied;
+				std::vector<std::pair<Components::ComponentId, Math::Geometry::Rectangle>> applied;
 				for (const auto &assignment : result.assignments) {
 					const auto entry = components_.find(assignment.id);
 					if (entry->second.indexed_bound == assignment.slot) {
@@ -115,9 +115,9 @@ namespace Opsiamethystos {
 			// Quadtree::update removes the old record before inserting the new one.
 			// Therefore the Entry::indexed_bound value, rather than component geometry,
 			// is always used for both the update and any recovery operation.
-			bool Panel::set_bounds(Components::ComponentId id, const Geometry::Rectangle &slot) {
+			bool Panel::set_bounds(Components::ComponentId id, const Math::Geometry::Rectangle &slot) {
 				const auto entry = components_.find(id);
-				if (entry == components_.end() || !Geometry::can_contain(bounds_, slot)) {
+				if (entry == components_.end() || !Math::Geometry::can_contain(bounds_, slot)) {
 					return false;
 				}
 
@@ -152,9 +152,9 @@ namespace Opsiamethystos {
 			// live boundary/index pair changes only after both are known to be valid.
 			// The argument is a parent-space rectangle, so its position becomes the new
 			// origin while the replacement boundary is normalized back to local space.
-			bool Panel::resize(const Geometry::Rectangle &bounds) {
-				const Geometry::Rectangle local_bounds{{0, 0}, bounds.width, bounds.height};
-				std::unordered_map<Components::ComponentId, Geometry::Rectangle> target_bounds;
+			bool Panel::resize(const Math::Geometry::Rectangle &bounds) {
+				const Math::Geometry::Rectangle local_bounds{{0, 0}, bounds.width, bounds.height};
+				std::unordered_map<Components::ComponentId, Math::Geometry::Rectangle> target_bounds;
 				target_bounds.reserve(components_.size());
 
 				if (layout_root_) {
@@ -166,7 +166,7 @@ namespace Opsiamethystos {
 					std::unordered_set<Components::ComponentId> assigned_ids;
 					for (const auto &assignment : result.assignments) {
 						if (!components_.contains(assignment.id)
-							|| !Geometry::can_contain(local_bounds, assignment.slot)
+							|| !Math::Geometry::can_contain(local_bounds, assignment.slot)
 							|| !assigned_ids.insert(assignment.id).second) {
 							return false;
 						}
@@ -176,14 +176,14 @@ namespace Opsiamethystos {
 
 				for (const auto &[id, entry] : components_) {
 					if (!target_bounds.contains(id)) {
-						if (!Geometry::can_contain(local_bounds, entry.indexed_bound)) {
+						if (!Math::Geometry::can_contain(local_bounds, entry.indexed_bound)) {
 							return false;
 						}
 						target_bounds.emplace(id, entry.indexed_bound);
 					}
 				}
 
-				std::vector<std::pair<Components::ComponentId, Geometry::Rectangle>> changed;
+				std::vector<std::pair<Components::ComponentId, Math::Geometry::Rectangle>> changed;
 				for (const auto &[id, target] : target_bounds) {
 					const auto entry = components_.find(id);
 					if (entry->second.indexed_bound == target) {
@@ -225,11 +225,11 @@ namespace Opsiamethystos {
 
 			// Parent and local spaces differ only by translation. Keeping this conversion
 			// centralized prevents callers from accidentally applying the origin twice.
-			Geometry::Rectangle Panel::to_local(const Geometry::Rectangle &area) const {
+			Math::Geometry::Rectangle Panel::to_local(const Math::Geometry::Rectangle &area) const {
 				return {area.position - origin_, area.width, area.height};
 			}
 
-			Geometry::Circle Panel::to_local(const Geometry::Circle &area) const {
+			Math::Geometry::Circle Panel::to_local(const Math::Geometry::Circle &area) const {
 				return {area.position - origin_, area.radius};
 			}
 
@@ -245,11 +245,11 @@ namespace Opsiamethystos {
 
 			// These helpers expose only broad-phase candidates. Exact shape checks are
 			// intentionally performed by intersects in the next stage.
-			std::vector<Components::ComponentId> Panel::find_in_area(const Geometry::Rectangle &area) const {
+			std::vector<Components::ComponentId> Panel::find_in_area(const Math::Geometry::Rectangle &area) const {
 				return quadtree_.find_in_area(area);
 			}
 
-			std::vector<Components::ComponentId> Panel::find_in_area(const Geometry::Circle &area) const {
+			std::vector<Components::ComponentId> Panel::find_in_area(const Math::Geometry::Circle &area) const {
 				return quadtree_.find_in_area(area);
 			}
 
@@ -263,7 +263,7 @@ namespace Opsiamethystos {
 
 				return std::visit(
 					[&area](const auto &component_bound) {
-						return Geometry::intersects(component_bound, area);
+						return Math::Geometry::intersects(component_bound, area);
 					},
 					component->get_bounds());
 			}
@@ -281,19 +281,20 @@ namespace Opsiamethystos {
 				return collisions;
 			}
 
-			std::vector<Components::ComponentId> Panel::collides(const Geometry::Rectangle &area) const {
+			std::vector<Components::ComponentId> Panel::collides(const Math::Geometry::Rectangle &area) const {
 				return collides_in_area(area);
 			}
 
-			std::vector<Components::ComponentId> Panel::collides(const Geometry::Circle &area) const {
+			std::vector<Components::ComponentId> Panel::collides(const Math::Geometry::Circle &area) const {
 				return collides_in_area(area);
 			}
 
-			std::vector<Components::ComponentId> Panel::collides_in_parent(const Geometry::Rectangle &area) const {
+			std::vector<Components::ComponentId>
+			Panel::collides_in_parent(const Math::Geometry::Rectangle &area) const {
 				return collides(to_local(area));
 			}
 
-			std::vector<Components::ComponentId> Panel::collides_in_parent(const Geometry::Circle &area) const {
+			std::vector<Components::ComponentId> Panel::collides_in_parent(const Math::Geometry::Circle &area) const {
 				return collides(to_local(area));
 			}
 
@@ -310,22 +311,22 @@ namespace Opsiamethystos {
 			}
 
 			std::optional<Components::ComponentId>
-			Panel::find_one_collision_in_area(const Geometry::Rectangle &area) const {
+			Panel::find_one_collision_in_area(const Math::Geometry::Rectangle &area) const {
 				return find_one_collision_in_area_impl(area);
 			}
 
 			std::optional<Components::ComponentId>
-			Panel::find_one_collision_in_area(const Geometry::Circle &area) const {
+			Panel::find_one_collision_in_area(const Math::Geometry::Circle &area) const {
 				return find_one_collision_in_area_impl(area);
 			}
 
 			std::optional<Components::ComponentId>
-			Panel::find_one_collision_in_parent(const Geometry::Rectangle &area) const {
+			Panel::find_one_collision_in_parent(const Math::Geometry::Rectangle &area) const {
 				return find_one_collision_in_area(to_local(area));
 			}
 
 			std::optional<Components::ComponentId>
-			Panel::find_one_collision_in_parent(const Geometry::Circle &area) const {
+			Panel::find_one_collision_in_parent(const Math::Geometry::Circle &area) const {
 				return find_one_collision_in_area(to_local(area));
 			}
 		} // namespace Panel

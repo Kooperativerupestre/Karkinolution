@@ -13,7 +13,7 @@ namespace Opsiamethystos {
 				public:
 
 					std::string               text;
-					Gui::Geometry::Position   position;
+					Math::Geometry::Position  position;
 					GreaterThanZeroValue<int> font_size;
 					KShared::Colors::Color    color;
 			};

@@ -1,15 +1,13 @@
 #include "opsiamethystos/gui/panel/layout/layout.hpp"
 
 #include <algorithm>
-#include <cmath>
-#include <numeric>
 
 namespace Opsiamethystos {
 	namespace Gui {
 		namespace Panel {
 			namespace Layout {
 				namespace {
-					// Geometry::Width and Height reject non-positive values. The layout
+					// Math::Geometry::Width and Height reject non-positive values. The layout
 					// therefore keeps a minimum slot extent so that an over-constrained
 					// panel can still return valid rectangles; overflowed reports that
 					// the requested arrangement could not fit without this safeguard.
@@ -196,12 +194,13 @@ namespace Opsiamethystos {
 									// This is the single edge-to-center conversion point. Keeping it
 									// here prevents different layout branches from deriving centers
 									// with subtly different rounding or Y-axis rules.
-									result.assignments.push_back({value.id,
-																  Geometry::Rectangle::from_edges(
-																	  Geometry::Left{static_cast<float>(box.left)},
-																	  Geometry::Top{static_cast<float>(box.top)},
-																	  Geometry::Right{static_cast<float>(box.right)},
-																	  Geometry::Floor{static_cast<float>(box.floor)})});
+									result.assignments.push_back(
+										{value.id,
+										 Math::Geometry::Rectangle::from_edges(
+											 Math::Geometry::Left{static_cast<float>(box.left)},
+											 Math::Geometry::Top{static_cast<float>(box.top)},
+											 Math::Geometry::Right{static_cast<float>(box.right)},
+											 Math::Geometry::Floor{static_cast<float>(box.floor)})});
 								} else {
 									append_stack(value, box, result);
 								}

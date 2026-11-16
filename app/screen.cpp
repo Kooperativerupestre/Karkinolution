@@ -15,14 +15,14 @@ void KarkinolutionView::Screen::StateView::register_panel(Opsiamethystos::Gui::P
 		return;
 	}
 
-	component_ =
-		std::make_shared<Opsiamethystos::Gui::Components::Component>(Opsiamethystos::Gui::Components::AllComponents{
-			Opsiamethystos::Gui::Components::LowLevel::Text{Gui::Geometry::Rectangle{Gui::Geometry::Position{-290, 95},
-																					 Gui::Geometry::Width{140},
-																					 Gui::Geometry::Height{40}},
-															state_.connected ? "Connected" : "Disconnected",
-															KShared::Colors::Presets::DarkGray,
-															20}});
+	component_ = std::make_shared<Opsiamethystos::Gui::Components::Component>(
+		Opsiamethystos::Gui::Components::AllComponents{Opsiamethystos::Gui::Components::LowLevel::Text{
+			Opsiamethystos::Math::Geometry::Rectangle{Opsiamethystos::Math::Geometry::Position{-290, 95},
+													  Opsiamethystos::Math::Geometry::Width{140},
+													  Opsiamethystos::Math::Geometry::Height{40}},
+			state_.connected ? "Connected" : "Disconnected",
+			KShared::Colors::Presets::DarkGray,
+			20}});
 
 	if (!panel.add(component_)) {
 		throw std::runtime_error("Failed to add connection status text to panel");

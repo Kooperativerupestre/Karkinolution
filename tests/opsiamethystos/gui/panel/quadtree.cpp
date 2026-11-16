@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 namespace {
-	namespace Geometry = Opsiamethystos::Gui::Geometry;
+	namespace Geometry = Opsiamethystos::Math::Geometry;
 	namespace Quadtree = Opsiamethystos::Gui::Panel::Quadtree;
 	using Opsiamethystos::Gui::Components::ComponentType;
 	using Opsiamethystos::Gui::Components::gen_id;

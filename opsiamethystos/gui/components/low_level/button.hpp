@@ -62,16 +62,16 @@ namespace Opsiamethystos {
 					class RectangleButton : public BaseComponent<ComponentType::BUTTON> {
 						private:
 
-							static Geometry::Rectangle fit_label(const Geometry::Rectangle &bounds,
-																 std::string_view           label,
-																 GreaterThanZeroValue<int>  font_size) {
+							static Math::Geometry::Rectangle fit_label(const Math::Geometry::Rectangle &bounds,
+																	   std::string_view                 label,
+																	   GreaterThanZeroValue<int>        font_size) {
 								constexpr double horizontal_padding = 20.0;
 								constexpr double vertical_padding   = 12.0;
 								const auto       measured = Drivers::Font::measure_text(label, font_size.value());
 								return {bounds.position,
-										Geometry::Width{
+										Math::Geometry::Width{
 											std::max(bounds.width.value(), measured.width + horizontal_padding)},
-										Geometry::Height{
+										Math::Geometry::Height{
 											std::max(bounds.height.value(), measured.height + vertical_padding)}};
 							}
 
@@ -80,7 +80,7 @@ namespace Opsiamethystos {
 							ButtonStyles          style_;
 							bool                  press_started_inside_ = false;
 
-							void draw(ButtonStates state, const Geometry::Position &origin) const;
+							void draw(ButtonStates state, const Math::Geometry::Position &origin) const;
 
 							void invoke() const {
 								std::invoke(callback_);
@@ -90,21 +90,21 @@ namespace Opsiamethystos {
 
 						public:
 
-							explicit RectangleButton(const Geometry::Rectangle &bounds,
-													 std::function<void()>      callback,
-													 ButtonStyles               style,
-													 const Text                &text)
+							explicit RectangleButton(const Math::Geometry::Rectangle &bounds,
+													 std::function<void()>            callback,
+													 ButtonStyles                     style,
+													 const Text                      &text)
 								: rectangle_component_(bounds, style.get(ButtonStates::IDLE))
 								, callback_(std::move(callback))
 								, style_(std::move(style))
 								, label(text) {}
 
-							explicit RectangleButton(const Geometry::Rectangle    &bounds,
-													 std::function<void()>         callback,
-													 ButtonStyles                  style,
-													 std::string                   label_text,
-													 const KShared::Colors::Color &label_color,
-													 GreaterThanZeroValue<int>     font_size)
+							explicit RectangleButton(const Math::Geometry::Rectangle &bounds,
+													 std::function<void()>            callback,
+													 ButtonStyles                     style,
+													 std::string                      label_text,
+													 const KShared::Colors::Color    &label_color,
+													 GreaterThanZeroValue<int>        font_size)
 								: RectangleButton(fit_label(bounds, label_text, font_size),
 												  std::move(callback),
 												  std::move(style),
@@ -118,18 +118,19 @@ namespace Opsiamethystos {
 													 std::string                   label_text,
 													 const KShared::Colors::Color &label_color,
 													 GreaterThanZeroValue<int>     font_size)
-								: RectangleButton(
-									  fit_label(Geometry::Rectangle{{0, 0}, Geometry::Width{1}, Geometry::Height{1}},
-												label_text,
-												font_size),
-									  std::move(callback),
-									  std::move(style),
-									  label_text,
-									  label_color,
-									  font_size) {}
+								: RectangleButton(fit_label(Math::Geometry::Rectangle{{0, 0},
+																					  Math::Geometry::Width{1},
+																					  Math::Geometry::Height{1}},
+															label_text,
+															font_size),
+												  std::move(callback),
+												  std::move(style),
+												  label_text,
+												  label_color,
+												  font_size) {}
 
 							[[nodiscard]]
-							Geometry::Rectangle get_bounds() const {
+							Math::Geometry::Rectangle get_bounds() const {
 								return rectangle_component_.get_bounds();
 							}
 
@@ -139,7 +140,7 @@ namespace Opsiamethystos {
 
 							// A button is a rectangle plus a label, so slot changes must be atomic
 							// across both parts to avoid drawing a label outside its background.
-							bool set_slot(const Geometry::Rectangle &slot) {
+							bool set_slot(const Math::Geometry::Rectangle &slot) {
 								const auto old_slot = rectangle_component_.get_bounds();
 								if (!rectangle_component_.set_slot(slot)) {
 									return false;
@@ -151,14 +152,14 @@ namespace Opsiamethystos {
 								return true;
 							}
 
-							void draw(const Geometry::Position &origin) const {
+							void draw(const Math::Geometry::Position &origin) const {
 								draw(ButtonStates::IDLE, origin);
 							}
 
 							void run();
 							// Input and drawing use the same parent-space translation; press state is
 							// still tracked in the button and is not part of layout geometry.
-							void run(const Geometry::Position &origin);
+							void run(const Math::Geometry::Position &origin);
 					};
 				} // namespace Button
 			} // namespace LowLevel
