@@ -1,5 +1,5 @@
+#include "opsiamethystos/graphics/render/render.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
-#include "opsiamethystos/render/render.hpp"
 
 #include <opsiamethystos/drivers/font.hpp>
 #include <opsiamethystos/graphics/panel/components/low_level/text.hpp>

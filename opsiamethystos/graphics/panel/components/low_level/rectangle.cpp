@@ -1,8 +1,8 @@
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <opsiamethystos/graphics/panel/components/low_level/rectangle.hpp>
+#include <opsiamethystos/graphics/render/render.hpp>
 #include <opsiamethystos/raylib_utils/colors.hpp>
-#include <opsiamethystos/render/render.hpp>
 
 namespace Opsiamethystos::Graphics::Panel::Components {
 

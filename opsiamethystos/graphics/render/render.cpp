@@ -3,7 +3,7 @@
 #include "shared/core/color.hpp"
 #include "shared/math/stats/compile_values.hpp"
 
-#include <opsiamethystos/render/render.hpp>
+#include <opsiamethystos/graphics/render/render.hpp>
 #include <raylib.h>
 
 namespace Opsiamethystos {

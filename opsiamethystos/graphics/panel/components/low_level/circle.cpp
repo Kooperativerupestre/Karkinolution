@@ -3,7 +3,7 @@
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <algorithm>
-#include <opsiamethystos/render/render.hpp>
+#include <opsiamethystos/graphics/render/render.hpp>
 
 namespace Opsiamethystos::Graphics::Panel::Components {
 
