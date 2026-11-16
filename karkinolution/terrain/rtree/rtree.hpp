@@ -94,7 +94,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 		template <typename Id>
 		FindSplitOutput find_best_split_margin(std::vector<std::reference_wrapper<RtreeEntry<Id>>> &entries,
-											   size_t                                                   min_entries) {
+											   size_t                                               min_entries) {
 			size_t size = entries.size();
 
 			std::vector<Box2D> prefix;
@@ -106,8 +106,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			prefix.resize(size);
 			suffix.resize(size);
 
-				prefix[0]        = entries[0].get().box;
-				suffix[size - 1] = entries[size - 1].get().box;
+			prefix[0]        = entries[0].get().box;
+			suffix[size - 1] = entries[size - 1].get().box;
 
 			for (size_t i = size - 1; i > 0; i--) {
 				suffix[i - 1] = Box2DMotor::combine(suffix[i], entries[i - 1].get().box);
@@ -159,8 +159,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			prefix.resize(size);
 			suffix.resize(size);
 
-				prefix[0]        = entries[0].get().box;
-				suffix[size - 1] = entries[size - 1].get().box;
+			prefix[0]        = entries[0].get().box;
+			suffix[size - 1] = entries[size - 1].get().box;
 
 			for (size_t i = size - 1; i > 0; i--) {
 				suffix[i - 1] = Box2DMotor::combine(suffix[i], entries[i - 1].get().box);
@@ -225,27 +225,35 @@ namespace Karkinolution::Terrain::Trees::RTree {
 				ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MIN)].push_back(entry);
 			}
 
-			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MAX)],
-							  [](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
-								  return std::pair{A.get().box.max.x, A.get().box.min.x} < std::pair{B.get().box.max.x, B.get().box.min.x};
-							  });
+			std::ranges::sort(
+				ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MAX)],
+				[](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
+					return std::pair{A.get().box.max.x, A.get().box.min.x}
+					< std::pair{B.get().box.max.x, B.get().box.min.x};
+				});
 
-			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MIN)],
-							  [](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
-								  return std::pair{A.get().box.min.x, A.get().box.max.x} < std::pair{B.get().box.min.x, B.get().box.max.x};
-							  });
+			std::ranges::sort(
+				ordenations[index(KShared::Math::Vec::Axis::X)][index(Bound::MIN)],
+				[](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
+					return std::pair{A.get().box.min.x, A.get().box.max.x}
+					< std::pair{B.get().box.min.x, B.get().box.max.x};
+				});
 
-			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MAX)],
-							  [](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
-								  return std::pair{A.get().box.max.y, A.get().box.min.y} < std::pair{B.get().box.max.y, B.get().box.min.y};
-							  });
+			std::ranges::sort(
+				ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MAX)],
+				[](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
+					return std::pair{A.get().box.max.y, A.get().box.min.y}
+					< std::pair{B.get().box.max.y, B.get().box.min.y};
+				});
 
-			std::ranges::sort(ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MIN)],
-							  [](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
-								  return std::pair{A.get().box.min.y, A.get().box.max.y} < std::pair{B.get().box.min.y, B.get().box.max.y};
-							  });
+			std::ranges::sort(
+				ordenations[index(KShared::Math::Vec::Axis::Y)][index(Bound::MIN)],
+				[](const std::reference_wrapper<RtreeEntry<Id>> A, const std::reference_wrapper<RtreeEntry<Id>> B) {
+					return std::pair{A.get().box.min.y, A.get().box.max.y}
+					< std::pair{B.get().box.min.y, B.get().box.max.y};
+				});
 
-			double                        best_score = std::numeric_limits<double>::infinity();
+			double                                               best_score = std::numeric_limits<double>::infinity();
 			std::vector<std::reference_wrapper<RtreeEntry<Id>>>* ptr        = nullptr;
 
 			for (auto &axis : ordenations) {
@@ -332,9 +340,12 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			std::vector<Id>
 			find(const Box2D &box, const std::vector<RtreeEntry<Id>> &entries, std::vector<Id> &ids) const;
 
-			RStarTreeMotor::_Internal_FindSoilPieceOutput find_node(Id id, std::vector<std::reference_wrapper<RtreeNode<Id>>> &path);
+			RStarTreeMotor::_Internal_FindSoilPieceOutput
+			find_node(Id id, std::vector<std::reference_wrapper<RtreeNode<Id>>> &path);
 
-			void insert_entry(RtreeEntry<Id> entry, std::vector<std::reference_wrapper<RtreeNode<Id>>> path, bool already_reinserted);
+			void insert_entry(RtreeEntry<Id>                                     entry,
+							  std::vector<std::reference_wrapper<RtreeNode<Id>>> path,
+							  bool                                               already_reinserted);
 
 			size_t choose_by_enlargement(RtreeNode<Id> &node, const Box2D &box);
 
@@ -344,7 +355,9 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 			void reinsert_orphan(RtreeEntry<Id> entry, size_t depth);
 
-			void choose_node_at_depth(std::vector<std::reference_wrapper<RtreeNode<Id>>> &nodes, const Box2D &box, size_t depth);
+			void choose_node_at_depth(std::vector<std::reference_wrapper<RtreeNode<Id>>> &nodes,
+									  const Box2D                                        &box,
+									  size_t                                              depth);
 
 			void refresh_mbrs(RtreeNode<Id> &node);
 			void refresh_path_mbrs(std::vector<std::reference_wrapper<RtreeNode<Id>>> &path);
@@ -364,8 +377,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		: root_(std::make_unique<RtreeNode<Id>>(
 			  RtreeNode<Id>{.type = NodeType::LEAF, .box = std::nullopt, .entries = {}})) {}
 
-	template <typename Id>
-	size_t RStarTree<Id>::choose_by_enlargement(RtreeNode<Id> &node, const Box2D &box) {
+	template <typename Id> size_t RStarTree<Id>::choose_by_enlargement(RtreeNode<Id> &node, const Box2D &box) {
 
 		size_t best_index = 0;
 
@@ -374,7 +386,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		double best_area = node.entries[0].box.area();
 
 		for (size_t i = 1; i < node.entries.size(); i++) {
-					const Box2D &entry_box = node.entries[i].box;
+			const Box2D &entry_box = node.entries[i].box;
 
 			const double current_enlargement = Box2DMotor::enlargement(entry_box, box);
 
@@ -451,7 +463,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename Id> size_t RStarTree<Id>::leaf_depth() const {
-		size_t                   depth = 0;
+		size_t               depth = 0;
 		const RtreeNode<Id>* node  = root_.get();
 
 		while (node->type != NodeType::LEAF) {
@@ -482,8 +494,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		size_t best_index =
 			children_are_leaves ? choose_by_overlap(last_node, box) : choose_by_enlargement(last_node, box);
 
-		RtreeNode<Id> &child =
-			*std::get<std::unique_ptr<RtreeNode<Id>>>(last_node.entries[best_index].content);
+		RtreeNode<Id> &child = *std::get<std::unique_ptr<RtreeNode<Id>>>(last_node.entries[best_index].content);
 
 		nodes.push_back(child);
 
@@ -606,8 +617,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 
 		old_root.entries.push_back(RtreeEntry<Id>{.box = left_node->box.value(), .content = std::move(left_node)});
 
-		old_root.entries.push_back(
-			RtreeEntry<Id>{.box = right_node->box.value(), .content = std::move(right_node)});
+		old_root.entries.push_back(RtreeEntry<Id>{.box = right_node->box.value(), .content = std::move(right_node)});
 
 		old_root.box = RStarTreeMotor::calculate_mbr(old_root.entries, 0, old_root.entries.size());
 
@@ -623,11 +633,11 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename Id>
-	void RStarTree<Id>::insert_entry(RtreeEntry<Id>              entry,
-										 std::vector<std::reference_wrapper<RtreeNode<Id>>> path,
-										 bool                            already_reinserted) {
+	void RStarTree<Id>::insert_entry(RtreeEntry<Id>                                     entry,
+									 std::vector<std::reference_wrapper<RtreeNode<Id>>> path,
+									 bool                                               already_reinserted) {
 
-			auto &leaf = path.back().get();
+		auto &leaf = path.back().get();
 
 		size_t path_size = path.size();
 
@@ -725,8 +735,9 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename Id>
-	void
-	RStarTree<Id>::choose_node_at_depth(std::vector<std::reference_wrapper<RtreeNode<Id>>> &nodes, const Box2D &box, size_t depth) {
+	void RStarTree<Id>::choose_node_at_depth(std::vector<std::reference_wrapper<RtreeNode<Id>>> &nodes,
+											 const Box2D                                        &box,
+											 size_t                                              depth) {
 
 		while (nodes.size() - 1 < depth) {
 			RtreeNode<Id> &node = nodes.back().get();
@@ -757,7 +768,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		node.box = RStarTreeMotor::calculate_mbr(node.entries, 0, node.entries.size());
 	}
 
-	template <typename Id> void RStarTree<Id>::refresh_path_mbrs(std::vector<std::reference_wrapper<RtreeNode<Id>>> &path) {
+	template <typename Id>
+	void RStarTree<Id>::refresh_path_mbrs(std::vector<std::reference_wrapper<RtreeNode<Id>>> &path) {
 		if (path.empty()) {
 			return;
 		}
@@ -806,9 +818,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename Id>
-	std::vector<Id> RStarTree<Id>::find(const Box2D                           &box,
-												const std::vector<RtreeEntry<Id>> &entries,
-												std::vector<Id>                   &ids) const {
+	std::vector<Id>
+	RStarTree<Id>::find(const Box2D &box, const std::vector<RtreeEntry<Id>> &entries, std::vector<Id> &ids) const {
 
 		for (const auto &entry : entries) {
 			if (Box2DMotor::intersect(box, entry.box)) {
@@ -834,8 +845,8 @@ namespace Karkinolution::Terrain::Trees::RTree {
 	}
 
 	template <typename Id>
-	RStarTreeMotor::_Internal_FindSoilPieceOutput RStarTree<Id>::find_node(Id                           id,
-																			   std::vector<std::reference_wrapper<RtreeNode<Id>>> &path) {
+	RStarTreeMotor::_Internal_FindSoilPieceOutput
+	RStarTree<Id>::find_node(Id id, std::vector<std::reference_wrapper<RtreeNode<Id>>> &path) {
 
 		for (size_t i = 0; i < path.back().get().entries.size(); i++) {
 
@@ -851,7 +862,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 			} else {
 				auto &node = *std::get<std::unique_ptr<RtreeNode<Id>>>(entry.content);
 
-					path.push_back(node);
+				path.push_back(node);
 
 				auto output = find_node(id, path);
 
@@ -1015,8 +1026,7 @@ namespace Karkinolution::Terrain::Trees::RTree {
 		}
 	}
 
-	template <typename Id>
-	void RStarTree<Id>::get_all_ids(std::vector<Id> &ids, const RtreeNode<Id> &node) const {
+	template <typename Id> void RStarTree<Id>::get_all_ids(std::vector<Id> &ids, const RtreeNode<Id> &node) const {
 
 		if (node.type == NodeType::LEAF) {
 			for (const RtreeEntry<Id> &entry : node.entries) {
