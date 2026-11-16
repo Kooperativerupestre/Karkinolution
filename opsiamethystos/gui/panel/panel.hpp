@@ -1,8 +1,8 @@
 #pragma once
 
 #include "opsiamethystos/graphics/panel/components/component.hpp"
+#include "opsiamethystos/graphics/panel/quadtree/quadtree.hpp"
 #include "opsiamethystos/gui/panel/layout/layout.hpp"
-#include "opsiamethystos/gui/panel/quadtree/quadtree.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <memory>

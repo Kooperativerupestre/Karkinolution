@@ -1,4 +1,4 @@
-#include "opsiamethystos/gui/panel/quadtree/quadtree.hpp"
+#include "opsiamethystos/graphics/panel/quadtree/quadtree.hpp"
 
 #include <algorithm>
 #include <gtest/gtest.h>
