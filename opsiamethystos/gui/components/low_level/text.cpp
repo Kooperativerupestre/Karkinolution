@@ -1,4 +1,5 @@
-#include "raylib.h"
+#include "opsiamethystos/math/geometry/geometry.hpp"
+#include "opsiamethystos/render/render.hpp"
 
 #include <opsiamethystos/drivers/font.hpp>
 #include <opsiamethystos/gui/components/low_level/text.hpp>
@@ -54,19 +55,21 @@ void Opsiamethystos::Gui::Components::LowLevel::Text::draw() const {
 }
 
 void Opsiamethystos::Gui::Components::LowLevel::Text::draw(const Geometry::Position &origin) const {
-	DrawText(text_.c_str(),
-			 static_cast<int>(current_bound_.left().value + origin.x),
-			 static_cast<int>(current_bound_.top().value + origin.y),
-			 font_size.value(),
-			 Opsiamethystos::Gui::Colors::translate(color));
+	Render::draw_simple_text(text_,
+							 Geometry::Position{static_cast<float>(current_bound_.left().value + origin.x),
+												static_cast<float>(current_bound_.top().value + origin.y)},
+							 font_size,
+							 color);
 }
 
 void Opsiamethystos::Gui::Components::LowLevel::Text::draw_centered_in(const Geometry::Rectangle &container,
 																	   const Geometry::Position  &origin) const {
 	const auto measured = measure_(text_, font_size.value());
-	DrawText(text_.c_str(),
-			 static_cast<int>(container.position.x - measured.width / 2.0 + origin.x),
-			 static_cast<int>(container.position.y - measured.height / 2.0 + origin.y),
-			 font_size.value(),
-			 Opsiamethystos::Gui::Colors::translate(color));
-}
+
+	Render::draw_simple_text(
+		text_,
+		Geometry::Position{static_cast<float>(container.position.x - measured.width / 2.0 + origin.x),
+						   static_cast<float>(container.position.y - measured.height / 2.0 + origin.y)},
+		font_size,
+		color);
+};

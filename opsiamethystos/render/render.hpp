@@ -2,7 +2,9 @@
 #include "shared/core/color.hpp"
 #include "shared/math/stats/compile_values.hpp"
 
+#include <opsiamethystos/graphics/models/models.hpp>
 #include <opsiamethystos/math/geometry/geometry.hpp>
+#include <string>
 
 namespace Opsiamethystos {
 	namespace Render {
@@ -39,5 +41,10 @@ namespace Opsiamethystos {
 		void draw_triangle_lines(const Gui::Geometry::Triangle  &triangle,
 								 const Gui::Geometry::Thickness &thickness,
 								 const KShared::Colors::Color   &color);
+		void draw_simple_text(const std::string               &string,
+							  const Gui::Geometry::Position   &position,
+							  const GreaterThanZeroValue<int> &font_size,
+							  const KShared::Colors::Color    &color);
+		void draw_simple_text(const Graphics::Models::SimpleText &simple_text);
 	} // namespace Render
 } // namespace Opsiamethystos

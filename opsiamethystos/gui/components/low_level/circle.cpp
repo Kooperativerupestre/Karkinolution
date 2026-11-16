@@ -1,9 +1,9 @@
 #include "opsiamethystos/gui/components/low_level/circle.hpp"
 
-#include "opsiamethystos/raylib_utils/colors.hpp"
-#include "raylib.h"
+#include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <algorithm>
+#include <opsiamethystos/render/render.hpp>
 
 Opsiamethystos::Gui::Components::LowLevel::Circle::Circle(const Opsiamethystos::Gui::Geometry::Circle &bounds,
 														  const KShared::Colors::Color                &color)
@@ -28,22 +28,13 @@ void Opsiamethystos::Gui::Components::LowLevel::Circle::draw() const {
 }
 
 void Opsiamethystos::Gui::Components::LowLevel::Circle::draw(const Geometry::Position &origin) const {
-	DrawCircleV(Vector2{bounds_.position.x + origin.x, bounds_.position.y + origin.y},
-				bounds_.radius.value(),
-				Opsiamethystos::Gui::Colors::translate(color));
+	Render::draw_circle(
+		Geometry::Circle{Geometry::Position{bounds_.position.x + origin.x, bounds_.position.y + origin.y},
+						 bounds_.radius},
+		color);
 }
 
 void Opsiamethystos::Gui::Components::LowLevel::Circle::draw_bounds(
 	Opsiamethystos::Gui::Geometry::Thickness thickness) const {
-	const Vector2 center{.x = bounds_.position.x, .y = bounds_.position.y};
-
-	const float radius = bounds_.radius.value();
-
-	DrawRing(center,
-			 radius - thickness.value(),
-			 radius,
-			 0.0f,
-			 360.0f,
-			 36,
-			 Opsiamethystos::Gui::Colors::translate(color));
+	Render::draw_ring(bounds_, thickness, color);
 }

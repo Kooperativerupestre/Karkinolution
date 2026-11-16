@@ -104,4 +104,15 @@ namespace Opsiamethystos {
 		draw_line(triangle.b, triangle.c, thickness, color);
 		draw_line(triangle.c, triangle.a, thickness, color);
 	}
+
+	void Render::draw_simple_text(const std::string               &string,
+								  const Gui::Geometry::Position   &position,
+								  const GreaterThanZeroValue<int> &font_size,
+								  const KShared::Colors::Color    &color) {
+		DrawText(string.c_str(), position.x, position.y, font_size.value(), Gui::Colors::translate(color));
+	}
+
+	void Render::draw_simple_text(const Graphics::Models::SimpleText &simple_text) {
+		draw_simple_text(simple_text.text, simple_text.position, simple_text.font_size, simple_text.color);
+	}
 } // namespace Opsiamethystos

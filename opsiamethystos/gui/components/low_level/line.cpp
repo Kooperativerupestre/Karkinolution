@@ -1,8 +1,8 @@
-#include "opsiamethystos/raylib_utils/colors.hpp"
+#include "opsiamethystos/math/geometry/geometry.hpp"
+#include "opsiamethystos/render/render.hpp"
 
 #include <cmath>
 #include <opsiamethystos/gui/components/low_level/line.hpp>
-#include <raylib.h>
 
 Opsiamethystos::Gui::Components::LowLevel::Line::Line(Opsiamethystos::Gui::Geometry::Position  begin,
 													  Opsiamethystos::Gui::Geometry::Position  end,
@@ -28,8 +28,9 @@ void Opsiamethystos::Gui::Components::LowLevel::Line::draw() const {
 }
 
 void Opsiamethystos::Gui::Components::LowLevel::Line::draw(const Geometry::Position &origin) const {
-	DrawLineEx(Vector2{.x = begin_.x + origin.x, .y = begin_.y + origin.y},
-			   Vector2{.x = end_.x + origin.x, .y = end_.y + origin.y},
-			   static_cast<float>(thickness_.value()),
-			   Colors::translate(color));
+
+	Render::draw_line(Geometry::Position{begin_.x + origin.x, begin_.y + origin.y},
+					  Geometry::Position{end_.x + origin.x, end_.y + origin.y},
+					  thickness_,
+					  color);
 }

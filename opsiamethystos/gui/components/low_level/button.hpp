@@ -1,7 +1,6 @@
 #pragma once
 
 #include "opsiamethystos/drivers/font.hpp"
-#include "opsiamethystos/drivers/mouse.hpp"
 #include "opsiamethystos/gui/components/base_component.hpp"
 #include "opsiamethystos/gui/components/identity.hpp"
 #include "opsiamethystos/gui/components/low_level/text.hpp"

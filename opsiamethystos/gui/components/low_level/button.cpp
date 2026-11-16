@@ -1,6 +1,8 @@
+#include "opsiamethystos/math/geometry/geometry.hpp"
+#include "opsiamethystos/render/render.hpp"
+
+#include <opsiamethystos/drivers/mouse.hpp>
 #include <opsiamethystos/gui/components/low_level/button.hpp>
-#include <opsiamethystos/raylib_utils/colors.hpp>
-#include <raylib.h>
 
 namespace Opsiamethystos {
 	namespace Gui {
@@ -8,11 +10,14 @@ namespace Opsiamethystos {
 			namespace LowLevel {
 				void Button::RectangleButton::draw(Button::ButtonStates state, const Geometry::Position &origin) const {
 					const auto bounds = rectangle_component_.get_bounds();
-					DrawRectangleRec(::Rectangle{.x      = bounds.left().value + origin.x,
-												 .y      = bounds.top().value + origin.y,
-												 .width  = static_cast<float>(bounds.width.value()),
-												 .height = static_cast<float>(bounds.height.value())},
-									 Colors::translate(style_.get(state)));
+
+					Render::draw_rectangle(Geometry::Rectangle{Geometry::Position{bounds.left().value + origin.x,
+																				  bounds.top().value + origin.y},
+															   bounds.width,
+															   bounds.height},
+										   style_.get(state));
+
+
 					label.draw_centered_in(bounds, origin);
 				}
 
