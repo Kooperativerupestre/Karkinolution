@@ -2,7 +2,7 @@
 
 #include "opsiamethystos/graphics/panel/components/component.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
-#include "opsiamethystos/gui/panel/panel.hpp"
+#include "opsiamethystos/graphics/panel/panel.hpp"
 
 #include <memory>
 

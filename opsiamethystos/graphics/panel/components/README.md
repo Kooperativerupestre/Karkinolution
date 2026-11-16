@@ -1,4 +1,4 @@
-# GUI components
+# Components
 
 ## Component invariants
 

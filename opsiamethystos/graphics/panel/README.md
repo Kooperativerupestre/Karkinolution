@@ -1,4 +1,4 @@
-# GUI panel
+# Panel
 
 ## Component ownership and spatial index
 

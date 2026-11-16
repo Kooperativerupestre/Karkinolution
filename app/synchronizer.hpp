@@ -2,7 +2,7 @@
 
 #include "app/screen.hpp"
 #include "karkinolution/networking/client_side/client/client.hpp"
-#include "opsiamethystos/gui/panel/panel.hpp"
+#include "opsiamethystos/graphics/panel/panel.hpp"
 
 namespace KarkinolutionView {
 	class Synchronizer {

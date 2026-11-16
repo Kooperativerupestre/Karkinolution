@@ -62,19 +62,19 @@ workflow:
       purpose: "View namespace conventions and rendering-boundary rules."
       when: "Read when the task involves the app/view layer or rendering boundaries."
 
-    - file: "opsiamethystos/gui/README.md"
-      purpose: "Opsiaméthystos GUI architecture and rendering dependency boundaries."
+    - file: "opsiamethystos/graphics/README.md"
+      purpose: "Opsiaméthystos Graphics architecture and rendering dependency boundaries."
       when: "Read when the task involves the opsiamethystos module."
 
-    - file: "opsiamethystos/gui/components/README.md"
-      purpose: "Opsiaméthystos GUI component invariants, immutable geometry, and component state rules."
-      when: "Read when the task involves opsiamethystos GUI components."
+    - file: "opsiamethystos/graphics/panel/components/README.md"
+      purpose: "Opsiaméthystos component invariants, immutable geometry, and component state rules."
+      when: "Read when the task involves opsiamethystos components."
 
     - file: "opsiamethystos/math/geometry/README.md"
       purpose: "Geometric center, extent, containment, and intersection conventions in Opsiaméthystos."
       when: "Read when the task involves opsiamethystos geometry or math."
 
-    - file: "opsiamethystos/gui/panel/README.md"
+    - file: "opsiamethystos/graphics/panel/README.md"
       purpose: "Panel ownership, quadtree consistency, collision queries, and rendering responsibilities in Opsiaméthystos."
       when: "Read when the task involves opsiamethystos panels or the quadtree."
 

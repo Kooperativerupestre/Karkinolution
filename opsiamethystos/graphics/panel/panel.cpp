@@ -1,4 +1,4 @@
-#include "opsiamethystos/gui/panel/panel.hpp"
+#include "opsiamethystos/graphics/panel/panel.hpp"
 
 #include <stdexcept>
 #include <unordered_set>

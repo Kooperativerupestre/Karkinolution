@@ -1,4 +1,4 @@
-#include "opsiamethystos/gui/panel/layout/layout.hpp"
+#include "opsiamethystos/graphics/panel/layout/layout.hpp"
 
 #include <algorithm>
 

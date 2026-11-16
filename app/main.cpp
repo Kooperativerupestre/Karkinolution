@@ -3,7 +3,7 @@
 #include "opsiamethystos/graphics/panel/components/board.hpp"
 #include "opsiamethystos/graphics/panel/components/component.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/button.hpp"
-#include "opsiamethystos/gui/panel/panel.hpp"
+#include "opsiamethystos/graphics/panel/panel.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 

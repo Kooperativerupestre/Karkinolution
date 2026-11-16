@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <memory>
-#include <opsiamethystos/gui/panel/layout/layout.hpp>
+#include <opsiamethystos/graphics/panel/layout/layout.hpp>
 
 namespace Layout   = Opsiamethystos::Gui::Panel::Layout;
 namespace Geometry = Opsiamethystos::Math::Geometry;
