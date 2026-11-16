@@ -1,5 +1,6 @@
 #pragma once
 
+#include "opsiamethystos/graphics/panel/components/identity.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/button.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/circle.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/circle_label.hpp"
@@ -8,7 +9,6 @@
 #include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
 #include "opsiamethystos/graphics/panel/components/medium_level/grid.hpp"
-#include "opsiamethystos/gui/components/identity.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <algorithm>

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "opsiamethystos/drivers/font.hpp"
+#include "opsiamethystos/graphics/panel/components/base_component.hpp"
+#include "opsiamethystos/graphics/panel/components/identity.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
-#include "opsiamethystos/gui/components/base_component.hpp"
-#include "opsiamethystos/gui/components/identity.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opsiamethystos/gui/components/base_component.hpp"
-#include "opsiamethystos/gui/components/identity.hpp"
+#include "opsiamethystos/graphics/panel/components/base_component.hpp"
+#include "opsiamethystos/graphics/panel/components/identity.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 #include "shared/math/stats/compile_values.hpp"

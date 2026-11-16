@@ -1,4 +1,4 @@
-#include "opsiamethystos/gui/components/board.hpp"
+#include "opsiamethystos/graphics/panel/components/board.hpp"
 
 #include <utility>
 

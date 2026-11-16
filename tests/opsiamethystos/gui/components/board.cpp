@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <opsiamethystos/gui/components/board.hpp>
+#include <opsiamethystos/graphics/panel/components/board.hpp>
 #include <shared/core/color.hpp>
 
 namespace {

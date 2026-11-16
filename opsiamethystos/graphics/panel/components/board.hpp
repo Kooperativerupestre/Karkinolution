@@ -1,10 +1,10 @@
 #pragma once
 
+#include "opsiamethystos/graphics/panel/components/base_component.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/circle.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/line.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
-#include "opsiamethystos/gui/components/base_component.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 

@@ -2,7 +2,7 @@
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 
-#include <opsiamethystos/gui/components/panel.hpp>
+#include <opsiamethystos/graphics/panel/components/panel.hpp>
 
 void Opsiamethystos::Gui::Components::Panel::draw_bounds(Math::Geometry::Thickness thickness) const {
 	form_.draw_bounds(thickness);

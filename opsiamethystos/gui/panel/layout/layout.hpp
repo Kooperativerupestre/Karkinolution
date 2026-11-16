@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opsiamethystos/gui/components/identity.hpp"
+#include "opsiamethystos/graphics/panel/components/identity.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <functional>
