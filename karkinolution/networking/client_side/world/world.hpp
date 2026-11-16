@@ -8,6 +8,7 @@
 #include "karkinolution/networking/client_side/interpreters/territory.hpp"
 #include "karkinolution/networking/client_side/world/aliases.hpp"
 #include "shared/core/id.hpp"
+#include "shared/functional/optional_reference.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 #include "shared/math/units.hpp"
 
@@ -73,6 +74,8 @@ namespace Karkinolution::Networking::ClientSide::World {
 			const std::vector<Soil> &get_soils() const {
 				return soils;
 			}
+
+			KShared::Functional::OptionalReference<const Soil> get_a_soil(SoilId id) const;
 
 			const KShared::Math::Units::Size &get_size() const {
 				if (!size) {
@@ -167,6 +170,9 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool has_creature(OrganismId id) const;
 			bool has_corpse(OrganismId id) const;
 
+			KShared::Functional::OptionalReference<const Creature> get_a_creature(OrganismId id) const;
+			KShared::Functional::OptionalReference<const Corpse>   get_a_corpse(OrganismId id) const;
+
 			template <HasRequest T> void sync(T &client) {
 				std::vector<OrganismId> creature_ids;
 				std::vector<OrganismId> corpse_ids;
@@ -231,6 +237,10 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool update(const Creature &creature);
 			bool update(const Corpse &corpse);
 			bool update(const Soil &soil);
+
+			KShared::Functional::OptionalReference<const Creature> get_a_creature(OrganismId id) const;
+			KShared::Functional::OptionalReference<const Corpse>   get_a_corpse(OrganismId id) const;
+			KShared::Functional::OptionalReference<const Soil>     get_a_soil(SoilId id) const;
 
 			bool has_creature(OrganismId id) const;
 			bool has_corpse(OrganismId id) const;

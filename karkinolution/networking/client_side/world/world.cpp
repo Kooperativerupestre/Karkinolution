@@ -1,9 +1,12 @@
 #include "karkinolution/networking/client_side/world/world.hpp"
 
 #include "karkinolution/networking/client_side/world/aliases.hpp"
+#include "shared/functional/data_structures.hpp"
+#include "shared/functional/optional_reference.hpp"
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 
 namespace Karkinolution::Networking::ClientSide::World {
 	///
@@ -36,6 +39,15 @@ namespace Karkinolution::Networking::ClientSide::World {
 		}
 		soils.push_back(soil);
 		return true;
+	}
+
+	KShared::Functional::OptionalReference<const Soil> Territory::get_a_soil(SoilId id) const {
+		for (size_t i = 0; i < soils.size(); i++) {
+			if (soils[i].id == id) {
+				return soils[i];
+			}
+		}
+		return nullptr;
 	}
 
 	bool Territory::update(const Soil &soil) {
@@ -139,6 +151,24 @@ namespace Karkinolution::Networking::ClientSide::World {
 		return add(corpse);
 	}
 
+	KShared::Functional::OptionalReference<const Creature> EntitiesStorage::get_a_creature(OrganismId id) const {
+		for (size_t i = 0; i < creatures.size(); i++) {
+			if (creatures[i].id == id) {
+				return creatures[i];
+			}
+		}
+		return nullptr;
+	}
+
+	KShared::Functional::OptionalReference<const Corpse> EntitiesStorage::get_a_corpse(OrganismId id) const {
+		for (size_t i = 0; i < corpses.size(); i++) {
+			if (corpses[i].id == id) {
+				return corpses[id];
+			}
+		}
+		return nullptr;
+	}
+
 	///
 	/// WORLD
 	///
@@ -188,5 +218,17 @@ namespace Karkinolution::Networking::ClientSide::World {
 
 	bool World::has_soil(SoilId id) const {
 		return territory.has_soil(id);
+	}
+
+	KShared::Functional::OptionalReference<const Creature> World::get_a_creature(OrganismId id) const {
+		return entities.get_a_creature(id);
+	}
+
+	KShared::Functional::OptionalReference<const Corpse> World::get_a_corpse(OrganismId id) const {
+		return entities.get_a_corpse(id);
+	}
+
+	KShared::Functional::OptionalReference<const Soil> World::get_a_soil(SoilId id) const {
+		return territory.get_a_soil(id);
 	}
 } // namespace Karkinolution::Networking::ClientSide::World
