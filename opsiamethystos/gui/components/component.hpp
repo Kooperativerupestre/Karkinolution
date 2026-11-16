@@ -7,8 +7,8 @@
 #include "opsiamethystos/graphics/panel/components/low_level/line.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
+#include "opsiamethystos/graphics/panel/components/medium_level/grid.hpp"
 #include "opsiamethystos/gui/components/identity.hpp"
-#include "opsiamethystos/gui/components/medium_level/grid.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <algorithm>
@@ -25,7 +25,8 @@ namespace Opsiamethystos::Gui::Panel {
 namespace Opsiamethystos {
 	namespace Gui {
 		namespace Components {
-			namespace LowLevel = Graphics::Panel::Components::LowLevel;
+			namespace LowLevel    = Graphics::Panel::Components::LowLevel;
+			namespace MediumLevel = Graphics::Panel::Components::MediumLevel;
 
 			using AllComponents = std::variant<LowLevel::Button::RectangleButton,
 											   LowLevel::Circle,
