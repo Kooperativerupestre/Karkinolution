@@ -1,4 +1,4 @@
-#include "opsiamethystos/gui/components/low_level/rectangle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 
@@ -9,5 +9,5 @@ void Opsiamethystos::Gui::Components::Panel::draw_bounds(Math::Geometry::Thickne
 }
 
 void Opsiamethystos::Gui::Components::Panel::fill_background(const KShared::Colors::Color &color) const {
-	Opsiamethystos::Gui::Components::LowLevel::Rectangle{form_.get_bounds(), color}.draw();
+	LowLevel::Rectangle{form_.get_bounds(), color}.draw();
 }

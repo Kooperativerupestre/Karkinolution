@@ -1,7 +1,7 @@
 #include "opsiamethystos/gui/components/medium_level/grid.hpp"
 
-#include "opsiamethystos/gui/components/low_level/line.hpp"
-#include "opsiamethystos/gui/components/low_level/rectangle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/line.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "shared/core/error.hpp"
 
 #include <format>
@@ -10,6 +10,8 @@ namespace Opsiamethystos {
 	namespace Gui {
 		namespace Components {
 			namespace MediumLevel {
+				namespace LowLevel = Graphics::Panel::Components::LowLevel;
+
 				Grid::Grid(const Math::Geometry::Rectangle &bounds,
 						   Math::Geometry::Thickness        thickness,
 						   Math::Geometry::Width            max_cell_width,

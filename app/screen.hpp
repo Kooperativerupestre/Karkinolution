@@ -1,7 +1,7 @@
 #pragma once
 
+#include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
 #include "opsiamethystos/gui/components/component.hpp"
-#include "opsiamethystos/gui/components/low_level/text.hpp"
 #include "opsiamethystos/gui/panel/panel.hpp"
 
 #include <memory>

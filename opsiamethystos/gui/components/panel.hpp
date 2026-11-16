@@ -1,13 +1,15 @@
 #pragma once
 
-#include "opsiamethystos/gui/components/low_level/circle.hpp"
-#include "opsiamethystos/gui/components/low_level/rectangle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/circle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 
 namespace Opsiamethystos {
 	namespace Gui {
 		namespace Components {
+			namespace LowLevel = Graphics::Panel::Components::LowLevel;
+
 			class Panel {
 				private:
 

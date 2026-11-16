@@ -1,0 +1,72 @@
+#pragma once
+
+#include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
+#include "opsiamethystos/gui/components/base_component.hpp"
+#include "opsiamethystos/gui/components/identity.hpp"
+#include "opsiamethystos/math/geometry/geometry.hpp"
+#include "shared/core/color.hpp"
+
+#include <string>
+
+namespace Opsiamethystos {
+	namespace Graphics {
+		namespace Panel {
+			namespace Components {
+				namespace LowLevel {
+					class RectangleLabel
+						: public Gui::Components::BaseComponent<Gui::Components::ComponentType::RECTANGLE_LABEL> {
+						private:
+
+							Rectangle rectangle_;
+							Text      text_;
+
+						public:
+
+							RectangleLabel(const Math::Geometry::Rectangle &bounds,
+										   std::string                      text,
+										   const KShared::Colors::Color    &rectangle_color,
+										   const KShared::Colors::Color    &text_color,
+										   GreaterThanZeroValue<int>        font_size);
+
+							[[nodiscard]]
+							Math::Geometry::Rectangle get_bounds() const {
+								return rectangle_.get_bounds();
+							}
+
+							[[nodiscard]]
+							Math::Geometry::Rectangle get_current_bounds() const {
+								return text_.get_current_bounds();
+							}
+
+							[[nodiscard]]
+							const std::string &get_text() const noexcept {
+								return text_.get_text();
+							}
+
+							void set_text(std::string text);
+
+							// Both children must accept the same slot. Restoring the rectangle when
+							// text rejects it keeps the compound component atomic.
+							bool set_slot(const Math::Geometry::Rectangle &slot) {
+								const auto old_slot = rectangle_.get_bounds();
+								if (!rectangle_.set_slot(slot)) {
+									return false;
+								}
+								if (!text_.set_slot(slot)) {
+									rectangle_.set_slot(old_slot);
+									return false;
+								}
+								return true;
+							}
+
+							void draw() const;
+							// The origin is forwarded to both children so their local geometry stays
+							// unchanged while the panel moves in its parent.
+							void draw(const Math::Geometry::Position &origin) const;
+					};
+				} // namespace LowLevel
+			} // namespace Components
+		} // namespace Panel
+	} // namespace Graphics
+} // namespace Opsiamethystos

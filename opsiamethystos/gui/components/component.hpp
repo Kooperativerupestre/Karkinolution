@@ -1,13 +1,13 @@
 #pragma once
 
+#include "opsiamethystos/graphics/panel/components/low_level/button.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/circle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/circle_label.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/label.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/line.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
 #include "opsiamethystos/gui/components/identity.hpp"
-#include "opsiamethystos/gui/components/low_level/button.hpp"
-#include "opsiamethystos/gui/components/low_level/circle.hpp"
-#include "opsiamethystos/gui/components/low_level/circle_label.hpp"
-#include "opsiamethystos/gui/components/low_level/label.hpp"
-#include "opsiamethystos/gui/components/low_level/line.hpp"
-#include "opsiamethystos/gui/components/low_level/rectangle.hpp"
-#include "opsiamethystos/gui/components/low_level/text.hpp"
 #include "opsiamethystos/gui/components/medium_level/grid.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
@@ -25,6 +25,8 @@ namespace Opsiamethystos::Gui::Panel {
 namespace Opsiamethystos {
 	namespace Gui {
 		namespace Components {
+			namespace LowLevel = Graphics::Panel::Components::LowLevel;
+
 			using AllComponents = std::variant<LowLevel::Button::RectangleButton,
 											   LowLevel::Circle,
 											   LowLevel::CircleLabel,

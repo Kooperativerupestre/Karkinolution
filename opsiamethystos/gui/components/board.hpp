@@ -1,10 +1,10 @@
 #pragma once
 
+#include "opsiamethystos/graphics/panel/components/low_level/circle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/line.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
 #include "opsiamethystos/gui/components/base_component.hpp"
-#include "opsiamethystos/gui/components/low_level/circle.hpp"
-#include "opsiamethystos/gui/components/low_level/line.hpp"
-#include "opsiamethystos/gui/components/low_level/rectangle.hpp"
-#include "opsiamethystos/gui/components/low_level/text.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 
@@ -13,6 +13,8 @@
 #include <vector>
 
 namespace Opsiamethystos::Gui::Components {
+	namespace LowLevel = Graphics::Panel::Components::LowLevel;
+
 	// Board is a free-positioning drawing surface. It owns primitive draw
 	// commands rather than layout components and never exposes the renderer in
 	// its public interface.
