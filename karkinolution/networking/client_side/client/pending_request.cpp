@@ -3,6 +3,7 @@
 #include "karkinolution/binary/frames/aliases.hpp"
 #include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
+#include "karkinolution/networking/frame/contract.hpp"
 #include "shared/core/error.hpp"
 
 #include <algorithm>
@@ -11,105 +12,7 @@
 #include <stdexcept>
 
 namespace Karkinolution::Networking::ClientSide::Protocol {
-	FutureRequest::FutureRequest()
-		: promise(std::in_place)
-		, fut_response(promise.value().get_future()) {}
-
-	bool FutureRequest::is_ready_unlocked() const {
-		return fut_response.valid() && fut_response.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
-	}
-
-	bool FutureRequest::set_response(const ResponseFrameVariant &response) {
-		std::lock_guard lock{mtx};
-
-		if (failure.has_value() || !promise.has_value()) {
-			return false;
-		}
-
-		promise->set_value(response);
-		promise.reset();
-		return true;
-	}
-
-	bool FutureRequest::has_response() {
-		std::lock_guard lock{mtx};
-		return !failure.has_value() && !wait_in_progress && is_ready_unlocked();
-	}
-
-	bool FutureRequest::fail(RequestFailure type) {
-		std::lock_guard lock{mtx};
-
-		if (failure.has_value() || !promise.has_value()) {
-			return false;
-		}
-		failure = type;
-		promise.reset();
-		return true;
-	}
-
-	ResponseResult FutureRequest::try_get() {
-		std::lock_guard lock{mtx};
-
-		if (failure.has_value()) {
-			return std::unexpected(failure.value());
-		}
-
-		if (wait_in_progress || failure.has_value() || !is_ready_unlocked()) {
-			return std::optional<ResponseFrameVariant>{};
-		}
-
-		return std::optional<ResponseFrameVariant>{fut_response.get()};
-	}
-
-	ResponseResult FutureRequest::await_response(std::chrono::seconds timeout) {
-		std::future<ResponseFrameVariant> fut;
-		{
-			std::lock_guard lock{mtx};
-
-			if (wait_in_progress) {
-				return std::optional<ResponseFrameVariant>{};
-			}
-
-			if (failure.has_value()) {
-				return std::unexpected(failure.value());
-			}
-
-			if (is_ready_unlocked()) {
-				return std::optional<ResponseFrameVariant>{fut_response.get()};
-			}
-
-			wait_in_progress = true;
-			fut              = std::move(fut_response);
-		}
-
-		const auto status = fut.wait_for(timeout);
-
-		std::lock_guard lock{mtx};
-		wait_in_progress = false;
-
-		if (status == std::future_status::ready) {
-			if (failure.has_value()) {
-				return std::unexpected(failure.value());
-			}
-			try {
-				return std::optional<ResponseFrameVariant>{fut.get()};
-			} catch (const std::exception &) {
-				return std::unexpected(RequestFailure::DISCONNECTION);
-			}
-		}
-
-		fut_response = std::move(fut);
-		failure      = RequestFailure::CANCEL;
-		promise.reset();
-		return std::unexpected(RequestFailure::CANCEL);
-	}
-
-	std::optional<RequestFailure> FutureRequest::get_failure() {
-		std::lock_guard lock{mtx};
-		return failure;
-	}
-
-	bool PendingRequests::erase_request(RequestId id, const std::shared_ptr<FutureRequest> expected) {
+	bool PendingRequests::erase_request(Binary::RequestId id, const std::shared_ptr<SelfFutureResponse> expected) {
 		std::lock_guard lock{mtx};
 		const auto      it = pendings.find(id);
 		if (it != pendings.end() && it->second == expected) {
@@ -119,15 +22,15 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return false;
 	}
 
-	bool PendingRequests::add_request(RequestId id) {
-		auto request = std::make_shared<FutureRequest>();
+	bool PendingRequests::add_request(Binary::RequestId id) {
+		auto future_response = std::make_shared<SelfFutureResponse>();
 
 		std::lock_guard lock{mtx};
-		return pendings.emplace(id, std::move(request)).second;
+		return pendings.emplace(id, std::move(future_response)).second;
 	}
 
 	bool PendingRequests::add_response(const ResponseFrameVariant &response) {
-		std::shared_ptr<FutureRequest> request;
+		std::shared_ptr<SelfFutureResponse> future_response;
 		{
 			std::lock_guard lock{mtx};
 
@@ -141,33 +44,33 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 				throw ClientSideError(
 					std::format("Invalid try to add a response to an inexistent request with id = {}", request_id));
 			}
-			request = it->second;
+			future_response = it->second;
 		}
 
-		return request->set_response(response);
+		return future_response->set_response(response);
 	}
 
-	ResponseResult PendingRequests::pop_response(RequestId id) {
-		std::shared_ptr<FutureRequest> request;
+	ResponseResult PendingRequests::pop_response(Binary::RequestId id) {
+		std::shared_ptr<SelfFutureResponse> future_response;
 		{
 			std::lock_guard lock{mtx};
 			auto            it = pendings.find(id);
 			if (it == pendings.end()) {
 				throw ClientSideError(std::format("Invalid pop response of an inexistent request with id = {}", id));
 			}
-			request = it->second;
+			future_response = it->second;
 		}
-		auto response = request->try_get();
+		auto response = future_response->try_get();
 
 		if (!response || response->has_value()) {
-			erase_request(id, request);
+			erase_request(id, future_response);
 		}
 
 		return response;
 	}
 
-	ResponseResult PendingRequests::await_response(RequestId id) {
-		std::shared_ptr<FutureRequest> request;
+	ResponseResult PendingRequests::await_response(Binary::RequestId id) {
+		std::shared_ptr<SelfFutureResponse> future_response;
 
 		{
 			std::lock_guard lock{mtx};
@@ -178,35 +81,35 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 				throw ClientSideError(std::format("Invalid await response of a nonexistent request with id = {}", id));
 			}
 
-			request = it->second;
+			future_response = it->second;
 		}
 
-		auto result = request->await_response(std::chrono::seconds(RESPONSE_WAITING_TIME_OUT_SECONDS));
+		auto result = future_response->await_response(std::chrono::seconds(RESPONSE_WAITING_TIME_OUT_SECONDS));
 
-		erase_request(id, request);
+		erase_request(id, future_response);
 
 		return result;
 	}
 
 	void PendingRequests::fail_all_by_disconnection() {
-		std::vector<std::shared_ptr<FutureRequest>> requests;
+		std::vector<std::shared_ptr<SelfFutureResponse>> future_responses;
 
 		{
 			std::lock_guard lock{mtx};
 
-			requests.reserve(pendings.size());
+			future_responses.reserve(pendings.size());
 
 			for (const auto &[id, request] : pendings) {
-				requests.push_back(request);
+				future_responses.push_back(request);
 			}
 		}
 
-		for (const auto &request : requests) {
+		for (const auto &request : future_responses) {
 			request->fail(RequestFailure::DISCONNECTION);
 		}
 	}
 
-	bool SystemPendingRequests::add_request(RequestId id) {
+	bool SystemPendingRequests::add_request(Frames::SystemCall::Id id) {
 		auto pending    = std::make_shared<Pending>();
 		pending->future = pending->promise.get_future();
 		std::lock_guard lock{mtx};
@@ -230,7 +133,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return true;
 	}
 
-	SystemResponseResult SystemPendingRequests::await_response(RequestId id) {
+	SystemResponseResult SystemPendingRequests::await_response(Frames::SystemCall::Id id) {
 		std::shared_ptr<Pending> pending;
 		{
 			std::lock_guard lock{mtx};

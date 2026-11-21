@@ -1,6 +1,5 @@
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/aliases.hpp"
-#include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
 
@@ -13,7 +12,7 @@ using Karkinolution::Binary::RequestId;
 using Karkinolution::Binary::ResponseCardinality;
 using Karkinolution::Binary::ResponseSubTypes;
 using Karkinolution::Networking::ClientSide::ClientSideError;
-using Karkinolution::Networking::ClientSide::Protocol::FutureRequest;
+using Karkinolution::Networking::ClientSide::Protocol::FutureResponse;
 using Karkinolution::Networking::ClientSide::Protocol::PendingRequests;
 using Karkinolution::Networking::ClientSide::Protocol::RequestFailure;
 using Karkinolution::Networking::ClientSide::Protocol::ResponseResult;
