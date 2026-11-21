@@ -81,7 +81,7 @@ jobs:
           echo "sha=$base" >> "$GITHUB_OUTPUT"
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2.25
+        uses: hendrikmuhs/ccache-action@v1.2.26
         with:
           key: clang21-tidy
           max-size: 1G
@@ -152,7 +152,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2.25
+        uses: hendrikmuhs/ccache-action@v1.2.26
         with:
           key: clang21
           max-size: 1G
@@ -213,7 +213,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2.25
+        uses: hendrikmuhs/ccache-action@v1.2.26
         with:
           key: clang21-asan-ubsan
           max-size: 1G
@@ -274,7 +274,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2.25
+        uses: hendrikmuhs/ccache-action@v1.2.26
         with:
           key: clang21-tsan
           max-size: 1G
@@ -351,7 +351,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up ccache
-        uses: hendrikmuhs/ccache-action@v1.2.25
+        uses: hendrikmuhs/ccache-action@v1.2.26
         with:
           key: ${{ matrix.ccache-key }}
           max-size: 1G
