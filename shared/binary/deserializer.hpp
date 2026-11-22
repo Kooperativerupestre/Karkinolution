@@ -176,7 +176,7 @@ namespace KShared::Binary::Deserializer {
 					return std::to_integer<std::uint8_t>(real_value);
 				}
 
-				constexpr std::uint8_t as_int8_t() const {
+				constexpr std::int8_t as_int8_t() const {
 					return std::to_integer<std::int8_t>(real_value);
 				}
 		};
@@ -215,7 +215,7 @@ namespace KShared::Binary::Deserializer {
 		return Types::Bytes2Deserialized(bytes, offset).as_int16_t();
 	}
 
-	template <ByteRange T> constexpr std::uint8_t read_int8_t(const T &bytes, std::size_t offset) {
+	template <ByteRange T> constexpr std::int8_t read_int8_t(const T &bytes, std::size_t offset) {
 		return Types::Bytes1Deserialized(bytes, offset).as_int8_t();
 	}
 
