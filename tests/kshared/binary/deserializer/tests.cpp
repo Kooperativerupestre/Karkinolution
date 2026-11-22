@@ -68,3 +68,20 @@ TEST(DeserializerRead, String) {
 	EXPECT_THROW(KShared::Binary::Deserializer::read_string(bytes, 1, length), KShared::Binary::ByteError);
 	EXPECT_THROW(KShared::Binary::Deserializer::read_string(bytes, 0, length * 2), KShared::Binary::ByteError);
 }
+
+TEST(DeserializerRead, Int8_t) {
+	std::vector<std::byte> bytes;
+	EXPECT_THROW(KShared::Binary::Deserializer::read_int8_t(bytes, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(KShared::Binary::Deserializer::read_int8_t(bytes, 10), KShared::Binary::ByteError);
+
+	static_assert(std::same_as<decltype(KShared::Binary::Deserializer::read_int8_t(bytes, 0)), std::int8_t>);
+	static_assert(std::same_as<decltype(KShared::Binary::Deserializer::Types::Bytes1Deserialized(bytes, 0).as_int8_t()),
+							   std::int8_t>);
+
+	const std::vector<std::int8_t> test_values = {0, 1, -1, 127, -128, 42, -42};
+	for (std::int8_t val : test_values) {
+		std::vector<std::byte> buf = {static_cast<std::byte>(val)};
+		EXPECT_EQ(KShared::Binary::Deserializer::read_int8_t(buf, 0), val);
+		EXPECT_EQ(KShared::Binary::Deserializer::deserialize<std::int8_t>(buf, 0), val);
+	}
+}
