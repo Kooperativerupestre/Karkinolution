@@ -247,16 +247,6 @@ namespace KShared::Binary::Deserializer {
 		return result;
 	}
 
-	template <ByteRange T> constexpr bool read_bool(const T &bytes, std::size_t offset) {
-		if (bytes[offset] == static_cast<std::byte>(0x01)) {
-			return true;
-		} else if (bytes[offset] == static_cast<std::byte>(0x00)) {
-			return false;
-		} else {
-			throw ByteError(std::format("Invalid bool value: {}", KShared::Binary::Utils::byte_to_int(bytes[offset])));
-		}
-	}
-
 	constexpr bool read_bool(std::byte byte) {
 		if (byte == static_cast<std::byte>(0x01)) {
 			return true;
@@ -265,6 +255,10 @@ namespace KShared::Binary::Deserializer {
 		} else {
 			throw ByteError(std::format("Invalid bool value: {}", KShared::Binary::Utils::byte_to_int(byte)));
 		}
+	}
+
+	template <ByteRange T> constexpr bool read_bool(const T &bytes, std::size_t offset) {
+		return read_bool(Core::deserialize_1_byte(bytes, offset));
 	}
 
 	template <BinarySupportedType T, ByteRange U> constexpr T deserialize(const U &bytes, std::size_t offset) {

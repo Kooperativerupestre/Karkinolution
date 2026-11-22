@@ -85,3 +85,22 @@ TEST(DeserializerRead, Int8_t) {
 		EXPECT_EQ(KShared::Binary::Deserializer::deserialize<std::int8_t>(buf, 0), val);
 	}
 }
+
+TEST(DeserializerRead, Bool) {
+	std::vector<std::byte> empty;
+	EXPECT_THROW(KShared::Binary::Deserializer::read_bool(empty, 0), KShared::Binary::ByteError);
+	EXPECT_THROW(KShared::Binary::Deserializer::read_bool(empty, 1), KShared::Binary::ByteError);
+
+	std::vector<std::byte> single_true = {static_cast<std::byte>(0x01)};
+	EXPECT_TRUE(KShared::Binary::Deserializer::read_bool(single_true, 0));
+	EXPECT_TRUE(KShared::Binary::Deserializer::deserialize<bool>(single_true, 0));
+	EXPECT_THROW(KShared::Binary::Deserializer::read_bool(single_true, 1), KShared::Binary::ByteError);
+	EXPECT_THROW(KShared::Binary::Deserializer::read_bool(single_true, 5), KShared::Binary::ByteError);
+
+	std::vector<std::byte> single_false = {static_cast<std::byte>(0x00)};
+	EXPECT_FALSE(KShared::Binary::Deserializer::read_bool(single_false, 0));
+	EXPECT_FALSE(KShared::Binary::Deserializer::deserialize<bool>(single_false, 0));
+
+	std::vector<std::byte> invalid_byte = {static_cast<std::byte>(0x02)};
+	EXPECT_THROW(KShared::Binary::Deserializer::read_bool(invalid_byte, 0), KShared::Binary::ByteError);
+}
