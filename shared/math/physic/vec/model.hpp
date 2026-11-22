@@ -36,40 +36,40 @@ namespace KShared {
 						return Vec2(x + other.x, y + other.y);
 					}
 
-					constexpr Vec2* operator+=(const Vec2 &other) noexcept {
+					constexpr Vec2 &operator+=(const Vec2 &other) noexcept {
 						x += other.x;
 						y += other.y;
-						return this;
+						return *this;
 					}
 
 					constexpr Vec2 operator-(const Vec2 &other) const noexcept {
 						return Vec2(x - other.x, y - other.y);
 					}
 
-					constexpr Vec2* operator-=(const Vec2 &other) noexcept {
+					constexpr Vec2 &operator-=(const Vec2 &other) noexcept {
 						x -= other.x;
 						y -= other.y;
-						return this;
+						return *this;
 					}
 
 					constexpr Vec2 operator*(double scalar) const noexcept {
 						return Vec2(x * scalar, y * scalar);
 					}
 
-					constexpr Vec2* operator*=(double scalar) noexcept {
+					constexpr Vec2 &operator*=(double scalar) noexcept {
 						x *= scalar;
 						y *= scalar;
-						return this;
+						return *this;
 					}
 
 					constexpr Vec2 operator/(double scalar) const {
 						return Vec2(x / scalar, y / scalar);
 					}
 
-					constexpr Vec2* operator/=(double scalar) {
+					constexpr Vec2 &operator/=(double scalar) {
 						x /= scalar;
 						y /= scalar;
-						return this;
+						return *this;
 					}
 
 					constexpr Vec2 operator-() const noexcept {
