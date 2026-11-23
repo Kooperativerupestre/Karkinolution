@@ -126,8 +126,8 @@ TEST(EntityMapTest, TerritoryBoundsAreCenteredAtOrigin) {
 	// A territory of size S spans S/2 in each direction from the origin.
 	// e.g. size {10, 10, 10} → bounds [-5, -5, -5] to [5, 5, 5].
 	const Size size{10.0, 10.0};
-	const AABB aabb{.min = Vec2{-size.width.value / 2.0, -size.height.value / 2.0},
-					.max = Vec2{size.width.value / 2.0, size.height.value / 2.0}};
+	const AABB aabb(Vec2{-size.width.value / 2.0, -size.height.value / 2.0},
+					Vec2{size.width.value / 2.0, size.height.value / 2.0});
 
 	EXPECT_DOUBLE_EQ(aabb.min.x, -5.0);
 	EXPECT_DOUBLE_EQ(aabb.min.y, -5.0);
