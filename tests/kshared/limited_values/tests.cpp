@@ -191,3 +191,26 @@ TEST(RuntimeFactor, DivisionClampsToMinimum) {
 
 	EXPECT_FLOAT_EQ(factor.value(), min);
 }
+
+TEST(GreaterThanZeroValue, IntegralMinIsOne) {
+	using KShared::Math::LV::CT::GreaterThanZeroValue;
+
+	GreaterThanZeroValue<int> v{5};
+	EXPECT_EQ(v.value(), 5);
+
+	GreaterThanZeroValue<int> clamped{0};
+	EXPECT_EQ(clamped.value(), 1);
+
+	GreaterThanZeroValue<int> negative{-10};
+	EXPECT_EQ(negative.value(), 1);
+}
+
+TEST(GreaterThanZeroValue, FloatMinIsEpsilonBased) {
+	using KShared::Math::LV::CT::GreaterThanZeroValue;
+
+	GreaterThanZeroValue<float> v{1.0f};
+	EXPECT_GT(v.value(), 0.0f);
+
+	GreaterThanZeroValue<float> clamped{0.0f};
+	EXPECT_GT(clamped.value(), 0.0f);
+}
