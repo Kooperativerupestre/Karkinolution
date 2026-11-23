@@ -230,3 +230,32 @@ TEST(LimitedValueRatio, NormalRangeRatioIsCorrect) {
 	GenericLimitedValue<float, max, min> at_max{10.0f};
 	EXPECT_FLOAT_EQ(at_max.ratio().value(), 1.0f);
 }
+
+TEST(Factor, DivisionByZeroThrows) {
+	constexpr float max = 2.0f;
+	constexpr float min = -1.0f;
+
+	GenericLimitedValue<float, max, min> factor{1.0f};
+
+	EXPECT_THROW(factor /= 0.0f, std::invalid_argument);
+	EXPECT_THROW(factor /= 0, std::invalid_argument);
+	EXPECT_THROW([[maybe_unused]] auto res = factor / 0.0f, std::invalid_argument);
+	EXPECT_THROW([[maybe_unused]] auto res = factor / 0, std::invalid_argument);
+}
+
+TEST(RuntimeFactor, DivisionByZeroThrows) {
+	constexpr float max = 2.0f;
+	constexpr float min = -1.0f;
+
+	GenericRuntimeValue<float> factor{1.0f, max, min};
+
+	EXPECT_THROW(factor /= 0.0f, std::invalid_argument);
+	EXPECT_THROW(factor /= 0, std::invalid_argument);
+}
+
+TEST(LimitedValueInteger, DivisionByZeroThrows) {
+	GenericLimitedValue<int, 100, 0> val{50};
+
+	EXPECT_THROW(val /= 0, std::invalid_argument);
+	EXPECT_THROW([[maybe_unused]] auto res = val / 0, std::invalid_argument);
+}

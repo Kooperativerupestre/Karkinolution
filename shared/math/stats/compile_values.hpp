@@ -1,5 +1,6 @@
 #pragma once
 #include <shared/math/global_epsilon.hpp>
+#include <stdexcept>
 
 /*
  * Copyright 2026 Koöperative Rüpestrën
@@ -121,6 +122,9 @@ namespace KShared {
 						}
 
 						template <typename U> constexpr Derived &operator/=(U other) {
+							if (other == U(0)) {
+								throw std::invalid_argument("Division by zero in LimitedValue");
+							}
 							_value /= static_cast<T>(other);
 							clamp();
 							return derived();
