@@ -25,13 +25,13 @@ namespace Karkinolution::Organisms::Entities::Embryo::Motor {
 				embryo);
 
 		embryo.energy -= max_life_trade.cost;
-		embryo.life.max_ref() += max_life_trade.gain;
+		embryo.life.set_max(embryo.life.max() + max_life_trade.gain);
 
 		const auto max_energy_trade = Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoGrowingPhysiology::
 			get_new_max_energy_increment(embryo);
 
 		embryo.energy -= max_energy_trade.cost;
-		embryo.energy.max_ref() += max_energy_trade.gain;
+		embryo.energy.set_max(embryo.energy.max() + max_energy_trade.gain);
 
 		const auto health_trade =
 			Karkinolution::Organisms::Entities::Embryo::Physiology::EmbryoGrowingPhysiology::get_new_health_increment(

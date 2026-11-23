@@ -288,3 +288,35 @@ TEST(LimitedValueInteger, DivisionByZeroThrows) {
 	EXPECT_THROW(val /= 0, std::invalid_argument);
 	EXPECT_THROW([[maybe_unused]] auto res = val / 0, std::invalid_argument);
 }
+
+TEST(RuntimeLimitedValueBounds, ThrowsOnNonFiniteBoundsOrValue) {
+	using KShared::Math::LV::RT::GenericRuntimeValue;
+
+	EXPECT_THROW(GenericRuntimeValue<float>(std::numeric_limits<float>::infinity(), 10.0f, 0.0f),
+				 std::invalid_argument);
+	EXPECT_THROW(GenericRuntimeValue<float>(5.0f, std::numeric_limits<float>::infinity(), 0.0f), std::invalid_argument);
+	EXPECT_THROW(GenericRuntimeValue<float>(5.0f, 10.0f, std::numeric_limits<float>::quiet_NaN()),
+				 std::invalid_argument);
+}
+
+TEST(RuntimeLimitedValueBounds, SetMaxAndSetMinValidateAndReclamp) {
+	using KShared::Math::LV::RT::GenericRuntimeValue;
+
+	GenericRuntimeValue<float> val{8.0f, 10.0f, 0.0f};
+	EXPECT_FLOAT_EQ(val.value(), 8.0f);
+
+	// Lowering max reclamps value
+	val.set_max(6.0f);
+	EXPECT_FLOAT_EQ(val.max(), 6.0f);
+	EXPECT_FLOAT_EQ(val.value(), 6.0f);
+
+	// Invalid max throws
+	EXPECT_THROW(val.set_max(-1.0f), std::invalid_argument);
+	EXPECT_THROW(val.set_max(std::numeric_limits<float>::infinity()), std::invalid_argument);
+
+	// Set min validates and reclamps
+	val.set_min(-5.0f);
+	EXPECT_FLOAT_EQ(val.min(), -5.0f);
+	EXPECT_THROW(val.set_min(1.0f), std::invalid_argument);  // min must accept zero
+	EXPECT_THROW(val.set_min(10.0f), std::invalid_argument); // min > max
+}
