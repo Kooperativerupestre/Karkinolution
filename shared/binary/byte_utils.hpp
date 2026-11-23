@@ -50,6 +50,13 @@ namespace KShared {
 
 			template <ByteRange T, size_t Size>
 			void append_bytes(std::array<std::byte, Size> &bytes, const T &value, size_t offset) {
+				if (offset > Size || value.size() > Size - offset) {
+					throw ByteError(
+						std::format("append_bytes out of bounds on array: offset {} + size {} > capacity {}",
+									offset,
+									value.size(),
+									Size));
+				}
 				for (size_t i = 0; i < value.size(); i++) {
 					bytes[offset + i] = value[i];
 				}
@@ -57,12 +64,24 @@ namespace KShared {
 
 			template <ByteRange T>
 			void append_bytes(std::vector<std::byte> &bytes, const T &value, std::size_t offset) {
+				if (offset > bytes.size() || value.size() > bytes.size() - offset) {
+					throw ByteError(
+						std::format("append_bytes out of bounds on vector: offset {} + size {} > capacity {}",
+									offset,
+									value.size(),
+									bytes.size()));
+				}
 				for (std::size_t i = 0; i < value.size(); i++) {
 					bytes[offset + i] = value[i];
 				}
 			}
 
 			inline void append_bytes(std::vector<std::byte> &bytes, std::byte value, std::size_t offset) {
+				if (offset >= bytes.size()) {
+					throw ByteError(std::format("append_bytes out of bounds on vector: offset {} >= size {}",
+												offset,
+												bytes.size()));
+				}
 				bytes[offset] = value;
 			}
 
@@ -72,6 +91,10 @@ namespace KShared {
 
 			template <std::size_t Size>
 			void append_bytes(std::array<std::byte, Size> &bytes, std::byte value, std::size_t offset) {
+				if (offset >= Size) {
+					throw ByteError(
+						std::format("append_bytes out of bounds on array: offset {} >= size {}", offset, Size));
+				}
 				bytes[offset] = value;
 			}
 
