@@ -277,11 +277,21 @@ namespace KShared {
 							: LimitedValue<NonNegativeValue<T>, T, std::numeric_limits<T>::max(), T{0}>{value} {}
 				};
 
+				namespace detail {
+					template <typename T> consteval T greater_than_zero_min() {
+						if constexpr (std::is_integral_v<T>) {
+							return T{1};
+						} else {
+							return T{0 + std::numeric_limits<T>::epsilon() * 10};
+						}
+					}
+				} // namespace detail
+
 				template <typename T>
 				class GreaterThanZeroValue : public LimitedValue<GreaterThanZeroValue<T>,
 																 T,
 																 std::numeric_limits<T>::max(),
-																 T{0 + std::numeric_limits<T>::epsilon() * 10}> {
+																 detail::greater_than_zero_min<T>()> {
 
 					public:
 
@@ -289,7 +299,7 @@ namespace KShared {
 							: LimitedValue<GreaterThanZeroValue<T>,
 										   T,
 										   std::numeric_limits<T>::max(),
-										   T{0 + std::numeric_limits<T>::epsilon() * 10}>{value} {}
+										   detail::greater_than_zero_min<T>()>{value} {}
 				};
 			} // namespace CT
 
