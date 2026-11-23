@@ -18,13 +18,7 @@
 
 // SRI implementations
 std::byte CreatureSRI::serialize_gender(const Karkinolution::Organisms::Entities::Creature::Gender &gender) {
-	if (gender == Karkinolution::Organisms::Entities::Creature::Gender::FEMALE) {
-		return std::byte(0x01);
-	} else if (gender == Karkinolution::Organisms::Entities::Creature::Gender::MALE) {
-		return std::byte(0x02);
-	}
-	throw KShared::Binary::ByteError(
-		std::format("Invalid creature gender byte: {}", static_cast<unsigned int>(gender)));
+	return KShared::Binary::Serializer::convert_uint8_t(static_cast<uint8_t>(gender));
 }
 
 std::byte CreatureSRI::serialize_specie(const Karkinolution::Organisms::Entities::Creature::CreatureSpecies &specie) {
