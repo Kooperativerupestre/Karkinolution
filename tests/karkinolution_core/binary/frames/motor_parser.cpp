@@ -1,3 +1,7 @@
+#include "karkinolution/binary/frames/parser/internal.hpp"
+#include "karkinolution/binary/frames/parser/parser.hpp"
+#include "karkinolution/binary/protocol/layouts.hpp"
+
 #include <array>
 #include <cstddef>
 #include <gtest/gtest.h>
@@ -51,14 +55,13 @@ TEST(FrameMotorRawBytes, SeeRequestHasReadableMetadataAndPayload) {
 	ASSERT_TRUE(Frames::Analyzer::is_request(raw));
 	EXPECT_FALSE(Frames::Analyzer::is_response(raw));
 	EXPECT_FALSE(Frames::Analyzer::is_error(raw));
-	EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::YES);
-	EXPECT_EQ(Frames::Parser::get_declared_size(raw) + Layout::DeclaredSize::SIZE, raw.size());
+	EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::Internal::FrameExistence::YES);
+	EXPECT_EQ(Frames::Parser::Internal::get_declared_size(raw) + Layout::DeclaredSize::SIZE, raw.size());
 	EXPECT_EQ(Frames::Parser::Request::calculate_payload_size(raw, RequestSubTypes::SEE), payload.size());
-	EXPECT_TRUE(Frames::Parser::Request::has_payload(raw));
 	EXPECT_EQ(Frames::Parser::get_payload(raw), (std::vector<std::byte>{payload.begin(), payload.end()}));
 
 	const auto parsed = Frames::Parser::parse_request_frame(raw);
-	EXPECT_EQ(parsed.get_declared_size(), Frames::Parser::get_declared_size(raw));
+	EXPECT_EQ(parsed.get_declared_size(), Frames::Parser::Internal::get_declared_size(raw));
 	EXPECT_EQ(parsed.get_id(), request_id);
 	EXPECT_EQ(parsed.get_sub_type(), RequestSubTypes::SEE);
 	EXPECT_EQ(parsed.get_resource(), Resource::CREATURE);
@@ -89,8 +92,7 @@ TEST(FrameMotorRawBytes, NonSeeOperationsPreserveMetadataAndPayload) {
 		EXPECT_EQ(Frames::Parser::Request::get_id(raw), request_id);
 		EXPECT_EQ(Frames::Parser::Request::get_resource(raw), Resource::CORPSE);
 		EXPECT_EQ(Frames::Parser::get_payload(raw), (std::vector<std::byte>{payload.begin(), payload.end()}));
-		EXPECT_TRUE(Frames::Parser::Request::has_payload(raw));
-		EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::YES);
+		EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::Internal::FrameExistence::YES);
 
 		const auto parsed = Frames::Parser::parse_request_frame(raw);
 		EXPECT_EQ(parsed.get_sub_type(), operation);
@@ -115,11 +117,9 @@ TEST(FrameMotorRawBytes, ResponseIsParsedWithCardinalityAndPayload) {
 	ASSERT_TRUE(Frames::Analyzer::is_response(raw));
 	EXPECT_FALSE(Frames::Analyzer::is_request(raw));
 	EXPECT_FALSE(Frames::Analyzer::is_error(raw));
-	EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::YES);
-	EXPECT_EQ(Frames::Parser::get_declared_size(raw) + Layout::DeclaredSize::SIZE, raw.size());
-	EXPECT_TRUE(Frames::Parser::Response::has_request_id(raw));
-	EXPECT_TRUE(Frames::Parser::Response::has_cardinality(raw));
-	EXPECT_TRUE(Frames::Parser::Response::has_payload(raw));
+	EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::Internal::FrameExistence::YES);
+	EXPECT_EQ(Frames::Parser::Internal::get_declared_size(raw) + Layout::DeclaredSize::SIZE, raw.size());
+
 	EXPECT_EQ(Frames::Parser::Response::get_payload(raw), (std::vector<std::byte>{payload.begin(), payload.end()}));
 
 	const auto parsed = Frames::Parser::parse_response_frame(raw);
@@ -135,10 +135,9 @@ TEST(FrameMotorRawBytes, ErrorIsParsedWithoutResponseCardinality) {
 	ASSERT_TRUE(Frames::Analyzer::is_error(raw));
 	EXPECT_FALSE(Frames::Analyzer::is_request(raw));
 	EXPECT_FALSE(Frames::Analyzer::is_response(raw));
-	EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::YES);
-	EXPECT_EQ(Frames::Parser::get_declared_size(raw) + Layout::DeclaredSize::SIZE, raw.size());
-	EXPECT_TRUE(Frames::Parser::Error::has_request_id(raw));
-	EXPECT_TRUE(Frames::Parser::Error::has_payload(raw));
+	EXPECT_EQ(Frames::Parser::has_frame(raw), Frames::Parser::Internal::FrameExistence::YES);
+	EXPECT_EQ(Frames::Parser::Internal::get_declared_size(raw) + Layout::DeclaredSize::SIZE, raw.size());
+
 	EXPECT_EQ(Frames::Parser::Error::get_payload(raw), (std::vector<std::byte>{payload.begin(), payload.end()}));
 
 	const auto parsed = Frames::Parser::parse_error_frame(raw);
@@ -152,21 +151,28 @@ TEST(FrameParserHas, RequestPredicatesRespectEachFieldBoundary) {
 
 	for (std::size_t size = 0; size <= raw.size(); ++size) {
 		const auto bytes = prefix(raw, size);
+
 		SCOPED_TRACE(size);
 
-		EXPECT_EQ(Frames::Parser::has_size(bytes), size >= Layout::DeclaredSize::END);
-		EXPECT_EQ(Frames::Parser::has_type(bytes), size >= Layout::Type::END);
-		EXPECT_EQ(Frames::Parser::has_sub_type(bytes), size >= Layout::SubType::END);
-		EXPECT_EQ(Frames::Parser::Request::has_id(bytes), size >= Layout::Request::Id::END);
-		EXPECT_EQ(Frames::Parser::Request::has_resource(bytes), size >= Layout::Request::Resource::END);
-		EXPECT_EQ(Frames::Parser::Request::See::has_target(bytes), size >= Layout::Request::See::Target::END);
+		EXPECT_EQ(Karkinolution::Binary::Frames::Parser::Internal::has_declared_size(bytes),
+				  size >= Layout::DeclaredSize::END);
 
-		const auto expected_frame_state =
-			size == 0 ? Frames::Parser::NO : (size < raw.size() ? Frames::Parser::INCOMPLETE : Frames::Parser::YES);
+		EXPECT_EQ(Karkinolution::Binary::Frames::Parser::Internal::has_type(bytes), size >= Layout::Type::END);
+
+		EXPECT_EQ(Karkinolution::Binary::Frames::Parser::Internal::has_sub_type(bytes), size >= Layout::SubType::END);
+
+		const auto expected_frame_state = size == 0
+			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::NO
+			: size < Karkinolution::Binary::ProtocolLayout::DeclaredSize::END
+			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::DECLARED_SIZE_INCOMPLETE
+			: size == Karkinolution::Binary::ProtocolLayout::DeclaredSize::END
+			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::DECLARED_SIZE_COMPLETE
+			: size < Karkinolution::Binary::ProtocolLayout::SubType::END
+			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::INCOMPLETE
+			: size < raw.size() ? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::INCOMPLETE
+								: Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::YES;
+
 		EXPECT_EQ(Frames::Parser::has_frame(bytes), expected_frame_state);
-		if (size >= Layout::SubType::END) {
-			EXPECT_EQ(Frames::Parser::Request::has_payload(bytes), size == raw.size());
-		}
 	}
 }
 
@@ -174,31 +180,36 @@ TEST(FrameParserHas, ResponseAndErrorPredicatesRespectTheirFieldBoundaries) {
 	const auto response = make_response();
 	const auto error    = make_error();
 
+	const auto expected_frame_state = [](std::size_t size, std::size_t frame_size) {
+		using FrameExistence = Frames::Parser::Internal::FrameExistence;
+
+		if (size == 0) {
+			return Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::NO;
+		}
+		if (size < Karkinolution::Binary::ProtocolLayout::DeclaredSize::END) {
+			return FrameExistence::DECLARED_SIZE_INCOMPLETE;
+		}
+		if (size == Karkinolution::Binary::ProtocolLayout::DeclaredSize::END) {
+			return FrameExistence::DECLARED_SIZE_COMPLETE;
+		}
+		if (size < frame_size) {
+			return FrameExistence::INCOMPLETE;
+		}
+		return FrameExistence::YES;
+	};
+
 	for (std::size_t size = 0; size <= response.size(); ++size) {
 		const auto bytes = prefix(response, size);
 		SCOPED_TRACE(::testing::Message() << "response prefix " << size);
 
-		EXPECT_EQ(Frames::Parser::Response::has_request_id(bytes), size >= Layout::Response::RequestId::END);
-		EXPECT_EQ(Frames::Parser::Response::has_cardinality(bytes), size >= Layout::Response::Cardinality::END);
-		EXPECT_EQ(Frames::Parser::has_frame(bytes),
-				  size == 0 ? Frames::Parser::NO
-							: (size < response.size() ? Frames::Parser::INCOMPLETE : Frames::Parser::YES));
-		if (size >= Layout::DeclaredSize::END) {
-			EXPECT_EQ(Frames::Parser::Response::has_payload(bytes), size == response.size());
-		}
+		EXPECT_EQ(Frames::Parser::has_frame(bytes), expected_frame_state(size, response.size()));
 	}
 
 	for (std::size_t size = 0; size <= error.size(); ++size) {
 		const auto bytes = prefix(error, size);
 		SCOPED_TRACE(::testing::Message() << "error prefix " << size);
 
-		EXPECT_EQ(Frames::Parser::Error::has_request_id(bytes), size >= Layout::Error::RequestId::END);
-		EXPECT_EQ(Frames::Parser::has_frame(bytes),
-				  size == 0 ? Frames::Parser::NO
-							: (size < error.size() ? Frames::Parser::INCOMPLETE : Frames::Parser::YES));
-		if (size >= Layout::DeclaredSize::END) {
-			EXPECT_EQ(Frames::Parser::Error::has_payload(bytes), size == error.size());
-		}
+		EXPECT_EQ(Frames::Parser::has_frame(bytes), expected_frame_state(size, error.size()));
 	}
 }
 
@@ -210,7 +221,7 @@ TEST(FrameParser, ExtractsOneCompleteFrameFromTrailingBytes) {
 
 	EXPECT_TRUE(Frames::Analyzer::is_complete_frame(first));
 	EXPECT_FALSE(Frames::Analyzer::is_complete_frame(combined));
-	EXPECT_EQ(Frames::Parser::has_frame(combined), Frames::Parser::YES);
+	EXPECT_EQ(Frames::Parser::has_frame(combined), Frames::Parser::Internal::FrameExistence::YES);
 	EXPECT_EQ(Frames::Parser::get_frame(combined), first);
 }
 

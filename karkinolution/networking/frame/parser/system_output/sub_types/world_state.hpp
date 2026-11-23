@@ -36,6 +36,10 @@ namespace Karkinolution {
 															Layout::SystemOutput::ST::WorldState::FIXED_HEADER_SIZE);
 				}
 
+				template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+					return Internal::has_frame(bytes, Layout::SystemOutput::ST::WorldState::FIXED_HEADER_SIZE);
+				}
+
 
 			} // namespace Parser::SystemOutput::ST::WorldState
 		} // namespace Frames

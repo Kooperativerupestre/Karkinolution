@@ -26,4 +26,8 @@ namespace Karkinolution::Networking::Frames::Parser::SystemOutput::ST::WorldCrea
 		return Internal::calculate_payload_size(declared_size,
 												Layout::SystemOutput::ST::WorldCreated::FIXED_HEADER_SIZE);
 	}
+
+	template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+		return Internal::has_frame(bytes, Layout::SystemOutput::ST::WorldCreated::FIXED_HEADER_SIZE);
+	}
 } // namespace Karkinolution::Networking::Frames::Parser::SystemOutput::ST::WorldCreated

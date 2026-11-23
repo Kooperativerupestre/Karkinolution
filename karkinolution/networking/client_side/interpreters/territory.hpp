@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Territory {
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Territory::Territory> see_territory(T &client) {
 		const auto payload = TerritorySRI::Request::make_see_territory();
 		const auto built =
@@ -24,11 +24,11 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Territory {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   SeeExtra{.target = SeeTarget::ONE});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
-		const auto                result = client.request(data);
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
+		const auto                     result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
 		}

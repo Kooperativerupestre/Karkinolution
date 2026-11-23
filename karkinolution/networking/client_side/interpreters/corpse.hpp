@@ -23,7 +23,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 	 * a valid response signalling the corpse does not exist or was
 	 * not found at the time of the request.
 	 */
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse>
 	see_corpse(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = CorpseSRI::Request::make_see_corpse(id);
@@ -35,12 +35,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   SeeExtra{.target = SeeTarget::ONE});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
 
-		const auto result = client.request(data);
+		const auto result = client.request_world_scope(data);
 
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
@@ -54,7 +54,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 		return CorpseDSI::get_corpse(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Corpse::Corpse>
 	tick_corpse(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = CorpseSRI::Request::make_see_corpse(id);
@@ -65,12 +65,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   CycleExtra{});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
 
-		const auto result = client.request(data);
+		const auto result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
 		}
@@ -83,7 +83,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 		return CorpseDSI::get_corpse(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T> bool erase_corpse(T &client, KShared::Core::Id::BaseIdType id) {
+	template <CanRequestWorldScope T> bool erase_corpse(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = CorpseSRI::Request::make_see_corpse(id);
 		const auto built =
 			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::ERASE,
@@ -91,11 +91,11 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 															   Resource::CORPSE,
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   EraseExtra{});
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
-		const auto                result = client.request(data);
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
+		const auto                     result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return false;
 		}

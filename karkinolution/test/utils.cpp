@@ -30,7 +30,7 @@ std::vector<std::byte> TestUtils::make_see_creature_frame(Karkinolution::Binary:
 			.target = Karkinolution::Binary::Protocol::Request::SeeTarget::ONE});
 }
 
-Karkinolution::Networking::ClientSide::Client::RequestData
+Karkinolution::Networking::ClientSide::Client::WorldRequestData
 TestUtils::make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id) {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);
 	const auto built   = Karkinolution::Binary::Frames::Motor::make_request(

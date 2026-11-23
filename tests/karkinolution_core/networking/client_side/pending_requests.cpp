@@ -1,5 +1,6 @@
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
 
@@ -15,7 +16,6 @@ using Karkinolution::Networking::ClientSide::ClientSideError;
 using Karkinolution::Networking::ClientSide::Protocol::FutureResponse;
 using Karkinolution::Networking::ClientSide::Protocol::PendingRequests;
 using Karkinolution::Networking::ClientSide::Protocol::RequestFailure;
-using Karkinolution::Networking::ClientSide::Protocol::ResponseResult;
 
 namespace {
 
@@ -35,7 +35,7 @@ TEST(PendingRequests, AddRequestConcurrentlyAcceptsOnlyOne) {
 	constexpr RequestId req_id = 4134;
 
 	for (int iteration = 0; iteration < 10000; iteration++) {
-		PendingRequests pending_requests;
+		PendingRequests<ResponseFrameVariant, RequestId> pending_requests;
 
 		std::barrier start_line(2);
 
@@ -71,7 +71,8 @@ TEST(PendingRequests, AddResponseConcurrentlyAcceptsOnlyOne) {
 	ResponseFrame response{123, req_id, ResponseSubTypes::CORPSE, payload, ResponseCardinality::ONE};
 
 	for (int i = 0; i < 10000; i++) {
-		Karkinolution::Networking::ClientSide::Protocol::PendingRequests pending_requests;
+		Karkinolution::Networking::ClientSide::Protocol::PendingRequests<ResponseFrameVariant, RequestId>
+			pending_requests;
 
 		EXPECT_TRUE(pending_requests.add_request(req_id));
 
@@ -82,12 +83,12 @@ TEST(PendingRequests, AddResponseConcurrentlyAcceptsOnlyOne) {
 
 		std::thread thread_a([&] {
 			start_line.arrive_and_wait();
-			result_a = pending_requests.add_response(response);
+			result_a = pending_requests.add_response(response, response.get_request_id());
 		});
 
 		std::thread thread_b([&] {
 			start_line.arrive_and_wait();
-			result_b = pending_requests.add_response(response);
+			result_b = pending_requests.add_response(response, response.get_request_id());
 		});
 
 		thread_a.join();
@@ -98,7 +99,7 @@ TEST(PendingRequests, AddResponseConcurrentlyAcceptsOnlyOne) {
 }
 
 TEST(PendingRequests, PopResponseThrowsIfRequestDoesNotExist) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 42;
 
@@ -106,7 +107,7 @@ TEST(PendingRequests, PopResponseThrowsIfRequestDoesNotExist) {
 }
 
 TEST(PendingRequests, PopResponseReturnsEmptyWhenResponseIsNotAvailable) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 42;
 
@@ -119,7 +120,7 @@ TEST(PendingRequests, PopResponseReturnsEmptyWhenResponseIsNotAvailable) {
 }
 
 TEST(PendingRequests, PopResponseReturnsAvailableResponse) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 42;
 
@@ -127,7 +128,7 @@ TEST(PendingRequests, PopResponseReturnsAvailableResponse) {
 
 	const auto response = make_test_response(id);
 
-	ASSERT_TRUE(requests.add_response(response));
+	ASSERT_TRUE(requests.add_response(response, response.get_request_id()));
 
 	auto result = requests.pop_response(id);
 
@@ -137,13 +138,13 @@ TEST(PendingRequests, PopResponseReturnsAvailableResponse) {
 }
 
 TEST(PendingRequests, PopResponseReturnsAvailableErrorFrame) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 42;
 	const ErrorFrame    error{123, id, ErrorSubTypes::CREATURE_WAS_NOT_FOUND, std::vector<std::byte>{}};
 
 	ASSERT_TRUE(requests.add_request(id));
-	ASSERT_TRUE(requests.add_response(ResponseFrameVariant{error}));
+	ASSERT_TRUE(requests.add_response(ResponseFrameVariant{error}, id));
 
 	const auto result = requests.pop_response(id);
 
@@ -154,7 +155,7 @@ TEST(PendingRequests, PopResponseReturnsAvailableErrorFrame) {
 }
 
 TEST(PendingRequests, PopResponseRemovesRequestAfterRetrievingResponse) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 42;
 
@@ -162,7 +163,7 @@ TEST(PendingRequests, PopResponseRemovesRequestAfterRetrievingResponse) {
 
 	const auto response = make_test_response(id);
 
-	ASSERT_TRUE(requests.add_response(response));
+	ASSERT_TRUE(requests.add_response(response, id));
 
 	auto result = requests.pop_response(id);
 
@@ -173,7 +174,7 @@ TEST(PendingRequests, PopResponseRemovesRequestAfterRetrievingResponse) {
 }
 
 TEST(PendingRequests, PopResponseDoesNotRemoveRequestWithoutResponse) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 42;
 
@@ -186,7 +187,7 @@ TEST(PendingRequests, PopResponseDoesNotRemoveRequestWithoutResponse) {
 
 	const auto response = make_test_response(id);
 
-	ASSERT_TRUE(requests.add_response(response));
+	ASSERT_TRUE(requests.add_response(response, id));
 
 	auto second_result = requests.pop_response(id);
 
@@ -195,7 +196,7 @@ TEST(PendingRequests, PopResponseDoesNotRemoveRequestWithoutResponse) {
 }
 
 TEST(PendingRequests, PopResponseDoesNotRemoveOtherPendingRequests) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId first_id  = 42;
 	constexpr RequestId second_id = 43;
@@ -205,7 +206,7 @@ TEST(PendingRequests, PopResponseDoesNotRemoveOtherPendingRequests) {
 
 	const auto response = make_test_response(first_id);
 
-	ASSERT_TRUE(requests.add_response(response));
+	ASSERT_TRUE(requests.add_response(response, first_id));
 
 	auto result = requests.pop_response(first_id);
 
@@ -216,7 +217,7 @@ TEST(PendingRequests, PopResponseDoesNotRemoveOtherPendingRequests) {
 }
 
 TEST(PendingRequests, FailAllByDisconnectionFailsEveryPendingRequest) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId first_id  = 1;
 	constexpr RequestId second_id = 2;
@@ -237,13 +238,13 @@ TEST(PendingRequests, FailAllByDisconnectionFailsEveryPendingRequest) {
 }
 
 TEST(PendingRequests, FailAllByDisconnectionDoesNothingWhenEmpty) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	EXPECT_NO_THROW(requests.fail_all_by_disconnection());
 }
 
 TEST(PendingRequests, FailAllByDisconnectionDoesNotRemovePendingRequests) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 1;
 
@@ -257,14 +258,14 @@ TEST(PendingRequests, FailAllByDisconnectionDoesNotRemovePendingRequests) {
 }
 
 TEST(PendingRequests, FailAllByDisconnectionDoesNotOverwriteAvailableResponse) {
-	PendingRequests requests;
+	PendingRequests<ResponseFrameVariant, RequestId> requests;
 
 	constexpr RequestId id = 1;
 
 	ASSERT_TRUE(requests.add_request(id));
 
 	const auto response = make_test_response(id);
-	ASSERT_TRUE(requests.add_response(response));
+	ASSERT_TRUE(requests.add_response(response, id));
 
 	requests.fail_all_by_disconnection();
 

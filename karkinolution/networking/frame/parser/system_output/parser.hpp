@@ -74,6 +74,26 @@ namespace Karkinolution {
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemOutput (frame)");
 					}
 
+					template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+						const auto sub_type = std::get<SystemOutputSubTypes>(Internal::get_sub_type(bytes));
+
+						switch (sub_type) {
+							case SystemOutputSubTypes::AllWorldIds:
+								return generic_has_frame(bytes);
+							case SystemOutputSubTypes::WorldState:
+								return ST::WorldState::has_frame(bytes);
+							case SystemOutputSubTypes::None:
+								return generic_has_frame(bytes);
+							case SystemOutputSubTypes::ConfigOutput:
+								return generic_has_frame(bytes);
+							case SystemOutputSubTypes::WorldCreated:
+								return ST::WorldCreated::has_frame(bytes);
+							default:
+								KShared::Functional::unreachable_or_throw();
+						}
+					}
+
+
 				} // namespace SystemOutput
 			} // namespace Parser
 		} // namespace Frames

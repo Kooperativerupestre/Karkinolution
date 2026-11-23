@@ -1,9 +1,12 @@
 #pragma once
-#include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/binary/frames/parser/internal.hpp"
+#include "karkinolution/binary/frames/parser/parser.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 
+#include <cstdint>
 #include <deque>
 #include <karkinolution/binary/protocol/layouts.hpp>
+#include <karkinolution/networking/scope/layout.hpp>
 #include <optional>
 #include <vector>
 
@@ -12,9 +15,7 @@ namespace Karkinolution::Networking {
 	inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 64 * 1024;
 
 
-	using BufferExistence = Karkinolution::Binary::Frames::Parser::FrameExistence;
-
-	using CodeVariant = Karkinolution::Binary::Protocol::Detail::CodeVariant;
+	using BufferExistence = Karkinolution::Binary::Frames::Parser::Internal::FrameExistence;
 
 	/*
 	Why is this used by Client and ProtocolSession (Server side)
@@ -30,6 +31,7 @@ namespace Karkinolution::Networking {
 	class RawFrameBuffer {
 		private:
 
+			// A RawFrameBuffer should never contain any scope-related information.
 			std::deque<std::byte> buffer_;
 
 		public:
@@ -117,11 +119,32 @@ namespace Karkinolution::Networking {
 				 MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE);
 
 	namespace FrameBufferAnalyzer {
+		enum class PlacesOfEndOfFrame : uint8_t {
+			BUFFER,
+			NEW_BYTES
+		};
 
-		BufferExistence has_frame(const RawFrameBuffer &buffer);
+		struct EndOfFrame {
+				std::size_t        index;
+				PlacesOfEndOfFrame place;
+		};
 
-		std::optional<std::vector<std::byte>> get_frame(const RawFrameBuffer &buffer);
+		BufferExistence has_frame(const RawFrameBuffer &buffer, Scope::Scope scope);
+		BufferExistence has_frame(const std::vector<std::byte> &bytes, Scope::Scope);
+		// get_size_of_frame only works when declared_size is set and depends solely on it.
+		std::uint32_t get_size_of_frame(const RawFrameBuffer &buffer, Scope::Scope scope);
+		std::uint32_t get_size_of_frame(const std::vector<std::byte> &declared_size, Scope::Scope scope);
 
+		std::optional<std::vector<std::byte>> get_frame(const RawFrameBuffer &buffer, Scope::Scope scope);
+
+		// This function only works when the Frame starts at an index within the RawFrameBuffer.
+		std::optional<std::size_t> get_end_of_frame(const RawFrameBuffer &buffer, Scope::Scope scope);
+		std::optional<std::size_t> get_end_of_frame(const std::vector<std::byte> &bytes, Scope::Scope scope);
+
+		// This function works differently. It first checks whether the buffer contains a complete Frame, then checks
+		// whether the newly received bytes complete the Frame as well. See the implementation for more details.
+		std::optional<EndOfFrame>
+		get_end_of_frame(const RawFrameBuffer &buffer, std::span<const std::byte> new_bytes, Scope::Scope scope);
 	} // namespace FrameBufferAnalyzer
 
 } // namespace Karkinolution::Networking

@@ -1,8 +1,9 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/world.hpp"
 
-#include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/binary/frames/parser/parser.hpp"
 #include "karkinolution/binary/frames/processor.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
+#include "karkinolution/networking/scope/layout.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -37,8 +38,8 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 	}
 
 	void WorldSession::process_frames() {
-		while (FrameBufferAnalyzer::has_frame(request_buffer) == BufferExistence::YES) {
-			auto frame = FrameBufferAnalyzer::get_frame(request_buffer);
+		while (FrameBufferAnalyzer::has_frame(request_buffer, Scope::Scope::WORLD) == BufferExistence::YES) {
+			auto frame = FrameBufferAnalyzer::get_frame(request_buffer, Scope::Scope::WORLD);
 			for (std::size_t i = 0; i < frame->size(); ++i) {
 				request_buffer.pop_front();
 			}

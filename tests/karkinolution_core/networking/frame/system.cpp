@@ -1,7 +1,7 @@
 #include "karkinolution/networking/frame/interpreter.hpp"
 #include "karkinolution/networking/frame/motor.hpp"
+#include "karkinolution/networking/frame/parser/internal.hpp"
 #include "karkinolution/networking/frame/parser/parser.hpp"
-#include "karkinolution/networking/frame/parser/system_call/sub_types/create_world.hpp"
 
 #include <gtest/gtest.h>
 
@@ -15,7 +15,7 @@ TEST(SystemFrames, RawSystemCallRoundTripsItsTypeSubtypeIdAndPayload) {
 	const auto payload = Interpreter::SystemCall::SRI::make_config(123);
 	const auto raw     = Motor::make_raw_system_call(SystemCallSubTypes::CONFIG, call_id, payload);
 
-	ASSERT_EQ(Parser::has_frame(raw, Layout::SystemCall::FIXED_HEADER_SIZE), Parser::FrameExistence::YES);
+	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
 	const auto parsed = Parser::parse_system_call_frame(raw);
 
 	EXPECT_EQ(parsed.get_id(), call_id);
@@ -27,7 +27,7 @@ TEST(SystemFrames, RawSystemOutputRoundTripsItsTypeSubtypeCallIdAndPayload) {
 	const auto payload = Interpreter::SystemOutput::SRI::make_config_output({.could_connect = true});
 	const auto raw     = Motor::make_raw_system_output(SystemOutputSubTypes::ConfigOutput, call_id, payload);
 
-	ASSERT_EQ(Parser::has_frame(raw, Layout::SystemOutput::FIXED_HEADER_SIZE), Parser::FrameExistence::YES);
+	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
 	const auto parsed = Parser::parse_system_output_frame(raw);
 
 	EXPECT_EQ(parsed.get_call_id(), call_id);
@@ -46,8 +46,7 @@ TEST(SystemFrames, CreateWorldPreservesItsAutoConnectHeaderAndPresetPayload) {
                                                  payload,
                                                  Models::SystemCall::CreateWorldExtra{.auto_connect = true});
 
-	ASSERT_EQ(Parser::has_frame(raw, Layout::SystemCall::ST::CreateWorld::FIXED_HEADER_SIZE),
-			  Parser::FrameExistence::YES);
+	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
 	const auto parsed = Parser::parse_system_call_frame(raw);
 	ASSERT_TRUE(std::holds_alternative<Models::SystemCall::CreateWorldExtra>(parsed.get_extra()));
 	EXPECT_TRUE(std::get<Models::SystemCall::CreateWorldExtra>(parsed.get_extra()).auto_connect);
@@ -60,8 +59,7 @@ TEST(SystemFrames, WorldCreatedOutputRoundTripsItsBooleanPayload) {
 	const auto payload = Interpreter::SystemOutput::SRI::make_world_created({.world_created = true});
 	const auto raw     = Motor::make_raw_system_output(SystemOutputSubTypes::WorldCreated, call_id, payload);
 
-	ASSERT_EQ(Parser::has_frame(raw, Layout::SystemOutput::ST::WorldCreated::FIXED_HEADER_SIZE),
-			  Parser::FrameExistence::YES);
+	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
 	const auto parsed = Parser::parse_system_output_frame(raw);
 	EXPECT_EQ(parsed.get_sub_type(), SystemOutputSubTypes::WorldCreated);
 	EXPECT_TRUE(Interpreter::DSI::get_world_created(parsed.get_payload()).world_created);

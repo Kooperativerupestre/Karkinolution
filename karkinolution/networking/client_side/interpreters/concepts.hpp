@@ -1,16 +1,28 @@
 #pragma once
 
+#include "karkinolution/networking/client_side/client/protocol_session.hpp"
+
 #include <concepts>
 #include <karkinolution/networking/client_side/client/client.hpp>
 
 namespace Karkinolution::Networking::ClientSide {
 	template <typename T>
-	concept HasRequest = requires(T &client, const Client::RequestData &data) {
-		{ client.request(data) } -> std::same_as<Client::ResponseResult>;
+	concept CanRequestWorldScope = requires(T &client, const Client::WorldRequestData &data) {
+		{ client.request_world_scope(data) } -> std::same_as<Protocol::WorldSession::ResponseResult>;
+	};
+
+
+	template <typename T>
+	concept CanRequestSystemScope = requires(T &client, const Client::SystemRequestData &data) {
+		{ client.request_system_scope(data) } -> std::same_as<Protocol::SystemSession::ResponseResult>;
 	};
 
 	template <typename T>
-	concept HasSystemRequest = requires(T &client, const Client::SystemRequestData &data) {
-		{ client.request(data) } -> std::same_as<Protocol::SystemResponseResult>;
-	};
+	concept CanRequest =
+		requires(T &client, const Client::SystemRequestData &s_data, const Client::WorldRequestData &w_data) {
+			{ client.request_world_scope(w_data) } -> std::same_as<Protocol::WorldSession::ResponseResult>;
+			{ client.request_system_scope(s_data) } -> std::same_as<Protocol::SystemSession::ResponseResult>;
+		};
+
+
 } // namespace Karkinolution::Networking::ClientSide

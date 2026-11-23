@@ -1,4 +1,7 @@
 #pragma once
+#include "karkinolution/binary/core_aliases.hpp"
+#include "shared/functional/unreachable_or_throw.hpp"
+
 #include <karkinolution/binary/frames/parser/internal.hpp>
 #include <karkinolution/binary/frames/parser/request/core.hpp>
 #include <karkinolution/binary/frames/parser/request/sub_types/create.hpp>
@@ -57,12 +60,24 @@ namespace Karkinolution {
 
 					template <KShared::Binary::ByteRange T>
 					std::uint32_t calculate_payload_size(const T &bytes, RequestSubTypes sub_type) {
-						return calculate_payload_size(get_declared_size(bytes), sub_type);
+						if (sub_type == RequestSubTypes::SEE) {
+							return ST::See::calculate_payload_size(bytes);
+						} else if (sub_type == RequestSubTypes::CYCLE) {
+							return ST::Cycle::calculate_payload_size(bytes);
+						} else if (sub_type == RequestSubTypes::CREATE) {
+							return ST::Create::calculate_payload_size(bytes);
+						} else if (sub_type == RequestSubTypes::WANT) {
+							return ST::Want::calculate_payload_size(bytes);
+
+						} else if (sub_type == RequestSubTypes::ERASE) {
+							return ST::Erase::calculate_payload_size(bytes);
+						}
+						KShared::Functional::unreachable_or_throw();
 					}
 
 					template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 
-						const auto sub_type = std::get<RequestSubTypes>(get_sub_type(bytes));
+						const auto sub_type = std::get<RequestSubTypes>(Internal::get_sub_type(bytes));
 
 						if (sub_type == RequestSubTypes::SEE) {
 							return ST::See::get_payload(bytes);
@@ -74,6 +89,24 @@ namespace Karkinolution {
 							return ST::Want::get_payload(bytes);
 						} else if (sub_type == RequestSubTypes::ERASE) {
 							return ST::Erase::get_payload(bytes);
+						}
+						KShared::Functional::unreachable_or_throw();
+					}
+
+					template <KShared::Binary::ByteRange T>
+					constexpr Internal::FrameExistence has_frame(const T &bytes) {
+						const auto sub_type = std::get<RequestSubTypes>(Internal::get_sub_type(bytes));
+
+						if (sub_type == RequestSubTypes::CREATE) {
+							return ST::Create::has_frame(bytes);
+						} else if (sub_type == RequestSubTypes::CYCLE) {
+							return ST::Cycle::has_frame(bytes);
+						} else if (sub_type == RequestSubTypes::ERASE) {
+							return ST::Erase::has_frame(bytes);
+						} else if (sub_type == RequestSubTypes::SEE) {
+							return ST::See::has_frame(bytes);
+						} else if (sub_type == RequestSubTypes::WANT) {
+							return ST::Want::has_frame(bytes);
 						}
 						KShared::Functional::unreachable_or_throw();
 					}

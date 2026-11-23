@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/binary/frames/parser.hpp"
+#include "karkinolution/binary/frames/parser/parser.hpp"
 
 #include <karkinolution/binary/frames/aliases.hpp>
 #include <queue>

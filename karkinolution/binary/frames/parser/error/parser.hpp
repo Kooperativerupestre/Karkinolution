@@ -1,4 +1,6 @@
 #pragma once
+#include "karkinolution/binary/protocol/layouts.hpp"
+
 #include <cstdint>
 #include <karkinolution/binary/frames/parser/internal.hpp>
 
@@ -30,6 +32,10 @@ namespace Karkinolution::Binary::Frames::Parser {
 						   bytes.begin() + ProtocolLayout::Error::Payload::OFFSET
 							   + Internal::calculate_payload_size(bytes, ProtocolLayout::Error::Payload::OFFSET));
 			return payload;
+		}
+
+		template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+			return Internal::has_frame(bytes, ProtocolLayout::Error::FIXED_HEADER_SIZE);
 		}
 
 	} // namespace Error

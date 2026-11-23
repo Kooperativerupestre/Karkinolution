@@ -2,7 +2,6 @@
 
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/motor.hpp"
-#include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/response_queue.hpp"
 #include "karkinolution/networking/scope/layout.hpp"

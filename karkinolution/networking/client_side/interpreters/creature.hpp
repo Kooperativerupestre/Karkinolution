@@ -16,7 +16,7 @@
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 	// Returns std::nullopt when the server responds with "none" (entity not found).
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 	see_creature(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = CreatureSRI::Request::make_see_creature(id);
@@ -27,12 +27,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   SeeExtra{.target = SeeTarget::ONE});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
 
-		const auto result = client.request(data);
+		const auto result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
 		}
@@ -45,7 +45,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 		return CreatureDSI::get_creature(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 	make_creature(T                                                                           &client,
 				  std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
@@ -60,12 +60,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   CreateExtra{});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
 
-		const auto result = client.request(data);
+		const auto result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
 		}
@@ -78,7 +78,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 		return CreatureDSI::get_creature(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Creature::Creature>
 	tick_creature(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = CreatureSRI::Request::make_see_creature(id);
@@ -89,12 +89,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   CycleExtra{});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
 
-		const auto result = client.request(data);
+		const auto result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
 		}
@@ -107,7 +107,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 		return CreatureDSI::get_creature(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T> bool erase_creature(T &client, KShared::Core::Id::BaseIdType id) {
+	template <CanRequestWorldScope T> bool erase_creature(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = CreatureSRI::Request::make_see_creature(id);
 		const auto built =
 			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::ERASE,
@@ -115,11 +115,11 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 															   Resource::CREATURE,
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   EraseExtra{});
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
-		const auto                result = client.request(data);
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
+		const auto                     result = client.request_world_scope()(data);
 		if (!result || !result.value().has_value()) {
 			return false;
 		}

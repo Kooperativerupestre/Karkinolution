@@ -1,4 +1,6 @@
 #pragma once
+#include "karkinolution/binary/protocol/layouts.hpp"
+
 #include <karkinolution/binary/frames/parser/internal.hpp>
 
 namespace Karkinolution {
@@ -45,6 +47,9 @@ namespace Karkinolution {
 						return payload;
 					}
 
+					template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+						return Internal::has_frame(bytes, ProtocolLayout::Response::FIXED_HEADER_SIZE);
+					}
 
 				} // namespace Response
 			} // namespace Parser

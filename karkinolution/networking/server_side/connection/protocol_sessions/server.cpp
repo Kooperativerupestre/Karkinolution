@@ -1,5 +1,6 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/server.hpp"
 
+#include "karkinolution/networking/frame/parser/internal.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 
 #include <iomanip>
@@ -39,8 +40,7 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 	}
 
 	void ServerSession::process_frames() {
-		while (Frames::Parser::has_frame(call_buffer.view(), Frames::Layout::SystemCall::FIXED_HEADER_SIZE)
-			   == Frames::Parser::FrameExistence::YES) {
+		while (Frames::Parser::has_frame(call_buffer.view()) == Frames::Parser::Internal::FrameExistence::YES) {
 			const auto frame = Frames::Parser::get_frame(call_buffer.view());
 			for (std::size_t index = 0; index < frame.size(); ++index) {
 				call_buffer.pop_front();

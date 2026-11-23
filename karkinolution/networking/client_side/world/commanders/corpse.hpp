@@ -6,7 +6,7 @@
 #include "karkinolution/networking/client_side/world/world.hpp"
 
 namespace Karkinolution::Networking::ClientSide::World::Commanders::Corpse {
-	template <HasRequest T> bool tick_corpse(T &client, World &world, OrganismId id) {
+	template <CanRequestWorldScope T> bool tick_corpse(T &client, World &world, OrganismId id) {
 		const auto output = Interpreters::Corpse::tick_corpse(client, id);
 		if (!output) {
 			return false;
@@ -14,7 +14,7 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Corpse {
 		return world.update(*output);
 	}
 
-	template <HasRequest T> bool erase_corpse(T &client, World &world, OrganismId id) {
+	template <CanRequestWorldScope T> bool erase_corpse(T &client, World &world, OrganismId id) {
 		if (!Interpreters::Corpse::erase_corpse(client, id)) {
 			return false;
 		}

@@ -14,7 +14,7 @@ namespace TestUtils {
 
 	std::vector<std::byte> make_see_creature_frame(Karkinolution::Binary::RequestId id,
 												   KShared::Core::Id::BaseIdType    creature_id);
-	Karkinolution::Networking::ClientSide::Client::RequestData
+	Karkinolution::Networking::ClientSide::Client::WorldRequestData
 	make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id);
 
 } // namespace TestUtils

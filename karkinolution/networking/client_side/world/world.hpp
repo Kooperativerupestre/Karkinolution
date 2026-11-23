@@ -30,7 +30,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 
 			std::optional<KShared::Math::Units::Size> size;
 
-			template <HasRequest T> SyncOutput sync_soil(T &client, SoilId id) {
+			template <CanRequestWorldScope T> SyncOutput sync_soil(T &client, SoilId id) {
 				if (!has_soil(id)) {
 					return SyncOutput::DOES_NOT_EXIST;
 				}
@@ -54,7 +54,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 				return SyncOutput::UPDATED;
 			}
 
-			template <HasRequest T> void sync_size(T &client) {
+			template <CanRequestWorldScope T> void sync_size(T &client) {
 				const auto output = Interpreters::Territory::see_territory(client);
 
 				if (output) {
@@ -84,7 +84,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 				return size.value();
 			}
 
-			template <HasRequest T> void sync(T &client) {
+			template <CanRequestWorldScope T> void sync(T &client) {
 				sync_size(client);
 
 				std::vector<SoilId> ids;
@@ -106,7 +106,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			std::vector<Creature> creatures;
 			std::vector<Corpse>   corpses;
 
-			template <HasRequest T> SyncOutput sync_creature(T &client, OrganismId id) {
+			template <CanRequestWorldScope T> SyncOutput sync_creature(T &client, OrganismId id) {
 				if (!has_creature(id)) {
 					return SyncOutput::DOES_NOT_EXIST;
 				}
@@ -130,7 +130,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 				return SyncOutput::UPDATED;
 			}
 
-			template <HasRequest T> SyncOutput sync_corpse(T &client, OrganismId id) {
+			template <CanRequestWorldScope T> SyncOutput sync_corpse(T &client, OrganismId id) {
 				if (!has_corpse(id)) {
 					return SyncOutput::DOES_NOT_EXIST;
 				}
@@ -173,7 +173,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			KShared::Functional::OptionalReference<const Creature> get_a_creature(OrganismId id) const;
 			KShared::Functional::OptionalReference<const Corpse>   get_a_corpse(OrganismId id) const;
 
-			template <HasRequest T> void sync(T &client) {
+			template <CanRequestWorldScope T> void sync(T &client) {
 				std::vector<OrganismId> creature_ids;
 				std::vector<OrganismId> corpse_ids;
 
@@ -249,7 +249,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			bool remove_corpse(OrganismId id);
 			bool remove_soil(SoilId id);
 
-			template <HasRequest T> void sync(T &client) {
+			template <CanRequestWorldScope T> void sync(T &client) {
 				entities.sync(client);
 				territory.sync(client);
 			}

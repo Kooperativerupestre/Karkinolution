@@ -1,21 +1,23 @@
 #pragma once
 
-#include "karkinolution/binary/frames/parser.hpp"
-#include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/client/protocol_session.hpp"
 #include "karkinolution/networking/client_side/client/request_queue.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
+#include "karkinolution/networking/frame/contract.hpp"
 #include "karkinolution/networking/frame/core_aliases.hpp"
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
+#include "karkinolution/networking/scope/layout.hpp"
 #include "shared/core/error.hpp"
 #include "shared/core/id.hpp"
 
+#include <asio/buffer.hpp>
 #include <asio/executor_work_guard.hpp>
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/strand.hpp>
 #include <atomic>
+#include <cmath>
 #include <condition_variable>
 #include <iostream>
 #include <karkinolution/binary/core_aliases.hpp>
@@ -24,21 +26,58 @@
 #include <optional>
 #include <string>
 #include <thread>
+#include <vector>
 
 namespace Karkinolution::Networking::ClientSide {
 	using RequestId       = Karkinolution::Binary::RequestId;
 	using RequestSubTypes = Karkinolution::Binary::RequestSubTypes;
 	using Resource        = Karkinolution::Binary::Resource;
 
-	struct SendingState {
-			std::vector<std::byte> bytes;
-			bool                   is_sending = false;
+	class SendingState {
+		private:
+
+			std::optional<std::vector<std::byte>> raw_frame_;
+			bool                                  is_sending_   = false;
+			std::optional<bool>                   has_finished_ = std::nullopt;
+
+			// se for nullopt, não está mandando. Se tiver valor, ele responde se já terminou ou não de adicionar raw
+			// bytes
+			std::optional<Scope::Scope> scope_;
+
+			void reset_();
+
+		public:
+
+			explicit operator bool() const noexcept;
+
+			bool constexpr is_sending() const noexcept {
+				return is_sending_;
+			}
+
+			bool constexpr is_prepared() const noexcept {
+				return is_sending_ && scope_;
+			}
+
+			std::optional<bool> constexpr has_finished() const noexcept {
+				return has_finished_;
+			}
+
+			bool reset_if_finished();
+
+			asio::const_buffer take_buffer() const;
+
+			bool prepare_sending_state(Scope::Scope scope);
+
+			// retorna se realmente adicionou os novos bytes
+			bool enqueue_raw_bytes(std::span<const std::byte> new_bytes);
+
+			bool mark_as_finished();
 	};
 
 	namespace Client {
 		inline constexpr std::size_t MAX_TEMPORARY_RESPONSE_SIZE = 8192;
 
-		struct RequestData {
+		struct WorldRequestData {
 				RequestSubTypes                                              sub_type;
 				Resource                                                     resource;
 				std::vector<std::byte>                                       payload;
@@ -67,33 +106,14 @@ namespace Karkinolution::Networking::ClientSide {
 
 			public:
 
-				void increment() {
-					std::lock_guard lock{mutex};
-					count++;
-				}
-
-				void decrement() {
-					std::lock_guard lock{mutex};
-					count--;
-					if (count == 0) {
-						cv.notify_all();
-					}
-				}
-
-				int load() {
-					std::lock_guard lock{mutex};
-					return count;
-				}
-
-				void wait_until_zero() {
-					std::unique_lock lock{mutex};
-					cv.wait(lock, [this] {
-						return count == 0;
-					});
-				}
+				void increment();
+				void decrement();
+				int  load();
+				void wait_until_zero();
 		};
 
-		using ResponseResult = std::expected<std::optional<ResponseFrameVariant>, Protocol::CancelledError>;
+		using WorldResponseResult  = Protocol::SessionManager::WorldResponseResult;
+		using SystemResponseResult = Protocol::SessionManager::SystemResponseResult;
 
 		class Client {
 			public:
@@ -118,11 +138,15 @@ namespace Karkinolution::Networking::ClientSide {
 					return connected;
 				}
 
-				ResponseResult                 request(const RequestData &data);
-				Protocol::SystemResponseResult request(const SystemRequestData &data);
+				WorldResponseResult  request_world_scope(const WorldRequestData &data);
+				SystemResponseResult request_system_scope(const SystemRequestData &data);
 
-				RequestId      send_without_waiting(const RequestData &data);
-				ResponseResult pop_response(RequestId id);
+
+				RequestId              send_without_waiting_world_scope(const WorldRequestData &data);
+				Frames::SystemCall::Id send_without_waiting_system_scope(const SystemRequestData &data);
+
+				WorldResponseResult  pop_response_world_scope(RequestId id);
+				SystemResponseResult pop_response_system_scope(Frames::SystemCall::Id id);
 
 				int get_current_async_operations_running() {
 					return current_async_operations_running.load();
@@ -163,10 +187,6 @@ namespace Karkinolution::Networking::ClientSide {
 				void receive();
 				void send();
 
-				void clear_sending_state() {
-					sending_state.is_sending = false;
-					sending_state.bytes.clear();
-				}
 
 				int         creation_number;
 				std::string name;
@@ -179,7 +199,7 @@ namespace Karkinolution::Networking::ClientSide {
 
 				std::atomic<KShared::Core::Id::BaseIdType> next_request_id = 0;
 
-				Protocol::ProtocolSession protocol_session;
+				Protocol::SessionManager session;
 
 				std::array<std::byte, MAX_TEMPORARY_RESPONSE_SIZE> temporary_responses;
 
@@ -209,12 +229,12 @@ namespace Karkinolution::Networking::ClientSide {
 				bool connect() noexcept;
 				bool disconnect() noexcept;
 
-				ResponseResult                 request(const RequestData &data);
+				/*ResponseResult                 request(const WorldRequestData &data);
 				Protocol::SystemResponseResult request(const SystemRequestData &data);
 
-				RequestId      send_without_waiting(const RequestData &data);
+				RequestId      send_without_waiting(const WorldRequestData &data);
 				ResponseResult pop_response(RequestId id);
-
+*/
 				[[nodiscard]]
 				const Config &get_config() const noexcept {
 					return config;
@@ -224,6 +244,16 @@ namespace Karkinolution::Networking::ClientSide {
 				const std::string &get_name() const noexcept {
 					return name;
 				}
+
+				WorldResponseResult  request_world_scope(const WorldRequestData &data);
+				SystemResponseResult request_system_scope(const SystemRequestData &data);
+
+
+				RequestId              send_without_waiting_world_scope(const WorldRequestData &data);
+				Frames::SystemCall::Id send_without_waiting_system_scope(const SystemRequestData &data);
+
+				WorldResponseResult  pop_response_world_scope(RequestId id);
+				SystemResponseResult pop_response_system_scope(Frames::SystemCall::Id id);
 
 			private:
 
@@ -236,9 +266,16 @@ namespace Karkinolution::Networking::ClientSide {
 		};
 
 		namespace Validator {
+
 			void constexpr validate_is_connected(const Client &client) {
 				if (!client.is_connected()) {
 					throw ClientError("Client isn't connected");
+				}
+			}
+
+			void constexpr validate_is_connected(const RuntimeClient &client) {
+				if (!client.is_connected()) {
+					throw ClientError("RuntimeClient isn't connected");
 				}
 			}
 		}; // namespace Validator

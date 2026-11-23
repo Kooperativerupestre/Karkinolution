@@ -59,6 +59,19 @@ namespace Karkinolution {
 						KShared::Functional::unreachable_or_throw("Invalid sub type of SystemCall (frame))");
 					}
 
+					template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+						const auto sub_type = std::get<SystemCallSubTypes>(Internal::get_sub_type(bytes));
+
+						if (sub_type == SystemCallSubTypes::CONFIG) {
+							return ST::Config::has_frame(bytes);
+						} else if (sub_type == SystemCallSubTypes::GET_ALL_WORLD_IDS) {
+							return generic_has_frame(bytes);
+						} else if (sub_type == SystemCallSubTypes::CREATE_WORLD) {
+							return ST::CreateWorld::has_frame(bytes);
+						}
+						KShared::Functional::unreachable_or_throw();
+					}
+
 				} // namespace SystemCall
 			} // namespace Parser
 		} // namespace Frames

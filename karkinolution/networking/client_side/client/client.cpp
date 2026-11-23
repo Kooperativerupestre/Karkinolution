@@ -1,13 +1,14 @@
 #include "karkinolution/networking/client_side/client/client.hpp"
 
-#include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/networking/client_side/client/alias.hpp"
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/client/protocol_session.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
+#include "karkinolution/networking/frame/contract.hpp"
 
 #include <asio/bind_executor.hpp>
 #include <asio/connect.hpp>
+#include <asio/post.hpp>
 #include <asio/write.hpp>
 #include <chrono>
 #include <format>
@@ -18,293 +19,409 @@
 #include <karkinolution/networking/scope/motor.hpp>
 #include <thread>
 
-namespace Karkinolution::Networking::ClientSide::Client {
-	Client::~Client() {
-		stop_new_async_operations();
-		wait_until_zero_async_operations();
+namespace Karkinolution::Networking::ClientSide {
+
+	void SendingState::reset_() {
+		raw_frame_.reset();
+		is_sending_ = false;
+		scope_.reset();
+		has_finished_.reset();
 	}
 
-	void Client::on_error(const std::string &error_message) {
-		std::cerr << "Error: " << error_message << "\n";
-		disconnect();
+	SendingState::operator bool() const noexcept {
+		return is_sending_;
 	}
 
-	void Client::disconnect() {
-		asio::post(strand_, [this] {
-			asio::error_code ec;
-			socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
-			socket_.close(ec);
-			connected = false;
-			protocol_session.fail_pending_requests();
-		});
+	bool SendingState::reset_if_finished() {
+		if (!has_finished_.value_or(false)) {
+			return false;
+		}
+		reset_();
+		return true;
 	}
 
-	void Client::connect() {
-		if (connected) {
-			throw ClientError("Client is already connected");
+	asio::const_buffer SendingState::take_buffer() const {
+		if (has_finished_.value_or(false) && raw_frame_) {
+			return asio::buffer(*raw_frame_);
+		}
+		return asio::const_buffer{};
+	}
+
+	bool SendingState::prepare_sending_state(Scope::Scope scope) {
+		if (is_prepared()) {
+			return false;
+		}
+		scope_ = scope;
+
+		is_sending_   = true;
+		has_finished_ = false;
+		raw_frame_.emplace();
+		return true;
+	}
+
+	bool SendingState::enqueue_raw_bytes(std::span<const std::byte> new_bytes) {
+		if (has_finished_.value_or(false) || !is_sending()) {
+			return false;
+		}
+		assert(raw_frame_);
+
+		for (size_t i = 0; i < new_bytes.size(); i++) {
+			raw_frame_->push_back(new_bytes[i]);
+		}
+		return true;
+	}
+
+	bool SendingState::mark_as_finished() {
+		if (!is_sending_) {
+			return false;
+		}
+		has_finished_ = true;
+		return true;
+	}
+
+	namespace Client {
+
+		void AsyncOperationsRunning::increment() {
+			std::lock_guard lock{mutex};
+			count++;
 		}
 
-		Karkinolution::Networking::AsioResolver  resolver(io_context_);
-		Karkinolution::Networking::AsioErrorCode error;
-
-		const auto endpoints = resolver.resolve(config.host, std::to_string(config.port), error);
-
-		if (error) {
-			throw ClientError(std::format("Failed to resolve {}:{}: {}", config.host, config.port, error.message()));
-		}
-
-		error.clear();
-
-		asio::connect(socket_, endpoints, error);
-
-		if (error) {
-			throw ClientError(std::format("Failed to connect to {}:{}: {}", config.host, config.port, error.message()));
-		}
-		connected = true;
-		asio::post(strand_, [this] {
-			receive();
-		});
-	}
-
-	RequestId Client::send_without_waiting(const RequestData &data) {
-		Validator::validate_is_connected(*this);
-
-		const auto request_id = next_request_id.fetch_add(1);
-		auto       raw_frame  = Karkinolution::Networking::Scope::Motor::make_world_frame(
-            Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
-                                                                         request_id,
-                                                                         data.resource,
-                                                                         data.payload,
-                                                                         data.extra));
-
-		protocol_session.register_request(request_id);
-		asio::post(strand_, [this, frame = std::move(raw_frame)]() mutable {
-			protocol_session.enqueue_request(frame);
-			send();
-		});
-
-		return request_id;
-	}
-
-	Protocol::SystemResponseResult Client::request(const SystemRequestData &data) {
-		Validator::validate_is_connected(*this);
-		const auto request_id = next_request_id.fetch_add(1);
-		const auto frame      = Karkinolution::Networking::Scope::Motor::make_system_frame(
-            Karkinolution::Networking::Frames::Motor::make_raw_system_call(data.sub_type,
-                                                                           request_id,
-                                                                           data.payload,
-                                                                           data.extra));
-		protocol_session.register_system_request(request_id);
-		asio::post(strand_, [this, frame] {
-			protocol_session.enqueue_request(frame);
-			send();
-		});
-		const auto output = protocol_session.await_system_response(request_id);
-		if (!output) {
-			if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
-				throw ClientError("Tried to request with the client disconnected");
+		void AsyncOperationsRunning::decrement() {
+			std::lock_guard lock{mutex};
+			count--;
+			if (count == 0) {
+				cv.notify_all();
 			}
-			return std::unexpected(Protocol::RequestFailure::CANCEL);
-		}
-		return output;
-	}
-
-	void Client::send() {
-		if (!connected || sending_state.is_sending || stopped_new_async_operations) {
-			return;
 		}
 
-		auto bytes = protocol_session.pop_request();
-
-		if (!bytes) {
-			return;
+		int AsyncOperationsRunning::load() {
+			std::lock_guard lock{mutex};
+			return count;
 		}
 
-		current_async_operations_running.increment();
-		sending_state.is_sending = true;
-		sending_state.bytes      = bytes.value();
-		try {
-			asio::async_write(
-				socket_,
-				asio::buffer(sending_state.bytes.data(), sending_state.bytes.size()),
+		void AsyncOperationsRunning::wait_until_zero() {
+			std::unique_lock lock{mutex};
+			cv.wait(lock, [this] {
+				return count == 0;
+			});
+		}
 
-				asio::bind_executor(strand_,
-									[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t) {
-										if (error) {
-											if (error == asio::error::operation_aborted) {
+		Client::~Client() {
+			stop_new_async_operations();
+			wait_until_zero_async_operations();
+		}
+
+		void Client::on_error(const std::string &error_message) {
+			std::cerr << "Error: " << error_message << "\n";
+			disconnect();
+		}
+
+		void Client::disconnect() {
+			asio::post(strand_, [this] {
+				asio::error_code ec;
+				socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+				socket_.close(ec);
+				connected = false;
+				session.fail_pending_requests();
+			});
+		}
+
+		void Client::connect() {
+			if (connected) {
+				throw ClientError("Client is already connected");
+			}
+
+			Karkinolution::Networking::AsioResolver  resolver(io_context_);
+			Karkinolution::Networking::AsioErrorCode error;
+
+			const auto endpoints = resolver.resolve(config.host, std::to_string(config.port), error);
+
+			if (error) {
+				throw ClientError(
+					std::format("Failed to resolve {}:{}: {}", config.host, config.port, error.message()));
+			}
+
+			error.clear();
+
+			asio::connect(socket_, endpoints, error);
+
+			if (error) {
+				throw ClientError(
+					std::format("Failed to connect to {}:{}: {}", config.host, config.port, error.message()));
+			}
+			connected = true;
+			asio::post(strand_, [this] {
+				receive();
+			});
+		}
+
+		RequestId Client::send_without_waiting_world_scope(const WorldRequestData &data) {
+			Validator::validate_is_connected(*this);
+
+			const auto request_id = next_request_id.fetch_add(1);
+			auto       raw_frame  = Karkinolution::Networking::Scope::Motor::make_world_frame(
+                Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
+                                                                             request_id,
+                                                                             data.resource,
+                                                                             data.payload,
+                                                                             data.extra));
+
+			session.register_world_request(request_id);
+			asio::post(strand_, [this, frame = std::move(raw_frame)]() mutable {
+				session.enqueue_world_request(frame);
+				send();
+			});
+
+			return request_id;
+		}
+
+		WorldResponseResult Client::request_world_scope(const WorldRequestData &data) {
+			Validator::validate_is_connected(*this);
+
+			const auto request_id = send_without_waiting_world_scope(data);
+			const auto output     = session.await_world_response(request_id);
+
+			if (!output) {
+				if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+					throw ClientError("Tried to request with the client disconnected");
+				}
+				return std::unexpected(Protocol::RequestFailure::CANCEL);
+			}
+			return output;
+		}
+
+		WorldResponseResult Client::pop_response_world_scope(Binary::RequestId id) {
+			const auto output = session.pop_world_response(id);
+
+			if (!output) {
+				if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+					throw ClientError("Tried to pop a response with the client disconnected");
+				}
+				return std::unexpected(Protocol::RequestFailure::CANCEL);
+			}
+			return output;
+		}
+
+		Frames::SystemCall::Id Client::send_without_waiting_system_scope(const SystemRequestData &data) {
+			Validator::validate_is_connected(*this);
+
+			const auto request_id = next_request_id.fetch_add(1);
+			const auto raw_Frame  = Scope::Motor::make_system_frame(
+                Frames::Motor::make_raw_system_call(data.sub_type, request_id, data.payload, data.extra));
+
+
+			session.register_system_request(request_id);
+
+			asio::post(strand_, [this, frame = std::move(raw_Frame)]() mutable {
+				session.enqueue_system_request(frame);
+				send();
+			});
+			return request_id;
+		}
+
+		SystemResponseResult Client::pop_response_system_scope(Frames::SystemCall::Id id) {
+			const auto output = session.pop_system_response(id);
+
+			if (!output) {
+				if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+					throw ClientError("Tried to pop a response with the client disconnected");
+				}
+				return std::unexpected(Protocol::RequestFailure::CANCEL);
+			}
+			return output;
+		}
+
+		SystemResponseResult Client::request_system_scope(const SystemRequestData &data) {
+			Validator::validate_is_connected(*this);
+			const auto request_id = send_without_waiting_system_scope(data);
+			const auto output     = session.await_system_response(request_id);
+			if (!output) {
+				if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
+					throw ClientError("Tried to request with the client disconnected");
+				}
+				return std::unexpected(Protocol::RequestFailure::CANCEL);
+			}
+			return output;
+		}
+
+		void Client::send() {
+			if (!connected || sending_state || stopped_new_async_operations) {
+				return;
+			}
+
+			auto bytes = session.pop_request_front();
+
+			if (!bytes) {
+				return;
+			}
+
+			current_async_operations_running.increment();
+			sending_state.prepare_sending_state(bytes.see_scope().value());
+			sending_state.enqueue_raw_bytes(bytes.see_frame().value());
+
+
+			sending_state.mark_as_finished();
+
+			try {
+				asio::async_write(
+					socket_,
+					sending_state.take_buffer(),
+
+					asio::bind_executor(strand_,
+										[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t) {
+											if (error) {
+												if (error == asio::error::operation_aborted) {
+													current_async_operations_running.decrement();
+													return;
+												}
+												on_error(error.message());
 												current_async_operations_running.decrement();
 												return;
 											}
-											on_error(error.message());
+											const auto has_reseted = sending_state.reset_if_finished();
+											assert(has_reseted);
+											send();
 											current_async_operations_running.decrement();
-											return;
-										}
-										clear_sending_state();
-
-										send();
-										current_async_operations_running.decrement();
-									}));
-		} catch (...) {
-			current_async_operations_running.decrement();
-			throw;
+										}));
+			} catch (...) {
+				current_async_operations_running.decrement();
+				throw;
+			}
 		}
-	}
 
-	void Client::receive() {
-		if (stopped_new_async_operations) {
-			return;
-		}
-		current_async_operations_running.increment();
-		try {
-			socket_.async_read_some(
-				asio::buffer(temporary_responses),
-				asio::bind_executor(
-					strand_,
-					[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t bytes_received) {
-						if (error) {
-							if (error == asio::error::eof) {
-								on_closed();
-								current_async_operations_running.decrement();
-								return;
-							} else if (error == asio::error::operation_aborted) {
+		void Client::receive() {
+			if (stopped_new_async_operations) {
+				return;
+			}
+			current_async_operations_running.increment();
+			try {
+				socket_.async_read_some(
+					asio::buffer(temporary_responses),
+					asio::bind_executor(
+						strand_,
+						[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t bytes_received) {
+							if (error) {
+								if (error == asio::error::eof) {
+									on_closed();
+									current_async_operations_running.decrement();
+									return;
+								} else if (error == asio::error::operation_aborted) {
+									current_async_operations_running.decrement();
+									return;
+								}
+
+								on_error(error.message());
 								current_async_operations_running.decrement();
 								return;
 							}
 
-							on_error(error.message());
+							session.receive(std::span<const std::byte>{temporary_responses.data(), bytes_received});
+							receive();
 							current_async_operations_running.decrement();
-							return;
-						}
-
-						protocol_session.receive(
-							std::span<const std::byte>{temporary_responses.data(), bytes_received});
-						receive();
-						current_async_operations_running.decrement();
-					}));
-		} catch (...) {
-			current_async_operations_running.decrement();
-			throw;
-		}
-	}
-
-	ResponseResult Client::pop_response(RequestId id) {
-		const auto output = protocol_session.pop_response(id);
-
-		if (!output) {
-			if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
-				throw ClientError("Tried to pop a response with the client disconnected");
-			} else if (output.error() == Protocol::RequestFailure::CANCEL) {
-				return std::unexpected(Protocol::CancelledError{});
+						}));
+			} catch (...) {
+				current_async_operations_running.decrement();
+				throw;
 			}
 		}
-		return output.value();
-	}
 
-	ResponseResult Client::request(const RequestData &data) {
-		const auto id     = send_without_waiting(data);
-		const auto output = protocol_session.await_response(id);
+		void Client::stop_new_async_operations() {
+			auto promise = std::make_shared<std::promise<void>>();
+			auto future  = promise->get_future();
 
-		if (!output) {
-			if (output.error() == Protocol::RequestFailure::DISCONNECTION) {
-				throw ClientError("Tried to request with the client disconnected");
+			asio::post(strand_, [this, promise] {
+				stopped_new_async_operations.store(true);
+				asio::error_code ec;
+				socket_.cancel(ec);
+				promise->set_value();
+			});
+			future.get();
+		}
+
+		RuntimeClient::RuntimeClient(Config config, std::string name)
+			: io()
+			, guard(io.get_executor())
+			, config(std::move(config))
+			, name(std::move(name))
+			, client(std::in_place, io, this->config, this->name)
+			, runner([this] {
+				io.run();
+			}) {}
+
+		RuntimeClient::~RuntimeClient() noexcept {
+			disconnect();
+			guard.reset();
+			if (runner.joinable()) {
+				runner.join();
 			}
-
-			return std::unexpected(Protocol::CancelledError{});
 		}
 
-		return output.value();
-	}
-
-	void Client::stop_new_async_operations() {
-		auto promise = std::make_shared<std::promise<void>>();
-		auto future  = promise->get_future();
-
-		asio::post(strand_, [this, promise] {
-			stopped_new_async_operations.store(true);
-			asio::error_code ec;
-			socket_.cancel(ec);
-			promise->set_value();
-		});
-		future.get();
-	}
-
-	RuntimeClient::RuntimeClient(Config config, std::string name)
-		: io()
-		, guard(io.get_executor())
-		, config(std::move(config))
-		, name(std::move(name))
-		, client(std::in_place, io, this->config, this->name)
-		, runner([this] {
-			io.run();
-		}) {}
-
-	RuntimeClient::~RuntimeClient() noexcept {
-		disconnect();
-		guard.reset();
-		if (runner.joinable()) {
-			runner.join();
+		bool RuntimeClient::is_connected() const noexcept {
+			return client.has_value() && client->is_connected();
 		}
-	}
 
-	bool RuntimeClient::is_connected() const noexcept {
-		return client.has_value() && client->is_connected();
-	}
-
-	bool RuntimeClient::connect() noexcept {
-		try {
-			if (is_connected()) {
-				return true;
-			}
-			client.emplace(io, config, name);
-			client->connect();
-			return client->is_connected();
-		} catch (...) {
-			client.reset();
-			return false;
-		}
-	}
-
-	bool RuntimeClient::disconnect() noexcept {
-		try {
-			if (client) {
-				if (client->is_connected()) {
-					client->disconnect();
+		bool RuntimeClient::connect() noexcept {
+			try {
+				if (is_connected()) {
+					return true;
 				}
-				client->stop_new_async_operations();
-				client->wait_until_zero_async_operations();
+				client.emplace(io, config, name);
+				client->connect();
+				return client->is_connected();
+			} catch (...) {
 				client.reset();
+				return false;
 			}
-			return true;
-		} catch (...) {
-			return false;
 		}
-	}
 
-	ResponseResult RuntimeClient::request(const RequestData &data) {
-		if (!client || !client->is_connected()) {
-			throw ClientError("RuntimeClient is not connected");
+		bool RuntimeClient::disconnect() noexcept {
+			try {
+				if (client) {
+					if (client->is_connected()) {
+						client->disconnect();
+					}
+					client->stop_new_async_operations();
+					client->wait_until_zero_async_operations();
+					client.reset();
+				}
+				return true;
+			} catch (...) {
+				return false;
+			}
 		}
-		return client->request(data);
-	}
 
-	Protocol::SystemResponseResult RuntimeClient::request(const SystemRequestData &data) {
-		if (!client || !client->is_connected()) {
-			throw ClientError("RuntimeClient is not connected");
-		}
-		return client->request(data);
-	}
+		SystemResponseResult RuntimeClient::pop_response_system_scope(Frames::SystemCall::Id id) {
+			Validator::validate_is_connected(*this);
 
-	RequestId RuntimeClient::send_without_waiting(const RequestData &data) {
-		if (!client || !client->is_connected()) {
-			throw ClientError("RuntimeClient is not connected");
+			return client->pop_response_system_scope(id);
 		}
-		return client->send_without_waiting(data);
-	}
 
-	ResponseResult RuntimeClient::pop_response(RequestId id) {
-		if (!client) {
-			throw ClientError("RuntimeClient has no active client");
+		SystemResponseResult RuntimeClient::request_system_scope(const SystemRequestData &data) {
+			Validator::validate_is_connected(*this);
+
+			return client->request_system_scope(data);
 		}
-		return client->pop_response(id);
-	}
-} // namespace Karkinolution::Networking::ClientSide::Client
+
+		Frames::SystemCall::Id RuntimeClient::send_without_waiting_system_scope(const SystemRequestData &data) {
+			Validator::validate_is_connected(*this);
+
+			return client->send_without_waiting_system_scope(data);
+		}
+
+		WorldResponseResult RuntimeClient::pop_response_world_scope(Binary::RequestId id) {
+			Validator::validate_is_connected(*this);
+			return client->pop_response_world_scope(id);
+		}
+
+		WorldResponseResult RuntimeClient::request_world_scope(const WorldRequestData &data) {
+			Validator::validate_is_connected(*this);
+			return client->request_world_scope(data);
+		}
+
+		Binary::RequestId RuntimeClient::send_without_waiting_world_scope(const WorldRequestData &data) {
+			Validator::validate_is_connected(*this);
+			return client->send_without_waiting_world_scope(data);
+		}
+
+	} // namespace Client
+} // namespace Karkinolution::Networking::ClientSide

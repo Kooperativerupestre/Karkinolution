@@ -16,31 +16,7 @@ namespace Karkinolution {
 	namespace Networking {
 		namespace Frames {
 			namespace Parser {
-				enum class FrameExistence : uint8_t {
-					YES,
-					INCOMPLETE,
-					NO
-				};
 
-				template <KShared::Binary::ByteRange T>
-				FrameExistence has_frame(const T &bytes, std::size_t fixed_header_size) {
-					if (bytes.size() == 0) {
-						return FrameExistence::NO;
-					}
-					if (bytes.size() < Layout::DeclaredSize::END) {
-						return FrameExistence::INCOMPLETE;
-					}
-					const auto declared_size         = Internal::get_declared_size(bytes);
-					const auto minimum_declared_size = fixed_header_size - Layout::DeclaredSize::SIZE;
-					if (declared_size < minimum_declared_size) {
-						throw KShared::Binary::ByteError(
-							std::format("Declared size {} is lower than the minimum frame size {}",
-										declared_size,
-										minimum_declared_size));
-					}
-					const auto frame_size = Layout::DeclaredSize::SIZE + declared_size;
-					return bytes.size() >= frame_size ? FrameExistence::YES : FrameExistence::INCOMPLETE;
-				}
 
 				template <KShared::Binary::ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
 					const auto frame_size = Layout::DeclaredSize::SIZE + Internal::get_declared_size(bytes);
@@ -126,6 +102,20 @@ namespace Karkinolution {
 							SystemOutput::get_id(bytes),
 							get_payload(bytes),
 							sub_type};
+				}
+
+				template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+					if (Internal::has_header(bytes) != Internal::FrameExistence::YES) {
+						return Internal::has_header(bytes);
+					}
+					const auto type = Internal::get_type(bytes);
+
+					if (type == Type::SystemCall) {
+						return SystemCall::has_frame(bytes);
+					} else if (type == Type::SystemOutput) {
+						return SystemOutput::has_frame(bytes);
+					}
+					KShared::Functional::unreachable_or_throw();
 				}
 			} // namespace Parser
 		} // namespace Frames

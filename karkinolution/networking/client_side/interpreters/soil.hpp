@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Soil::Soil> see_soil(T &client,
 																					KShared::Core::Id::BaseIdType id) {
 		const auto payload = SoilSRI::Request::make_see_soil(id);
@@ -30,11 +30,11 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   SeeExtra{.target = SeeTarget::ONE});
 
-		const Client::RequestData    data{.sub_type = built.get_sub_type(),
-										  .resource = built.get_resource(),
-										  .payload  = built.get_payload(),
-										  .extra    = built.get_extra()};
-		const Client::ResponseResult result = client.request(data);
+		const Client::WorldRequestData    data{.sub_type = built.get_sub_type(),
+											   .resource = built.get_resource(),
+											   .payload  = built.get_payload(),
+											   .extra    = built.get_extra()};
+		const Client::WorldResponseResult result = client.request_world_scope(data);
 
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
@@ -48,7 +48,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 		return SoilDSI::get_soil(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::vector<Karkinolution::Binary::Interpreters::Models::Soil::Soil> see_all_soils(T &client) {
 		const auto payload = SoilSRI::Request::make_see_all_soils();
 
@@ -59,11 +59,11 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   SeeExtra{.target = SeeTarget::ALL});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
-		const auto                result = client.request(data);
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
+		const auto                     result = client.request_world_scope(data);
 
 		if (!result || !result.value().has_value()) {
 			return {};
@@ -77,7 +77,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 		return ListTDSI::deserialize<SoilSRI::Layout::TOTAL_SIZE>(frame.get_payload(), SoilDSI::get_soil, 0);
 	}
 
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Binary::Interpreters::Models::Soil::Soil> tick_soil(T &client,
 																					 KShared::Core::Id::BaseIdType id) {
 		const auto payload = SoilSRI::Request::make_see_soil(id);
@@ -88,12 +88,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   CycleExtra{});
 
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
 
-		const auto result = client.request(data);
+		const auto result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return std::nullopt;
 		}
@@ -106,7 +106,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 		return SoilDSI::get_soil(frame.get_payload(), 0);
 	}
 
-	template <HasRequest T> bool erase_soil(T &client, KShared::Core::Id::BaseIdType id) {
+	template <CanRequestWorldScope T> bool erase_soil(T &client, KShared::Core::Id::BaseIdType id) {
 		const auto payload = SoilSRI::Request::make_see_soil(id);
 		const auto built =
 			Karkinolution::Binary::Frames::Motor::make_request(RequestSubTypes::ERASE,
@@ -114,11 +114,11 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 															   Resource::SOIL,
 															   std::vector<std::byte>(payload.begin(), payload.end()),
 															   EraseExtra{});
-		const Client::RequestData data{.sub_type = built.get_sub_type(),
-									   .resource = built.get_resource(),
-									   .payload  = built.get_payload(),
-									   .extra    = built.get_extra()};
-		const auto                result = client.request(data);
+		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
+											.resource = built.get_resource(),
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
+		const auto                     result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return false;
 		}

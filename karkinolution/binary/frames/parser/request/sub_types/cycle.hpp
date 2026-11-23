@@ -1,4 +1,7 @@
 #pragma once
+#include "karkinolution/binary/protocol/layouts.hpp"
+#include "shared/binary/byte_range.hpp"
+
 #include <karkinolution/binary/frames/parser/internal.hpp>
 
 namespace Karkinolution {
@@ -37,6 +40,11 @@ namespace Karkinolution {
 								return Internal::calculate_payload_size(
 									bytes,
 									ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
+							}
+
+							template <KShared::Binary::ByteRange T>
+							constexpr Internal::FrameExistence has_frame(const T &bytes) {
+								return Internal::has_frame(bytes, ProtocolLayout::Request::Cycle::FIXED_HEADER_SIZE);
 							}
 
 						} // namespace Cycle

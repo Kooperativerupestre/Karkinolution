@@ -3,7 +3,6 @@
 
 #include "karkinolution/binary/frames/errors.hpp"
 #include "karkinolution/binary/frames/models.hpp"
-#include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/frames/processor.hpp"
 #include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
@@ -13,6 +12,7 @@
 #include <array>
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/frames/aliases.hpp>
+#include <karkinolution/binary/frames/parser/parser.hpp>
 #include <karkinolution/binary/protocol/layouts.hpp>
 #include <karkinolution/binary/protocol/utils.hpp>
 #include <karkinolution/networking/scope/layout.hpp>

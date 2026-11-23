@@ -35,6 +35,10 @@ namespace Karkinolution {
 					return Internal::calculate_payload_size(bytes, Layout::SystemCall::ST::Config::FIXED_HEADER_SIZE);
 				}
 
+				template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+					return Internal::has_frame(bytes, Layout::SystemCall::ST::Config::FIXED_HEADER_SIZE);
+				}
+
 			} // namespace Parser::SystemCall::ST::Config
 		} // namespace Frames
 	} // namespace Networking

@@ -2,7 +2,6 @@
 #include "karkinolution/binary/binary_validators.hpp"
 #include "karkinolution/binary/core_aliases.hpp"
 #include "karkinolution/binary/frames/models.hpp"
-#include "karkinolution/binary/frames/parser.hpp"
 #include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/binary/protocol/utils.hpp"
 #include "karkinolution/networking/server_side/api_adapter/corpse.hpp"

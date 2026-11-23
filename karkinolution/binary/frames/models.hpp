@@ -294,6 +294,8 @@ namespace Karkinolution {
 						}
 				};
 
+				using ResponseVariant = std::variant<Response::Response, Error::Error>;
+
 			} // namespace Models
 		} // namespace Frames
 	} // namespace Binary

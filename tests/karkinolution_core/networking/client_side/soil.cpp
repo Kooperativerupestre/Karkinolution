@@ -22,8 +22,8 @@ namespace {
 			explicit SoilListClient(const World &world)
 				: world(world) {}
 
-			Karkinolution::Networking::ClientSide::Client::ResponseResult
-			request(const Karkinolution::Networking::ClientSide::Client::RequestData &) {
+			Karkinolution::Networking::ClientSide::Client::WorldResponseResult
+			request_world_scope(const Karkinolution::Networking::ClientSide::Client::WorldRequestData &) {
 				const auto &soil_pieces = world.see_territory().registry();
 				const auto  payload =
 					ListTSRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(std::views::values(soil_pieces),

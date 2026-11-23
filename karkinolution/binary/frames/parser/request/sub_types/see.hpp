@@ -47,6 +47,11 @@ namespace Karkinolution {
 									ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
 							}
 
+							template <KShared::Binary::ByteRange T>
+							constexpr Internal::FrameExistence has_frame(const T &bytes) {
+								return Internal::has_frame(bytes, ProtocolLayout::Request::See::FIXED_HEADER_SIZE);
+							}
+
 
 						} // namespace See
 					} // namespace ST

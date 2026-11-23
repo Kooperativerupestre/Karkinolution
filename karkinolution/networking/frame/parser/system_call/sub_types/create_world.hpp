@@ -29,4 +29,8 @@ namespace Karkinolution::Networking::Frames::Parser::SystemCall::ST::CreateWorld
 	constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size) {
 		return Internal::calculate_payload_size(declared_size, Layout::SystemCall::ST::CreateWorld::FIXED_HEADER_SIZE);
 	}
+
+	template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
+		return Internal::has_frame(bytes, Layout::SystemCall::ST::CreateWorld::FIXED_HEADER_SIZE);
+	}
 } // namespace Karkinolution::Networking::Frames::Parser::SystemCall::ST::CreateWorld

@@ -11,7 +11,7 @@
 #include <string>
 
 namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature {
-	template <HasRequest T>
+	template <CanRequestWorldScope T>
 	std::optional<ClientSide::World::Creature> make_creature(T                                      &client,
 															 World                                  &world,
 															 std::optional<Gender>                   gender,
@@ -27,7 +27,7 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature {
 		return world.add(*output);
 	}
 
-	template <HasRequest T> bool tick_creature(T &client, World &world, OrganismId id) {
+	template <CanRequestWorldScope T> bool tick_creature(T &client, World &world, OrganismId id) {
 		const auto output = Interpreters::Creature::tick_creature(client, id);
 		if (!output) {
 			return false;
@@ -35,7 +35,7 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature {
 		return world.update(*output);
 	}
 
-	template <HasRequest T> bool erase_creature(T &client, World &world, OrganismId id) {
+	template <CanRequestWorldScope T> bool erase_creature(T &client, World &world, OrganismId id) {
 		if (!Interpreters::Creature::erase_creature(client, id)) {
 			return false;
 		}

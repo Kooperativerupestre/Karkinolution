@@ -25,8 +25,7 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 			RawFrameBuffer frame_buffer;
 			frame_buffer.add(frame_bytes);
 			if (scope == Scope::Scope::SERVER) {
-				if (Frames::Parser::has_frame(frame_buffer.view(), Frames::Layout::SystemCall::FIXED_HEADER_SIZE)
-					!= Frames::Parser::FrameExistence::YES) {
+				if (Frames::Parser::has_frame(frame_buffer.view()) != Frames::Parser::Internal::FrameExistence::YES) {
 					return;
 				}
 				const auto frame = Frames::Parser::get_frame(frame_buffer.view());
@@ -38,13 +37,13 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 					world_session.emplace(server_session.world());
 				}
 			} else if (scope == Scope::Scope::WORLD) {
-				if (FrameBufferAnalyzer::has_frame(frame_buffer) != BufferExistence::YES) {
+				if (FrameBufferAnalyzer::has_frame(frame_buffer, scope) != BufferExistence::YES) {
 					return;
 				}
 				if (!world_session) {
 					throw std::runtime_error("World scope received before world acquisition");
 				}
-				const auto frame = FrameBufferAnalyzer::get_frame(frame_buffer);
+				const auto frame = FrameBufferAnalyzer::get_frame(frame_buffer, scope);
 				world_session->receive(std::span<const std::byte>{*frame});
 				for (std::size_t index = 0; index < frame->size() + 1; ++index) {
 					incoming.pop_front();

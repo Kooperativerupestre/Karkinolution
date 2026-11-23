@@ -1,7 +1,6 @@
 #include "karkinolution/networking/client_side/client/alias.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
 #include "karkinolution/test/utils.hpp"
-#include "shared/core/error.hpp"
 
 #include <chrono>
 #include <gtest/gtest.h>
@@ -17,13 +16,13 @@ TEST_F(ClientTest, PendingRequestFailsWhenServerDrops) {
 	client.connect();
 	server.accept_peer();
 
-	const auto id = client.send_without_waiting(TestUtils::make_see_creature_request_data(45));
+	const auto id = client.send_without_waiting_world_scope(TestUtils::make_see_creature_request_data(45));
 	server.drop_conection();
 	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
 	bool       failed   = false;
 	while (std::chrono::steady_clock::now() < deadline) {
 		try {
-			const auto output = client.pop_response(id);
+			const auto output = client.pop_response_world_scope(id);
 		} catch (const ClientError &error) {
 			failed = true;
 			break;

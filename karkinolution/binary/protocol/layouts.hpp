@@ -59,12 +59,15 @@ namespace Karkinolution::Binary::Protocol {
 		namespace Error {
 			using RequestId = KShared::Binary::Next<SubType, sizeof(Aliases::RequestId)>;
 			using Payload   = KShared::Binary::Field<RequestId::END, 0>;
+
+			inline constexpr std::size_t FIXED_HEADER_SIZE = Payload::END;
 		} // namespace Error
 
 		namespace Response {
 			using RequestId   = KShared::Binary::Next<SubType, sizeof(Aliases::RequestId)>;
 			using Cardinality = KShared::Binary::Next<RequestId, sizeof(Aliases::Response::Cardinality)>;
 			using Payload     = KShared::Binary::Field<Cardinality::END, 0>;
+			inline constexpr std::size_t FIXED_HEADER_SIZE = Payload::END;
 
 		} // namespace Response
 	} // namespace Layout

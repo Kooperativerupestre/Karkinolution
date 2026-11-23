@@ -17,7 +17,6 @@
 #include <exception>
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>
-#include <latch>
 #include <networking/server_fixture.hpp>
 
 using Karkinolution::Networking::IoContext;
@@ -62,7 +61,7 @@ TEST_F(ClientTest, ServerE2E) {
 			try {
 				client.connect();
 				EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
-				auto output = client.request(TestUtils::make_see_creature_request_data(45));
+				auto output = client.request_world_scope(TestUtils::make_see_creature_request_data(45));
 
 				if (!output || !output.value().has_value()) {
 					failures.fetch_add(1);
@@ -252,7 +251,7 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 			try {
 				client.connect();
 				EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
-				auto output = client.request(TestUtils::make_see_creature_request_data(45));
+				auto output = client.request_world_scope(TestUtils::make_see_creature_request_data(45));
 				succeeded   = output && output.value().has_value();
 			} catch (const std::exception &error) {
 				ADD_FAILURE() << "Client request failed: " << error.what();

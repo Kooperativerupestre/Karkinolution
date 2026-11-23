@@ -4,6 +4,7 @@
 #include "shared/binary/byte_range.hpp"
 #include "shared/binary/errors.hpp"
 
+#include <cstddef>
 #include <format>
 #include <magic_enum/magic_enum.hpp>
 
@@ -11,6 +12,14 @@ namespace Karkinolution {
 	namespace Networking {
 		namespace Scope {
 			namespace Parser {
+				inline Scope get_type(std::byte byte) {
+					if (!magic_enum::enum_contains(static_cast<Scope>(byte))) {
+						throw KShared::Binary::ByteError(
+							std::format("Invalid scope of frame: {}", static_cast<uint8_t>(byte)));
+					}
+					return static_cast<Scope>(byte);
+				}
+
 				template <KShared::Binary::ByteRange T> Scope get_type(const T &bytes) {
 					if (bytes.size() < 1) {
 						throw KShared::Binary::ByteError(
@@ -25,6 +34,8 @@ namespace Karkinolution {
 					}
 					return type;
 				}
+
+
 			} // namespace Parser
 		} // namespace Scope
 	} // namespace Networking

@@ -2,17 +2,17 @@
 #include "karkinolution/binary/frames/aliases.hpp"
 
 #include <karkinolution/binary/frames/analyzer.hpp>
-#include <karkinolution/binary/frames/parser.hpp>
+#include <karkinolution/binary/frames/parser/parser.hpp>
 
 bool Karkinolution::Binary::Frames::Analyzer::is_error(const std::vector<std::byte> &frame) {
-	return Parser::get_type(frame) == BinaryTypes::Error;
+	return Parser::Internal::get_type(frame) == BinaryTypes::Error;
 }
 
 bool Karkinolution::Binary::Frames::Analyzer::is_none(const std::vector<std::byte> &frame) {
 	if (!is_response(frame)) {
 		return false;
 	}
-	return std::get<ResponseSubTypes>(Parser::get_sub_type(frame)) == ResponseSubTypes::NONE;
+	return std::get<ResponseSubTypes>(Parser::Internal::get_sub_type(frame)) == ResponseSubTypes::NONE;
 }
 
 bool Karkinolution::Binary::Frames::Analyzer::is_none(const ResponseFrame &frame) {
@@ -20,9 +20,9 @@ bool Karkinolution::Binary::Frames::Analyzer::is_none(const ResponseFrame &frame
 }
 
 bool Karkinolution::Binary::Frames::Analyzer::is_response(const std::vector<std::byte> &frame) {
-	return Parser::get_type(frame) == BinaryTypes::Response;
+	return Parser::Internal::get_type(frame) == BinaryTypes::Response;
 }
 
 bool Karkinolution::Binary::Frames::Analyzer::is_request(const std::vector<std::byte> &frame) {
-	return Parser::get_type(frame) == BinaryTypes::Request;
+	return Parser::Internal::get_type(frame) == BinaryTypes::Request;
 }

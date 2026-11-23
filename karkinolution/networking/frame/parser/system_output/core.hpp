@@ -40,6 +40,10 @@ namespace Karkinolution {
 						return Internal::calculate_payload_size(bytes, Layout::SystemOutput::FIXED_HEADER_SIZE);
 					}
 
+					template <KShared::Binary::ByteRange T> Internal::FrameExistence generic_has_frame(const T &bytes) {
+						return Internal::has_frame(bytes, Layout::SystemOutput::FIXED_HEADER_SIZE);
+					}
+
 
 				} // namespace SystemOutput
 			} // namespace Parser

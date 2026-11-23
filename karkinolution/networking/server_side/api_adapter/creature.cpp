@@ -7,7 +7,7 @@
 
 #include <format>
 #include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/binary/frames/parser.hpp>
+#include <karkinolution/binary/frames/parser/parser.hpp>
 #include <karkinolution/binary/interpreters/creature.hpp>
 #include <karkinolution/networking/server_side/api_adapter/creature.hpp>
 

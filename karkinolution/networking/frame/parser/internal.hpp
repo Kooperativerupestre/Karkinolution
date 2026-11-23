@@ -5,6 +5,7 @@
 #include "shared/binary/errors.hpp"
 
 #include <cstdint>
+#include <karkinolution/binary/frames/parser/internal.hpp>
 #include <karkinolution/networking/frame/contract.hpp>
 #include <shared/binary/deserializer.hpp>
 
@@ -13,6 +14,8 @@ namespace Karkinolution {
 		namespace Frames {
 			namespace Parser {
 				namespace Internal {
+
+					using FrameExistence = Binary::Frames::Parser::Internal::FrameExistence;
 
 					template <KShared::Binary::ByteRange T> DeclaredSize get_declared_size(const T &bytes) {
 						return KShared::Binary::Deserializer::deserialize<DeclaredSize>(bytes,
@@ -61,6 +64,60 @@ namespace Karkinolution {
 						return calculate_payload_size(declared_size, fixed_header_size);
 					}
 
+					template <KShared::Binary::ByteRange T> FrameExistence has_header(const T &bytes) {
+						const auto bytes_size = bytes.size();
+
+						if (bytes_size == 0) {
+							return FrameExistence::NO;
+						}
+
+						if (bytes_size < Layout::DeclaredSize::END) {
+							return FrameExistence::DECLARED_SIZE_INCOMPLETE;
+						}
+
+						if (bytes_size == Layout::DeclaredSize::END) {
+							return FrameExistence::DECLARED_SIZE_COMPLETE;
+						}
+
+						if (bytes_size < Layout::Type::END) {
+							return FrameExistence::INCOMPLETE;
+						}
+
+						if (bytes_size < Layout::SubType::END) {
+							return FrameExistence::INCOMPLETE;
+						}
+
+						return FrameExistence::YES;
+					}
+
+					template <KShared::Binary::ByteRange T>
+					FrameExistence has_frame(const T &bytes, std::size_t fixed_header_size) {
+						const auto bytes_size = bytes.size();
+						if (bytes_size == 0) {
+							return FrameExistence::NO;
+						}
+
+						if (bytes_size >= 0 && bytes_size < Layout::DeclaredSize::END) {
+							return FrameExistence::DECLARED_SIZE_INCOMPLETE;
+						}
+
+						if (bytes_size == Layout::DeclaredSize::END) {
+							return FrameExistence::DECLARED_SIZE_COMPLETE;
+						}
+
+
+						const auto declared_size         = get_declared_size(bytes);
+						const auto minimum_declared_size = fixed_header_size - Layout::DeclaredSize::SIZE;
+						if (declared_size < minimum_declared_size) {
+							throw KShared::Binary::ByteError(
+								std::format("Declared size {} is lower than the minimum frame size {}",
+											declared_size,
+											minimum_declared_size));
+						}
+
+						const auto frame_size = Layout::DeclaredSize::SIZE + declared_size;
+						return bytes.size() >= frame_size ? FrameExistence::YES : FrameExistence::INCOMPLETE;
+					}
 
 				} // namespace Internal
 			} // namespace Parser
