@@ -40,7 +40,7 @@ namespace Karkinolution::Organisms::Entities::Creature {
 	}
 
 	Gender choose_random_gender() {
-		return KRandom::choice(std::vector<Gender>{Gender::FEMALE, Gender::FEMALE});
+		return KRandom::choice(std::vector<Gender>{Gender::FEMALE, Gender::MALE});
 	}
 
 	CreatureSpecies chooes_random_specie() {
