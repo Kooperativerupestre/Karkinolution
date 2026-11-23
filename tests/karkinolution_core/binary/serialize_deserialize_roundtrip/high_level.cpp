@@ -279,3 +279,26 @@ TEST(CreatureSerializeDeserializeRoundtrip, FullCreatureSerialization) {
 	EXPECT_EQ(copy.brain.intent.time, creature.brain.intent().time);
 	EXPECT_EQ(copy.brain.intent.type, creature.brain.intent().type);
 }
+
+TEST(CreatureOntology, RandomGenderSelectionProducesBothGenders) {
+	using Karkinolution::Organisms::Entities::Creature::choose_random_gender;
+	using Karkinolution::Organisms::Entities::Creature::Gender;
+
+	bool saw_female = false;
+	bool saw_male   = false;
+
+	for (int i = 0; i < 200; ++i) {
+		auto g = choose_random_gender();
+		if (g == Gender::FEMALE) {
+			saw_female = true;
+		} else if (g == Gender::MALE) {
+			saw_male = true;
+		}
+		if (saw_female && saw_male) {
+			break;
+		}
+	}
+
+	EXPECT_TRUE(saw_female);
+	EXPECT_TRUE(saw_male);
+}
