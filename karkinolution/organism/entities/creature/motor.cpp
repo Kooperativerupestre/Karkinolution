@@ -40,11 +40,11 @@ namespace Karkinolution::Organisms::Entities::Creature::Motor {
 		body.morphology.size.width.value += width_grow;
 
 		auto max_energy_grow = Physiology::Growing::get_new_max_energy_increment(creature, organisms);
-		body.metabolism.energy.max_ref() += max_energy_grow.gain;
+		body.metabolism.energy.set_max(body.metabolism.energy.max() + max_energy_grow.gain);
 		body.metabolism.reserved -= max_energy_grow.cost.reserved_energy;
 
 		auto max_reserved_grow = Physiology::Growing::get_new_max_energy_reserved_increment(creature, organisms);
-		body.metabolism.reserved.max_ref() += max_reserved_grow.gain;
+		body.metabolism.reserved.set_max(body.metabolism.reserved.max() + max_reserved_grow.gain);
 		body.metabolism.reserved -= max_reserved_grow.cost.reserved_energy;
 	}
 

@@ -1,3 +1,4 @@
+#include <cmath>
 #pragma once
 #include <format>
 #include <shared/math/stats/compile_values.hpp>
@@ -32,6 +33,11 @@ namespace KShared {
 							: _value(value)
 							, _min(min)
 							, _max(max) {
+							if constexpr (std::floating_point<T>) {
+								if (!std::isfinite(value) || !std::isfinite(min) || !std::isfinite(max)) {
+									throw std::invalid_argument("RuntimeLimitedValue bounds and value must be finite");
+								}
+							}
 							if (_min > _max) {
 								throw std::invalid_argument(
 									std::format("Invalid RuntimeLimitedValue range. Min > Max: {} > {}", _min, _max));
@@ -61,12 +67,36 @@ namespace KShared {
 							return _max;
 						}
 
-						constexpr T &max_ref() noexcept {
-							return _max;
+						void set_max(T new_max) {
+							if constexpr (std::floating_point<T>) {
+								if (!std::isfinite(new_max)) {
+									throw std::invalid_argument("RuntimeLimitedValue max must be finite");
+								}
+							}
+							if (new_max < _min) {
+								throw std::invalid_argument(
+									std::format("Invalid RuntimeLimitedValue max. Min > Max: {} > {}", _min, new_max));
+							}
+							_max = new_max;
+							clamp();
 						}
 
-						constexpr T &min_ref() noexcept {
-							return _min;
+						void set_min(T new_min) {
+							if constexpr (std::floating_point<T>) {
+								if (!std::isfinite(new_min)) {
+									throw std::invalid_argument("RuntimeLimitedValue min must be finite");
+								}
+							}
+							if (new_min > _max) {
+								throw std::invalid_argument(
+									std::format("Invalid RuntimeLimitedValue min. Min > Max: {} > {}", new_min, _max));
+							}
+							if (new_min > T(0)) {
+								throw std::invalid_argument(
+									std::format("Invalid RuntimeLimitedValue min. Min must accept zero: {}", new_min));
+							}
+							_min = new_min;
+							clamp();
 						}
 
 						constexpr void clamp() noexcept {
