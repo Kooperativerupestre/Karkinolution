@@ -5,6 +5,7 @@
 #include <array>
 #include <random>
 #include <ranges>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -20,6 +21,9 @@ namespace KShared {
 			inline std::mt19937_64    gen(rd());
 
 			template <std::ranges::random_access_range Range> decltype(auto) choice(Range &&range) {
+				if (std::ranges::empty(range)) {
+					throw std::invalid_argument("Cannot choose from an empty range");
+				}
 				std::uniform_int_distribution<size_t> dist(0, std::ranges::size(range) - 1);
 				return range[dist(gen)];
 			}
@@ -27,6 +31,9 @@ namespace KShared {
 			template <std::ranges::forward_range Range>
 				requires(!std::ranges::random_access_range<Range> && std::ranges::sized_range<Range>)
 			decltype(auto) choice(Range &&range) {
+				if (std::ranges::empty(range)) {
+					throw std::invalid_argument("Cannot choose from an empty range");
+				}
 				std::uniform_int_distribution<size_t> dist(0, std::ranges::size(range) - 1);
 
 				auto it = std::ranges::begin(range);
@@ -39,6 +46,9 @@ namespace KShared {
 				requires(!std::ranges::random_access_range<Range> && !std::ranges::sized_range<Range>)
 			decltype(auto) choice(Range &&range) {
 				auto size = std::ranges::distance(range);
+				if (size <= 0) {
+					throw std::invalid_argument("Cannot choose from an empty range");
+				}
 
 				std::uniform_int_distribution<std::ranges::range_difference_t<Range>> dist(0, size - 1);
 
@@ -49,6 +59,9 @@ namespace KShared {
 			}
 
 			template <typename T> T choice(std::initializer_list<T> list) {
+				if (list.size() == 0) {
+					throw std::invalid_argument("Cannot choose from an empty list");
+				}
 				std::uniform_int_distribution<size_t> dist(0, list.size() - 1);
 				return *(list.begin() + dist(gen));
 			}
@@ -57,6 +70,32 @@ namespace KShared {
 			auto choices(ItemsContainer &&items, WeightsContainer &&weights, size_t k) {
 				using PlainItems = std::remove_reference_t<ItemsContainer>;
 				using ItemType   = typename PlainItems::value_type;
+
+				size_t num_items   = std::distance(std::begin(items), std::end(items));
+				size_t num_weights = std::distance(std::begin(weights), std::end(weights));
+
+				if (num_items != num_weights) {
+					throw std::invalid_argument("Items and weights size mismatch");
+				}
+
+				if (k == 0) {
+					return std::vector<ItemType>{};
+				}
+
+				if (num_items == 0) {
+					throw std::invalid_argument("Cannot choose from empty items");
+				}
+
+				double sum = 0.0;
+				for (auto it = std::begin(weights); it != std::end(weights); ++it) {
+					if (*it < 0) {
+						throw std::invalid_argument("Weights must be non-negative");
+					}
+					sum += static_cast<double>(*it);
+				}
+				if (sum <= 0.0) {
+					throw std::invalid_argument("Sum of weights must be positive");
+				}
 
 				std::vector<ItemType> selected;
 				selected.reserve(k);
