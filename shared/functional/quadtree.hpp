@@ -1,3 +1,5 @@
+#include <cmath>
+#include <stdexcept>
 #pragma once
 
 #include "shared/math/physic/vec/model.hpp"
@@ -17,6 +19,21 @@ namespace KShared::Functional::Quadtree {
 	struct AABB {
 			Position min;
 			Position max;
+
+			constexpr AABB(Position min, Position max)
+				: min(min)
+				, max(max) {
+				if (!std::isfinite(min.x) || !std::isfinite(min.y) || !std::isfinite(max.x) || !std::isfinite(max.y)) {
+					throw std::invalid_argument("AABB coordinates must be finite");
+				}
+				if (min.x > max.x || min.y > max.y) {
+					throw std::invalid_argument("AABB min must be less than or equal to max");
+				}
+			}
+
+			constexpr AABB()
+				: min(Position(0.0, 0.0))
+				, max(Position(0.0, 0.0)) {}
 
 			[[nodiscard]] constexpr Position center() const noexcept {
 				return (min + max) / 2.0;

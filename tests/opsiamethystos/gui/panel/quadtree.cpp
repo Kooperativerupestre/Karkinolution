@@ -148,3 +148,34 @@ TEST(Quadtree, AddAndUpdatePreserveStructuralInvariants) {
 	EXPECT_EQ(tree.size(), 101);
 	EXPECT_TRUE(tree.invariants_hold());
 }
+
+TEST(Quadtree, UpdateTransactionalAtomicityPreservesOldEntryWhenNewCannotBeContained) {
+	Quadtree::Quadtree tree{rectangle(0, 0, 1000, 1000)};
+	const auto         id            = gen_id(ComponentType::GRID);
+	const auto         original_form = rectangle(10, 10, 20, 20);
+	ASSERT_TRUE(tree.add(id, original_form));
+	EXPECT_EQ(tree.size(), 1);
+
+	const auto out_of_bounds = rectangle(-1500, -1500, 10, 10);
+	// Update should fail because out_of_bounds cannot be contained
+	EXPECT_EQ(tree.update(id, out_of_bounds), Quadtree::UpdateOutput::DOES_NOT_EXIST);
+	// Atomicity guarantee: entry is preserved and size remains 1
+	EXPECT_EQ(tree.size(), 1);
+	EXPECT_TRUE(tree.exists(id, original_form));
+}
+
+TEST(QuadtreeAABB, ConstructorThrowsOnInvalidCoordinates) {
+	using KShared::Functional::Quadtree::AABB;
+	using KShared::Math::Vec::Vec2;
+
+	// Inverted min/max
+	EXPECT_THROW(AABB(Vec2(10.0, 10.0), Vec2(5.0, 20.0)), std::invalid_argument);
+	EXPECT_THROW(AABB(Vec2(10.0, 10.0), Vec2(20.0, 5.0)), std::invalid_argument);
+
+	// Non-finite coordinates (NaN / Inf)
+	EXPECT_THROW(AABB(Vec2(0.0, 0.0), Vec2(std::numeric_limits<double>::infinity(), 10.0)), std::invalid_argument);
+	EXPECT_THROW(AABB(Vec2(std::numeric_limits<double>::quiet_NaN(), 0.0), Vec2(10.0, 10.0)), std::invalid_argument);
+
+	// Degenerate (zero-width / zero-height) bounds are valid point/line bounds
+	EXPECT_NO_THROW(AABB(Vec2(5.0, 5.0), Vec2(5.0, 5.0)));
+}
