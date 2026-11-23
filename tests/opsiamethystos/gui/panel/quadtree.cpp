@@ -163,3 +163,19 @@ TEST(Quadtree, UpdateTransactionalAtomicityPreservesOldEntryWhenNewCannotBeConta
 	EXPECT_EQ(tree.size(), 1);
 	EXPECT_TRUE(tree.exists(id, original_form));
 }
+
+TEST(QuadtreeAABB, ConstructorThrowsOnInvalidCoordinates) {
+	using KShared::Functional::Quadtree::AABB;
+	using KShared::Math::Vec::Vec2;
+
+	// Inverted min/max
+	EXPECT_THROW(AABB(Vec2(10.0, 10.0), Vec2(5.0, 20.0)), std::invalid_argument);
+	EXPECT_THROW(AABB(Vec2(10.0, 10.0), Vec2(20.0, 5.0)), std::invalid_argument);
+
+	// Non-finite coordinates (NaN / Inf)
+	EXPECT_THROW(AABB(Vec2(0.0, 0.0), Vec2(std::numeric_limits<double>::infinity(), 10.0)), std::invalid_argument);
+	EXPECT_THROW(AABB(Vec2(std::numeric_limits<double>::quiet_NaN(), 0.0), Vec2(10.0, 10.0)), std::invalid_argument);
+
+	// Degenerate (zero-width / zero-height) bounds are valid point/line bounds
+	EXPECT_NO_THROW(AABB(Vec2(5.0, 5.0), Vec2(5.0, 5.0)));
+}
