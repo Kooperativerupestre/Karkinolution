@@ -148,3 +148,18 @@ TEST(Quadtree, AddAndUpdatePreserveStructuralInvariants) {
 	EXPECT_EQ(tree.size(), 101);
 	EXPECT_TRUE(tree.invariants_hold());
 }
+
+TEST(Quadtree, UpdateTransactionalAtomicityPreservesOldEntryWhenNewCannotBeContained) {
+	Quadtree::Quadtree tree{rectangle(0, 0, 1000, 1000)};
+	const auto         id            = gen_id(ComponentType::GRID);
+	const auto         original_form = rectangle(10, 10, 20, 20);
+	ASSERT_TRUE(tree.add(id, original_form));
+	EXPECT_EQ(tree.size(), 1);
+
+	const auto out_of_bounds = rectangle(-1500, -1500, 10, 10);
+	// Update should fail because out_of_bounds cannot be contained
+	EXPECT_EQ(tree.update(id, out_of_bounds), Quadtree::UpdateOutput::DOES_NOT_EXIST);
+	// Atomicity guarantee: entry is preserved and size remains 1
+	EXPECT_EQ(tree.size(), 1);
+	EXPECT_TRUE(tree.exists(id, original_form));
+}
