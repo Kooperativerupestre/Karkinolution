@@ -14,7 +14,7 @@ namespace Karkinolution::Terrain {
 
 		AABB to_aabb(const Size &size, const Vec2 &position) {
 			const Vec2 half_size{size.width.value / 2.0, size.height.value / 2.0};
-			return {.min = position - half_size, .max = position + half_size};
+			return AABB(position - half_size, position + half_size);
 		}
 
 		AABB territory_aabb(const Size &size) {
