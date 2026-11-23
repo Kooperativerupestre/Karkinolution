@@ -242,6 +242,7 @@ namespace KShared {
 				template <typename D>
 					requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 				NormalizedValue<T> LimitedValue<Derived, T, max, min>::ratio() const {
+					static_assert(max != min, "ratio() is undefined for zero-width range (max == min)");
 					return NormalizedValue<T>(static_cast<T>(_value - min) / static_cast<T>(max - min));
 				}
 
@@ -249,6 +250,7 @@ namespace KShared {
 				template <typename D>
 					requires(!std::same_as<D, NormalizedValue<T>> && !std::same_as<D, SignedNormalizedValue<T>>)
 				SignedNormalizedValue<T> LimitedValue<Derived, T, max, min>::ratio_min() const {
+					static_assert(max != min, "ratio_min() is undefined for zero-width range (max == min)");
 					return SignedNormalizedValue<T>(static_cast<T>(_value - min) / static_cast<T>(max - min) * T(2)
 													- T(1));
 				}
