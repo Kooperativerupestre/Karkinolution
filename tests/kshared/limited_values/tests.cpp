@@ -243,3 +243,19 @@ TEST(GreaterThanZeroValue, FloatMinIsEpsilonBased) {
 	GreaterThanZeroValue<float> clamped{0.0f};
 	EXPECT_GT(clamped.value(), 0.0f);
 }
+
+TEST(LimitedValueRatio, NormalRangeRatioIsCorrect) {
+	using KShared::Math::LV::CT::GenericLimitedValue;
+
+	constexpr float max = 10.0f;
+	constexpr float min = 0.0f;
+
+	GenericLimitedValue<float, max, min> v{5.0f};
+	EXPECT_FLOAT_EQ(v.ratio().value(), 0.5f);
+
+	GenericLimitedValue<float, max, min> at_min{0.0f};
+	EXPECT_FLOAT_EQ(at_min.ratio().value(), 0.0f);
+
+	GenericLimitedValue<float, max, min> at_max{10.0f};
+	EXPECT_FLOAT_EQ(at_max.ratio().value(), 1.0f);
+}
