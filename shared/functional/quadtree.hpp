@@ -136,29 +136,33 @@ namespace KShared::Functional::Quadtree {
 				return std::nullopt;
 			}
 
-			bool remove_impl(const IdType &id, const AABB* old_bound) {
+			std::optional<AABB> remove_impl(const IdType &id, const AABB* old_bound) {
 				if (old_bound != nullptr && !boundary.contains(*old_bound)) {
-					return false;
+					return std::nullopt;
 				}
 				for (std::size_t index = entries.size(); index-- > 0;) {
 					if (entries[index].component_id == id) {
+						AABB removed_bounds = entries[index].bounds;
 						entries.erase(entries.begin() + static_cast<std::ptrdiff_t>(index));
-						return true;
+						return removed_bounds;
 					}
 				}
 				if (is_leaf()) {
-					return false;
+					return std::nullopt;
 				}
 				if (old_bound != nullptr) {
 					const auto quadrant = containing_quadrant(*old_bound);
-					return quadrant.has_value() && child(*quadrant)->remove_impl(id, old_bound);
+					if (quadrant.has_value()) {
+						return child(*quadrant)->remove_impl(id, old_bound);
+					}
+					return std::nullopt;
 				}
 				for (const auto quadrant : ALL_QUADRANTS) {
-					if (child(quadrant)->remove_impl(id, nullptr)) {
-						return true;
+					if (auto removed = child(quadrant)->remove_impl(id, nullptr)) {
+						return removed;
 					}
 				}
-				return false;
+				return std::nullopt;
 			}
 
 			void find_impl(const AABB &area, std::vector<const Entry<IdType>*> &result) const {
@@ -254,27 +258,63 @@ namespace KShared::Functional::Quadtree {
 			}
 
 			bool remove(const IdType &id) {
-				return remove_impl(id, nullptr);
+				return remove_impl(id, nullptr).has_value();
 			}
 
 			bool remove(const IdType &id, const AABB &old_bound) {
-				return remove_impl(id, &old_bound);
+				return remove_impl(id, &old_bound).has_value();
 			}
 
+			/*
+			 * Atomicity policy decision:
+			 * We enforce transactional update semantics (Option A). If the new entry
+			 * cannot be inserted, we roll back and reinsert the old entry to preserve
+			 * atomicity and prevent data loss even in irregular/exceptional failure paths.
+			 */
 			UpdateOutput update(const IdType &id, const AABB &new_bound) {
-				if (!can_contain(new_bound) || !remove(id)) {
+				if (!can_contain(new_bound)) {
 					return UpdateOutput::DOES_NOT_EXIST;
 				}
-				return insert(Entry<IdType>{id, new_bound}) ? UpdateOutput::UPDATED
-															: UpdateOutput::EXISTS_BUT_WAS_REMOVED;
+				auto removed_bound = remove_impl(id, nullptr);
+				if (!removed_bound.has_value()) {
+					return UpdateOutput::DOES_NOT_EXIST;
+				}
+				try {
+					if (insert(Entry<IdType>{id, new_bound})) {
+						return UpdateOutput::UPDATED;
+					}
+				} catch (...) {
+					insert(Entry<IdType>{id, *removed_bound});
+					throw;
+				}
+				// Insertion failed: rollback to restore atomicity
+				if (insert(Entry<IdType>{id, *removed_bound})) {
+					return UpdateOutput::DOES_NOT_EXIST;
+				}
+				return UpdateOutput::EXISTS_BUT_WAS_REMOVED;
 			}
 
 			UpdateOutput update(const IdType &id, const AABB &new_bound, const AABB &old_bound) {
-				if (!can_contain(new_bound) || !remove(id, old_bound)) {
+				if (!can_contain(new_bound)) {
 					return UpdateOutput::DOES_NOT_EXIST;
 				}
-				return insert(Entry<IdType>{id, new_bound}) ? UpdateOutput::UPDATED
-															: UpdateOutput::EXISTS_BUT_WAS_REMOVED;
+				auto removed_bound = remove_impl(id, &old_bound);
+				if (!removed_bound.has_value()) {
+					return UpdateOutput::DOES_NOT_EXIST;
+				}
+				try {
+					if (insert(Entry<IdType>{id, new_bound})) {
+						return UpdateOutput::UPDATED;
+					}
+				} catch (...) {
+					insert(Entry<IdType>{id, *removed_bound});
+					throw;
+				}
+				// Insertion failed: rollback to restore atomicity
+				if (insert(Entry<IdType>{id, *removed_bound})) {
+					return UpdateOutput::DOES_NOT_EXIST;
+				}
+				return UpdateOutput::EXISTS_BUT_WAS_REMOVED;
 			}
 
 			[[nodiscard]] bool exists(const IdType &id) const {
