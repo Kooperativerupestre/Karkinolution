@@ -1,12 +1,12 @@
-#include "karkinolution/networking/frame/interpreter.hpp"
-#include "karkinolution/networking/frame/motor.hpp"
-#include "karkinolution/networking/frame/parser/internal.hpp"
-#include "karkinolution/networking/frame/parser/parser.hpp"
+#include "karkinolution/networking/frame/system/interpreter.hpp"
+#include "karkinolution/networking/frame/system/motor.hpp"
+#include "karkinolution/networking/frame/system/parser/internal.hpp"
+#include "karkinolution/networking/frame/system/parser/parser.hpp"
 
 #include <gtest/gtest.h>
 
 namespace {
-	using namespace Karkinolution::Networking::Frames;
+	using namespace Karkinolution::Networking::Frames::System;
 
 	constexpr SystemCall::Id call_id = 42;
 } // namespace

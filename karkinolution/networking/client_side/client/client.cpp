@@ -4,7 +4,7 @@
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/client/protocol_session.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
-#include "karkinolution/networking/frame/contract.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
 
 #include <asio/bind_executor.hpp>
 #include <asio/connect.hpp>
@@ -15,7 +15,7 @@
 #include <iostream>
 #include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/asio_types.hpp>
-#include <karkinolution/networking/frame/motor.hpp>
+#include <karkinolution/networking/frame/system/motor.hpp>
 #include <karkinolution/networking/scope/motor.hpp>
 #include <thread>
 
@@ -202,12 +202,12 @@ namespace Karkinolution::Networking::ClientSide {
 			return output;
 		}
 
-		Frames::SystemCall::Id Client::send_without_waiting_system_scope(const SystemRequestData &data) {
+		Frames::System::SystemCall::Id Client::send_without_waiting_system_scope(const SystemRequestData &data) {
 			Validator::validate_is_connected(*this);
 
 			const auto request_id = next_request_id.fetch_add(1);
 			const auto raw_Frame  = Scope::Motor::make_system_frame(
-                Frames::Motor::make_raw_system_call(data.sub_type, request_id, data.payload, data.extra));
+                Frames::System::Motor::make_raw_system_call(data.sub_type, request_id, data.payload, data.extra));
 
 
 			session.register_system_request(request_id);
@@ -219,7 +219,7 @@ namespace Karkinolution::Networking::ClientSide {
 			return request_id;
 		}
 
-		SystemResponseResult Client::pop_response_system_scope(Frames::SystemCall::Id id) {
+		SystemResponseResult Client::pop_response_system_scope(Frames::System::SystemCall::Id id) {
 			const auto output = session.pop_system_response(id);
 
 			if (!output) {
@@ -390,7 +390,7 @@ namespace Karkinolution::Networking::ClientSide {
 			}
 		}
 
-		SystemResponseResult RuntimeClient::pop_response_system_scope(Frames::SystemCall::Id id) {
+		SystemResponseResult RuntimeClient::pop_response_system_scope(Frames::System::SystemCall::Id id) {
 			Validator::validate_is_connected(*this);
 
 			return client->pop_response_system_scope(id);
@@ -402,7 +402,7 @@ namespace Karkinolution::Networking::ClientSide {
 			return client->request_system_scope(data);
 		}
 
-		Frames::SystemCall::Id RuntimeClient::send_without_waiting_system_scope(const SystemRequestData &data) {
+		Frames::System::SystemCall::Id RuntimeClient::send_without_waiting_system_scope(const SystemRequestData &data) {
 			Validator::validate_is_connected(*this);
 
 			return client->send_without_waiting_system_scope(data);

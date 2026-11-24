@@ -3,8 +3,8 @@
 #include "karkinolution/networking/client_side/client/protocol_session.hpp"
 #include "karkinolution/networking/client_side/client/request_queue.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
-#include "karkinolution/networking/frame/contract.hpp"
-#include "karkinolution/networking/frame/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
 #include "karkinolution/networking/port.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
@@ -85,9 +85,9 @@ namespace Karkinolution::Networking::ClientSide {
 		};
 
 		struct SystemRequestData {
-				Karkinolution::Networking::Frames::SystemCallSubTypes                  sub_type;
-				std::vector<std::byte>                                                 payload;
-				Karkinolution::Networking::Frames::Models::SystemCall::SystemCallExtra extra = std::monostate{};
+				Karkinolution::Networking::Frames::System::SystemCallSubTypes                  sub_type;
+				std::vector<std::byte>                                                         payload;
+				Karkinolution::Networking::Frames::System::Models::SystemCall::SystemCallExtra extra = std::monostate{};
 		};
 
 		struct Config {
@@ -142,11 +142,11 @@ namespace Karkinolution::Networking::ClientSide {
 				SystemResponseResult request_system_scope(const SystemRequestData &data);
 
 
-				RequestId              send_without_waiting_world_scope(const WorldRequestData &data);
-				Frames::SystemCall::Id send_without_waiting_system_scope(const SystemRequestData &data);
+				RequestId                      send_without_waiting_world_scope(const WorldRequestData &data);
+				Frames::System::SystemCall::Id send_without_waiting_system_scope(const SystemRequestData &data);
 
 				WorldResponseResult  pop_response_world_scope(RequestId id);
-				SystemResponseResult pop_response_system_scope(Frames::SystemCall::Id id);
+				SystemResponseResult pop_response_system_scope(Frames::System::SystemCall::Id id);
 
 				int get_current_async_operations_running() {
 					return current_async_operations_running.load();
@@ -249,11 +249,11 @@ namespace Karkinolution::Networking::ClientSide {
 				SystemResponseResult request_system_scope(const SystemRequestData &data);
 
 
-				RequestId              send_without_waiting_world_scope(const WorldRequestData &data);
-				Frames::SystemCall::Id send_without_waiting_system_scope(const SystemRequestData &data);
+				RequestId                      send_without_waiting_world_scope(const WorldRequestData &data);
+				Frames::System::SystemCall::Id send_without_waiting_system_scope(const SystemRequestData &data);
 
 				WorldResponseResult  pop_response_world_scope(RequestId id);
-				SystemResponseResult pop_response_system_scope(Frames::SystemCall::Id id);
+				SystemResponseResult pop_response_system_scope(Frames::System::SystemCall::Id id);
 
 			private:
 

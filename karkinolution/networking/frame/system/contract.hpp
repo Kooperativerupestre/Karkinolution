@@ -8,7 +8,7 @@
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			using DeclaredSize = std::uint32_t;
 			// Declared size = size after the declared_size field
 
@@ -63,6 +63,6 @@ namespace Karkinolution {
 			namespace Detail {
 				using SubTypeVariant = std::variant<SystemCall::SubType, SystemOutput::SubType>;
 			} // namespace Detail
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

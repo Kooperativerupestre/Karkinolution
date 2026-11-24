@@ -1,20 +1,20 @@
 #pragma once
-#include "karkinolution/networking/frame/contract.hpp"
-#include "karkinolution/networking/frame/core_aliases.hpp"
-#include "karkinolution/networking/frame/layout.hpp"
-#include "karkinolution/networking/frame/parser/internal.hpp"
-#include "karkinolution/networking/frame/parser/system_call/core.hpp"
-#include "karkinolution/networking/frame/parser/system_output/core.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
+#include "karkinolution/networking/frame/system/parser/internal.hpp"
+#include "karkinolution/networking/frame/system/parser/system_call/core.hpp"
+#include "karkinolution/networking/frame/system/parser/system_output/core.hpp"
 #include "shared/binary/byte_range.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
-#include <karkinolution/networking/frame/models.hpp>
-#include <karkinolution/networking/frame/parser/system_call/parser.hpp>
-#include <karkinolution/networking/frame/parser/system_output/parser.hpp>
+#include <karkinolution/networking/frame/system/models.hpp>
+#include <karkinolution/networking/frame/system/parser/system_call/parser.hpp>
+#include <karkinolution/networking/frame/system/parser/system_output/parser.hpp>
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Parser {
 
 
@@ -118,6 +118,6 @@ namespace Karkinolution {
 					KShared::Functional::unreachable_or_throw();
 				}
 			} // namespace Parser
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

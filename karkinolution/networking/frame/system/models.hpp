@@ -1,7 +1,7 @@
 #pragma once
 
-#include "karkinolution/networking/frame/contract.hpp"
-#include "karkinolution/networking/frame/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
 #include <stdexcept>
@@ -10,7 +10,7 @@
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Models {
 				namespace SystemCall {
 					// The extra is kept separate from the payload because it changes the fixed frame header.
@@ -34,11 +34,11 @@ namespace Karkinolution {
 					class SystemCall {
 						private:
 
-							DeclaredSize           declared_size;
-							std::vector<std::byte> payload;
-							Frames::SystemCall::Id id;
-							SystemCallSubTypes     sub_type;
-							SystemCallExtra        extra;
+							DeclaredSize                   declared_size;
+							std::vector<std::byte>         payload;
+							Frames::System::SystemCall::Id id;
+							SystemCallSubTypes             sub_type;
+							SystemCallExtra                extra;
 
 						public:
 
@@ -50,7 +50,7 @@ namespace Karkinolution {
 								return payload;
 							}
 
-							Frames::SystemCall::Id get_id() const {
+							Frames::System::SystemCall::Id get_id() const {
 								return id;
 							}
 
@@ -62,11 +62,11 @@ namespace Karkinolution {
 								return extra;
 							}
 
-							SystemCall(DeclaredSize                 declared_size,
-									   const std::vector<std::byte> payload,
-									   Frames::SystemCall::Id       id,
-									   SystemCallSubTypes           sub_type,
-									   SystemCallExtra              extra = std::monostate{})
+							SystemCall(DeclaredSize                   declared_size,
+									   const std::vector<std::byte>   payload,
+									   Frames::System::SystemCall::Id id,
+									   SystemCallSubTypes             sub_type,
+									   SystemCallExtra                extra = std::monostate{})
 								: declared_size(declared_size)
 								, payload(payload)
 								, id(id)
@@ -81,18 +81,18 @@ namespace Karkinolution {
 					class SystemOutput {
 						private:
 
-							DeclaredSize           declared_size;
-							Frames::SystemCall::Id call_id;
-							std::vector<std::byte> payload;
-							SystemOutputSubTypes   sub_type;
+							DeclaredSize                   declared_size;
+							Frames::System::SystemCall::Id call_id;
+							std::vector<std::byte>         payload;
+							SystemOutputSubTypes           sub_type;
 
 						public:
 
 
-							SystemOutput(DeclaredSize                  declared_size,
-										 Frames::SystemCall::Id        call_id,
-										 const std::vector<std::byte> &payload,
-										 SystemOutputSubTypes          sub_type)
+							SystemOutput(DeclaredSize                   declared_size,
+										 Frames::System::SystemCall::Id call_id,
+										 const std::vector<std::byte>  &payload,
+										 SystemOutputSubTypes           sub_type)
 								: declared_size(declared_size)
 								, call_id(call_id)
 								, payload(payload)
@@ -106,7 +106,7 @@ namespace Karkinolution {
 								return payload;
 							}
 
-							Frames::SystemCall::Id get_call_id() const {
+							Frames::System::SystemCall::Id get_call_id() const {
 								return call_id;
 							}
 
@@ -162,6 +162,6 @@ namespace Karkinolution {
 						}
 				};
 			} // namespace Models
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

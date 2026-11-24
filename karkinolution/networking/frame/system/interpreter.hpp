@@ -1,7 +1,7 @@
 #pragma once
 
 #include "karkinolution/networking/config_output.hpp"
-#include "karkinolution/networking/frame/layout.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
 #include "karkinolution/networking/world_state.hpp"
 #include "karkinolution/world/world.hpp"
 #include "shared/binary/fields.hpp"
@@ -23,7 +23,7 @@ classes/structs in the Kshared library.
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Interpreter {
 
 				namespace SRI {
@@ -120,6 +120,6 @@ namespace Karkinolution {
 				} // namespace SystemOutput
 
 			} // namespace Interpreter
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

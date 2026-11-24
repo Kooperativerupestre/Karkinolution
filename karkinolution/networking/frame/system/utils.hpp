@@ -1,15 +1,15 @@
 #pragma once
 
-#include "karkinolution/networking/frame/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
 #include <cstdint>
-#include <karkinolution/networking/frame/contract.hpp>
+#include <karkinolution/networking/frame/system/contract.hpp>
 #include <variant>
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Utils {
 				uint8_t constexpr cast_numeric(Detail::SubTypeVariant sub_type) {
 					if (std::holds_alternative<SystemCallSubTypes>(sub_type)) {
@@ -20,6 +20,6 @@ namespace Karkinolution {
 					KShared::Functional::unreachable_or_throw("Invalid sub type of frame (system) on cast numeric");
 				}
 			} // namespace Utils
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

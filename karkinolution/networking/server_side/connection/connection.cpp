@@ -7,7 +7,7 @@
 #include <asio/buffer.hpp>
 #include <asio/write.hpp>
 #include <iostream>
-#include <karkinolution/networking/frame/motor.hpp>
+#include <karkinolution/networking/frame/system/motor.hpp>
 #include <karkinolution/networking/scope/motor.hpp>
 #include <variant>
 
@@ -80,11 +80,11 @@ namespace Karkinolution::Networking::ServerSide::Connection {
 		sending_state.bytes = std::visit(
 			[](const auto &response) {
 				using Response = std::decay_t<decltype(response)>;
-				if constexpr (std::is_same_v<Response, Frames::Models::SystemOutput::SystemOutput>) {
+				if constexpr (std::is_same_v<Response, Frames::System::Models::SystemOutput::SystemOutput>) {
 					return Scope::Motor::make_system_frame(
-						Frames::Motor::make_raw_system_output(response.get_sub_type(),
-															  response.get_call_id(),
-															  response.get_payload()));
+						Frames::System::Motor::make_raw_system_output(response.get_sub_type(),
+																	  response.get_call_id(),
+																	  response.get_payload()));
 				} else {
 					return Scope::Motor::make_world_frame(
 						Binary::Frames::Motor::make_raw_response(response.get_cardinality(),

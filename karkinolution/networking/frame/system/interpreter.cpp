@@ -8,11 +8,11 @@
 #include "shared/binary/serializer.hpp"
 #include "shared/binary/types/list.hpp"
 
-#include <karkinolution/networking/frame/interpreter.hpp>
+#include <karkinolution/networking/frame/system/interpreter.hpp>
 #include <vector>
 
 namespace Karkinolution {
-	namespace Networking::Frames::Interpreter {
+	namespace Networking::Frames::System::Interpreter {
 		WorldPreset::SRI::Bytes WorldPreset::SRI::serialize(const World::WorldPreset &preset) {
 			WorldPreset::SRI::Bytes bytes{};
 			KShared::Binary::Utils::append_bytes(bytes,
@@ -140,5 +140,5 @@ namespace Karkinolution {
 												 0);
 			return bytes;
 		}
-	} // namespace Networking::Frames::Interpreter
+	} // namespace Networking::Frames::System::Interpreter
 } // namespace Karkinolution

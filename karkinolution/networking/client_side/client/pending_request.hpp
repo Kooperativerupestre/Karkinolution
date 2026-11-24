@@ -1,7 +1,7 @@
 #pragma once
 
 #include "karkinolution/binary/frames/models.hpp"
-#include "karkinolution/networking/frame/contract.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
 
 #include <chrono>
 #include <expected>
@@ -9,7 +9,7 @@
 #include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/networking/client_side/error.hpp>
-#include <karkinolution/networking/frame/models.hpp>
+#include <karkinolution/networking/frame/system/models.hpp>
 #include <memory>
 #include <mutex>
 #include <optional>

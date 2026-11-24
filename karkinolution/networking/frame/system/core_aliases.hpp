@@ -1,12 +1,12 @@
 #pragma once
 
-#include "karkinolution/networking/frame/contract.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			using SystemCallSubTypes   = SystemCall::SubType;
 			using SystemOutputSubTypes = SystemOutput::SubType;
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

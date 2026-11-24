@@ -1,13 +1,13 @@
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 
 #include "karkinolution/binary/protocol/layouts.hpp"
-#include "karkinolution/networking/frame/layout.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
 #include <cstdint>
 #include <karkinolution/binary/frames/parser/parser.hpp>
-#include <karkinolution/networking/frame/parser/parser.hpp>
+#include <karkinolution/networking/frame/system/parser/parser.hpp>
 #include <vector>
 
 namespace Karkinolution::Networking {
@@ -15,7 +15,7 @@ namespace Karkinolution::Networking {
 		if (scope == Scope::Scope::WORLD) {
 			return Binary::Frames::Parser::has_frame(bytes);
 		} else if (scope == Scope::Scope::SERVER) {
-			return Frames::Parser::has_frame(bytes);
+			return Frames::System::Parser::has_frame(bytes);
 		}
 		KShared::Functional::unreachable_or_throw();
 	}
@@ -24,7 +24,7 @@ namespace Karkinolution::Networking {
 		if (scope == Scope::Scope::WORLD) {
 			return Binary::Frames::Parser::has_frame(buffer.view());
 		} else if (scope == Scope::Scope::SERVER) {
-			return Frames::Parser::has_frame(buffer.view());
+			return Frames::System::Parser::has_frame(buffer.view());
 		}
 		KShared::Functional::unreachable_or_throw();
 	}
@@ -38,14 +38,14 @@ namespace Karkinolution::Networking {
 		if (scope == Scope::Scope::WORLD) {
 			return Binary::Frames::Parser::get_frame(buffer.view());
 		} else if (scope == Scope::Scope::SERVER) {
-			return Frames::Parser::get_frame(buffer.view());
+			return Frames::System::Parser::get_frame(buffer.view());
 		}
 		KShared::Functional::unreachable_or_throw();
 	}
 
 	std::uint32_t FrameBufferAnalyzer::get_size_of_frame(const RawFrameBuffer &buffer, Scope::Scope scope) {
 		if (scope == Scope::Scope::SERVER) {
-			return Frames::Parser::get_frame_size(buffer.view());
+			return Frames::System::Parser::get_frame_size(buffer.view());
 		} else if (scope == Scope::Scope::WORLD) {
 			return Binary::Frames::Parser::get_frame_size(buffer.view());
 		}
@@ -55,7 +55,7 @@ namespace Karkinolution::Networking {
 	std::uint32_t FrameBufferAnalyzer::get_size_of_frame(const std::vector<std::byte> &declared_size,
 														 Scope::Scope                  scope) {
 		if (scope == Scope::Scope::SERVER) {
-			return Frames::Parser::get_frame_size(declared_size);
+			return Frames::System::Parser::get_frame_size(declared_size);
 		} else if (scope == Scope::Scope::WORLD) {
 			return Binary::Frames::Parser::get_frame_size(declared_size);
 		}
@@ -83,7 +83,7 @@ namespace Karkinolution::Networking {
 
 	bool has_declared_size(std::size_t buffer_size, std::size_t new_bytes_size, Scope::Scope scope) {
 		if (scope == Scope::Scope::SERVER) {
-			return buffer_size + new_bytes_size >= Frames::Layout::DeclaredSize::END;
+			return buffer_size + new_bytes_size >= Frames::System::Layout::DeclaredSize::END;
 		} else if (scope == Scope::Scope::WORLD) {
 			return buffer_size + new_bytes_size >= Binary::ProtocolLayout::DeclaredSize::END;
 		}
@@ -92,7 +92,7 @@ namespace Karkinolution::Networking {
 
 	bool has_declared_size(std::size_t buffer_size, Scope::Scope scope) {
 		if (scope == Scope::Scope::SERVER) {
-			return buffer_size >= Frames::Layout::DeclaredSize::END;
+			return buffer_size >= Frames::System::Layout::DeclaredSize::END;
 		} else if (scope == Scope::Scope::WORLD) {
 			return buffer_size >= Binary::ProtocolLayout::DeclaredSize::END;
 		}

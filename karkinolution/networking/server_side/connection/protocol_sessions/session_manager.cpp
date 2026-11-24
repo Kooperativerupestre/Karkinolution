@@ -1,6 +1,6 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/session_manager.hpp"
 
-#include "karkinolution/networking/frame/parser/parser.hpp"
+#include "karkinolution/networking/frame/system/parser/parser.hpp"
 #include "karkinolution/networking/scope/parser.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
@@ -25,10 +25,11 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 			RawFrameBuffer frame_buffer;
 			frame_buffer.add(frame_bytes);
 			if (scope == Scope::Scope::SERVER) {
-				if (Frames::Parser::has_frame(frame_buffer.view()) != Frames::Parser::Internal::FrameExistence::YES) {
+				if (Frames::System::Parser::has_frame(frame_buffer.view())
+					!= Frames::System::Parser::Internal::FrameExistence::YES) {
 					return;
 				}
-				const auto frame = Frames::Parser::get_frame(frame_buffer.view());
+				const auto frame = Frames::System::Parser::get_frame(frame_buffer.view());
 				server_session.receive(std::span<const std::byte>{frame});
 				for (std::size_t index = 0; index < frame.size() + 1; ++index) {
 					incoming.pop_front();

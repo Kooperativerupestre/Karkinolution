@@ -1,18 +1,18 @@
 #pragma once
-#include "karkinolution/networking/frame/layout.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
 
-#include <karkinolution/networking/frame/contract.hpp>
-#include <karkinolution/networking/frame/parser/internal.hpp>
+#include <karkinolution/networking/frame/system/contract.hpp>
+#include <karkinolution/networking/frame/system/parser/internal.hpp>
 #include <shared/binary/byte_range.hpp>
 #include <shared/binary/deserializer.hpp>
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Parser {
 				namespace SystemOutput {
-					template <KShared::Binary::ByteRange T> Frames::SystemCall::Id get_id(const T &bytes) {
-						return KShared::Binary::Deserializer::deserialize<Frames::SystemCall::Id>(
+					template <KShared::Binary::ByteRange T> Frames::System::SystemCall::Id get_id(const T &bytes) {
+						return KShared::Binary::Deserializer::deserialize<Frames::System::SystemCall::Id>(
 							bytes,
 							Layout::SystemOutput::CallId::OFFSET);
 					}
@@ -47,6 +47,6 @@ namespace Karkinolution {
 
 				} // namespace SystemOutput
 			} // namespace Parser
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

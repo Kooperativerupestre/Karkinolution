@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/networking/frame/models.hpp"
+#include "karkinolution/networking/frame/system/models.hpp"
 
 #include <cstdint>
 #include <queue>
@@ -8,8 +8,8 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 	class SystemOutputQueue {
 		private:
 
-			static constexpr std::size_t                           SYSTEM_OUTPUT_MAX_SIZE = 20;
-			std::queue<Frames::Models::SystemOutput::SystemOutput> frames;
+			static constexpr std::size_t                                   SYSTEM_OUTPUT_MAX_SIZE = 20;
+			std::queue<Frames::System::Models::SystemOutput::SystemOutput> frames;
 
 		public:
 
@@ -17,7 +17,7 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 				return frames;
 			}
 
-			bool add(const Frames::Models::SystemOutput::SystemOutput &frame) {
+			bool add(const Frames::System::Models::SystemOutput::SystemOutput &frame) {
 				if (frames.size() >= SYSTEM_OUTPUT_MAX_SIZE) {
 					return false;
 				}
@@ -26,7 +26,7 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 				return true;
 			}
 
-			Frames::Models::SystemOutput::SystemOutput pop_front() {
+			Frames::System::Models::SystemOutput::SystemOutput pop_front() {
 				auto frame = std::move(frames.front());
 				frames.pop();
 				return frame;

@@ -1,4 +1,4 @@
-#include "karkinolution/networking/frame/motor.hpp"
+#include "karkinolution/networking/frame/system/motor.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 #include "karkinolution/networking/scope/motor.hpp"
 #include "karkinolution/networking/scope/parser.hpp"

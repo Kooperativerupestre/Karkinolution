@@ -1,7 +1,7 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/session_manager.hpp"
 
-#include "karkinolution/networking/frame/interpreter.hpp"
-#include "karkinolution/networking/frame/motor.hpp"
+#include "karkinolution/networking/frame/system/interpreter.hpp"
+#include "karkinolution/networking/frame/system/motor.hpp"
 #include "karkinolution/networking/scope/motor.hpp"
 #include "karkinolution/networking/server_side/connection/simulation_adapter/simulation_adapter.hpp"
 #include "karkinolution/networking/server_side/simulation/simulation.hpp"
@@ -13,9 +13,9 @@
 
 namespace {
 	using ::ResponseFrame;
-	using Karkinolution::Networking::Frames::SystemCallSubTypes;
-	using Karkinolution::Networking::Frames::SystemOutputSubTypes;
-	using Karkinolution::Networking::Frames::Motor::make_raw_system_call;
+	using Karkinolution::Networking::Frames::System::SystemCallSubTypes;
+	using Karkinolution::Networking::Frames::System::SystemOutputSubTypes;
+	using Karkinolution::Networking::Frames::System::Motor::make_raw_system_call;
 	using Karkinolution::Networking::Scope::Motor::make_system_frame;
 	using Karkinolution::Networking::Scope::Motor::make_world_frame;
 	using Karkinolution::Networking::ServerSide::Connection::ProtocolSessions::SessionManager;
@@ -41,18 +41,20 @@ TEST(SessionManager, RoutesSystemFramesAndWorldFramesWithoutForwardingScope) {
 	manager.receive(world_list_call);
 	ASSERT_TRUE(manager.has_response());
 	const auto world_list_response =
-		std::get<Karkinolution::Networking::Frames::Models::SystemOutput::SystemOutput>(manager.pop_response());
+		std::get<Karkinolution::Networking::Frames::System::Models::SystemOutput::SystemOutput>(manager.pop_response());
 	EXPECT_EQ(world_list_response.get_call_id(), 1);
 	EXPECT_EQ(world_list_response.get_sub_type(), SystemOutputSubTypes::AllWorldIds);
 
-	const auto config_payload = Karkinolution::Networking::Frames::Interpreter::SystemCall::SRI::make_config(world_id);
+	const auto config_payload =
+		Karkinolution::Networking::Frames::System::Interpreter::SystemCall::SRI::make_config(world_id);
 	manager.receive(make_system_frame(make_raw_system_call(SystemCallSubTypes::CONFIG, 2, config_payload)));
 	ASSERT_TRUE(manager.has_response());
 	const auto config_response =
-		std::get<Karkinolution::Networking::Frames::Models::SystemOutput::SystemOutput>(manager.pop_response());
+		std::get<Karkinolution::Networking::Frames::System::Models::SystemOutput::SystemOutput>(manager.pop_response());
 	EXPECT_EQ(config_response.get_sub_type(), SystemOutputSubTypes::ConfigOutput);
-	EXPECT_TRUE(Karkinolution::Networking::Frames::Interpreter::DSI::get_config_output(config_response.get_payload())
-					.could_connect);
+	EXPECT_TRUE(
+		Karkinolution::Networking::Frames::System::Interpreter::DSI::get_config_output(config_response.get_payload())
+			.could_connect);
 
 	const auto world_request = make_world_frame(TestUtils::make_see_creature_frame(3, 45));
 	manager.receive(world_request);

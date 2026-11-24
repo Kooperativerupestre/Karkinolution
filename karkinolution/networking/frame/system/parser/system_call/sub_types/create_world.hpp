@@ -1,12 +1,12 @@
 #pragma once
 
-#include "karkinolution/networking/frame/layout.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
 #include "shared/binary/byte_range.hpp"
 #include "shared/binary/deserializer.hpp"
 
-#include <karkinolution/networking/frame/parser/internal.hpp>
+#include <karkinolution/networking/frame/system/parser/internal.hpp>
 
-namespace Karkinolution::Networking::Frames::Parser::SystemCall::ST::CreateWorld {
+namespace Karkinolution::Networking::Frames::System::Parser::SystemCall::ST::CreateWorld {
 	template <KShared::Binary::ByteRange T> bool get_auto_connect(const T &bytes) {
 		return KShared::Binary::Deserializer::read_bool(bytes,
 														Layout::SystemCall::ST::CreateWorld::AutoConnect::OFFSET);
@@ -33,4 +33,4 @@ namespace Karkinolution::Networking::Frames::Parser::SystemCall::ST::CreateWorld
 	template <KShared::Binary::ByteRange T> Internal::FrameExistence has_frame(const T &bytes) {
 		return Internal::has_frame(bytes, Layout::SystemCall::ST::CreateWorld::FIXED_HEADER_SIZE);
 	}
-} // namespace Karkinolution::Networking::Frames::Parser::SystemCall::ST::CreateWorld
+} // namespace Karkinolution::Networking::Frames::System::Parser::SystemCall::ST::CreateWorld

@@ -5,9 +5,9 @@
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/client/request_queue.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
-#include "karkinolution/networking/frame/contract.hpp"
-#include "karkinolution/networking/frame/models.hpp"
-#include "karkinolution/networking/frame/parser/internal.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/system/models.hpp"
+#include "karkinolution/networking/frame/system/parser/internal.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 #include "karkinolution/networking/scope/parser.hpp"
@@ -18,7 +18,7 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
-#include <karkinolution/networking/frame/parser/parser.hpp>
+#include <karkinolution/networking/frame/system/parser/parser.hpp>
 #include <memory>
 #include <optional>
 #include <span>
@@ -39,7 +39,7 @@
 #include <vector>
 
 namespace Karkinolution::Networking::ClientSide::Protocol {
-	using FrameExistence = Frames::Parser::Internal::FrameExistence;
+	using FrameExistence = Frames::System::Parser::Internal::FrameExistence;
 
 	template <typename Response, typename RequestId> class AbstractSession {
 
@@ -166,7 +166,8 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 			std::optional<FrameBufferAnalyzer::EndOfFrame> get_end_of_frame(std::span<const std::byte> new_bytes);
 	};
 
-	class SystemSession : public AbstractSession<Frames::Models::SystemOutput::SystemOutput, Frames::SystemCall::Id> {
+	class SystemSession
+		: public AbstractSession<Frames::System::Models::SystemOutput::SystemOutput, Frames::System::SystemCall::Id> {
 		public:
 
 			BufferExistence                                has_frame() const;
@@ -273,13 +274,13 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 			WorldResponseResult pop_world_response(Binary::RequestId id);
 
 			// doesn't block caller thread. If it has response, send, if it doesn't have, doesn't send
-			SystemResponseResult pop_system_response(Frames::SystemCall::Id id);
+			SystemResponseResult pop_system_response(Frames::System::SystemCall::Id id);
 
 			// block the thread until the response arrives (stops if it reaches timeout)
 			WorldResponseResult await_world_response(Binary::RequestId id);
 
 			// block the thread until the response arrives (stops if it reaches timeout)
-			SystemResponseResult await_system_response(Frames::SystemCall::Id id);
+			SystemResponseResult await_system_response(Frames::System::SystemCall::Id id);
 
 			void fail_pending_requests();
 
@@ -287,7 +288,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 
 			void register_world_request(Binary::RequestId id);
 
-			void register_system_request(Frames::SystemCall::Id id);
+			void register_system_request(Frames::System::SystemCall::Id id);
 
 			void enqueue_world_request(std::span<const std::byte> new_bytes);
 
@@ -364,15 +365,15 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 			// doesn't block caller thread. If it has response, send, if it doesn't have, doesn't send
 
 
-			SystemResponseResult pop_system_response(Frames::SystemCall::Id id);
+			SystemResponseResult pop_system_response(Frames::System::SystemCall::Id id);
 
 			WorldResponseResult await_world_response(Binary::RequestId id);
 
-			SystemResponseResult await_system_response(Frames::SystemCall::Id id);
+			SystemResponseResult await_system_response(Frames::System::SystemCall::Id id);
 
 			void register_world_request(Binary::RequestId id);
 
-			void register_system_request(Frames::SystemCall::Id id);
+			void register_system_request(Frames::System::SystemCall::Id id);
 
 			SessionManager() {}
 

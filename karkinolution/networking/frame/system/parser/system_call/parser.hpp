@@ -1,17 +1,17 @@
 #pragma once
 
-#include "karkinolution/networking/frame/core_aliases.hpp"
-#include "karkinolution/networking/frame/parser/internal.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/parser/internal.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
-#include <karkinolution/networking/frame/parser/system_call/core.hpp>
-#include <karkinolution/networking/frame/parser/system_call/sub_types/config.hpp>
-#include <karkinolution/networking/frame/parser/system_call/sub_types/create_world.hpp>
+#include <karkinolution/networking/frame/system/parser/system_call/core.hpp>
+#include <karkinolution/networking/frame/system/parser/system_call/sub_types/config.hpp>
+#include <karkinolution/networking/frame/system/parser/system_call/sub_types/create_world.hpp>
 #include <shared/binary/byte_range.hpp>
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Parser {
 				namespace SystemCall {
 					inline constexpr std::uint32_t calculate_declared_size(std::uint32_t      payload_size,
@@ -74,6 +74,6 @@ namespace Karkinolution {
 
 				} // namespace SystemCall
 			} // namespace Parser
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

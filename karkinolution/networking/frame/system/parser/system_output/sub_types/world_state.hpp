@@ -1,14 +1,14 @@
 #pragma once
 
-#include "karkinolution/networking/frame/layout.hpp"
-#include "karkinolution/networking/frame/parser/internal.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
+#include "karkinolution/networking/frame/system/parser/internal.hpp"
 #include "shared/binary/byte_range.hpp"
 
 #include <vector>
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Parser::SystemOutput::ST::WorldState {
 				template <KShared::Binary::ByteRange T> std::vector<std::byte> get_payload(const T &bytes) {
 					std::vector<std::byte> payload;
@@ -42,6 +42,6 @@ namespace Karkinolution {
 
 
 			} // namespace Parser::SystemOutput::ST::WorldState
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

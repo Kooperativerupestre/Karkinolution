@@ -112,12 +112,12 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		while (const auto raw_frame = system_session.pop_complete_raw_frame()) {
 			assert(raw_frame);
 
-			const auto type = Frames::Parser::Internal::get_type(raw_frame.value());
+			const auto type = Frames::System::Parser::Internal::get_type(raw_frame.value());
 
-			std::optional<Frames::Models::SystemOutput::SystemOutput> response = std::nullopt;
+			std::optional<Frames::System::Models::SystemOutput::SystemOutput> response = std::nullopt;
 
-			if (type == Frames::Type::SystemOutput) {
-				response.emplace(Frames::Parser::parse_system_output_frame(raw_frame.value()));
+			if (type == Frames::System::Type::SystemOutput) {
+				response.emplace(Frames::System::Parser::parse_system_output_frame(raw_frame.value()));
 			} else {
 				throw ClientError("Client received a request frame from the server");
 			}
@@ -134,7 +134,8 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return world_session.pop_response(id);
 	}
 
-	SimulationSessions::SystemResponseResult SimulationSessions::pop_system_response(Frames::SystemCall::Id id) {
+	SimulationSessions::SystemResponseResult
+	SimulationSessions::pop_system_response(Frames::System::SystemCall::Id id) {
 		return system_session.pop_response(id);
 	}
 
@@ -142,7 +143,8 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return world_session.await_response(id);
 	}
 
-	SimulationSessions::SystemResponseResult SimulationSessions::await_system_response(Frames::SystemCall::Id id) {
+	SimulationSessions::SystemResponseResult
+	SimulationSessions::await_system_response(Frames::System::SystemCall::Id id) {
 		return system_session.await_response(id);
 	}
 
@@ -155,7 +157,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return world_session.register_request(id);
 	}
 
-	void SimulationSessions::register_system_request(Frames::SystemCall::Id id) {
+	void SimulationSessions::register_system_request(Frames::System::SystemCall::Id id) {
 		return system_session.register_request(id);
 	}
 
@@ -309,7 +311,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return sessions.pop_world_response(id);
 	}
 
-	SessionManager::SystemResponseResult SessionManager::pop_system_response(Frames::SystemCall::Id id) {
+	SessionManager::SystemResponseResult SessionManager::pop_system_response(Frames::System::SystemCall::Id id) {
 		return sessions.pop_system_response(id);
 	}
 
@@ -317,7 +319,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return sessions.await_world_response(id);
 	}
 
-	SessionManager::SystemResponseResult SessionManager::await_system_response(Frames::SystemCall::Id id) {
+	SessionManager::SystemResponseResult SessionManager::await_system_response(Frames::System::SystemCall::Id id) {
 		return sessions.await_system_response(id);
 	}
 
@@ -325,7 +327,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return sessions.register_world_request(id);
 	}
 
-	void SessionManager::register_system_request(Frames::SystemCall::Id id) {
+	void SessionManager::register_system_request(Frames::System::SystemCall::Id id) {
 		return sessions.register_system_request(id);
 	}
 

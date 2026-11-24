@@ -1,12 +1,12 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/server.hpp"
 
-#include "karkinolution/networking/frame/parser/internal.hpp"
+#include "karkinolution/networking/frame/system/parser/internal.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 
 #include <iomanip>
 #include <iostream>
-#include <karkinolution/networking/frame/parser/parser.hpp>
-#include <karkinolution/networking/frame/processor.hpp>
+#include <karkinolution/networking/frame/system/parser/parser.hpp>
+#include <karkinolution/networking/frame/system/processor.hpp>
 #include <span>
 #include <stdexcept>
 
@@ -40,13 +40,14 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 	}
 
 	void ServerSession::process_frames() {
-		while (Frames::Parser::has_frame(call_buffer.view()) == Frames::Parser::Internal::FrameExistence::YES) {
-			const auto frame = Frames::Parser::get_frame(call_buffer.view());
+		while (Frames::System::Parser::has_frame(call_buffer.view())
+			   == Frames::System::Parser::Internal::FrameExistence::YES) {
+			const auto frame = Frames::System::Parser::get_frame(call_buffer.view());
 			for (std::size_t index = 0; index < frame.size(); ++index) {
 				call_buffer.pop_front();
 			}
-			const auto call = Frames::Parser::parse_system_call_frame(frame);
-			system_outputs.add(Frames::Processor::process(call, simulation, world_lease));
+			const auto call = Frames::System::Parser::parse_system_call_frame(frame);
+			system_outputs.add(Frames::System::Processor::process(call, simulation, world_lease));
 		}
 	}
 
@@ -54,7 +55,7 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 		return !system_outputs.view().empty();
 	}
 
-	Frames::Models::SystemOutput::SystemOutput ServerSession::pop_response() {
+	Frames::System::Models::SystemOutput::SystemOutput ServerSession::pop_response() {
 		return system_outputs.pop_front();
 	}
 

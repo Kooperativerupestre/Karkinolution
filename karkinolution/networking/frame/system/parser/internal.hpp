@@ -1,17 +1,17 @@
 #pragma once
-#include "karkinolution/networking/frame/core_aliases.hpp"
-#include "karkinolution/networking/frame/layout.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
 #include "shared/binary/byte_range.hpp"
 #include "shared/binary/errors.hpp"
 
 #include <cstdint>
 #include <karkinolution/binary/frames/parser/internal.hpp>
-#include <karkinolution/networking/frame/contract.hpp>
+#include <karkinolution/networking/frame/system/contract.hpp>
 #include <shared/binary/deserializer.hpp>
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Parser {
 				namespace Internal {
 
@@ -121,6 +121,6 @@ namespace Karkinolution {
 
 				} // namespace Internal
 			} // namespace Parser
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution

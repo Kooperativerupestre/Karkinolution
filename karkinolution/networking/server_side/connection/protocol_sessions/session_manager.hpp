@@ -12,7 +12,7 @@
 #include <variant>
 
 namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
-	using SessionResponse = std::variant<Frames::Models::SystemOutput::SystemOutput, ResponseFrame>;
+	using SessionResponse = std::variant<Frames::System::Models::SystemOutput::SystemOutput, ResponseFrame>;
 
 	/// Routes inbound frames between ServerSession (SERVER scope) and WorldSession (WORLD scope).
 	/// WORLD-scoped requests are strictly rejected until a world has been leased via a CONFIG

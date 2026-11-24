@@ -1,18 +1,18 @@
 #pragma once
 
-#include "karkinolution/networking/frame/contract.hpp"
-#include "karkinolution/networking/frame/core_aliases.hpp"
-#include "karkinolution/networking/frame/layout.hpp"
-#include "karkinolution/networking/frame/models.hpp"
-#include "karkinolution/networking/frame/parser/parser.hpp"
-#include "karkinolution/networking/frame/utils.hpp"
+#include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/system/core_aliases.hpp"
+#include "karkinolution/networking/frame/system/layout.hpp"
+#include "karkinolution/networking/frame/system/models.hpp"
+#include "karkinolution/networking/frame/system/parser/parser.hpp"
+#include "karkinolution/networking/frame/system/utils.hpp"
 #include "shared/binary/byte_range.hpp"
 #include "shared/binary/byte_utils.hpp"
 #include "shared/binary/serializer.hpp"
 
 namespace Karkinolution {
 	namespace Networking {
-		namespace Frames {
+		namespace Frames::System {
 			namespace Motor {
 				template <KShared::Binary::ByteRange Payload>
 				std::vector<std::byte> copy_payload(const Payload &payload) {
@@ -139,6 +139,6 @@ namespace Karkinolution {
 
 
 			} // namespace Motor
-		} // namespace Frames
+		} // namespace Frames::System
 	} // namespace Networking
 } // namespace Karkinolution
