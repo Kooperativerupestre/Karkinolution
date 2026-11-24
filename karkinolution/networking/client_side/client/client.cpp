@@ -257,13 +257,13 @@ namespace Karkinolution::Networking::ClientSide {
 				return;
 			}
 
-			current_async_operations_running.increment();
+
 			sending_state.prepare_sending_state(bytes.see_scope().value());
 			sending_state.enqueue_raw_bytes(bytes.see_frame().value());
 
 
 			sending_state.mark_as_finished();
-
+			current_async_operations_running.increment();
 			try {
 				asio::async_write(
 					socket_,
@@ -271,19 +271,19 @@ namespace Karkinolution::Networking::ClientSide {
 
 					asio::bind_executor(strand_,
 										[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t) {
+											KShared::Functional::ScopeGuard scope_guard{[this]() noexcept {
+												current_async_operations_running.decrement();
+											}};
 											if (error) {
 												if (error == asio::error::operation_aborted) {
-													current_async_operations_running.decrement();
 													return;
 												}
 												on_error(error.message());
-												current_async_operations_running.decrement();
 												return;
 											}
 											const auto has_reseted = sending_state.reset_if_finished();
 											assert(has_reseted);
 											send();
-											current_async_operations_running.decrement();
 										}));
 			} catch (...) {
 				current_async_operations_running.decrement();
