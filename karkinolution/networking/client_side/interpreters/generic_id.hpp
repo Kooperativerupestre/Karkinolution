@@ -1,9 +1,9 @@
 #pragma once
 
-#include "karkinolution/binary/core_aliases.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
 
 namespace Karkinolution::Networking::ClientSide::Interpreters {
-	inline constexpr Binary::RequestId GENERIC_INTERPRETER_ID = 45;
+	inline constexpr Frames::World::RequestId GENERIC_INTERPRETER_ID = 45;
 } // namespace Karkinolution::Networking::ClientSide::Interpreters
 
 /*

@@ -1,11 +1,11 @@
 #pragma once
-#include "karkinolution/binary/frames/parser/internal.hpp"
-#include "karkinolution/binary/frames/parser/parser.hpp"
-#include "karkinolution/binary/protocol/contract.hpp"
+#include "karkinolution/networking/frame/world/parser/internal.hpp"
+#include "karkinolution/networking/frame/world/parser/parser.hpp"
+#include "karkinolution/networking/frame/world/protocol/contract.hpp"
 
 #include <cstdint>
 #include <deque>
-#include <karkinolution/binary/protocol/layouts.hpp>
+#include <karkinolution/networking/frame/world/protocol/layouts.hpp>
 #include <karkinolution/networking/scope/layout.hpp>
 #include <optional>
 #include <vector>
@@ -15,7 +15,7 @@ namespace Karkinolution::Networking {
 	inline constexpr int MAX_RAW_FRAME_BUFFER_SIZE = 64 * 1024;
 
 
-	using BufferExistence = Karkinolution::Binary::Frames::Parser::Internal::FrameExistence;
+	using BufferExistence = Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence;
 
 	/*
 	Why is this used by Client and ProtocolSession (Server side)
@@ -114,9 +114,10 @@ namespace Karkinolution::Networking {
 			}
 	};
 
-	inline constexpr std::size_t MAX_PAYLOAD_BYTES =
-		std::min(static_cast<std::size_t>(UINT32_MAX) - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE,
-				 MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Binary::Protocol::Layout::TOTAL_HEADER_SIZE);
+	inline constexpr std::size_t MAX_PAYLOAD_BYTES = std::min(
+		static_cast<std::size_t>(UINT32_MAX)
+			- Karkinolution::Networking::Frames::World::Protocol::Layout::TOTAL_HEADER_SIZE,
+		MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Networking::Frames::World::Protocol::Layout::TOTAL_HEADER_SIZE);
 
 	namespace FrameBufferAnalyzer {
 		enum class PlacesOfEndOfFrame : uint8_t {

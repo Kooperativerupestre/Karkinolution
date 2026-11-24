@@ -87,10 +87,10 @@ namespace Karkinolution::Networking::ServerSide::Connection {
 																	  response.get_payload()));
 				} else {
 					return Scope::Motor::make_world_frame(
-						Binary::Frames::Motor::make_raw_response(response.get_cardinality(),
-																 response.get_sub_type(),
-																 response.get_request_id(),
-																 response.get_payload()));
+						Frames::World::Motor::make_raw_response(response.get_cardinality(),
+																response.get_sub_type(),
+																response.get_request_id(),
+																response.get_payload()));
 				}
 			},
 			response);

@@ -1,0 +1,56 @@
+#pragma once
+
+#include "karkinolution/networking/frame/world/interpreters/models/territory.hpp"
+#include "shared/binary/fields.hpp"
+#include "shared/binary/interpreters/unit.hpp"
+#include "shared/math/units.hpp"
+
+#include <array>
+#include <cstddef>
+#include <vector>
+
+namespace Karkinolution {
+	namespace Networking {
+		namespace Frames::World::Interpreters {
+			namespace SRI {
+				namespace Territory {
+					/*
+					 * Territory protocol
+					 *
+					 * # begin size (16 bytes)
+					 * [0 -> 7 - size.width]
+					 * [8 -> 15 - size.height]
+					 * # end size
+					 */
+
+					namespace Layout {
+						using Size = KShared::Binary::Field<0, UnitsSRI::Layout::TOTAL_SIZE>;
+
+						inline size_t constexpr TOTAL_SIZE = Size::END;
+					} // namespace Layout
+
+					namespace BytesArrays {
+						using Territory = std::array<std::byte, Layout::TOTAL_SIZE>;
+					} // namespace BytesArrays
+
+					BytesArrays::Territory
+					serialize_territory(const Interpreters::Models::Territory::Territory &territory);
+
+					namespace Request {
+						std::array<std::byte, 0> make_see_territory();
+					} // namespace Request
+				} // namespace Territory
+			} // namespace SRI
+
+			namespace DSI {
+				namespace Territory {
+					Interpreters::Models::Territory::Territory
+					deserialize_territory(const std::vector<std::byte> &payload, std::size_t offset);
+				} // namespace Territory
+			} // namespace DSI
+		} // namespace Frames::World::Interpreters
+	} // namespace Networking
+} // namespace Karkinolution
+
+namespace TerritorySRI = Karkinolution::Networking::Frames::World::Interpreters::SRI::Territory;
+namespace TerritoryDSI = Karkinolution::Networking::Frames::World::Interpreters::DSI::Territory;

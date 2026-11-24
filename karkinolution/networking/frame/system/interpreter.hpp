@@ -27,12 +27,12 @@ namespace Karkinolution {
 			namespace Interpreter {
 
 				namespace SRI {
-					std::vector<std::byte> serialize(const std::vector<World::WorldId> &world_ids);
+					std::vector<std::byte> serialize(const std::vector<Karkinolution::World::WorldId> &world_ids);
 
 					namespace Layout {
 						namespace WorldState {
 							using HasOwnerId = KShared::Binary::Field<0, 1>;
-							using OwnerId    = KShared::Binary::Next<HasOwnerId, sizeof(World::WorldId)>;
+							using OwnerId    = KShared::Binary::Next<HasOwnerId, sizeof(Karkinolution::World::WorldId)>;
 
 							inline constexpr std::size_t TotalSize = OwnerId::END;
 						} // namespace WorldState
@@ -52,8 +52,8 @@ namespace Karkinolution {
 
 
 					WorldState get_world_state(const std::vector<std::byte> &bytes, std::size_t offset = 0);
-					std::vector<World::WorldId> get_world_ids(const std::vector<std::byte> &bytes,
-															  std::size_t                   offset = 0);
+					std::vector<Karkinolution::World::WorldId> get_world_ids(const std::vector<std::byte> &bytes,
+																			 std::size_t                   offset = 0);
 					ConfigOutput get_config_output(const std::vector<std::byte> &bytes, std::size_t offset = 0);
 
 					struct WorldCreatedOutput {
@@ -74,11 +74,12 @@ namespace Karkinolution {
 						} // namespace Layout
 
 						using Bytes = std::array<std::byte, Layout::TOTAL_SIZE>;
-						Bytes serialize(const World::WorldPreset &preset);
+						Bytes serialize(const Karkinolution::World::WorldPreset &preset);
 					} // namespace SRI
 
 					namespace DSI {
-						World::WorldPreset deserialize(const std::vector<std::byte> &bytes, std::size_t offset = 0);
+						Karkinolution::World::WorldPreset deserialize(const std::vector<std::byte> &bytes,
+																	  std::size_t                   offset = 0);
 					} // namespace DSI
 				} // namespace WorldPreset
 
@@ -87,7 +88,7 @@ namespace Karkinolution {
 					namespace SRI {
 						namespace Layout {
 							namespace Config {
-								using WorldId = KShared::Binary::Field<0, sizeof(World::WorldId)>;
+								using WorldId = KShared::Binary::Field<0, sizeof(Karkinolution::World::WorldId)>;
 								inline constexpr std::size_t TOTAL_SIZE = WorldId::END;
 							} // namespace Config
 
@@ -96,15 +97,17 @@ namespace Karkinolution {
 							} // namespace CreateWorld
 						} // namespace Layout
 
-						std::array<std::byte, Layout::Config::TOTAL_SIZE> make_config(World::WorldId world_id);
-						WorldPreset::SRI::Bytes make_create_world(const World::WorldPreset &preset);
+						std::array<std::byte, Layout::Config::TOTAL_SIZE>
+												make_config(Karkinolution::World::WorldId world_id);
+						WorldPreset::SRI::Bytes make_create_world(const Karkinolution::World::WorldPreset &preset);
 
 					} // namespace SRI
 
 					namespace DSI {
-						World::WorldId     get_config(const std::vector<std::byte> &bytes, std::size_t offset = 0);
-						World::WorldPreset get_create_world(const std::vector<std::byte> &bytes,
-															std::size_t                   offset = 0);
+						Karkinolution::World::WorldId     get_config(const std::vector<std::byte> &bytes,
+																	 std::size_t                   offset = 0);
+						Karkinolution::World::WorldPreset get_create_world(const std::vector<std::byte> &bytes,
+																		   std::size_t                   offset = 0);
 					} // namespace DSI
 				} // namespace SystemCall
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "karkinolution/binary/frames/parser/parser.hpp"
+#include "karkinolution/networking/frame/world/parser/parser.hpp"
 
-#include <karkinolution/binary/frames/aliases.hpp>
+#include <karkinolution/networking/frame/world/aliases.hpp>
 #include <queue>
 #include <shared/core/error.hpp>
 #include <vector>

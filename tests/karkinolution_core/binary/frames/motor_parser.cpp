@@ -1,26 +1,26 @@
-#include "karkinolution/binary/frames/parser/internal.hpp"
-#include "karkinolution/binary/frames/parser/parser.hpp"
-#include "karkinolution/binary/protocol/layouts.hpp"
+#include "karkinolution/networking/frame/world/parser/internal.hpp"
+#include "karkinolution/networking/frame/world/parser/parser.hpp"
+#include "karkinolution/networking/frame/world/protocol/layouts.hpp"
 
 #include <array>
 #include <cstddef>
 #include <gtest/gtest.h>
-#include <karkinolution/binary/frames/analyzer.hpp>
-#include <karkinolution/binary/frames/motor.hpp>
+#include <karkinolution/networking/frame/world/analyzer.hpp>
+#include <karkinolution/networking/frame/world/motor.hpp>
 #include <utility>
 #include <vector>
 
 namespace {
 
-	namespace Frames = Karkinolution::Binary::Frames;
-	namespace Layout = Karkinolution::Binary::Protocol::Layout;
-	using Karkinolution::Binary::BinaryTypes;
-	using Karkinolution::Binary::ErrorSubTypes;
-	using Karkinolution::Binary::RequestId;
-	using Karkinolution::Binary::RequestSubTypes;
-	using Karkinolution::Binary::Resource;
-	using Karkinolution::Binary::ResponseCardinality;
-	using Karkinolution::Binary::ResponseSubTypes;
+	namespace Frames = Karkinolution::Networking::Frames::World;
+	namespace Layout = Karkinolution::Networking::Frames::World::Protocol::Layout;
+	using Karkinolution::Networking::Frames::World::BinaryTypes;
+	using Karkinolution::Networking::Frames::World::ErrorSubTypes;
+	using Karkinolution::Networking::Frames::World::RequestId;
+	using Karkinolution::Networking::Frames::World::RequestSubTypes;
+	using Karkinolution::Networking::Frames::World::Resource;
+	using Karkinolution::Networking::Frames::World::ResponseCardinality;
+	using Karkinolution::Networking::Frames::World::ResponseSubTypes;
 
 	constexpr RequestId request_id = 0x0102030405060708ULL;
 
@@ -32,7 +32,8 @@ namespace {
 			request_id,
 			Resource::CREATURE,
 			payload,
-			Frames::Models::Request::SeeExtra{.target = Karkinolution::Binary::Protocol::Request::SeeTarget::ALL});
+			Frames::Models::Request::SeeExtra{
+				.target = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ALL});
 	}
 
 	std::vector<std::byte> make_response() {
@@ -68,11 +69,12 @@ TEST(FrameMotorRawBytes, SeeRequestHasReadableMetadataAndPayload) {
 	EXPECT_EQ(parsed.get_payload(), (std::vector<std::byte>{payload.begin(), payload.end()}));
 	ASSERT_TRUE(std::holds_alternative<Frames::Models::Request::SeeExtra>(parsed.get_extra()));
 	EXPECT_EQ(std::get<Frames::Models::Request::SeeExtra>(parsed.get_extra()).target,
-			  Karkinolution::Binary::Protocol::Request::SeeTarget::ALL);
+			  Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ALL);
 
 	EXPECT_EQ(Frames::Parser::Request::get_id(raw), request_id);
 	EXPECT_EQ(Frames::Parser::Request::get_resource(raw), Resource::CREATURE);
-	EXPECT_EQ(Frames::Parser::Request::See::get_target(raw), Karkinolution::Binary::Protocol::Request::SeeTarget::ALL);
+	EXPECT_EQ(Frames::Parser::Request::See::get_target(raw),
+			  Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ALL);
 }
 
 TEST(FrameMotorRawBytes, NonSeeOperationsPreserveMetadataAndPayload) {
@@ -154,23 +156,25 @@ TEST(FrameParserHas, RequestPredicatesRespectEachFieldBoundary) {
 
 		SCOPED_TRACE(size);
 
-		EXPECT_EQ(Karkinolution::Binary::Frames::Parser::Internal::has_declared_size(bytes),
+		EXPECT_EQ(Karkinolution::Networking::Frames::World::Parser::Internal::has_declared_size(bytes),
 				  size >= Layout::DeclaredSize::END);
 
-		EXPECT_EQ(Karkinolution::Binary::Frames::Parser::Internal::has_type(bytes), size >= Layout::Type::END);
+		EXPECT_EQ(Karkinolution::Networking::Frames::World::Parser::Internal::has_type(bytes),
+				  size >= Layout::Type::END);
 
-		EXPECT_EQ(Karkinolution::Binary::Frames::Parser::Internal::has_sub_type(bytes), size >= Layout::SubType::END);
+		EXPECT_EQ(Karkinolution::Networking::Frames::World::Parser::Internal::has_sub_type(bytes),
+				  size >= Layout::SubType::END);
 
 		const auto expected_frame_state = size == 0
-			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::NO
-			: size < Karkinolution::Binary::ProtocolLayout::DeclaredSize::END
-			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::DECLARED_SIZE_INCOMPLETE
-			: size == Karkinolution::Binary::ProtocolLayout::DeclaredSize::END
-			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::DECLARED_SIZE_COMPLETE
-			: size < Karkinolution::Binary::ProtocolLayout::SubType::END
-			? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::INCOMPLETE
-			: size < raw.size() ? Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::INCOMPLETE
-								: Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::YES;
+			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::NO
+			: size < Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END
+			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::DECLARED_SIZE_INCOMPLETE
+			: size == Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END
+			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::DECLARED_SIZE_COMPLETE
+			: size < Karkinolution::Networking::Frames::World::ProtocolLayout::SubType::END
+			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::INCOMPLETE
+			: size < raw.size() ? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::INCOMPLETE
+								: Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::YES;
 
 		EXPECT_EQ(Frames::Parser::has_frame(bytes), expected_frame_state);
 	}
@@ -184,12 +188,12 @@ TEST(FrameParserHas, ResponseAndErrorPredicatesRespectTheirFieldBoundaries) {
 		using FrameExistence = Frames::Parser::Internal::FrameExistence;
 
 		if (size == 0) {
-			return Karkinolution::Binary::Frames::Parser::Internal::FrameExistence::NO;
+			return Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::NO;
 		}
-		if (size < Karkinolution::Binary::ProtocolLayout::DeclaredSize::END) {
+		if (size < Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END) {
 			return FrameExistence::DECLARED_SIZE_INCOMPLETE;
 		}
-		if (size == Karkinolution::Binary::ProtocolLayout::DeclaredSize::END) {
+		if (size == Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END) {
 			return FrameExistence::DECLARED_SIZE_COMPLETE;
 		}
 		if (size < frame_size) {
@@ -231,11 +235,11 @@ TEST(FrameMotorRawBytes, RejectsSubtypeFromTheWrongFrameKind) {
 					 std::variant<ErrorSubTypes, ResponseSubTypes>{ErrorSubTypes::CORPSE_WAS_NOT_FOUND},
 					 request_id,
 					 payload),
-				 Karkinolution::Binary::Frames::FrameInvariantError);
+				 Karkinolution::Networking::Frames::World::FrameInvariantError);
 	EXPECT_THROW(
 		Frames::Motor::make_response_raw_bytes(BinaryTypes::Error,
 											   std::variant<ErrorSubTypes, ResponseSubTypes>{ResponseSubTypes::SOIL},
 											   request_id,
 											   payload),
-		Karkinolution::Binary::Frames::FrameInvariantError);
+		Karkinolution::Networking::Frames::World::FrameInvariantError);
 }

@@ -1,7 +1,7 @@
 #include "karkinolution/networking/client_side/client/protocol_session.hpp"
 
-#include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/frames/models.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
+#include "karkinolution/networking/frame/world/models.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
 namespace Karkinolution::Networking::ClientSide::Protocol {
@@ -75,29 +75,29 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		while (const auto raw_frame = world_session.pop_complete_raw_frame()) {
 			assert(raw_frame);
 
-			const auto type = Binary::Frames::Parser::Internal::get_type(raw_frame.value());
+			const auto type = Frames::World::Parser::Internal::get_type(raw_frame.value());
 
 			// This std::optional does not have optional semantics; it only serves
 			// to allow us to decide its type below in the parsing checks
 			// if no throw occurs, this variable should have a value
-			std::optional<Binary::Frames::Models::ResponseVariant> response = std::nullopt;
+			std::optional<Frames::World::Models::ResponseVariant> response = std::nullopt;
 
-			if (type == Binary::BinaryTypes::Response) {
-				response.emplace(Binary::Frames::Parser::parse_response_frame(raw_frame.value()));
-			} else if (type == Binary::BinaryTypes::Error) {
-				response.emplace(Binary::Frames::Parser::parse_error_frame(raw_frame.value()));
+			if (type == Frames::World::BinaryTypes::Response) {
+				response.emplace(Frames::World::Parser::parse_response_frame(raw_frame.value()));
+			} else if (type == Frames::World::BinaryTypes::Error) {
+				response.emplace(Frames::World::Parser::parse_error_frame(raw_frame.value()));
 			} else {
 				throw ClientError("Client received a request frame from the server");
 			}
 
 			assert(response.has_value());
 
-			Binary::RequestId request_id;
+			Frames::World::RequestId request_id;
 
-			if (type == Binary::BinaryTypes::Response) {
-				request_id = std::get<Binary::Frames::Models::Response::Response>(response.value()).get_request_id();
-			} else if (type == Binary::BinaryTypes::Error) {
-				request_id = std::get<Binary::Frames::Models::Error::Error>(response.value()).get_request_id();
+			if (type == Frames::World::BinaryTypes::Response) {
+				request_id = std::get<Frames::World::Models::Response::Response>(response.value()).get_request_id();
+			} else if (type == Frames::World::BinaryTypes::Error) {
+				request_id = std::get<Frames::World::Models::Error::Error>(response.value()).get_request_id();
 			} else {
 				KShared::Functional::unreachable_or_throw();
 			}
@@ -130,7 +130,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		}
 	}
 
-	SimulationSessions::WorldResponseResult SimulationSessions::pop_world_response(Binary::RequestId id) {
+	SimulationSessions::WorldResponseResult SimulationSessions::pop_world_response(Frames::World::RequestId id) {
 		return world_session.pop_response(id);
 	}
 
@@ -139,7 +139,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return system_session.pop_response(id);
 	}
 
-	SimulationSessions::WorldResponseResult SimulationSessions::await_world_response(Binary::RequestId id) {
+	SimulationSessions::WorldResponseResult SimulationSessions::await_world_response(Frames::World::RequestId id) {
 		return world_session.await_response(id);
 	}
 
@@ -153,7 +153,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		world_session.fail_pending_requests();
 	}
 
-	void SimulationSessions::register_world_request(Binary::RequestId id) {
+	void SimulationSessions::register_world_request(Frames::World::RequestId id) {
 		return world_session.register_request(id);
 	}
 
@@ -307,7 +307,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		}
 	}
 
-	SessionManager::WorldResponseResult SessionManager::pop_world_response(Binary::RequestId id) {
+	SessionManager::WorldResponseResult SessionManager::pop_world_response(Frames::World::RequestId id) {
 		return sessions.pop_world_response(id);
 	}
 
@@ -315,7 +315,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return sessions.pop_system_response(id);
 	}
 
-	SessionManager::WorldResponseResult SessionManager::await_world_response(Binary::RequestId id) {
+	SessionManager::WorldResponseResult SessionManager::await_world_response(Frames::World::RequestId id) {
 		return sessions.await_world_response(id);
 	}
 
@@ -323,7 +323,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 		return sessions.await_system_response(id);
 	}
 
-	void SessionManager::register_world_request(Binary::RequestId id) {
+	void SessionManager::register_world_request(Frames::World::RequestId id) {
 		return sessions.register_world_request(id);
 	}
 

@@ -1,20 +1,20 @@
 #pragma once
 
-#include "karkinolution/binary/frames/aliases.hpp"
-#include "karkinolution/binary/frames/models.hpp"
-#include "karkinolution/binary/protocol/contract.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
+#include "karkinolution/networking/frame/world/aliases.hpp"
+#include "karkinolution/networking/frame/world/models.hpp"
+#include "karkinolution/networking/frame/world/protocol/contract.hpp"
 
 #include <cstdint>
 #include <format>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters {
-	using Karkinolution::Binary::Frames::Models::Request::CreateExtra;
-	using Karkinolution::Binary::Frames::Models::Request::CycleExtra;
-	using Karkinolution::Binary::Frames::Models::Request::EraseExtra;
-	using Karkinolution::Binary::Frames::Models::Request::SeeExtra;
-	using Karkinolution::Binary::Frames::Models::Request::WantExtra;
-	using Karkinolution::Binary::Protocol::Request::SeeTarget;
+	using Karkinolution::Networking::Frames::World::Models::Request::CreateExtra;
+	using Karkinolution::Networking::Frames::World::Models::Request::CycleExtra;
+	using Karkinolution::Networking::Frames::World::Models::Request::EraseExtra;
+	using Karkinolution::Networking::Frames::World::Models::Request::SeeExtra;
+	using Karkinolution::Networking::Frames::World::Models::Request::WantExtra;
+	using Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget;
 
 	inline const ResponseFrame &require_response_frame(const ResponseFrameVariant &frame) {
 		if (const auto* response = std::get_if<ResponseFrame>(&frame)) {

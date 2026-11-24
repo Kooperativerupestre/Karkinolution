@@ -1,13 +1,13 @@
 #pragma once
 
-#include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/client/request_queue.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
 #include "karkinolution/networking/frame/system/contract.hpp"
 #include "karkinolution/networking/frame/system/models.hpp"
 #include "karkinolution/networking/frame/system/parser/internal.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
+#include "karkinolution/networking/frame/world/models.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 #include "karkinolution/networking/scope/parser.hpp"
@@ -158,7 +158,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 			}
 	};
 
-	class WorldSession : public AbstractSession<Binary::Frames::Models::ResponseVariant, Binary::RequestId> {
+	class WorldSession : public AbstractSession<Frames::World::Models::ResponseVariant, Frames::World::RequestId> {
 		public:
 
 			BufferExistence                                has_frame() const;
@@ -271,13 +271,13 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 
 			// doesn't block caller thread. If it has response, send, if it doesn't have, doesn't send
 
-			WorldResponseResult pop_world_response(Binary::RequestId id);
+			WorldResponseResult pop_world_response(Frames::World::RequestId id);
 
 			// doesn't block caller thread. If it has response, send, if it doesn't have, doesn't send
 			SystemResponseResult pop_system_response(Frames::System::SystemCall::Id id);
 
 			// block the thread until the response arrives (stops if it reaches timeout)
-			WorldResponseResult await_world_response(Binary::RequestId id);
+			WorldResponseResult await_world_response(Frames::World::RequestId id);
 
 			// block the thread until the response arrives (stops if it reaches timeout)
 			SystemResponseResult await_system_response(Frames::System::SystemCall::Id id);
@@ -286,7 +286,7 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 
 			SimulationSessions() {}
 
-			void register_world_request(Binary::RequestId id);
+			void register_world_request(Frames::World::RequestId id);
 
 			void register_system_request(Frames::System::SystemCall::Id id);
 
@@ -360,18 +360,18 @@ namespace Karkinolution::Networking::ClientSide::Protocol {
 			// doesn't block caller thread. If it has response, send, if it doesn't have, doesn't send
 
 
-			WorldResponseResult pop_world_response(Binary::RequestId id);
+			WorldResponseResult pop_world_response(Frames::World::RequestId id);
 
 			// doesn't block caller thread. If it has response, send, if it doesn't have, doesn't send
 
 
 			SystemResponseResult pop_system_response(Frames::System::SystemCall::Id id);
 
-			WorldResponseResult await_world_response(Binary::RequestId id);
+			WorldResponseResult await_world_response(Frames::World::RequestId id);
 
 			SystemResponseResult await_system_response(Frames::System::SystemCall::Id id);
 
-			void register_world_request(Binary::RequestId id);
+			void register_world_request(Frames::World::RequestId id);
 
 			void register_system_request(Frames::System::SystemCall::Id id);
 

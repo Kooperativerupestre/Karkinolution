@@ -1,51 +1,51 @@
-#include "karkinolution/binary/core_aliases.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
 
 #include <karkinolution/api/corpse.hpp>
-#include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/binary/interpreters/corpse.hpp>
+#include <karkinolution/networking/frame/world/interpreters/corpse.hpp>
+#include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/server_side/api_adapter/corpse.hpp>
 
 namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 	ResponseFrame see_corpse(const Karkinolution::World::World &world,
-							 Binary::RequestId                  request_id,
+							 Frames::World::RequestId           request_id,
 							 const std::vector<std::byte>      &payload) {
 		const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
 
 		auto corpse = Karkinolution::API::Corpse::see_corpse(world, id);
 
 		if (!corpse) {
-			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+			return Karkinolution::Networking::Frames::World::Motor::make_none_response(request_id);
 		}
 		const auto corpse_payload = CorpseSRI::serialize_corpse(*corpse);
 
-		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CORPSE,
-																   request_id,
-																   corpse_payload,
-																   Binary::ResponseCardinality::ONE);
+		return Karkinolution::Networking::Frames::World::Motor::make_response(Frames::World::ResponseSubTypes::CORPSE,
+																			  request_id,
+																			  corpse_payload,
+																			  Frames::World::ResponseCardinality::ONE);
 	}
 
 	ResponseFrame tick_corpse(Karkinolution::World::World  &world,
-							  Binary::RequestId             request_id,
+							  Frames::World::RequestId      request_id,
 							  const std::vector<std::byte> &payload) {
 		const auto id     = CorpseDSI::Request::interpret_like_see_corpse(payload);
 		const auto corpse = Karkinolution::API::Corpse::tick(world, id);
 
 		if (!corpse) {
-			return Karkinolution::Binary::Frames::Motor::make_none_response(request_id);
+			return Karkinolution::Networking::Frames::World::Motor::make_none_response(request_id);
 		}
 
 		const auto corpse_payload = CorpseSRI::serialize_corpse(*corpse);
-		return Karkinolution::Binary::Frames::Motor::make_response(Binary::ResponseSubTypes::CORPSE,
-																   request_id,
-																   corpse_payload,
-																   Binary::ResponseCardinality::ONE);
+		return Karkinolution::Networking::Frames::World::Motor::make_response(Frames::World::ResponseSubTypes::CORPSE,
+																			  request_id,
+																			  corpse_payload,
+																			  Frames::World::ResponseCardinality::ONE);
 	}
 
 	ResponseFrame erase_corpse(Karkinolution::World::World  &world,
-							   Binary::RequestId             request_id,
+							   Frames::World::RequestId      request_id,
 							   const std::vector<std::byte> &payload) {
 		const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
-		return Karkinolution::Binary::Frames::Motor::make_boolean_response(
+		return Karkinolution::Networking::Frames::World::Motor::make_boolean_response(
 			request_id,
 			Karkinolution::API::Corpse::erase(world, id));
 	}

@@ -1,20 +1,21 @@
-#include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/frames/models.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
+#include "karkinolution/networking/frame/world/models.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 
 #include <gtest/gtest.h>
-#include <karkinolution/binary/frames/motor.hpp>
+#include <karkinolution/networking/frame/world/motor.hpp>
 #include <vector>
 
 using namespace Karkinolution;
 
 std::vector<std::byte> make_random_raw_request() {
-	return Binary::Frames::Motor::make_request_raw_bytes(Binary::RequestSubTypes::CREATE,
-														 3,
-														 Binary::Resource::CORPSE,
-														 std::vector<std::byte>{static_cast<std::byte>(0x01)},
-														 Binary::Frames::Models::Request::CreateExtra{});
+	return Karkinolution::Networking::Frames::World::Motor::make_request_raw_bytes(
+		Karkinolution::Networking::Frames::World::RequestSubTypes::CREATE,
+		3,
+		Karkinolution::Networking::Frames::World::Resource::CORPSE,
+		std::vector<std::byte>{static_cast<std::byte>(0x01)},
+		Karkinolution::Networking::Frames::World::Models::Request::CreateExtra{});
 }
 
 TEST(RawFrameBufferAnalyzer, GetEndOfFrame) {

@@ -1,9 +1,9 @@
-#include "karkinolution/binary/frames/motor.hpp"
+#include "karkinolution/networking/frame/world/motor.hpp"
 #include "karkinolution/networking/server_side/connection/protocol_sessions/world.hpp"
 #include "karkinolution/world/world.hpp"
 
 #include <gtest/gtest.h>
-#include <karkinolution/binary/interpreters/creature.hpp>
+#include <karkinolution/networking/frame/world/interpreters/creature.hpp>
 #include <karkinolution/test/utils.hpp>
 
 using Karkinolution::Networking::ServerSide::Connection::ProtocolSessions::WorldSession;

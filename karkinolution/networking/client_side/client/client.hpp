@@ -20,8 +20,8 @@
 #include <cmath>
 #include <condition_variable>
 #include <iostream>
-#include <karkinolution/binary/core_aliases.hpp>
 #include <karkinolution/networking/asio_types.hpp>
+#include <karkinolution/networking/frame/world/core_aliases.hpp>
 #include <mutex>
 #include <optional>
 #include <string>
@@ -29,9 +29,9 @@
 #include <vector>
 
 namespace Karkinolution::Networking::ClientSide {
-	using RequestId       = Karkinolution::Binary::RequestId;
-	using RequestSubTypes = Karkinolution::Binary::RequestSubTypes;
-	using Resource        = Karkinolution::Binary::Resource;
+	using RequestId       = Karkinolution::Networking::Frames::World::RequestId;
+	using RequestSubTypes = Karkinolution::Networking::Frames::World::RequestSubTypes;
+	using Resource        = Karkinolution::Networking::Frames::World::Resource;
 
 	class SendingState {
 		private:
@@ -78,10 +78,10 @@ namespace Karkinolution::Networking::ClientSide {
 		inline constexpr std::size_t MAX_TEMPORARY_RESPONSE_SIZE = 8192;
 
 		struct WorldRequestData {
-				RequestSubTypes                                              sub_type;
-				Resource                                                     resource;
-				std::vector<std::byte>                                       payload;
-				Karkinolution::Binary::Frames::Models::Request::RequestExtra extra;
+				RequestSubTypes                                                         sub_type;
+				Resource                                                                resource;
+				std::vector<std::byte>                                                  payload;
+				Karkinolution::Networking::Frames::World::Models::Request::RequestExtra extra;
 		};
 
 		struct SystemRequestData {

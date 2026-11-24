@@ -1,21 +1,21 @@
-#include "karkinolution/binary/core_aliases.hpp"
-#include "karkinolution/binary/frames/aliases.hpp"
-#include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/networking/client_side/client/pending_request.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
+#include "karkinolution/networking/frame/world/aliases.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
+#include "karkinolution/networking/frame/world/protocol/aliases.hpp"
 
 #include <barrier>
 #include <gtest/gtest.h>
-#include <karkinolution/binary/frames/motor.hpp>
+#include <karkinolution/networking/frame/world/motor.hpp>
 
-using Karkinolution::Binary::ErrorSubTypes;
-using Karkinolution::Binary::RequestId;
-using Karkinolution::Binary::ResponseCardinality;
-using Karkinolution::Binary::ResponseSubTypes;
 using Karkinolution::Networking::ClientSide::ClientSideError;
 using Karkinolution::Networking::ClientSide::Protocol::FutureResponse;
 using Karkinolution::Networking::ClientSide::Protocol::PendingRequests;
 using Karkinolution::Networking::ClientSide::Protocol::RequestFailure;
+using Karkinolution::Networking::Frames::World::ErrorSubTypes;
+using Karkinolution::Networking::Frames::World::RequestId;
+using Karkinolution::Networking::Frames::World::ResponseCardinality;
+using Karkinolution::Networking::Frames::World::ResponseSubTypes;
 
 namespace {
 

@@ -1,7 +1,7 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/world.hpp"
 
-#include "karkinolution/binary/frames/parser/parser.hpp"
-#include "karkinolution/binary/frames/processor.hpp"
+#include "karkinolution/networking/frame/world/parser/parser.hpp"
+#include "karkinolution/networking/frame/world/processor.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 
@@ -44,8 +44,8 @@ namespace Karkinolution::Networking::ServerSide::Connection::ProtocolSessions {
 				request_buffer.pop_front();
 			}
 
-			auto request  = Karkinolution::Binary::Frames::Parser::parse_request_frame(frame.value());
-			auto response = Karkinolution::Binary::Frames::Processor::process(request, world);
+			auto request  = Karkinolution::Networking::Frames::World::Parser::parse_request_frame(frame.value());
+			auto response = Karkinolution::Networking::Frames::World::Processor::process(request, world);
 			responses.add(std::move(response));
 		}
 	}

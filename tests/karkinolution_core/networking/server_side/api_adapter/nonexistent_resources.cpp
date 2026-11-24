@@ -1,27 +1,27 @@
 #include <gtest/gtest.h>
-#include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/frames/analyzer.hpp>
-#include <karkinolution/binary/frames/motor.hpp>
-#include <karkinolution/binary/frames/processor.hpp>
-#include <karkinolution/binary/interpreters/corpse.hpp>
-#include <karkinolution/binary/interpreters/creature.hpp>
-#include <karkinolution/binary/interpreters/soil.hpp>
+#include <karkinolution/networking/frame/world/analyzer.hpp>
+#include <karkinolution/networking/frame/world/core_aliases.hpp>
+#include <karkinolution/networking/frame/world/interpreters/corpse.hpp>
+#include <karkinolution/networking/frame/world/interpreters/creature.hpp>
+#include <karkinolution/networking/frame/world/interpreters/soil.hpp>
+#include <karkinolution/networking/frame/world/motor.hpp>
+#include <karkinolution/networking/frame/world/processor.hpp>
 #include <karkinolution/test/utils.hpp>
 
 namespace {
 	using ::RequestFrame;
-	using Karkinolution::Binary::RequestId;
-	using Karkinolution::Binary::RequestSubTypes;
-	using Karkinolution::Binary::Resource;
+	using Karkinolution::Networking::Frames::World::RequestId;
+	using Karkinolution::Networking::Frames::World::RequestSubTypes;
+	using Karkinolution::Networking::Frames::World::Resource;
 
 	template <typename Payload> RequestFrame make_see_request(Resource resource, const Payload &payload) {
-		return Karkinolution::Binary::Frames::Motor::make_request(
+		return Karkinolution::Networking::Frames::World::Motor::make_request(
 			RequestSubTypes::SEE,
 			RequestId{1},
 			resource,
 			payload,
-			Karkinolution::Binary::Frames::Models::Request::SeeExtra{
-				.target = Karkinolution::Binary::Protocol::Request::SeeTarget::ONE});
+			Karkinolution::Networking::Frames::World::Models::Request::SeeExtra{
+				.target = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ONE});
 	}
 
 } // namespace
@@ -31,9 +31,9 @@ TEST(NonexistentResource, CreatureReturnsNone) {
 
 	const auto payload  = CreatureSRI::Request::make_see_creature(0);
 	const auto request  = make_see_request(Resource::CREATURE, payload);
-	const auto response = Karkinolution::Binary::Frames::Processor::process(request, world);
+	const auto response = Karkinolution::Networking::Frames::World::Processor::process(request, world);
 
-	EXPECT_TRUE(Karkinolution::Binary::Frames::Analyzer::is_none(response));
+	EXPECT_TRUE(Karkinolution::Networking::Frames::World::Analyzer::is_none(response));
 }
 
 TEST(NonexistentResource, CorpseReturnsNone) {
@@ -41,9 +41,9 @@ TEST(NonexistentResource, CorpseReturnsNone) {
 
 	const auto payload  = CorpseSRI::Request::make_see_corpse(0);
 	const auto request  = make_see_request(Resource::CORPSE, payload);
-	const auto response = Karkinolution::Binary::Frames::Processor::process(request, world);
+	const auto response = Karkinolution::Networking::Frames::World::Processor::process(request, world);
 
-	EXPECT_TRUE(Karkinolution::Binary::Frames::Analyzer::is_none(response));
+	EXPECT_TRUE(Karkinolution::Networking::Frames::World::Analyzer::is_none(response));
 }
 
 TEST(NonexistentResource, SoilReturnsNone) {
@@ -51,7 +51,7 @@ TEST(NonexistentResource, SoilReturnsNone) {
 
 	const auto payload  = SoilSRI::Request::make_see_soil(0);
 	const auto request  = make_see_request(Resource::SOIL, payload);
-	const auto response = Karkinolution::Binary::Frames::Processor::process(request, world);
+	const auto response = Karkinolution::Networking::Frames::World::Processor::process(request, world);
 
-	EXPECT_TRUE(Karkinolution::Binary::Frames::Analyzer::is_none(response));
+	EXPECT_TRUE(Karkinolution::Networking::Frames::World::Analyzer::is_none(response));
 }

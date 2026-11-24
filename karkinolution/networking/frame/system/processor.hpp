@@ -14,7 +14,7 @@ namespace Karkinolution {
 				Frames::System::Models::SystemOutput::SystemOutput
 				process(const Frames::System::Models::SystemCall::SystemCall         &call,
 						ServerSide::Connection::SimulationAdapter::SimulationAdapter &simulation,
-						std::optional<GiftLease<World::World>>                       &world_lease);
+						std::optional<GiftLease<Karkinolution::World::World>>        &world_lease);
 			} // namespace Processor
 		} // namespace Frames::System
 	} // namespace Networking

@@ -14,7 +14,7 @@ namespace Karkinolution::Networking::Frames::System {
 	Frames::System::Models::SystemOutput::SystemOutput
 	Processor::process(const Frames::System::Models::SystemCall::SystemCall         &call,
 					   ServerSide::Connection::SimulationAdapter::SimulationAdapter &simulation,
-					   std::optional<GiftLease<World::World>>                       &world_lease) {
+					   std::optional<GiftLease<Karkinolution::World::World>>        &world_lease) {
 		const auto sub_type = call.get_sub_type();
 
 		if (sub_type == Frames::System::SystemCallSubTypes::GET_ALL_WORLD_IDS) {

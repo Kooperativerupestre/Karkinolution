@@ -1,6 +1,6 @@
 #pragma once
 
-#include "karkinolution/binary/frames/aliases.hpp"
+#include "karkinolution/networking/frame/world/aliases.hpp"
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 #include "karkinolution/networking/server_side/connection/protocol_sessions/server.hpp"

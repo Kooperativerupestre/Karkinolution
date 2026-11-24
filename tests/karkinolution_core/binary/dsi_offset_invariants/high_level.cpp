@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <karkinolution/binary/interpreters/corpse.hpp>
-#include <karkinolution/binary/interpreters/creature.hpp>
-#include <karkinolution/binary/interpreters/properties.hpp>
-#include <karkinolution/binary/interpreters/soil.hpp>
-#include <karkinolution/binary/interpreters/territory.hpp>
+#include <karkinolution/networking/frame/world/interpreters/corpse.hpp>
+#include <karkinolution/networking/frame/world/interpreters/creature.hpp>
+#include <karkinolution/networking/frame/world/interpreters/properties.hpp>
+#include <karkinolution/networking/frame/world/interpreters/soil.hpp>
+#include <karkinolution/networking/frame/world/interpreters/territory.hpp>
 #include <karkinolution/organism/entities/creature/constructor.hpp>
 #include <karkinolution/organism/entities/genetics/genetic.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
@@ -209,8 +209,8 @@ TEST(DSIOffsetInvariantsHighLevel, CorpseAuxiliaryGettersDoNotAutoAddOffset) {
 }
 
 TEST(DSIOffsetInvariantsHighLevel, TerritoryDeserializerReadsFromProvidedOffset) {
-	const KShared::Math::Units::Size                                        original_size{12.5, 24.0};
-	const Karkinolution::Binary::Interpreters::Models::Territory::Territory original{original_size};
+	const KShared::Math::Units::Size original_size{12.5, 24.0};
+	const Karkinolution::Networking::Frames::World::Interpreters::Models::Territory::Territory original{original_size};
 	const auto serialized = TerritorySRI::serialize_territory(original);
 
 	std::vector<std::byte> payload = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};

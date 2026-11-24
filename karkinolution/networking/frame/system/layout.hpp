@@ -1,7 +1,7 @@
 #pragma once
 
-#include "karkinolution/binary/protocol/aliases.hpp"
 #include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/world/protocol/aliases.hpp"
 #include "karkinolution/world/world.hpp"
 #include "shared/binary/fields.hpp"
 
@@ -10,8 +10,9 @@ namespace Karkinolution {
 		namespace Frames::System {
 			namespace Layout {
 				using DeclaredSize = KShared::Binary::Field<0, sizeof(DeclaredSize)>;
-				using Type =
-					KShared::Binary::Next<DeclaredSize, sizeof(Binary::Protocol::Aliases::UnderlyingType<Type>)>;
+				using Type         = KShared::Binary::Next<
+							DeclaredSize,
+							sizeof(Karkinolution::Networking::Frames::World::Protocol::Aliases::UnderlyingType<Type>)>;
 				using SubType = KShared::Binary::Next<Type, sizeof(uint8_t)>;
 
 				namespace SystemCall {

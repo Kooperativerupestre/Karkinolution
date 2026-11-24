@@ -8,9 +8,9 @@
 #include <shared/binary/types/list.hpp>
 #include <unordered_set>
 
-using Karkinolution::Binary::RequestId;
-using Karkinolution::Binary::ResponseCardinality;
-using Karkinolution::Binary::ResponseSubTypes;
+using Karkinolution::Networking::Frames::World::RequestId;
+using Karkinolution::Networking::Frames::World::ResponseCardinality;
+using Karkinolution::Networking::Frames::World::ResponseSubTypes;
 using Karkinolution::Terrain::Soil::SoilPiece;
 using Karkinolution::World::World;
 using KShared::Core::Id::BaseIdType;
@@ -30,10 +30,11 @@ namespace {
 																	 [](const SoilPiece &soil) {
 																		 return SoilSRI::serialize_soil(soil);
 																	 });
-				const auto response = Karkinolution::Binary::Frames::Motor::make_response(ResponseSubTypes::SOIL,
-																						  RequestId{0},
-																						  payload,
-																						  ResponseCardinality::ALL);
+				const auto response =
+					Karkinolution::Networking::Frames::World::Motor::make_response(ResponseSubTypes::SOIL,
+																				   RequestId{0},
+																				   payload,
+																				   ResponseCardinality::ALL);
 
 				return std::optional<ResponseFrameVariant>{response};
 			}

@@ -13,9 +13,9 @@
 #include <chrono>
 #include <format>
 #include <iostream>
-#include <karkinolution/binary/frames/motor.hpp>
 #include <karkinolution/networking/asio_types.hpp>
 #include <karkinolution/networking/frame/system/motor.hpp>
+#include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/scope/motor.hpp>
 #include <thread>
 
@@ -160,11 +160,11 @@ namespace Karkinolution::Networking::ClientSide {
 
 			const auto request_id = next_request_id.fetch_add(1);
 			auto       raw_frame  = Karkinolution::Networking::Scope::Motor::make_world_frame(
-                Karkinolution::Binary::Frames::Motor::make_request_raw_bytes(data.sub_type,
-                                                                             request_id,
-                                                                             data.resource,
-                                                                             data.payload,
-                                                                             data.extra));
+                Karkinolution::Networking::Frames::World::Motor::make_request_raw_bytes(data.sub_type,
+                                                                                        request_id,
+                                                                                        data.resource,
+                                                                                        data.payload,
+                                                                                        data.extra));
 
 			session.register_world_request(request_id);
 			asio::post(strand_, [this, frame = std::move(raw_frame)]() mutable {
@@ -190,7 +190,7 @@ namespace Karkinolution::Networking::ClientSide {
 			return output;
 		}
 
-		WorldResponseResult Client::pop_response_world_scope(Binary::RequestId id) {
+		WorldResponseResult Client::pop_response_world_scope(Frames::World::RequestId id) {
 			const auto output = session.pop_world_response(id);
 
 			if (!output) {
@@ -408,7 +408,7 @@ namespace Karkinolution::Networking::ClientSide {
 			return client->send_without_waiting_system_scope(data);
 		}
 
-		WorldResponseResult RuntimeClient::pop_response_world_scope(Binary::RequestId id) {
+		WorldResponseResult RuntimeClient::pop_response_world_scope(Frames::World::RequestId id) {
 			Validator::validate_is_connected(*this);
 			return client->pop_response_world_scope(id);
 		}
@@ -418,7 +418,7 @@ namespace Karkinolution::Networking::ClientSide {
 			return client->request_world_scope(data);
 		}
 
-		Binary::RequestId RuntimeClient::send_without_waiting_world_scope(const WorldRequestData &data) {
+		Frames::World::RequestId RuntimeClient::send_without_waiting_world_scope(const WorldRequestData &data) {
 			Validator::validate_is_connected(*this);
 			return client->send_without_waiting_world_scope(data);
 		}

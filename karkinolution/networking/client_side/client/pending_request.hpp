@@ -1,15 +1,15 @@
 #pragma once
 
-#include "karkinolution/binary/frames/models.hpp"
 #include "karkinolution/networking/frame/system/contract.hpp"
+#include "karkinolution/networking/frame/world/models.hpp"
 
 #include <chrono>
 #include <expected>
 #include <future>
-#include <karkinolution/binary/core_aliases.hpp>
-#include <karkinolution/binary/frames/aliases.hpp>
 #include <karkinolution/networking/client_side/error.hpp>
 #include <karkinolution/networking/frame/system/models.hpp>
+#include <karkinolution/networking/frame/world/aliases.hpp>
+#include <karkinolution/networking/frame/world/core_aliases.hpp>
 #include <memory>
 #include <mutex>
 #include <optional>

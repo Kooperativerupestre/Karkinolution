@@ -6,12 +6,12 @@
 #include "shared/math/geometry/models.hpp"
 
 #include <gtest/gtest.h>
-#include <karkinolution/binary/interpreters/corpse.hpp>
-#include <karkinolution/binary/interpreters/creature.hpp>
-#include <karkinolution/binary/interpreters/models/soil.hpp>
-#include <karkinolution/binary/interpreters/properties.hpp>
-#include <karkinolution/binary/interpreters/soil.hpp>
-#include <karkinolution/binary/interpreters/territory.hpp>
+#include <karkinolution/networking/frame/world/interpreters/corpse.hpp>
+#include <karkinolution/networking/frame/world/interpreters/creature.hpp>
+#include <karkinolution/networking/frame/world/interpreters/models/soil.hpp>
+#include <karkinolution/networking/frame/world/interpreters/properties.hpp>
+#include <karkinolution/networking/frame/world/interpreters/soil.hpp>
+#include <karkinolution/networking/frame/world/interpreters/territory.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
@@ -142,7 +142,7 @@ TEST(SoilSerializeDeserializeRoundtrip, FullSoilSerialization) {
 	const auto                   serialized = SoilSRI::serialize_soil(soil);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());
 
-	const Karkinolution::Binary::Interpreters::Models::Soil::Soil copy = SoilDSI::get_soil(bytes, 0);
+	const Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::Soil copy = SoilDSI::get_soil(bytes, 0);
 
 	EXPECT_EQ(copy.id, id);
 	EXPECT_EQ(copy.type, soil.type);
@@ -218,7 +218,7 @@ TEST(TerritorySerializeDeserializeRoundtrip, FullFields) {
 TEST(TerritorySerializeDeserializeRoundtrip, FullTerritorySerialization) {
 	const KShared::Math::Units::Size size{12.5, 24.0};
 
-	Karkinolution::Binary::Interpreters::Models::Territory::Territory territory{size};
+	Karkinolution::Networking::Frames::World::Interpreters::Models::Territory::Territory territory{size};
 
 	const auto                   serialized = TerritorySRI::serialize_territory(territory);
 	const std::vector<std::byte> bytes(serialized.begin(), serialized.end());

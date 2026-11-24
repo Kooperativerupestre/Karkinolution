@@ -5,8 +5,8 @@
 #include "shared/binary/errors.hpp"
 
 #include <cstdint>
-#include <karkinolution/binary/frames/parser/internal.hpp>
 #include <karkinolution/networking/frame/system/contract.hpp>
+#include <karkinolution/networking/frame/world/parser/internal.hpp>
 #include <shared/binary/deserializer.hpp>
 
 namespace Karkinolution {
@@ -15,7 +15,7 @@ namespace Karkinolution {
 			namespace Parser {
 				namespace Internal {
 
-					using FrameExistence = Binary::Frames::Parser::Internal::FrameExistence;
+					using FrameExistence = Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence;
 
 					template <KShared::Binary::ByteRange T> DeclaredSize get_declared_size(const T &bytes) {
 						return KShared::Binary::Deserializer::deserialize<DeclaredSize>(bytes,
