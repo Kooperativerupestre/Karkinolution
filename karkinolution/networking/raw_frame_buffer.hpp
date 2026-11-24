@@ -3,11 +3,13 @@
 #include "karkinolution/networking/frame/world/parser/internal.hpp"
 #include "karkinolution/networking/frame/world/parser/parser.hpp"
 
+#include <bit>
 #include <cstdint>
 #include <deque>
 #include <karkinolution/networking/frame/world/layout.hpp>
 #include <karkinolution/networking/scope/layout.hpp>
 #include <optional>
+#include <span>
 #include <vector>
 
 namespace Karkinolution::Networking {
