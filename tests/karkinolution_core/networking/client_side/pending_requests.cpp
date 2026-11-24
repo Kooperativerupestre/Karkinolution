@@ -2,7 +2,6 @@
 #include "karkinolution/networking/client_side/error.hpp"
 #include "karkinolution/networking/frame/world/aliases.hpp"
 #include "karkinolution/networking/frame/world/core_aliases.hpp"
-#include "karkinolution/networking/frame/world/protocol/aliases.hpp"
 
 #include <barrier>
 #include <gtest/gtest.h>

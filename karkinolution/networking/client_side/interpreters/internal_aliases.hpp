@@ -2,8 +2,8 @@
 
 #include "karkinolution/networking/client_side/error.hpp"
 #include "karkinolution/networking/frame/world/aliases.hpp"
+#include "karkinolution/networking/frame/world/contract.hpp"
 #include "karkinolution/networking/frame/world/models.hpp"
-#include "karkinolution/networking/frame/world/protocol/contract.hpp"
 
 #include <cstdint>
 #include <format>
@@ -14,7 +14,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters {
 	using Karkinolution::Networking::Frames::World::Models::Request::EraseExtra;
 	using Karkinolution::Networking::Frames::World::Models::Request::SeeExtra;
 	using Karkinolution::Networking::Frames::World::Models::Request::WantExtra;
-	using Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget;
+	using Karkinolution::Networking::Frames::World::Request::SeeTarget;
 
 	inline const ResponseFrame &require_response_frame(const ResponseFrameVariant &frame) {
 		if (const auto* response = std::get_if<ResponseFrame>(&frame)) {

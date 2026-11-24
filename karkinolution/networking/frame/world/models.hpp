@@ -1,11 +1,9 @@
 #pragma once
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
 #include "karkinolution/networking/frame/world/errors.hpp"
-#include "karkinolution/networking/frame/world/protocol/aliases.hpp"
-#include "karkinolution/networking/frame/world/protocol/contract.hpp"
-#include "karkinolution/networking/frame/world/protocol/layouts.hpp"
+#include "karkinolution/networking/frame/world/layout.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
-#include <karkinolution/networking/frame/world/core_aliases.hpp>
 #include <shared/binary/byte_range.hpp>
 #include <utility>
 #include <vector>
@@ -20,7 +18,7 @@ namespace Karkinolution {
 				// accessors prevent later mutation and keep those layers consistent.
 				namespace Request {
 					struct SeeExtra {
-							Protocol::Request::SeeTarget target;
+							Frames::World::Request::SeeTarget target;
 					};
 
 					struct WantExtra {};
@@ -42,11 +40,11 @@ namespace Karkinolution {
 								throw FrameError("Request with sub type See must have SeeExtra");
 							}
 							const auto target = std::get<SeeExtra>(extra).target;
-							if (target != Protocol::Request::SeeTarget::ONE
-								&& target != Protocol::Request::SeeTarget::ALL) {
+							if (target != Frames::World::Request::SeeTarget::ONE
+								&& target != Frames::World::Request::SeeTarget::ALL) {
 								throw FrameError("Invalid request target");
 							}
-							if (resource == Resource::TERRITORY && target != Protocol::Request::SeeTarget::ONE) {
+							if (resource == Resource::TERRITORY && target != Frames::World::Request::SeeTarget::ONE) {
 								throw FrameError("Territory requests must have target One");
 							}
 						} else if (sub_type == RequestSubTypes::WANT) {
@@ -277,7 +275,7 @@ namespace Karkinolution {
 							KShared::Functional::unreachable_or_throw();
 						}
 
-						Protocol::Detail::CodeVariant constexpr get_sub_type() const {
+						Detail::SubTypeVariant constexpr get_sub_type() const {
 							const auto type = get_type();
 							if (type == BinaryTypes::Request) {
 								return std::get<Request::Request>(data_).get_sub_type();

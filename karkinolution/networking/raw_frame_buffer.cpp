@@ -1,7 +1,7 @@
 #include "karkinolution/networking/raw_frame_buffer.hpp"
 
 #include "karkinolution/networking/frame/system/layout.hpp"
-#include "karkinolution/networking/frame/world/protocol/layouts.hpp"
+#include "karkinolution/networking/frame/world/layout.hpp"
 #include "karkinolution/networking/scope/layout.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
 
@@ -85,7 +85,7 @@ namespace Karkinolution::Networking {
 		if (scope == Scope::Scope::SERVER) {
 			return buffer_size + new_bytes_size >= Frames::System::Layout::DeclaredSize::END;
 		} else if (scope == Scope::Scope::WORLD) {
-			return buffer_size + new_bytes_size >= Frames::World::ProtocolLayout::DeclaredSize::END;
+			return buffer_size + new_bytes_size >= Frames::World::Layout::DeclaredSize::END;
 		}
 		KShared::Functional::unreachable_or_throw();
 	}
@@ -94,7 +94,7 @@ namespace Karkinolution::Networking {
 		if (scope == Scope::Scope::SERVER) {
 			return buffer_size >= Frames::System::Layout::DeclaredSize::END;
 		} else if (scope == Scope::Scope::WORLD) {
-			return buffer_size >= Frames::World::ProtocolLayout::DeclaredSize::END;
+			return buffer_size >= Frames::World::Layout::DeclaredSize::END;
 		}
 		KShared::Functional::unreachable_or_throw();
 	}

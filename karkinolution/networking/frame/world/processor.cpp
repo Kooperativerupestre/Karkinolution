@@ -1,9 +1,9 @@
 #include "karkinolution/api/creature.hpp"
 #include "karkinolution/networking/frame/world/binary_validators.hpp"
+#include "karkinolution/networking/frame/world/contract.hpp"
 #include "karkinolution/networking/frame/world/core_aliases.hpp"
 #include "karkinolution/networking/frame/world/models.hpp"
-#include "karkinolution/networking/frame/world/protocol/contract.hpp"
-#include "karkinolution/networking/frame/world/protocol/utils.hpp"
+#include "karkinolution/networking/frame/world/utils.hpp"
 #include "karkinolution/networking/server_side/api_adapter/corpse.hpp"
 
 #include <format>
@@ -27,7 +27,7 @@ namespace Karkinolution::Networking::Frames::World::Processor {
 			} else if (resource == Resource::CORPSE) {
 				return Networking::ServerSide::APIBYA::Corpse::see_corpse(world, frame.get_id(), frame.get_payload());
 			} else if (resource == Resource::SOIL) {
-				if (extra.target == Protocol::Request::SeeTarget::ONE) {
+				if (extra.target == Request::SeeTarget::ONE) {
 					return Networking::ServerSide::APIBYA::Soil::see_soil(world, frame.get_id(), frame.get_payload());
 				} else {
 					return Networking::ServerSide::APIBYA::Soil::see_all_soils(world,

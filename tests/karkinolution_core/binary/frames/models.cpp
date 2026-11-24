@@ -21,8 +21,7 @@ TEST(FrameModelConstructors, RequestStoresValidatedFields) {
 		RequestSubTypes::SEE,
 		payload,
 		Resource::CREATURE,
-		Models::Request::SeeExtra{.target =
-									  Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ONE}};
+		Models::Request::SeeExtra{.target = Karkinolution::Networking::Frames::World::Request::SeeTarget::ONE}};
 
 	EXPECT_EQ(request.get_declared_size(), 12);
 	EXPECT_EQ(request.get_id(), 34);
@@ -41,7 +40,7 @@ TEST(FrameModelConstructors, RequestStoresValidatedFields) {
 }
 
 TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
-	using SeeTarget = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget;
+	using SeeTarget = Karkinolution::Networking::Frames::World::Request::SeeTarget;
 	using Request   = Models::Request::Request;
 	using SeeExtra  = Models::Request::SeeExtra;
 

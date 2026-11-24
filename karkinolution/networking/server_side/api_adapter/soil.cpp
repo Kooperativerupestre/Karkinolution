@@ -1,8 +1,8 @@
 #include "karkinolution/networking/frame/world/interpreters/models/soil.hpp"
 
 #include "karkinolution/networking/frame/world/aliases.hpp"
+#include "karkinolution/networking/frame/world/contract.hpp"
 #include "karkinolution/networking/frame/world/core_aliases.hpp"
-#include "karkinolution/networking/frame/world/protocol/contract.hpp"
 #include "karkinolution/terrain/soil/soil.hpp"
 
 #include <karkinolution/api/soil.hpp>

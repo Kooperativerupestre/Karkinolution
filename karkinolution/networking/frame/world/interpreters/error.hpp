@@ -1,7 +1,7 @@
 #pragma once
 
+#include "karkinolution/networking/frame/world/contract.hpp"
 #include "karkinolution/networking/frame/world/core_aliases.hpp"
-#include "karkinolution/networking/frame/world/protocol/contract.hpp"
 #include "shared/core/id.hpp"
 
 #include <cstddef>

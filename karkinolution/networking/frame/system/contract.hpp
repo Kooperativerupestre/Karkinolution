@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <shared/core/id.hpp>
+#include <type_traits>
 #include <variant>
 
 namespace Karkinolution {
@@ -61,7 +62,8 @@ namespace Karkinolution {
 			} // namespace SystemOutput
 
 			namespace Detail {
-				using SubTypeVariant = std::variant<SystemCall::SubType, SystemOutput::SubType>;
+				template <typename T> using UnderlyingType = std::underlying_type_t<T>;
+				using SubTypeVariant                       = std::variant<SystemCall::SubType, SystemOutput::SubType>;
 			} // namespace Detail
 		} // namespace Frames::System
 	} // namespace Networking

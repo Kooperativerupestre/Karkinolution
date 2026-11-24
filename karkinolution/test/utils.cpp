@@ -1,7 +1,7 @@
 #include "karkinolution/networking/client_side/client/client.hpp"
 #include "karkinolution/networking/client_side/interpreters/generic_id.hpp"
 #include "karkinolution/networking/frame/world/core_aliases.hpp"
-#include "karkinolution/networking/frame/world/protocol/layouts.hpp"
+#include "karkinolution/networking/frame/world/layout.hpp"
 #include "karkinolution/world/world.hpp"
 #include "shared/math/units.hpp"
 
@@ -27,7 +27,7 @@ std::vector<std::byte> TestUtils::make_see_creature_frame(Karkinolution::Network
 		Karkinolution::Networking::Frames::World::Resource::CREATURE,
 		std::vector<std::byte>(payload.begin(), payload.end()),
 		Karkinolution::Networking::Frames::World::Models::Request::SeeExtra{
-			.target = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ONE});
+			.target = Karkinolution::Networking::Frames::World::Request::SeeTarget::ONE});
 }
 
 Karkinolution::Networking::ClientSide::Client::WorldRequestData
@@ -39,7 +39,7 @@ TestUtils::make_see_creature_request_data(KShared::Core::Id::BaseIdType creature
         Karkinolution::Networking::Frames::World::Resource::CREATURE,
         std::vector<std::byte>(payload.begin(), payload.end()),
         Karkinolution::Networking::Frames::World::Models::Request::SeeExtra{
-			  .target = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ONE});
+			  .target = Karkinolution::Networking::Frames::World::Request::SeeTarget::ONE});
 	return {.sub_type = built.get_sub_type(),
 			.resource = built.get_resource(),
 			.payload  = built.get_payload(),

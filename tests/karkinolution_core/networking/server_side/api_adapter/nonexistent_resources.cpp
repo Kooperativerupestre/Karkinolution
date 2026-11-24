@@ -21,7 +21,7 @@ namespace {
 			resource,
 			payload,
 			Karkinolution::Networking::Frames::World::Models::Request::SeeExtra{
-				.target = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ONE});
+				.target = Karkinolution::Networking::Frames::World::Request::SeeTarget::ONE});
 	}
 
 } // namespace

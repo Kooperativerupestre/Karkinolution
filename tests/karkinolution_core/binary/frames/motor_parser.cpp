@@ -1,6 +1,6 @@
+#include "karkinolution/networking/frame/world/layout.hpp"
 #include "karkinolution/networking/frame/world/parser/internal.hpp"
 #include "karkinolution/networking/frame/world/parser/parser.hpp"
-#include "karkinolution/networking/frame/world/protocol/layouts.hpp"
 
 #include <array>
 #include <cstddef>
@@ -13,7 +13,7 @@
 namespace {
 
 	namespace Frames = Karkinolution::Networking::Frames::World;
-	namespace Layout = Karkinolution::Networking::Frames::World::Protocol::Layout;
+	namespace Layout = Karkinolution::Networking::Frames::World::Layout;
 	using Karkinolution::Networking::Frames::World::BinaryTypes;
 	using Karkinolution::Networking::Frames::World::ErrorSubTypes;
 	using Karkinolution::Networking::Frames::World::RequestId;
@@ -32,8 +32,8 @@ namespace {
 			request_id,
 			Resource::CREATURE,
 			payload,
-			Frames::Models::Request::SeeExtra{
-				.target = Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ALL});
+			Frames::Models::Request::SeeExtra{.target =
+												  Karkinolution::Networking::Frames::World::Request::SeeTarget::ALL});
 	}
 
 	std::vector<std::byte> make_response() {
@@ -69,12 +69,12 @@ TEST(FrameMotorRawBytes, SeeRequestHasReadableMetadataAndPayload) {
 	EXPECT_EQ(parsed.get_payload(), (std::vector<std::byte>{payload.begin(), payload.end()}));
 	ASSERT_TRUE(std::holds_alternative<Frames::Models::Request::SeeExtra>(parsed.get_extra()));
 	EXPECT_EQ(std::get<Frames::Models::Request::SeeExtra>(parsed.get_extra()).target,
-			  Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ALL);
+			  Karkinolution::Networking::Frames::World::Request::SeeTarget::ALL);
 
 	EXPECT_EQ(Frames::Parser::Request::get_id(raw), request_id);
 	EXPECT_EQ(Frames::Parser::Request::get_resource(raw), Resource::CREATURE);
 	EXPECT_EQ(Frames::Parser::Request::See::get_target(raw),
-			  Karkinolution::Networking::Frames::World::Protocol::Request::SeeTarget::ALL);
+			  Karkinolution::Networking::Frames::World::Request::SeeTarget::ALL);
 }
 
 TEST(FrameMotorRawBytes, NonSeeOperationsPreserveMetadataAndPayload) {
@@ -167,11 +167,11 @@ TEST(FrameParserHas, RequestPredicatesRespectEachFieldBoundary) {
 
 		const auto expected_frame_state = size == 0
 			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::NO
-			: size < Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END
+			: size < Karkinolution::Networking::Frames::World::Layout::DeclaredSize::END
 			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::DECLARED_SIZE_INCOMPLETE
-			: size == Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END
+			: size == Karkinolution::Networking::Frames::World::Layout::DeclaredSize::END
 			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::DECLARED_SIZE_COMPLETE
-			: size < Karkinolution::Networking::Frames::World::ProtocolLayout::SubType::END
+			: size < Karkinolution::Networking::Frames::World::Layout::SubType::END
 			? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::INCOMPLETE
 			: size < raw.size() ? Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::INCOMPLETE
 								: Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::YES;
@@ -190,10 +190,10 @@ TEST(FrameParserHas, ResponseAndErrorPredicatesRespectTheirFieldBoundaries) {
 		if (size == 0) {
 			return Karkinolution::Networking::Frames::World::Parser::Internal::FrameExistence::NO;
 		}
-		if (size < Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END) {
+		if (size < Karkinolution::Networking::Frames::World::Layout::DeclaredSize::END) {
 			return FrameExistence::DECLARED_SIZE_INCOMPLETE;
 		}
-		if (size == Karkinolution::Networking::Frames::World::ProtocolLayout::DeclaredSize::END) {
+		if (size == Karkinolution::Networking::Frames::World::Layout::DeclaredSize::END) {
 			return FrameExistence::DECLARED_SIZE_COMPLETE;
 		}
 		if (size < frame_size) {

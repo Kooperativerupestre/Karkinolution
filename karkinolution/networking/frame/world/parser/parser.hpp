@@ -17,7 +17,7 @@ namespace Karkinolution {
 
 
 				template <KShared::Binary::ByteRange T> std::vector<std::byte> get_frame(const T &bytes) {
-					const auto frame_size = ProtocolLayout::DeclaredSize::SIZE + Internal::get_declared_size(bytes);
+					const auto             frame_size = Layout::DeclaredSize::SIZE + Internal::get_declared_size(bytes);
 					std::vector<std::byte> frame;
 					frame.reserve(frame_size);
 					for (std::size_t i = 0; i < frame_size; ++i) {
@@ -27,9 +27,9 @@ namespace Karkinolution {
 				}
 
 				// The public dispatchers route by frame type and CodeVariant subtype.
-				constexpr std::uint32_t calculate_declared_size(std::uint32_t                        payload_size,
-																BinaryTypes                          type,
-																const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t calculate_declared_size(std::uint32_t                 payload_size,
+																BinaryTypes                   type,
+																const Detail::SubTypeVariant &sub_type) {
 					if (type == BinaryTypes::Request) {
 						if (const auto* request_sub_type = std::get_if<RequestSubTypes>(&sub_type)) {
 							return Request::calculate_declared_size(payload_size, *request_sub_type);
@@ -46,9 +46,9 @@ namespace Karkinolution {
 					KShared::Functional::unreachable_or_throw("Frame type and sub type do not match");
 				}
 
-				constexpr std::uint32_t calculate_payload_size(std::uint32_t                        declared_size,
-															   BinaryTypes                          type,
-															   const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t calculate_payload_size(std::uint32_t                 declared_size,
+															   BinaryTypes                   type,
+															   const Detail::SubTypeVariant &sub_type) {
 					if (type == BinaryTypes::Request) {
 						if (const auto* request_sub_type = std::get_if<RequestSubTypes>(&sub_type)) {
 							return Request::calculate_payload_size(declared_size, *request_sub_type);
@@ -66,9 +66,8 @@ namespace Karkinolution {
 				}
 
 				template <KShared::Binary::ByteRange T>
-				constexpr std::uint32_t calculate_payload_size(const T                             &bytes,
-															   BinaryTypes                          type,
-															   const Protocol::Detail::CodeVariant &sub_type) {
+				constexpr std::uint32_t
+				calculate_payload_size(const T &bytes, BinaryTypes type, const Detail::SubTypeVariant &sub_type) {
 					return calculate_payload_size(get_declared_size(bytes), type, sub_type);
 				}
 
@@ -85,7 +84,7 @@ namespace Karkinolution {
 				}
 
 				template <KShared::Binary::ByteRange T> std::uint32_t get_frame_size(const T &bytes) {
-					return ProtocolLayout::DeclaredSize::SIZE + Internal::get_declared_size(bytes);
+					return Layout::DeclaredSize::SIZE + Internal::get_declared_size(bytes);
 				}
 
 				template <KShared::Binary::ByteRange T> Models::Request::Request parse_request_frame(const T &bytes) {
@@ -95,19 +94,19 @@ namespace Karkinolution {
 					Models::Request::RequestExtra extra = std::monostate();
 
 					switch (sub_type) {
-						case Protocol::Request::Operation::SEE:
+						case RequestSubTypes::SEE:
 							extra = Models::Request::SeeExtra{.target = Request::See::get_target(bytes)};
 							break;
-						case Protocol::Request::Operation::WANT:
+						case RequestSubTypes::WANT:
 							extra = Models::Request::WantExtra{};
 							break;
-						case Protocol::Request::Operation::ERASE:
+						case RequestSubTypes::ERASE:
 							extra = Models::Request::EraseExtra{};
 							break;
-						case Protocol::Request::Operation::CREATE:
+						case RequestSubTypes::CREATE:
 							extra = Models::Request::CreateExtra{};
 							break;
-						case Protocol::Request::Operation::CYCLE:
+						case RequestSubTypes::CYCLE:
 							extra = Models::Request::CycleExtra{};
 							break;
 						default:
@@ -139,8 +138,7 @@ namespace Karkinolution {
 
 				template <KShared::Binary::ByteRange T> Models::GenericFrame parse_frame(const T &bytes) {
 					const auto type = get_type(bytes);
-					Karkinolution::Networking::Frames::World::Protocol::Validator::validate_type(
-						static_cast<std::uint8_t>(type));
+					Karkinolution::Networking::Frames::World::Validator::validate_type(static_cast<std::uint8_t>(type));
 					if (type == BinaryTypes::Request) {
 						return Models::GenericFrame{parse_request_frame(bytes)};
 					} else if (type == BinaryTypes::Response) {

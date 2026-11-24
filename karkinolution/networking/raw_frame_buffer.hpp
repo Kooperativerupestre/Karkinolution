@@ -1,11 +1,11 @@
 #pragma once
+#include "karkinolution/networking/frame/world/contract.hpp"
 #include "karkinolution/networking/frame/world/parser/internal.hpp"
 #include "karkinolution/networking/frame/world/parser/parser.hpp"
-#include "karkinolution/networking/frame/world/protocol/contract.hpp"
 
 #include <cstdint>
 #include <deque>
-#include <karkinolution/networking/frame/world/protocol/layouts.hpp>
+#include <karkinolution/networking/frame/world/layout.hpp>
 #include <karkinolution/networking/scope/layout.hpp>
 #include <optional>
 #include <vector>
@@ -115,9 +115,8 @@ namespace Karkinolution::Networking {
 	};
 
 	inline constexpr std::size_t MAX_PAYLOAD_BYTES = std::min(
-		static_cast<std::size_t>(UINT32_MAX)
-			- Karkinolution::Networking::Frames::World::Protocol::Layout::TOTAL_HEADER_SIZE,
-		MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Networking::Frames::World::Protocol::Layout::TOTAL_HEADER_SIZE);
+		static_cast<std::size_t>(UINT32_MAX) - Karkinolution::Networking::Frames::World::Layout::TOTAL_HEADER_SIZE,
+		MAX_RAW_FRAME_BUFFER_SIZE - Karkinolution::Networking::Frames::World::Layout::TOTAL_HEADER_SIZE);
 
 	namespace FrameBufferAnalyzer {
 		enum class PlacesOfEndOfFrame : uint8_t {

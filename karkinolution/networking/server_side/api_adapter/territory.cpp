@@ -1,5 +1,5 @@
 #include "karkinolution/networking/frame/world/aliases.hpp"
-#include "karkinolution/networking/frame/world/protocol/aliases.hpp"
+#include "karkinolution/networking/frame/world/core_aliases.hpp"
 
 #include <karkinolution/api/territory.hpp>
 #include <karkinolution/networking/frame/world/interpreters/territory.hpp>

@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/networking/frame/world/protocol/layouts.hpp"
+#include "karkinolution/networking/frame/world/layout.hpp"
 #include "shared/binary/byte_range.hpp"
 #include "shared/binary/errors.hpp"
 
@@ -21,12 +21,12 @@ namespace Karkinolution {
 				namespace Internal {
 					constexpr std::uint32_t calculate_declared_size(std::uint32_t payload_size,
 																	std::size_t   fixed_header_size) {
-						return fixed_header_size - ProtocolLayout::DeclaredSize::SIZE + payload_size;
+						return fixed_header_size - Layout::DeclaredSize::SIZE + payload_size;
 					}
 
 					constexpr std::uint32_t calculate_payload_size(std::uint32_t declared_size,
 																   std::size_t   fixed_header_size) {
-						const auto minimum_declared_size = fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
+						const auto minimum_declared_size = fixed_header_size - Layout::DeclaredSize::SIZE;
 
 						if (declared_size < minimum_declared_size) {
 							throw KShared::Binary::ByteError(
@@ -38,8 +38,7 @@ namespace Karkinolution {
 					}
 
 					template <KShared::Binary::ByteRange T> std::uint32_t get_declared_size(const T &bytes) {
-						return KShared::Binary::Deserializer::read_uint32_t(bytes,
-																			ProtocolLayout::DeclaredSize::OFFSET);
+						return KShared::Binary::Deserializer::read_uint32_t(bytes, Layout::DeclaredSize::OFFSET);
 					}
 
 					template <KShared::Binary::ByteRange T>
@@ -49,22 +48,19 @@ namespace Karkinolution {
 					}
 
 					template <KShared::Binary::ByteRange T> BinaryTypes get_type(const T &bytes) {
-						const auto raw =
-							KShared::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::Type::OFFSET);
+						const auto raw = KShared::Binary::Deserializer::read_uint8_t(bytes, Layout::Type::OFFSET);
 
-						Protocol::Validator::validate_type(raw);
+						Validator::validate_type(raw);
 						return static_cast<BinaryTypes>(raw);
 					}
 
 					template <KShared::Binary::ByteRange T>
-					Karkinolution::Networking::Frames::World::Protocol::Detail::CodeVariant
-					get_sub_type(const T &bytes) {
-						Karkinolution::Networking::Frames::World::Protocol::Detail::CodeVariant sub_type;
-						const auto                                                              type = get_type(bytes);
-						const auto                                                              read =
-							KShared::Binary::Deserializer::read_uint8_t(bytes, ProtocolLayout::SubType::OFFSET);
+					Karkinolution::Networking::Frames::World::Detail::SubTypeVariant get_sub_type(const T &bytes) {
+						Karkinolution::Networking::Frames::World::Detail::SubTypeVariant sub_type;
+						const auto                                                       type = get_type(bytes);
+						const auto read = KShared::Binary::Deserializer::read_uint8_t(bytes, Layout::SubType::OFFSET);
 
-						Karkinolution::Networking::Frames::World::Protocol::Validator::validate_sub_type(type, read);
+						Karkinolution::Networking::Frames::World::Validator::validate_sub_type(type, read);
 
 						if (type == BinaryTypes::Error) {
 							return ErrorSubTypes{read};
@@ -79,15 +75,15 @@ namespace Karkinolution {
 					}
 
 					template <KShared::Binary::ByteRange T> bool has_declared_size(const T &byte) {
-						return byte.size() >= ProtocolLayout::DeclaredSize::END;
+						return byte.size() >= Layout::DeclaredSize::END;
 					}
 
 					template <KShared::Binary::ByteRange T> bool has_type(const T &byte) {
-						return byte.size() >= ProtocolLayout::Type::END;
+						return byte.size() >= Layout::Type::END;
 					}
 
 					template <KShared::Binary::ByteRange T> bool has_sub_type(const T &byte) {
-						return byte.size() >= ProtocolLayout::SubType::END;
+						return byte.size() >= Layout::SubType::END;
 					}
 
 					enum class FrameExistence : uint8_t {
@@ -106,19 +102,19 @@ namespace Karkinolution {
 							return FrameExistence::NO;
 						}
 
-						if (bytes_size < ProtocolLayout::DeclaredSize::END) {
+						if (bytes_size < Layout::DeclaredSize::END) {
 							return FrameExistence::DECLARED_SIZE_INCOMPLETE;
 						}
 
-						if (bytes_size == ProtocolLayout::DeclaredSize::END) {
+						if (bytes_size == Layout::DeclaredSize::END) {
 							return FrameExistence::DECLARED_SIZE_COMPLETE;
 						}
 
-						if (bytes_size < ProtocolLayout::Type::END) {
+						if (bytes_size < Layout::Type::END) {
 							return FrameExistence::INCOMPLETE;
 						}
 
-						if (bytes_size < ProtocolLayout::SubType::END) {
+						if (bytes_size < Layout::SubType::END) {
 							return FrameExistence::INCOMPLETE;
 						}
 
@@ -133,16 +129,16 @@ namespace Karkinolution {
 							return FrameExistence::NO;
 						}
 
-						if (bytes_size < ProtocolLayout::DeclaredSize::END) {
+						if (bytes_size < Layout::DeclaredSize::END) {
 							return FrameExistence::DECLARED_SIZE_INCOMPLETE;
 						}
 
-						if (bytes_size == ProtocolLayout::DeclaredSize::END) {
+						if (bytes_size == Layout::DeclaredSize::END) {
 							return FrameExistence::DECLARED_SIZE_COMPLETE;
 						}
 
 						const auto declared_size         = get_declared_size(bytes);
-						const auto minimum_declared_size = fixed_header_size - ProtocolLayout::DeclaredSize::SIZE;
+						const auto minimum_declared_size = fixed_header_size - Layout::DeclaredSize::SIZE;
 
 						if (declared_size < minimum_declared_size) {
 							throw KShared::Binary::ByteError(
@@ -151,7 +147,7 @@ namespace Karkinolution {
 											minimum_declared_size));
 						}
 
-						const auto frame_size = ProtocolLayout::DeclaredSize::SIZE + declared_size;
+						const auto frame_size = Layout::DeclaredSize::SIZE + declared_size;
 
 						return bytes_size >= frame_size ? FrameExistence::YES : FrameExistence::INCOMPLETE;
 					}
