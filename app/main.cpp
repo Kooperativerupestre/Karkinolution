@@ -1,3 +1,4 @@
+#include "app/creature_board.hpp"
 #include "app/synchronizer.hpp"
 #include "app/window.hpp"
 #include "opsiamethystos/graphics/panel/components/board.hpp"
@@ -54,21 +55,36 @@ int main() {
 
 	std::string connection_button_label{"Connect"};
 
-	Components::Board board{
-		MathGeometry::Rectangle{MathGeometry::Position{0, 35}, MathGeometry::Width{400}, MathGeometry::Height{240}}};
-	if (!board.draw_rectangle(board.get_bounds(), Colors::Presets::Black)
-		|| !board.draw_circle(MathGeometry::Circle{{-120, 35}, MathGeometry::Radius{35}}, Colors::Presets::Red)
-		|| !board.draw_circle(MathGeometry::Circle{{0, 35}, MathGeometry::Radius{35}}, Colors::Presets::Green)
-		|| !board.draw_circle(MathGeometry::Circle{{120, 35}, MathGeometry::Radius{35}}, Colors::Presets::Blue)) {
-		throw std::runtime_error("Failed to draw demo primitive on board");
+	auto create_button_component =
+		std::make_shared<Components::Component>(Components::AllComponents{Components::LowLevel::Button::RectangleButton{
+			MathGeometry::Rectangle{MathGeometry::Position{-90, -170},
+									MathGeometry::Width{160},
+									MathGeometry::Height{40}},
+			[&synchronizer] {
+				synchronizer.create_creature();
+			},
+			Components::LowLevel::Button::ButtonStyles{Colors::Presets::DarkGray,
+													   Colors::Presets::Gray,
+													   Colors::Presets::Black},
+			"Create creature",
+			Colors::Presets::White,
+			20}});
+	if (!panel.add(create_button_component)) {
+		throw std::runtime_error("Failed to add creature creation button to its panel");
 	}
+
+	Components::Board board{
+		MathGeometry::Rectangle{MathGeometry::Position{0, 0}, MathGeometry::Width{400}, MathGeometry::Height{240}}};
+	KarkinolutionView::CreatureBoard creature_board{board};
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 
 		KarkinolutionView::Window::init_inside_loop();
 
+		synchronizer.poll();
 		synchronizer.draw();
+		creature_board.draw(synchronizer.creatures(), synchronizer.territory_size());
 		board.draw(panel.origin());
 
 		const std::string_view connection_label = synchronizer.is_connected() ? "Disconnect" : "Connect";

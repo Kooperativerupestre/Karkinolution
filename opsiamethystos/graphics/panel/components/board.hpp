@@ -9,6 +9,7 @@
 #include "shared/core/color.hpp"
 
 #include <string>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -21,7 +22,13 @@ namespace Opsiamethystos::Gui::Components {
 	class Board : public BaseComponent<ComponentType::BOARD> {
 		private:
 
-			using Primitive = std::variant<LowLevel::Circle, LowLevel::Line, LowLevel::Rectangle, LowLevel::Text>;
+			struct TrianglePrimitive {
+					Math::Geometry::Triangle triangle;
+					KShared::Colors::Color   color;
+			};
+
+			using Primitive =
+				std::variant<LowLevel::Circle, LowLevel::Line, LowLevel::Rectangle, LowLevel::Text, TrianglePrimitive>;
 
 			Math::Geometry::Rectangle bounds_;
 			std::vector<Primitive>    primitives_;
@@ -43,6 +50,7 @@ namespace Opsiamethystos::Gui::Components {
 
 			// Positions are supplied by the caller; Board does not rearrange them.
 			bool draw_circle(const Math::Geometry::Circle &circle, const KShared::Colors::Color &color);
+			bool draw_triangle(const Math::Geometry::Triangle &triangle, const KShared::Colors::Color &color);
 			bool draw_line(Math::Geometry::Position      begin,
 						   Math::Geometry::Position      end,
 						   Math::Geometry::Thickness     thickness,
@@ -55,6 +63,10 @@ namespace Opsiamethystos::Gui::Components {
 
 			[[nodiscard]] std::size_t size() const noexcept {
 				return primitives_.size();
+			}
+
+			void clear() noexcept {
+				primitives_.clear();
 			}
 
 			// Drawing follows insertion order; later primitives appear above earlier ones.

@@ -41,3 +41,26 @@ TEST(Board, AcceptsPrimitivesTouchingItsBoundary) {
 	EXPECT_TRUE(target.draw_circle(Geometry::Circle{{0, -45}, Geometry::Radius{5}}, White));
 	EXPECT_EQ(target.size(), 2);
 }
+
+TEST(Board, AcceptsTriangleInsideItsBounds) {
+	auto target = board();
+
+	EXPECT_TRUE(target.draw_triangle(Geometry::Triangle{{-20, -20}, {20, -20}, {0, 20}}, White));
+	EXPECT_EQ(target.size(), 1);
+}
+
+TEST(Board, RejectsTriangleOutsideItsBoundsWithoutMutatingTheBoard) {
+	auto target = board();
+
+	EXPECT_FALSE(target.draw_triangle(Geometry::Triangle{{-60, 0}, {0, 20}, {0, -20}}, White));
+	EXPECT_EQ(target.size(), 0);
+}
+
+TEST(Board, ClearRemovesAllDrawingCommands) {
+	auto target = board();
+
+	ASSERT_TRUE(target.draw_circle(Geometry::Circle{{0, 0}, Geometry::Radius{10}}, White));
+	target.clear();
+
+	EXPECT_EQ(target.size(), 0);
+}
