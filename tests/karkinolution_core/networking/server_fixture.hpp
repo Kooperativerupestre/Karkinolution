@@ -2,8 +2,10 @@
 #include "karkinolution/networking/client_side/client/alias.hpp"
 #include "karkinolution/networking/client_side/client/client.hpp"
 
+#include <asio/write.hpp>
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>
+#include <span>
 
 using Karkinolution::Networking::Acceptor;
 using Karkinolution::Networking::EndPoint;
@@ -27,6 +29,10 @@ class FakeServer {
 
 		void drop_conection() {
 			peer_->close();
+		}
+
+		void send_bytes(std::span<const std::byte> bytes) {
+			asio::write(*peer_, asio::buffer(bytes.data(), bytes.size()));
 		}
 
 	private:
