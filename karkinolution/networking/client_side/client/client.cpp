@@ -11,12 +11,14 @@
 #include <asio/post.hpp>
 #include <asio/write.hpp>
 #include <chrono>
+#include <exception>
 #include <format>
 #include <iostream>
 #include <karkinolution/networking/asio_types.hpp>
 #include <karkinolution/networking/frame/system/motor.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/scope/motor.hpp>
+#include <shared/functional/scope_guard.hpp>
 #include <thread>
 
 namespace Karkinolution::Networking::ClientSide {
@@ -300,24 +302,29 @@ namespace Karkinolution::Networking::ClientSide {
 					asio::bind_executor(
 						strand_,
 						[this](const Karkinolution::Networking::AsioErrorCode &error, std::size_t bytes_received) {
+							KShared::Functional::ScopeGuard scope_guard{[this]() noexcept {
+								current_async_operations_running.decrement();
+							}};
+
 							if (error) {
 								if (error == asio::error::eof) {
 									on_closed();
-									current_async_operations_running.decrement();
 									return;
 								} else if (error == asio::error::operation_aborted) {
-									current_async_operations_running.decrement();
 									return;
 								}
 
 								on_error(error.message());
-								current_async_operations_running.decrement();
+								return;
+							}
+							try {
+								session.receive(std::span<const std::byte>{temporary_responses.data(), bytes_received});
+							} catch (const std::exception &e) {
+								on_error(e.what());
 								return;
 							}
 
-							session.receive(std::span<const std::byte>{temporary_responses.data(), bytes_received});
 							receive();
-							current_async_operations_running.decrement();
 						}));
 			} catch (...) {
 				current_async_operations_running.decrement();
