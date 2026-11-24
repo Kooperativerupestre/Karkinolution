@@ -33,6 +33,10 @@ namespace Karkinolution::Terrain {
 		if (!territory_aabb(territory.size()).contains(entity_aabb)) {
 			return false;
 		}
+		// The spatial map owns the non-overlap invariant before the entity reaches the registry.
+		if (if_find_one_stop(size, position)) {
+			return false;
+		}
 		return quadtree.add(id, entity_aabb);
 	}
 

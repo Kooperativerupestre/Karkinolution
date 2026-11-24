@@ -60,6 +60,22 @@ TEST(EntityMapTest, AddRejectsEntityOutsideTerritory) {
 	EXPECT_FALSE(entity_map.has_entity(corpse.build_id()));
 }
 
+TEST(EntityMapTest, AddRejectsOverlappingEntityAndPreservesTheExistingEntry) {
+	const Size map_size{100.0, 100.0};
+	Territory  territory{map_size};
+	EntityMap  entity_map{map_size};
+
+	const auto first_id  = corpse_id(4);
+	const auto second_id = corpse_id(5);
+	const Size size{10.0, 10.0};
+
+	ASSERT_TRUE(entity_map.add(first_id, Vec2{0.0, 0.0}, size, territory));
+
+	EXPECT_FALSE(entity_map.add(second_id, Vec2{1.0, 0.0}, size, territory));
+	EXPECT_TRUE(entity_map.has_entity(first_id));
+	EXPECT_FALSE(entity_map.has_entity(second_id));
+}
+
 TEST(EntityMapTest, RemoveDeletesEntityAndIndex) {
 	const Size map_size{500.0, 500.0};
 	Territory  territory{map_size};
