@@ -1,5 +1,6 @@
 #pragma once
 
+#include "karkinolution/networking/frame/base/layout.hpp"
 #include "karkinolution/networking/frame/world/contract.hpp"
 #include "shared/binary/fields.hpp"
 
@@ -10,9 +11,9 @@ namespace Karkinolution {
 	namespace Networking {
 		namespace Frames::World {
 			namespace Layout {
-				using DeclaredSize = KShared::Binary::Field<0, sizeof(DeclaredSize)>;
-				using Type         = KShared::Binary::Next<DeclaredSize, sizeof(Detail::UnderlyingType<Type>)>;
-				using SubType      = KShared::Binary::Next<Type, sizeof(uint8_t)>;
+				using DeclaredSize = Base::Layout::DeclaredSize;
+				using Type         = Base::Layout::Type;
+				using SubType      = Base::Layout::SubType;
 
 				inline constexpr std::size_t TOTAL_HEADER_SIZE = SubType::END;
 

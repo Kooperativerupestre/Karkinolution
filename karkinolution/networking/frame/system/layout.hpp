@@ -1,5 +1,6 @@
 #pragma once
 
+#include "karkinolution/networking/frame/base/layout.hpp"
 #include "karkinolution/networking/frame/system/contract.hpp"
 #include "karkinolution/world/world.hpp"
 #include "shared/binary/fields.hpp"
@@ -8,9 +9,9 @@ namespace Karkinolution {
 	namespace Networking {
 		namespace Frames::System {
 			namespace Layout {
-				using DeclaredSize = KShared::Binary::Field<0, sizeof(DeclaredSize)>;
-				using Type         = KShared::Binary::Next<DeclaredSize, sizeof(Detail::UnderlyingType<Type>)>;
-				using SubType      = KShared::Binary::Next<Type, sizeof(uint8_t)>;
+				using DeclaredSize = Base::Layout::DeclaredSize;
+				using Type         = Base::Layout::Type;
+				using SubType      = Base::Layout::SubType;
 
 				namespace SystemCall {
 					using Id             = KShared::Binary::Next<SubType, sizeof(Frames::System::SystemCall::Id)>;
