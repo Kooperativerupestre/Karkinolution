@@ -272,20 +272,21 @@ namespace Karkinolution {
 						WorldsManager(ClientT &client)
 							: client(client) {
 
-							// Construction assumes that connecting the client was the only
-							// client action performed before this manager was created.
 
-							if (!client.is_connected()) {
-								throw KShared::Errors::SimulationError{
-									"Cannot create a WorldsManager with client disconnected"};
+							if (client.is_connected()) {
+								sync_world_ids_unlocked_();
 							}
-
-							sync_world_ids_unlocked_();
 						}
 
 						bool world_inexistence_is_broken() const {
 							std::lock_guard lock{mutex};
 							return world_inexistence_is_broken_unlocked_();
+						}
+
+						void sync_after_client_connects() {
+							std::lock_guard lock{mutex};
+							assert(client.is_connected());
+							sync_world_ids_unlocked_();
 						}
 
 						bool world_emplacement_is_broken() const {
