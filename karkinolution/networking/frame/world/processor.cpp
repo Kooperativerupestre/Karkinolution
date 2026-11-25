@@ -21,11 +21,19 @@ namespace Karkinolution::Networking::Frames::World::Processor {
 		if (sub_type == RequestSubTypes::SEE) {
 			const auto extra = std::get<Models::Request::SeeExtra>(frame.get_extra());
 			if (resource == Resource::CREATURE) {
-				return Networking::ServerSide::APIBYA::Creature::see_creature(world,
-																			  frame.get_id(),
-																			  frame.get_payload());
+				if (extra.target == Request::SeeTarget::ONE) {
+					return Networking::ServerSide::APIBYA::Creature::see_creature(world,
+																		  frame.get_id(),
+																		  frame.get_payload());
+				} else {
+					return Networking::ServerSide::APIBYA::Creature::see_all_creatures(world, frame.get_id());
+				}
 			} else if (resource == Resource::CORPSE) {
-				return Networking::ServerSide::APIBYA::Corpse::see_corpse(world, frame.get_id(), frame.get_payload());
+				if (extra.target == Request::SeeTarget::ONE) {
+					return Networking::ServerSide::APIBYA::Corpse::see_corpse(world, frame.get_id(), frame.get_payload());
+				} else {
+					return Networking::ServerSide::APIBYA::Corpse::see_all_corpses(world, frame.get_id());
+				}
 			} else if (resource == Resource::SOIL) {
 				if (extra.target == Request::SeeTarget::ONE) {
 					return Networking::ServerSide::APIBYA::Soil::see_soil(world, frame.get_id(), frame.get_payload());

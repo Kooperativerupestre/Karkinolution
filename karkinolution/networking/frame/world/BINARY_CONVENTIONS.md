@@ -194,6 +194,11 @@ the updated soil as a `SOIL` response, or `NONE` when the soil ID is absent.
 
 ## Domain-specific payload layouts
 
+For `SEE ALL CREATURE`, `SEE ALL CORPSE`, and `SEE ALL SOIL`, the response payload is a shared binary list whose
+elements are only the resource IDs. Each element is one `int64_t` ID; the response does not serialize the complete
+entity. This keeps enumeration separate from fetching mutable entity state through the corresponding `SEE ONE`
+operation.
+
 Exact payload layouts belong beside the SRI declaration that owns them. For example, the `CREATURE` response layout,
 its grouped transport data, field offsets, and total size are documented in the `CREATURE PROTOCOL` block in
 `karkinolution/binary/interpreters/creature.hpp`. This document defines reusable binary rules; it does not duplicate

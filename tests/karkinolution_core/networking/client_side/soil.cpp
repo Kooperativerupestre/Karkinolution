@@ -1,10 +1,10 @@
 #include "karkinolution/networking/client_side/interpreters/soil.hpp"
 
+#include "karkinolution/api/soil.hpp"
 #include "karkinolution/networking/client_side/client/client.hpp"
 #include "karkinolution/testing/helpers/world.hpp"
 
 #include <gtest/gtest.h>
-#include <ranges>
 #include <shared/binary/types/list.hpp>
 #include <unordered_set>
 
@@ -24,12 +24,12 @@ namespace {
 
 			Karkinolution::Networking::ClientSide::Client::WorldResponseResult
 			request_world_scope(const Karkinolution::Networking::ClientSide::Client::WorldRequestData &) {
-				const auto &soil_pieces = world.see_territory().registry();
-				const auto  payload =
-					ListTSRI::serialize<SoilSRI::Layout::TOTAL_SIZE>(std::views::values(soil_pieces),
-																	 [](const SoilPiece &soil) {
-																		 return SoilSRI::serialize_soil(soil);
-																	 });
+				const auto all_soil_ids = Karkinolution::API::Soil::see_all_soil_ids(world);
+
+				const auto payload = ListTSRI::serialize<sizeof(BaseIdType)>(all_soil_ids, [](BaseIdType id) {
+					return KShared::Binary::Serializer::serialize(id);
+				});
+
 				const auto response =
 					Karkinolution::Networking::Frames::World::Motor::make_response(ResponseSubTypes::SOIL,
 																				   RequestId{0},
@@ -46,17 +46,21 @@ namespace {
 } // namespace
 
 TEST(SoilInterpreter, ReturnsAllSoils) {
-	const World                    world = Karkinolution::Testing::World::make_small_world();
-	SoilListClient                 client{world};
+	const World    world = Karkinolution::Testing::World::make_small_world();
+	SoilListClient client{world};
+
 	std::unordered_set<BaseIdType> expected_soil_ids;
-	for (const auto &soil : std::views::values(world.see_territory().registry())) {
-		expected_soil_ids.insert(soil.id);
+
+	for (const auto &[id, soil] : world.see_territory().registry()) {
+		static_cast<void>(soil);
+		expected_soil_ids.insert(id);
 	}
 
 	const auto soils = SoilInterpreter::see_all_soils(client);
 
 	ASSERT_EQ(soils.size(), expected_soil_ids.size());
-	for (const auto &soil : soils) {
-		EXPECT_TRUE(expected_soil_ids.contains(soil.id));
+
+	for (const auto id : soils) {
+		EXPECT_TRUE(expected_soil_ids.contains(id));
 	}
 }

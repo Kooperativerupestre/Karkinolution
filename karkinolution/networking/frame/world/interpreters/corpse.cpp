@@ -52,6 +52,10 @@ std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(KShared::Core::Id::
 	return KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
 }
 
+std::array<std::byte, 1> CorpseSRI::Request::make_see_all_corpses() {
+	return {};
+}
+
 // DSI implementations
 KShared::Core::Id::BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);

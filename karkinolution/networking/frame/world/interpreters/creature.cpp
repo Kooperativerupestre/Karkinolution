@@ -117,6 +117,10 @@ std::array<std::byte, 8> CreatureSRI::Request::make_see_creature(KShared::Core::
 	return KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
 }
 
+std::array<std::byte, 1> CreatureSRI::Request::make_see_all_creatures() {
+	return {};
+}
+
 std::array<std::byte, CreatureSRI::Request::Layout::CreateCreature::TOTAL_SIZE>
 CreatureSRI::Request::make_create_creature(
 	std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,

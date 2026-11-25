@@ -5,6 +5,7 @@
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/world/world.hpp>
 #include <shared/functional/optional_reference.hpp>
+#include <vector>
 
 namespace Karkinolution {
 	namespace API {
@@ -15,9 +16,7 @@ namespace Karkinolution {
 			SoilReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 			bool          erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 
-			inline const auto &see_all_soils(const Karkinolution::World::World &world) {
-				return world.see_territory().registry();
-			}
+			std::vector<KShared::Core::Id::BaseIdType> see_all_soil_ids(const Karkinolution::World::World &world);
 		} // namespace Soil
 	} // namespace API
 } // namespace Karkinolution

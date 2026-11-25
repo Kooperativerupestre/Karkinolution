@@ -95,6 +95,7 @@ namespace Karkinolution {
 						} // namespace Layout
 
 						std::array<std::byte, 8> make_see_creature(KShared::Core::Id::BaseIdType id);
+						std::array<std::byte, 1> make_see_all_creatures();
 						std::array<std::byte, Layout::CreateCreature::TOTAL_SIZE> make_create_creature(
 							std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
 							std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,

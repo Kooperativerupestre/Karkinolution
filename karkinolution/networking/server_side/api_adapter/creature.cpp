@@ -10,6 +10,7 @@
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/frame/world/parser/parser.hpp>
 #include <karkinolution/networking/server_side/api_adapter/creature.hpp>
+#include <shared/binary/types/list.hpp>
 
 namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame see_creature(const Karkinolution::World::World &world,
@@ -28,6 +29,17 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 																			  request_id,
 																			  creature_payload,
 																			  Frames::World::ResponseCardinality::ONE);
+	}
+
+	ResponseFrame see_all_creatures(const Karkinolution::World::World &world, Frames::World::RequestId request_id) {
+		const auto ids = Karkinolution::API::Creature::see_all_creature_ids(world);
+		const auto payload = ListTSRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(
+			ids, [](KShared::Core::Id::BaseIdType id) { return KShared::Binary::Serializer::serialize(id); });
+		return Karkinolution::Networking::Frames::World::Motor::make_response(
+			Frames::World::ResponseSubTypes::CREATURE,
+			request_id,
+			payload,
+			Frames::World::ResponseCardinality::ALL);
 	}
 
 	ResponseFrame create_creature(Karkinolution::World::World  &world,

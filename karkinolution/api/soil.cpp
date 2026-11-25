@@ -16,6 +16,17 @@ Karkinolution::API::Soil::SoilReference Karkinolution::API::Soil::see_soil(const
 	return *soil;
 }
 
+std::vector<KShared::Core::Id::BaseIdType>
+Karkinolution::API::Soil::see_all_soil_ids(const Karkinolution::World::World &world) {
+	std::vector<KShared::Core::Id::BaseIdType> ids;
+	ids.reserve(world.see_territory().registry().size());
+	for (const auto &[id, soil] : world.see_territory().registry()) {
+		static_cast<void>(soil);
+		ids.push_back(id);
+	}
+	return ids;
+}
+
 Karkinolution::API::Soil::SoilReference Karkinolution::API::Soil::tick(Karkinolution::World::World  &world,
 																	   KShared::Core::Id::BaseIdType id) {
 	auto* soil =

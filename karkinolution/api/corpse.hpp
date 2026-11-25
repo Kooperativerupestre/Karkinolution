@@ -5,6 +5,7 @@
 #include <karkinolution/organism/entities/corpse/corpse.hpp>
 #include <karkinolution/world/world.hpp>
 #include <shared/functional/optional_reference.hpp>
+#include <vector>
 
 namespace Karkinolution {
 	namespace API {
@@ -13,6 +14,7 @@ namespace Karkinolution {
 				KShared::Functional::OptionalReference<const Karkinolution::Organisms::Entities::Corpse::Corpse>;
 
 			CorpseReference see_corpse(const Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
+			std::vector<KShared::Core::Id::BaseIdType> see_all_corpse_ids(const Karkinolution::World::World &world);
 			CorpseReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 			bool            erase(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 		} // namespace Corpse

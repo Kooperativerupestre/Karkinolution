@@ -49,7 +49,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 	}
 
 	template <CanRequestWorldScope T>
-	std::vector<Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::Soil> see_all_soils(T &client) {
+	std::vector<KShared::Core::Id::BaseIdType> see_all_soils(T &client) {
 		const auto payload = SoilSRI::Request::make_see_all_soils();
 
 		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
@@ -74,7 +74,12 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 			return {};
 		}
 
-		return ListTDSI::deserialize<SoilSRI::Layout::TOTAL_SIZE>(frame.get_payload(), SoilDSI::get_soil, 0);
+		return ListTDSI::deserialize<sizeof(KShared::Core::Id::BaseIdType)>(
+			frame.get_payload(),
+			[](const std::vector<std::byte> &bytes, std::size_t offset) {
+				return KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(bytes, offset);
+			},
+			0);
 	}
 
 	template <CanRequestWorldScope T>
