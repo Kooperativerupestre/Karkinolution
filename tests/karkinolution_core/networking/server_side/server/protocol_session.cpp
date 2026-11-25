@@ -4,15 +4,16 @@
 
 #include <gtest/gtest.h>
 #include <karkinolution/networking/frame/world/interpreters/creature.hpp>
-#include <karkinolution/test/utils.hpp>
+#include <karkinolution/testing/helpers/frame.hpp>
+#include <karkinolution/testing/helpers/world.hpp>
 
 using Karkinolution::Networking::ServerSide::Connection::ProtocolSessions::WorldSession;
 
 TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {
-	auto         world = TestUtils::make_small_world();
+	auto         world = Karkinolution::Testing::World::make_small_world();
 	WorldSession session{world};
 
-	const auto frame = TestUtils::make_see_creature_frame(7, 45);
+	const auto frame = Karkinolution::Testing::Frame::make_see_creature_frame(7, 45);
 	session.receive(frame);
 
 	ASSERT_TRUE(session.has_response());
@@ -22,10 +23,10 @@ TEST(ProtocolSessionTest, OneCompleteFrameProducesExactlyOneResponse) {
 }
 
 TEST(ProtocolSessionTest, FrameSplitAcrossTwoReceivesProducesOneResponse) {
-	auto         world = TestUtils::make_small_world();
+	auto         world = Karkinolution::Testing::World::make_small_world();
 	WorldSession session{world};
 
-	const auto frame = TestUtils::make_see_creature_frame(8, 45);
+	const auto frame = Karkinolution::Testing::Frame::make_see_creature_frame(8, 45);
 	const auto half  = frame.size() / 2;
 	std::span  all{frame};
 

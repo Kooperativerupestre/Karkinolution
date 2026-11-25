@@ -90,6 +90,20 @@ Complex organism behavior follows the Model / Physiology / Motor separation:
 The API is the supported domain boundary for external consumers. Networking adapters call the API or the corresponding
 simulation service instead of reaching into domain storage directly.
 
+### Testing support
+
+Reusable test support lives under `karkinolution/testing/` and is separate from production domain behavior:
+
+- `helpers/` contains domain-specific construction and protocol data builders under `Karkinolution::Testing`.
+- `fixtures/` contains reusable test lifecycles, such as the networking client/server fixture.
+- `brokers/` contains explicitly privileged test access types that cross encapsulation boundaries to create or inspect
+  invalid intermediate states required by invariant tests.
+
+Test support must use a domain-specific namespace rather than a catch-all `TestUtils` namespace. Brokers are the only
+testing types that may be friends of production classes, and their friend relationship must be justified by an
+invariant or atomicity test. Test files should not silently introduce local helpers; exceptional local support requires
+explicit programmer authorization and a visible justification.
+
 ## Frames and protocol layers
 
 A frame is the protocol contract shared by the client and server. It connects binary layout, parsing, models, request

@@ -1,9 +1,11 @@
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/frame.hpp"
 
 #include <chrono>
 #include <gtest/gtest.h>
-#include <networking/server_fixture.hpp>
+#include <karkinolution/testing/fixtures/networking.hpp>
 #include <thread>
+
+using Karkinolution::Testing::Networking::ClientTest;
 
 TEST_F(ClientTest, SendCompletionReleasesItsAsyncOperation) {
 	KarkinolutionClient client{
@@ -12,7 +14,7 @@ TEST_F(ClientTest, SendCompletionReleasesItsAsyncOperation) {
 	client.connect();
 	server.accept_peer();
 
-	client.send_without_waiting_world_scope(TestUtils::make_see_creature_request_data(45));
+	client.send_without_waiting_world_scope(Karkinolution::Testing::Frame::make_see_creature_request_data(45));
 
 	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
 	while (std::chrono::steady_clock::now() < deadline && client.get_current_async_operations_running() != 1) {

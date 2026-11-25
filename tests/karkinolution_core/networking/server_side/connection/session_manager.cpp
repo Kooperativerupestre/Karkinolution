@@ -5,7 +5,8 @@
 #include "karkinolution/networking/scope/motor.hpp"
 #include "karkinolution/networking/server_side/connection/simulation_adapter/simulation_adapter.hpp"
 #include "karkinolution/networking/server_side/simulation/simulation.hpp"
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/frame.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 #include "karkinolution/world/world_storage.hpp"
 
 #include <gtest/gtest.h>
@@ -23,14 +24,11 @@ namespace {
 	using Karkinolution::Networking::ServerSide::Simulation::Simulation;
 	using Karkinolution::World::WorldStorage;
 
-	Karkinolution::World::World make_world() {
-		return TestUtils::make_small_world();
-	}
 } // namespace
 
 TEST(SessionManager, RoutesSystemFramesAndWorldFramesWithoutForwardingScope) {
 	WorldStorage storage;
-	ASSERT_TRUE(storage.add(make_world()));
+	ASSERT_TRUE(storage.add(Karkinolution::Testing::World::make_small_world()));
 	const auto        world_id = storage.get_all_world_ids().front();
 	Simulation        simulation{storage};
 	SimulationAdapter adapter{simulation, 17};
@@ -56,7 +54,7 @@ TEST(SessionManager, RoutesSystemFramesAndWorldFramesWithoutForwardingScope) {
 		Karkinolution::Networking::Frames::System::Interpreter::DSI::get_config_output(config_response.get_payload())
 			.could_connect);
 
-	const auto world_request = make_world_frame(TestUtils::make_see_creature_frame(3, 45));
+	const auto world_request = make_world_frame(Karkinolution::Testing::Frame::make_see_creature_frame(3, 45));
 	manager.receive(world_request);
 	ASSERT_TRUE(manager.has_response());
 	const auto world_response = std::get<ResponseFrame>(manager.pop_response());
@@ -65,10 +63,11 @@ TEST(SessionManager, RoutesSystemFramesAndWorldFramesWithoutForwardingScope) {
 
 TEST(SessionManager, RejectsWorldFramesBeforeWorldAcquisition) {
 	WorldStorage storage;
-	ASSERT_TRUE(storage.add(make_world()));
+	ASSERT_TRUE(storage.add(Karkinolution::Testing::World::make_small_world()));
 	Simulation        simulation{storage};
 	SimulationAdapter adapter{simulation, 17};
 	SessionManager    manager{adapter};
 
-	EXPECT_THROW(manager.receive(make_world_frame(TestUtils::make_see_creature_frame(1, 45))), std::runtime_error);
+	EXPECT_THROW(manager.receive(make_world_frame(Karkinolution::Testing::Frame::make_see_creature_frame(1, 45))),
+				 std::runtime_error);
 }

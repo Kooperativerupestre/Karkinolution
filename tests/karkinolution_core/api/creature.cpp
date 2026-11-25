@@ -1,7 +1,7 @@
 #include "karkinolution/api/creature.hpp"
 
 #include "karkinolution/organism/entities/creature/constructor.hpp"
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 
 #include <gtest/gtest.h>
 
@@ -16,13 +16,13 @@ using KShared::Core::Id::gen_id;
 namespace CreatureConstructor = Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor;
 
 TEST(CreatureAPI, ReturnsEmptyReferencesForUnknownCreatures) {
-	const World world = TestUtils::make_small_world();
+	const World world = Karkinolution::Testing::World::make_small_world();
 
 	EXPECT_EQ(see_creature(world, gen_id()), nullptr);
 }
 
 TEST(CreatureAPI, CreatesAndTicksCreatureThroughOptionalReferences) {
-	World      world       = TestUtils::make_small_world();
+	World      world       = Karkinolution::Testing::World::make_small_world();
 	const auto creature_id = gen_id();
 	auto       creature    = CreatureConstructor::from_blueprint(CreatureBlueprint{.id = creature_id});
 	ASSERT_TRUE(world.add(std::move(creature)));
@@ -38,7 +38,7 @@ TEST(CreatureAPI, CreatesAndTicksCreatureThroughOptionalReferences) {
 }
 
 TEST(CreatureAPI, EraseReturnsWhetherCreatureWasRemoved) {
-	World      world       = TestUtils::make_small_world();
+	World      world       = Karkinolution::Testing::World::make_small_world();
 	const auto creature_id = gen_id();
 	auto       creature    = CreatureConstructor::from_blueprint(CreatureBlueprint{.id = creature_id});
 	ASSERT_TRUE(world.add(std::move(creature)));

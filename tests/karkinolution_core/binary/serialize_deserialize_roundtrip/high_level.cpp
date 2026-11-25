@@ -15,7 +15,6 @@
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
-#include <karkinolution/test/utils.hpp>
 #include <limits>
 #include <shared/binary/interpreters/geometry.hpp>
 #include <shared/binary/interpreters/unit.hpp>

@@ -11,13 +11,14 @@
 #include "karkinolution/networking/server_side/server/server.hpp"
 #include "karkinolution/organism/entities/corpse/physiology.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/frame.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 #include "karkinolution/world/world_storage.hpp"
 
 #include <exception>
 #include <gtest/gtest.h>
 #include <karkinolution/networking/asio_types.hpp>
-#include <networking/server_fixture.hpp>
+#include <karkinolution/testing/fixtures/networking.hpp>
 
 using Karkinolution::Networking::IoContext;
 using Karkinolution::Networking::PORT;
@@ -26,6 +27,7 @@ using Karkinolution::Networking::ClientSide::Client::Config;
 using Karkinolution::Networking::ClientSide::World::Commanders::Corpse::tick_corpse;
 using Karkinolution::Networking::ClientSide::World::Commanders::Creature::tick_creature;
 using Karkinolution::Networking::ClientSide::World::Commanders::Soil::tick_soil;
+using Karkinolution::Testing::Networking::ClientTest;
 using LocalWorld = Karkinolution::Networking::ClientSide::World::World;
 using Karkinolution::World::World;
 using Karkinolution::World::WorldId;
@@ -39,7 +41,7 @@ TEST_F(ClientTest, ServerE2E) {
 	std::vector<WorldId> world_ids;
 	world_ids.reserve(8);
 	for (int index = 0; index < 8; ++index) {
-		World world = TestUtils::make_small_world();
+		World world = Karkinolution::Testing::World::make_small_world();
 		world_ids.push_back(world.get_id());
 		ASSERT_TRUE(storage.add(std::move(world)));
 	}
@@ -61,7 +63,8 @@ TEST_F(ClientTest, ServerE2E) {
 			try {
 				client.connect();
 				EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
-				auto output = client.request_world_scope(TestUtils::make_see_creature_request_data(45));
+				auto output =
+					client.request_world_scope(Karkinolution::Testing::Frame::make_see_creature_request_data(45));
 
 				if (!output || !output.value().has_value()) {
 					failures.fetch_add(1);
@@ -95,7 +98,7 @@ TEST_F(ClientTest, ServerE2E) {
 TEST_F(ClientTest, CreatureTickReturnsUpdatedCreatureAndUpdatesLocalWorld) {
 	IoContext server_io;
 
-	World      server_world = TestUtils::make_small_world();
+	World      server_world = Karkinolution::Testing::World::make_small_world();
 	const auto created      = Karkinolution::API::Creature::make_creature(server_world,
                                                                      std::nullopt,
                                                                      std::nullopt,
@@ -144,7 +147,7 @@ TEST_F(ClientTest, CreatureTickReturnsUpdatedCreatureAndUpdatesLocalWorld) {
 TEST_F(ClientTest, CorpseTickReturnsUpdatedCorpseAndUpdatesLocalWorld) {
 	IoContext server_io;
 
-	World server_world = TestUtils::make_small_world();
+	World server_world = Karkinolution::Testing::World::make_small_world();
 	auto  creature = Karkinolution::Organisms::Entities::Creature::Constructor::CreatureConstructor::from_blueprint();
 	auto  corpse   = Karkinolution::Organisms::Entities::Corpse::Physiology::generate_corpse(creature);
 	const auto corpse_id = corpse.id;
@@ -190,7 +193,7 @@ TEST_F(ClientTest, CorpseTickReturnsUpdatedCorpseAndUpdatesLocalWorld) {
 TEST_F(ClientTest, SoilTickReturnsUpdatedSoilAndUpdatesLocalWorld) {
 	IoContext server_io;
 
-	World      server_world = TestUtils::make_small_world();
+	World      server_world = Karkinolution::Testing::World::make_small_world();
 	const auto soil_id      = server_world.see_territory().registry().begin()->first;
 
 	WorldStorage storage;
@@ -234,7 +237,7 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 	IoContext server_io;
 
 	WorldStorage storage;
-	World        world    = TestUtils::make_small_world();
+	World        world    = Karkinolution::Testing::World::make_small_world();
 	const auto   world_id = world.get_id();
 	ASSERT_TRUE(storage.add(std::move(world)));
 	ServerType application_server{server_io, PORT, storage};
@@ -252,8 +255,9 @@ TEST_F(ClientTest, ServerAcceptsNewClientAfterDisconnect) {
 			try {
 				client.connect();
 				EXPECT_TRUE(SystemInterpreter::config(client, world_id).value_or(false));
-				auto output = client.request_world_scope(TestUtils::make_see_creature_request_data(45));
-				succeeded   = output && output.value().has_value();
+				auto output =
+					client.request_world_scope(Karkinolution::Testing::Frame::make_see_creature_request_data(45));
+				succeeded = output && output.value().has_value();
 			} catch (const std::exception &error) {
 				ADD_FAILURE() << "Client request failed: " << error.what();
 			} catch (...) {
@@ -289,7 +293,7 @@ TEST_F(ClientTest, ClientReceivesLargeSoilListResponse) {
 	IoContext server_io;
 
 	WorldStorage storage;
-	World        world               = TestUtils::make_small_world();
+	World        world               = Karkinolution::Testing::World::make_small_world();
 	const auto   world_id            = world.get_id();
 	const auto   expected_soil_count = world.see_territory().registry().size();
 	ASSERT_TRUE(storage.add(std::move(world)));

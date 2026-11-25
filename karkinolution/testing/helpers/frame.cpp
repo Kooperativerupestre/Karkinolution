@@ -1,25 +1,11 @@
-#include "karkinolution/networking/client_side/client/client.hpp"
+#include "karkinolution/testing/helpers/frame.hpp"
+
 #include "karkinolution/networking/client_side/interpreters/generic_id.hpp"
-#include "karkinolution/networking/frame/world/core_aliases.hpp"
-#include "karkinolution/networking/frame/world/layout.hpp"
-#include "karkinolution/world/world.hpp"
-#include "shared/math/units.hpp"
+#include "karkinolution/networking/frame/world/interpreters/creature.hpp"
 
-#include <karkinolution/networking/frame/world/interpreters/creature.hpp>
-#include <karkinolution/test/utils.hpp>
-#include <shared/functional/k_random.hpp>
-
-Karkinolution::World::World TestUtils::make_small_world() {
-	Karkinolution::World::WorldPreset preset{
-		.seed    = 1,
-		.size    = KShared::Math::Units::Size{.width  = KShared::Math::Units::Width{100.0},
-											  .height = KShared::Math::Units::Height{100.0}},
-		.epsilon = 5.0f};
-	return {preset};
-}
-
-std::vector<std::byte> TestUtils::make_see_creature_frame(Karkinolution::Networking::Frames::World::RequestId id,
-														  KShared::Core::Id::BaseIdType creature_id) {
+std::vector<std::byte>
+Karkinolution::Testing::Frame::make_see_creature_frame(Karkinolution::Networking::Frames::World::RequestId id,
+													   KShared::Core::Id::BaseIdType creature_id) {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);
 	return Karkinolution::Networking::Frames::World::Motor::make_request_raw_bytes(
 		Karkinolution::Networking::Frames::World::RequestSubTypes::SEE,
@@ -31,7 +17,7 @@ std::vector<std::byte> TestUtils::make_see_creature_frame(Karkinolution::Network
 }
 
 Karkinolution::Networking::ClientSide::Client::WorldRequestData
-TestUtils::make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id) {
+Karkinolution::Testing::Frame::make_see_creature_request_data(KShared::Core::Id::BaseIdType creature_id) {
 	const auto payload = CreatureSRI::Request::make_see_creature(creature_id);
 	const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
         Karkinolution::Networking::Frames::World::RequestSubTypes::SEE,

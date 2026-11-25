@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <kshared/test_utils.hpp>
+#include <karkinolution/testing/helpers/shared.hpp>
 #include <shared/binary/deserializer.hpp>
 #include <shared/binary/serializer.hpp>
 
@@ -14,7 +14,7 @@ TEST(SerializeDeserializeRoundtrip, HighLevel_AllTypesRoundtrip) {
 		const auto        original_u64   = KShared::Functional::KRandom::RandomGenerators::generate<std::uint64_t>();
 		const auto        original_dbl   = KShared::Functional::KRandom::RandomGenerators::generate<double>();
 		const auto        original_u8    = KShared::Functional::KRandom::RandomGenerators::generate<std::uint8_t>();
-		const std::string original_str   = TestUtils::random_string();
+		const std::string original_str   = Karkinolution::Testing::Shared::random_string();
 		const auto        original_float = KShared::Functional::KRandom::RandomGenerators::generate<float>();
 		const auto        original_int   = KShared::Functional::KRandom::RandomGenerators::generate<int>();
 
@@ -22,25 +22,32 @@ TEST(SerializeDeserializeRoundtrip, HighLevel_AllTypesRoundtrip) {
 		std::vector<std::byte> buffer;
 
 		const size_t offset_u32 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_uint32_t(original_u32));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_uint32_t(original_u32));
 
 		const size_t offset_u64 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_uint64_t(original_u64));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_uint64_t(original_u64));
 
 		const size_t offset_dbl = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_double(original_dbl));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_double(original_dbl));
 
 		const size_t offset_u8 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_uint8_t(original_u8));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_uint8_t(original_u8));
 
 		const size_t offset_str = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_string(original_str));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_string(original_str));
 
 		const size_t offset_float = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_float(original_float));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_float(original_float));
 
 		const size_t offset_int = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::convert_int(original_int));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::convert_int(original_int));
 
 		EXPECT_EQ(KShared::Binary::Deserializer::read_uint32_t(buffer, offset_u32), original_u32);
 		EXPECT_EQ(KShared::Binary::Deserializer::read_uint64_t(buffer, offset_u64), original_u64);
@@ -67,16 +74,23 @@ TEST(SerializeDeserializeRoundtrip, Core_RandomValuesRoundtripWithOffsets) {
 		std::vector<std::byte> buffer = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
 
 		const size_t offset_8 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::Core::convert_8_bytes(original_8));
+		Karkinolution::Testing::Shared::append_to_buffer(
+			buffer,
+			KShared::Binary::Serializer::Core::convert_8_bytes(original_8));
 
 		const size_t offset_4 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::Core::convert_4_bytes(original_4));
+		Karkinolution::Testing::Shared::append_to_buffer(
+			buffer,
+			KShared::Binary::Serializer::Core::convert_4_bytes(original_4));
 
 		const size_t offset_2 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::Core::convert_2_bytes(original_2));
+		Karkinolution::Testing::Shared::append_to_buffer(
+			buffer,
+			KShared::Binary::Serializer::Core::convert_2_bytes(original_2));
 
 		const size_t offset_1 = buffer.size();
-		TestUtils::append_to_buffer(buffer, KShared::Binary::Serializer::Core::convert_1_byte(original_1));
+		Karkinolution::Testing::Shared::append_to_buffer(buffer,
+														 KShared::Binary::Serializer::Core::convert_1_byte(original_1));
 
 		EXPECT_EQ(KShared::Binary::Deserializer::Core::deserialize_8_bytes(buffer, offset_8), original_8);
 		EXPECT_EQ(KShared::Binary::Deserializer::Core::deserialize_4_bytes(buffer, offset_4), original_4);

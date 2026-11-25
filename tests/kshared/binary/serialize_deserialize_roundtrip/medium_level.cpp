@@ -1,7 +1,7 @@
 
 
 #include <gtest/gtest.h>
-#include <kshared/test_utils.hpp>
+#include <karkinolution/testing/helpers/shared.hpp>
 #include <shared/binary/interpreters/geometry.hpp>
 #include <shared/binary/interpreters/stats.hpp>
 #include <shared/binary/interpreters/unit.hpp>
@@ -450,28 +450,28 @@ TEST(MathSerializeDeserializeRoundtrip, PhysicsUnits_StreamWithOffsets) {
 	std::vector<std::byte> stream = {std::byte{0xDE}, std::byte{0xAD}};
 
 	const size_t off_vol = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_area(orig_vol));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_area(orig_vol));
 
 	const size_t off_mass = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_mass(orig_mass));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_mass(orig_mass));
 
 	const size_t off_dens = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_density(orig_dens));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_density(orig_dens));
 
 	const size_t off_meter = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_meter(orig_meter));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_meter(orig_meter));
 
 	const size_t off_size = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_size(orig_size));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_size(orig_size));
 
 	const size_t off_shared = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_shared_area(orig_shared));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_shared_area(orig_shared));
 
 	const size_t off_eff = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_efficiency(orig_eff));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_efficiency(orig_eff));
 
 	const size_t off_qual = stream.size();
-	TestUtils::append_to_buffer(stream, UnitsSRI::serialize_quality(orig_qual));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, UnitsSRI::serialize_quality(orig_qual));
 
 	stream.push_back(std::byte{0xBE});
 	stream.push_back(std::byte{0xEF});
@@ -672,16 +672,16 @@ TEST(MathSerializeDeserializeRoundtrip, Geometry_StreamWithOffsets) {
 	std::vector<std::byte> stream = {std::byte{0xAA}, std::byte{0xBB}, std::byte{0xCC}};
 
 	const size_t off_r = stream.size();
-	TestUtils::append_to_buffer(stream, GeometrySRI::serialize_radius(orig_radius));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, GeometrySRI::serialize_radius(orig_radius));
 
 	const size_t off_c = stream.size();
-	TestUtils::append_to_buffer(stream, GeometrySRI::serialize_circumference(orig_circ));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, GeometrySRI::serialize_circumference(orig_circ));
 
 	const size_t off_d = stream.size();
-	TestUtils::append_to_buffer(stream, GeometrySRI::serialize_diameter(orig_diam));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, GeometrySRI::serialize_diameter(orig_diam));
 
 	const size_t off_a = stream.size();
-	TestUtils::append_to_buffer(stream, GeometrySRI::serialize_area(orig_area));
+	Karkinolution::Testing::Shared::append_to_buffer(stream, GeometrySRI::serialize_area(orig_area));
 
 	stream.push_back(std::byte{0xDD});
 	stream.push_back(std::byte{0xEE});

@@ -1,13 +1,14 @@
 #include "karkinolution/networking/client_side/error.hpp"
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/frame.hpp"
 
 #include <array>
 #include <chrono>
 #include <gtest/gtest.h>
-#include <networking/server_fixture.hpp>
+#include <karkinolution/testing/fixtures/networking.hpp>
 #include <thread>
 
 using Karkinolution::Networking::ClientSide::ClientError;
+using Karkinolution::Testing::Networking::ClientTest;
 
 TEST_F(ClientTest, MalformedReceivedBytesReleaseOperationAndFailPendingRequest) {
 	KarkinolutionClient client{
@@ -16,7 +17,8 @@ TEST_F(ClientTest, MalformedReceivedBytesReleaseOperationAndFailPendingRequest) 
 	client.connect();
 	server.accept_peer();
 
-	const auto request_id = client.send_without_waiting_world_scope(TestUtils::make_see_creature_request_data(45));
+	const auto request_id =
+		client.send_without_waiting_world_scope(Karkinolution::Testing::Frame::make_see_creature_request_data(45));
 	const std::array invalid_scope{std::byte{0xff}};
 	server.send_bytes(invalid_scope);
 

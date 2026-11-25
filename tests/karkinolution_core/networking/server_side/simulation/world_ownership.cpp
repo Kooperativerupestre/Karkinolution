@@ -2,6 +2,7 @@
 #include "karkinolution/networking/server_side/connection/simulation_adapter/simulation_adapter.hpp"
 #include "karkinolution/networking/server_side/simulation/simulation.hpp"
 #include "karkinolution/networking/world_state.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 #include "karkinolution/world/world_storage.hpp"
 
 #include <array>
@@ -11,22 +12,9 @@
 #include <memory>
 #include <thread>
 
-namespace {
-	Karkinolution::World::WorldPreset make_preset() {
-		return Karkinolution::World::WorldPreset{
-			.seed    = 1,
-			.size    = {.width = KShared::Math::Units::Width{100.0}, .height = KShared::Math::Units::Height{100.0}},
-			.epsilon = 5.0f};
-	}
-
-	Karkinolution::World::World make_world() {
-		return Karkinolution::World::World{make_preset()};
-	}
-} // namespace
-
 TEST(WorldOwnership, RecordsTheConnectionThatAcquiredTheWorld) {
 	Karkinolution::World::WorldStorage storage;
-	ASSERT_TRUE(storage.add(make_world()));
+	ASSERT_TRUE(storage.add(Karkinolution::Testing::World::make_small_world()));
 	const auto                                                    world_id = storage.get_all_world_ids().front();
 	Karkinolution::Networking::ServerSide::Simulation::Simulation simulation{storage};
 	Karkinolution::Networking::ServerSide::Connection::SimulationAdapter::SimulationAdapter adapter{simulation, 17};
@@ -43,7 +31,7 @@ TEST(WorldOwnership, RecordsTheConnectionThatAcquiredTheWorld) {
 
 TEST(WorldOwnership, ConcurrentConnectionsOnlyOneAcquiresTheWorld) {
 	Karkinolution::World::WorldStorage storage;
-	ASSERT_TRUE(storage.add(make_world()));
+	ASSERT_TRUE(storage.add(Karkinolution::Testing::World::make_small_world()));
 	const auto                                                    world_id = storage.get_all_world_ids().front();
 	Karkinolution::Networking::ServerSide::Simulation::Simulation simulation{storage};
 	Karkinolution::Networking::ServerSide::Connection::SimulationAdapter::SimulationAdapter first{simulation, 1};
@@ -100,7 +88,9 @@ TEST(WorldOwnership, ConcurrentCreateWorldOperationsConnectEachCreatorAtomically
 		threads.emplace_back([&, index] {
 			start.count_down();
 			start.wait();
-			results[index] = adapters[index]->create_world(make_preset(), true, leases[index]);
+			results[index] = adapters[index]->create_world(Karkinolution::Testing::World::make_small_world_preset(),
+														   true,
+														   leases[index]);
 		});
 	}
 
@@ -139,7 +129,8 @@ TEST(WorldOwnership, ConcurrentAcquisitionCannotStealWorldDuringCreateAndConnect
 	std::jthread                                                         creator_thread{[&] {
         start.count_down();
         start.wait();
-        creator_result.store(creator.create_world(make_preset(), true, creator_lease));
+        creator_result.store(
+            creator.create_world(Karkinolution::Testing::World::make_small_world_preset(), true, creator_lease));
     }};
 
 	std::vector<std::jthread> contender_threads;

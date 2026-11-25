@@ -7,16 +7,18 @@
 #include <shared/math/units.hpp>
 #include <unordered_map>
 
+namespace Karkinolution::Testing::Brokers::RTree {
+	class Access;
+} // namespace Karkinolution::Testing::Brokers::RTree
+
 // Don't use if you aren't testing.
 // This exists only for creating invalid states.
 
 namespace Karkinolution {
 	namespace Terrain {
 		namespace Trees {
-			class RSTServiceTest;
-
 			template <typename ID, BoxConvertible V> class RSTService {
-					friend class RSTServiceTest;
+					friend class Karkinolution::Testing::Brokers::RTree::Access;
 
 				private:
 

@@ -1,11 +1,12 @@
 #pragma once
+
 #include "shared/core/error.hpp"
 
 #include <shared/functional/k_random.hpp>
 #include <string>
 #include <vector>
 
-namespace TestUtils {
+namespace Karkinolution::Testing::Shared {
 
 	inline std::string random_string() {
 		static constexpr char CHARSET[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -45,4 +46,4 @@ namespace TestUtils {
 		}
 	}
 
-} // namespace TestUtils
+} // namespace Karkinolution::Testing::Shared

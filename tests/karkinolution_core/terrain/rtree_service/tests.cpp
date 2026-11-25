@@ -2,7 +2,7 @@
 #include <karkinolution/terrain/soil/soil.hpp>
 #include <karkinolution/terrain/terrain.hpp>
 #include <karkinolution/terrain/terrain_gen.hpp>
-#include <karkinolution/test/rtree_service_test_generator.hpp>
+#include <karkinolution/testing/brokers/rtree.hpp>
 #include <shared/core/id.hpp>
 #include <shared/functional/data_structures.hpp>
 #include <shared/math/physic/vec/model.hpp>
@@ -28,8 +28,8 @@ namespace {
 TEST(RSTServiceTest, AddIsAtomic) {
 	auto territory = give_me_territory();
 	territory.clear();
-	auto      &registry      = RSTServiceTest::get_registry(territory);
-	auto      &internal_tree = RSTServiceTest::get_tree(territory);
+	auto      &registry      = Karkinolution::Testing::Brokers::RTree::Access::get_registry(territory);
+	auto      &internal_tree = Karkinolution::Testing::Brokers::RTree::Access::get_tree(territory);
 	const auto common_id     = gen_id();
 	// A repeated ID violates the registry's unique-key constraint.
 	SoilPiece soil_A = gen_soil_piece(SoilTypes::ROCK, 10, Vec2{0.0, 0.0});
@@ -84,8 +84,8 @@ TEST(RSTServiceTest, AddIsAtomic) {
 
 TEST(RSTServiceTest, RemoveIsAtomic) {
 	auto  territory     = give_me_territory();
-	auto &registry      = RSTServiceTest::get_registry(territory);
-	auto &internal_tree = RSTServiceTest::get_tree(territory);
+	auto &registry      = Karkinolution::Testing::Brokers::RTree::Access::get_registry(territory);
+	auto &internal_tree = Karkinolution::Testing::Brokers::RTree::Access::get_tree(territory);
 
 	territory.clear();
 
@@ -124,8 +124,8 @@ TEST(RSTServiceTest, AddRejectsPieceOutsideBoundary) {
 	auto territory = give_me_territory();
 	territory.clear();
 
-	auto &registry      = RSTServiceTest::get_registry(territory);
-	auto &internal_tree = RSTServiceTest::get_tree(territory);
+	auto &registry      = Karkinolution::Testing::Brokers::RTree::Access::get_registry(territory);
+	auto &internal_tree = Karkinolution::Testing::Brokers::RTree::Access::get_tree(territory);
 
 	const auto id = gen_id();
 

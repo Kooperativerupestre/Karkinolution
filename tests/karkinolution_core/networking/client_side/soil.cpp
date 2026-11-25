@@ -1,7 +1,7 @@
 #include "karkinolution/networking/client_side/interpreters/soil.hpp"
 
 #include "karkinolution/networking/client_side/client/client.hpp"
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 
 #include <gtest/gtest.h>
 #include <ranges>
@@ -46,7 +46,7 @@ namespace {
 } // namespace
 
 TEST(SoilInterpreter, ReturnsAllSoils) {
-	const World                    world = TestUtils::make_small_world();
+	const World                    world = Karkinolution::Testing::World::make_small_world();
 	SoilListClient                 client{world};
 	std::unordered_set<BaseIdType> expected_soil_ids;
 	for (const auto &soil : std::views::values(world.see_territory().registry())) {

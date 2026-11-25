@@ -40,6 +40,14 @@ Invariant tests must put the invariant under meaningful pressure rather than che
   structure and place a test alongside the closest matching domain or concern.
 - Give each test suite and case a name that states the behavior or invariant being protected.
 - Use the project's GoogleTest conventions and existing test helpers where applicable.
+- Do not create local helpers inside a test file as a convenience. Reuse or extend the domain-specific support under
+  `karkinolution/testing/helpers/` and `karkinolution/testing/fixtures/`, using the narrowest
+  `Karkinolution::Testing` namespace for the domain.
+- A local helper is allowed only in an exceptionally rare case, with explicit authorization from the responsible
+  programmer and a visible justification in the test. Do not introduce one silently.
+- Classes that deliberately bypass encapsulation to construct or inspect invalid states belong under
+  `karkinolution/testing/brokers/` and must use the `Karkinolution::Testing::Brokers` namespace. They require an
+  explicit friend relationship and must not be treated as ordinary helpers.
 - Tests are discovered from `tests/**/*.cpp` by CMake. New C++ test files are included automatically.
 - Keep comments concise. Add a comment to explain why a test exists only when its purpose is not clear from its name
   and assertions.

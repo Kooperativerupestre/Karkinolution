@@ -6,7 +6,7 @@
 #include <karkinolution/networking/frame/world/interpreters/soil.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/frame/world/processor.hpp>
-#include <karkinolution/test/utils.hpp>
+#include <karkinolution/testing/helpers/world.hpp>
 
 namespace {
 	using ::RequestFrame;
@@ -27,7 +27,7 @@ namespace {
 } // namespace
 
 TEST(NonexistentResource, CreatureReturnsNone) {
-	auto world = TestUtils::make_small_world();
+	auto world = Karkinolution::Testing::World::make_small_world();
 
 	const auto payload  = CreatureSRI::Request::make_see_creature(0);
 	const auto request  = make_see_request(Resource::CREATURE, payload);
@@ -37,7 +37,7 @@ TEST(NonexistentResource, CreatureReturnsNone) {
 }
 
 TEST(NonexistentResource, CorpseReturnsNone) {
-	auto world = TestUtils::make_small_world();
+	auto world = Karkinolution::Testing::World::make_small_world();
 
 	const auto payload  = CorpseSRI::Request::make_see_corpse(0);
 	const auto request  = make_see_request(Resource::CORPSE, payload);
@@ -47,7 +47,7 @@ TEST(NonexistentResource, CorpseReturnsNone) {
 }
 
 TEST(NonexistentResource, SoilReturnsNone) {
-	auto world = TestUtils::make_small_world();
+	auto world = Karkinolution::Testing::World::make_small_world();
 
 	const auto payload  = SoilSRI::Request::make_see_soil(0);
 	const auto request  = make_see_request(Resource::SOIL, payload);

@@ -12,10 +12,12 @@
 #include <karkinolution/terrain/terrain.hpp>
 #include <shared/core/id.hpp>
 
+namespace Karkinolution::Testing::Brokers::World {
+	class Access;
+} // namespace Karkinolution::Testing::Brokers::World
+
 namespace Karkinolution {
 	namespace World {
-
-		class WorldTestHelper;
 
 		struct WorldPreset {
 				int                        seed;
@@ -28,7 +30,7 @@ namespace Karkinolution {
 		class World {
 				// Note: Friend class for testing purposes, enabling test suites to inspect
 				// internal components and verify invariant enforcement and atomicity.
-				friend class WorldTestHelper;
+				friend class Karkinolution::Testing::Brokers::World::Access;
 
 			private:
 

@@ -1,11 +1,12 @@
 #include "karkinolution/networking/client_side/client/alias.hpp"
 #include "karkinolution/networking/client_side/error.hpp"
-#include "karkinolution/test/utils.hpp"
 
 #include <chrono>
 #include <gtest/gtest.h>
-#include <networking/server_fixture.hpp>
+#include <karkinolution/testing/fixtures/networking.hpp>
 #include <thread>
+
+using Karkinolution::Testing::Networking::ClientTest;
 
 TEST(RuntimeClientLifecycle, DestructorCleansUpWithoutHanging) {
 	KarkinolutionRuntimeClient client{

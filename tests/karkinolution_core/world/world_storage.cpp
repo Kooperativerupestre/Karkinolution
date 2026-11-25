@@ -1,4 +1,4 @@
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 
 #include <atomic>
 #include <barrier>
@@ -13,7 +13,7 @@ using KShared::Functional::BadGiftAccess;
 
 TEST(WorldStorageTest, ConcurrentTakesAllowOnlyOneLease) {
 	WorldStorage storage;
-	auto         world    = TestUtils::make_small_world();
+	auto         world    = Karkinolution::Testing::World::make_small_world();
 	const auto   world_id = world.get_id();
 	ASSERT_TRUE(storage.add(std::move(world)));
 
@@ -55,7 +55,7 @@ TEST(WorldStorageTest, ConcurrentTakesAllowOnlyOneLease) {
 
 TEST(WorldStorageTest, ConcurrentStateReadsRemainConsistentWhileWorldIsTaken) {
 	WorldStorage storage;
-	auto         world    = TestUtils::make_small_world();
+	auto         world    = Karkinolution::Testing::World::make_small_world();
 	const auto   world_id = world.get_id();
 	ASSERT_TRUE(storage.add(std::move(world)));
 

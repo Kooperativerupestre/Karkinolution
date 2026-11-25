@@ -2,7 +2,7 @@
 
 #include "karkinolution/organism/entities/corpse/physiology.hpp"
 #include "karkinolution/organism/entities/creature/constructor.hpp"
-#include "karkinolution/test/utils.hpp"
+#include "karkinolution/testing/helpers/world.hpp"
 
 #include <gtest/gtest.h>
 
@@ -17,13 +17,13 @@ namespace CreatureConstructor = Karkinolution::Organisms::Entities::Creature::Co
 namespace CorpsePhysiology    = Karkinolution::Organisms::Entities::Corpse::Physiology;
 
 TEST(CorpseAPI, ReturnsEmptyReferencesForUnknownCorpses) {
-	const World world = TestUtils::make_small_world();
+	const World world = Karkinolution::Testing::World::make_small_world();
 
 	EXPECT_EQ(see_corpse(world, gen_id()), nullptr);
 }
 
 TEST(CorpseAPI, TicksAndReturnsUpdatedCorpseThroughOptionalReference) {
-	World      world            = TestUtils::make_small_world();
+	World      world            = Karkinolution::Testing::World::make_small_world();
 	auto       creature         = CreatureConstructor::from_blueprint(CreatureBlueprint{});
 	auto       corpse           = CorpsePhysiology::generate_corpse(creature);
 	const auto corpse_id        = corpse.id;
@@ -38,7 +38,7 @@ TEST(CorpseAPI, TicksAndReturnsUpdatedCorpseThroughOptionalReference) {
 }
 
 TEST(CorpseAPI, EraseReturnsWhetherCorpseWasRemoved) {
-	World      world     = TestUtils::make_small_world();
+	World      world     = Karkinolution::Testing::World::make_small_world();
 	auto       creature  = CreatureConstructor::from_blueprint(CreatureBlueprint{});
 	auto       corpse    = CorpsePhysiology::generate_corpse(creature);
 	const auto corpse_id = corpse.id;
