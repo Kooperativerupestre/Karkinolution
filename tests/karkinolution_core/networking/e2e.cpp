@@ -103,6 +103,7 @@ TEST_F(ClientTest, CreatureTickReturnsUpdatedCreatureAndUpdatesLocalWorld) {
                                                                      std::nullopt);
 	ASSERT_TRUE(created);
 	const auto creature_id = created->ontology.id;
+	const auto world_id    = server_world.get_id();
 
 	WorldStorage storage;
 	ASSERT_TRUE(storage.add(std::move(server_world)));
@@ -112,7 +113,7 @@ TEST_F(ClientTest, CreatureTickReturnsUpdatedCreatureAndUpdatesLocalWorld) {
 		server_io.run();
 	}};
 
-	LocalWorld local_world;
+	LocalWorld local_world{world_id};
 	bool       succeeded = false;
 	{
 		Client client{io, Config{.host = "127.0.0.1", .port = PORT}};
@@ -158,7 +159,7 @@ TEST_F(ClientTest, CorpseTickReturnsUpdatedCorpseAndUpdatesLocalWorld) {
 		server_io.run();
 	}};
 
-	LocalWorld local_world;
+	LocalWorld local_world{world_id};
 	bool       succeeded = false;
 	{
 		Client client{io, Config{.host = "127.0.0.1", .port = PORT}};
@@ -201,7 +202,7 @@ TEST_F(ClientTest, SoilTickReturnsUpdatedSoilAndUpdatesLocalWorld) {
 		server_io.run();
 	}};
 
-	LocalWorld local_world;
+	LocalWorld local_world{world_id};
 	bool       succeeded = false;
 	{
 		Client client{io, Config{.host = "127.0.0.1", .port = PORT}};

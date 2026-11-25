@@ -7,6 +7,7 @@
 #include "karkinolution/networking/client_side/interpreters/soil.hpp"
 #include "karkinolution/networking/client_side/interpreters/territory.hpp"
 #include "karkinolution/networking/client_side/world/aliases.hpp"
+#include "karkinolution/world/world.hpp"
 #include "shared/core/id.hpp"
 #include "shared/functional/optional_reference.hpp"
 #include "shared/functional/unreachable_or_throw.hpp"
@@ -22,6 +23,8 @@ namespace Karkinolution::Networking::ClientSide::World {
 		REMOVED,
 		UPDATED
 	};
+
+	using WorldId = Karkinolution::World::WorldId;
 
 	class Territory {
 		private:
@@ -213,7 +216,17 @@ namespace Karkinolution::Networking::ClientSide::World {
 			EntitiesStorage entities;
 			Territory       territory;
 
+			WorldId id;
+
 		public:
+
+
+			World(WorldId id)
+				: id(id) {}
+
+			WorldId get_id() const {
+				return id;
+			}
 
 			const std::vector<Creature> &get_creatures() const {
 				return entities.get_creatures();

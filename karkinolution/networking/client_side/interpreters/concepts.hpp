@@ -24,5 +24,12 @@ namespace Karkinolution::Networking::ClientSide {
 			{ client.request_system_scope(s_data) } -> std::same_as<Protocol::SystemSession::ResponseResult>;
 		};
 
+	template <typename T>
+	concept AsClient = CanRequest<T> && requires(T &client) {
+		{ client.connect() };
+		{ client.disconnect() };
+		{ client.is_connected() } -> std::same_as<bool>;
+	};
+
 
 } // namespace Karkinolution::Networking::ClientSide
