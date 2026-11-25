@@ -16,20 +16,19 @@
 #include <shared/core/id.hpp>
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
-	template <CanRequestWorldScope T>
-	std::vector<KShared::Core::Id::BaseIdType> see_all_creatures(T &client) {
+	template <CanRequestWorldScope T> std::vector<KShared::Core::Id::BaseIdType> see_all_creatures(T &client) {
 		const auto payload = CreatureSRI::Request::make_see_all_creatures();
-		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
-			RequestSubTypes::SEE,
-			GENERIC_INTERPRETER_ID,
-			Resource::CREATURE,
-			std::vector<std::byte>(payload.begin(), payload.end()),
-			SeeExtra{.target = SeeTarget::ALL});
+		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
+            RequestSubTypes::SEE,
+            GENERIC_INTERPRETER_ID,
+            Resource::CREATURE,
+            std::vector<std::byte>(payload.begin(), payload.end()),
+            SeeExtra{.target = SeeTarget::ALL});
 		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
 											.resource = built.get_resource(),
-											.payload = built.get_payload(),
-											.extra = built.get_extra()};
-		const auto result = client.request_world_scope(data);
+											.payload  = built.get_payload(),
+											.extra    = built.get_extra()};
+		const auto                     result = client.request_world_scope(data);
 		if (!result || !result.value().has_value()) {
 			return {};
 		}

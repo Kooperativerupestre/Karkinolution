@@ -61,9 +61,12 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 								const std::vector<std::byte>      &payload) {
 		const auto all_soil_ids = Karkinolution::API::Soil::see_all_soil_ids(world);
 
-		std::vector<std::byte> r_payload = KShared::Binary::Types::List::SRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(
-			all_soil_ids,
-			[](KShared::Core::Id::BaseIdType id) { return KShared::Binary::Serializer::serialize(id); });
+		std::vector<std::byte> r_payload =
+			KShared::Binary::Types::List::SRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(
+				all_soil_ids,
+				[](KShared::Core::Id::BaseIdType id) {
+					return KShared::Binary::Serializer::serialize(id);
+				});
 
 		return Karkinolution::Networking::Frames::World::Motor::make_response(Frames::World::ResponseSubTypes::SOIL,
 																			  request_id,

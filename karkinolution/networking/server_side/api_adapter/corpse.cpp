@@ -28,13 +28,14 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 
 	ResponseFrame see_all_corpses(const Karkinolution::World::World &world, Frames::World::RequestId request_id) {
 		const auto ids = Karkinolution::API::Corpse::see_all_corpse_ids(world);
-		const auto payload = ListTSRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(
-			ids, [](KShared::Core::Id::BaseIdType id) { return KShared::Binary::Serializer::serialize(id); });
-		return Karkinolution::Networking::Frames::World::Motor::make_response(
-			Frames::World::ResponseSubTypes::CORPSE,
-			request_id,
-			payload,
-			Frames::World::ResponseCardinality::ALL);
+		const auto payload =
+			ListTSRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(ids, [](KShared::Core::Id::BaseIdType id) {
+				return KShared::Binary::Serializer::serialize(id);
+			});
+		return Karkinolution::Networking::Frames::World::Motor::make_response(Frames::World::ResponseSubTypes::CORPSE,
+																			  request_id,
+																			  payload,
+																			  Frames::World::ResponseCardinality::ALL);
 	}
 
 	ResponseFrame tick_corpse(Karkinolution::World::World  &world,

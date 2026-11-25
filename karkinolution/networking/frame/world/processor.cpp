@@ -23,14 +23,16 @@ namespace Karkinolution::Networking::Frames::World::Processor {
 			if (resource == Resource::CREATURE) {
 				if (extra.target == Request::SeeTarget::ONE) {
 					return Networking::ServerSide::APIBYA::Creature::see_creature(world,
-																		  frame.get_id(),
-																		  frame.get_payload());
+																				  frame.get_id(),
+																				  frame.get_payload());
 				} else {
 					return Networking::ServerSide::APIBYA::Creature::see_all_creatures(world, frame.get_id());
 				}
 			} else if (resource == Resource::CORPSE) {
 				if (extra.target == Request::SeeTarget::ONE) {
-					return Networking::ServerSide::APIBYA::Corpse::see_corpse(world, frame.get_id(), frame.get_payload());
+					return Networking::ServerSide::APIBYA::Corpse::see_corpse(world,
+																			  frame.get_id(),
+																			  frame.get_payload());
 				} else {
 					return Networking::ServerSide::APIBYA::Corpse::see_all_corpses(world, frame.get_id());
 				}

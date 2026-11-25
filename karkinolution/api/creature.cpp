@@ -18,8 +18,7 @@ namespace Karkinolution::API::Creature {
 		return world.at_creature(entity_id);
 	}
 
-	std::vector<KShared::Core::Id::BaseIdType>
-	see_all_creature_ids(const Karkinolution::World::World &world) {
+	std::vector<KShared::Core::Id::BaseIdType> see_all_creature_ids(const Karkinolution::World::World &world) {
 		std::vector<KShared::Core::Id::BaseIdType> ids;
 		for (const auto &id : world.see_entities_registry().keys()) {
 			if (id.type == Karkinolution::Organisms::Entities::EntityTypes::CREATURE) {

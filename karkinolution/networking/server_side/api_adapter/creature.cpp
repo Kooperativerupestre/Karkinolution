@@ -33,13 +33,14 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 
 	ResponseFrame see_all_creatures(const Karkinolution::World::World &world, Frames::World::RequestId request_id) {
 		const auto ids = Karkinolution::API::Creature::see_all_creature_ids(world);
-		const auto payload = ListTSRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(
-			ids, [](KShared::Core::Id::BaseIdType id) { return KShared::Binary::Serializer::serialize(id); });
-		return Karkinolution::Networking::Frames::World::Motor::make_response(
-			Frames::World::ResponseSubTypes::CREATURE,
-			request_id,
-			payload,
-			Frames::World::ResponseCardinality::ALL);
+		const auto payload =
+			ListTSRI::serialize<sizeof(KShared::Core::Id::BaseIdType)>(ids, [](KShared::Core::Id::BaseIdType id) {
+				return KShared::Binary::Serializer::serialize(id);
+			});
+		return Karkinolution::Networking::Frames::World::Motor::make_response(Frames::World::ResponseSubTypes::CREATURE,
+																			  request_id,
+																			  payload,
+																			  Frames::World::ResponseCardinality::ALL);
 	}
 
 	ResponseFrame create_creature(Karkinolution::World::World  &world,

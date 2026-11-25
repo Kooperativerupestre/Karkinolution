@@ -12,8 +12,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame create_creature(Karkinolution::World::World  &world,
 								  Frames::World::RequestId      request_id,
 								  const std::vector<std::byte> &payload);
-	ResponseFrame see_all_creatures(const Karkinolution::World::World &world,
-									Frames::World::RequestId request_id);
+	ResponseFrame see_all_creatures(const Karkinolution::World::World &world, Frames::World::RequestId request_id);
 	ResponseFrame tick_creature(Karkinolution::World::World  &world,
 								Frames::World::RequestId      request_id,
 								const std::vector<std::byte> &payload);

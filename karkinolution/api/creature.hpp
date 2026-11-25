@@ -14,11 +14,11 @@ namespace Karkinolution::API::Creature {
 
 	CreatureReference see_creature(const Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);
 	std::vector<KShared::Core::Id::BaseIdType> see_all_creature_ids(const Karkinolution::World::World &world);
-	CreatureReference make_creature(Karkinolution::World::World                                                 &world,
-									std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
-									std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-									const std::optional<KShared::Math::Vec::Vec2> &position,
-									const std::optional<std::string>              &name);
+	CreatureReference                          make_creature(Karkinolution::World::World                                                 &world,
+															 std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
+															 std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
+															 const std::optional<KShared::Math::Vec::Vec2> &position,
+															 const std::optional<std::string>              &name);
 
 	// Runs one creature tick and returns the updated creature, or an empty reference if it does not exist anymore.
 	CreatureReference tick(Karkinolution::World::World &world, KShared::Core::Id::BaseIdType id);

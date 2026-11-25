@@ -48,8 +48,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 		return SoilDSI::get_soil(frame.get_payload(), 0);
 	}
 
-	template <CanRequestWorldScope T>
-	std::vector<KShared::Core::Id::BaseIdType> see_all_soils(T &client) {
+	template <CanRequestWorldScope T> std::vector<KShared::Core::Id::BaseIdType> see_all_soils(T &client) {
 		const auto payload = SoilSRI::Request::make_see_all_soils();
 
 		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
