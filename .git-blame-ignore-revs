@@ -12,3 +12,4 @@ b103ffab8ef400c0ae7a7b38adba8249036ea3bc # style(src): format source files
 c63d731a50a4d1e8ec980831c5bfe258b44870fe # style: apply clang-format across src, tests, shared, and main
 42f5cc10d357a392aafc146144a968764fbd5b01 # refactor(project): move karkinolution to repository root removing src/
 44bd3e7c5d303cd3ab764f628140921131cad69d # style(R*-tree): apply
+a8e8cdaa9ff64ace39a6b076a3a706af29d72e35 # style: apply
