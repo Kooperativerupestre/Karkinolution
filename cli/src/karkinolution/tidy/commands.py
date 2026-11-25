@@ -128,11 +128,17 @@ def run_tidy(
 
 
 def default_build_dir(file: Path) -> Path:
-    if "app" in file.parts and (Path("build-app") / "compile_commands.json").is_file():
-        return Path("build-app")
-    if not (Path("build") / "compile_commands.json").is_file() and (Path("build-tidy") / "compile_commands.json").is_file():
-        return Path("build-tidy")
-    return Path("build")
+    presets_file = find_config_file("CMakePresets.json")
+    root = presets_file.parent if presets_file else Path(".")
+    app_build = root / "build-app"
+    debug_build = root / "build"
+    tidy_build = root / "build-tidy"
+
+    if "app" in file.parts and (app_build / "compile_commands.json").is_file():
+        return app_build
+    if not (debug_build / "compile_commands.json").is_file() and (tidy_build / "compile_commands.json").is_file():
+        return tidy_build
+    return debug_build
 
 
 def group_files_by_build_dir(

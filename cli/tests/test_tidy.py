@@ -243,6 +243,26 @@ class TestTidy(unittest.TestCase):
             finally:
                 os.chdir(orig_cwd)
 
+    def test_default_build_dir_resolves_builds_from_repository_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            (root / "CMakePresets.json").write_text("{}")
+            (root / "build-app").mkdir()
+            (root / "build-app" / "compile_commands.json").write_text("[]")
+            nested = root / "app" / "nested"
+            nested.mkdir(parents=True)
+            source_file = root / "app" / "view.cpp"
+            source_file.write_text("int view() { return 0; }")
+
+            import os
+
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(nested)
+                self.assertEqual(default_build_dir(source_file), root / "build-app")
+            finally:
+                os.chdir(original_cwd)
+
 
 if __name__ == "__main__":
     unittest.main()
