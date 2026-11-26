@@ -8,7 +8,6 @@
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 
-#include <raylib.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -22,7 +21,7 @@ namespace Panel        = Opsiamethystos::Gui::Panel;
 int main() {
 	KApp::Presets::Screen screen_preset{.width = 800, .height = 450};
 
-	KarkinolutionView::Window::init_before_loop(screen_preset);
+	KApp::Window::init_before_loop(screen_preset);
 
 	Panel::Panel panel{
 		MathGeometry::Rectangle{MathGeometry::Position{400, 225}, MathGeometry::Width{800}, MathGeometry::Height{450}}};
@@ -58,16 +57,16 @@ int main() {
 		MathGeometry::Rectangle{MathGeometry::Position{0, 0}, MathGeometry::Width{400}, MathGeometry::Height{240}}};
 	KarkinolutionView::CreatureBoard creature_board{board};
 
-	while (!WindowShouldClose()) {
+	while (!KApp::Window::should_window_close()) {
 
-		KarkinolutionView::Window::init_inside_loop();
+		KApp::Window::init_inside_loop();
 
 
 		panel.draw();
 
-		KarkinolutionView::Window::end_inside_loop();
+		KApp::Window::end_inside_loop();
 	}
-	KarkinolutionView::Window::end_after_loop();
+	KApp::Window::end_after_loop();
 
 	return 0;
 }

@@ -5,20 +5,25 @@
 #include <opsiamethystos/raylib_utils/colors.hpp>
 #include <raylib.h>
 
-void KarkinolutionView::Window::init_inside_loop() {
+void KApp::Window::init_inside_loop() {
+	BeginDrawing();
 	ClearBackground(Opsiamethystos::Gui::Colors::translate(KShared::Colors::Presets::Cyan));
 }
 
-void KarkinolutionView::Window::init_before_loop(KApp::Presets::Screen screen_preset) {
+bool KApp::Window::should_window_close() {
+	return WindowShouldClose();
+}
+
+void KApp::Window::init_before_loop(KApp::Presets::Screen screen_preset) {
 	InitWindow(screen_preset.width, screen_preset.height, "Karkinolution");
 
 	SetTargetFPS(60);
 }
 
-void KarkinolutionView::Window::end_inside_loop() {
+void KApp::Window::end_inside_loop() {
 	EndDrawing();
 }
 
-void KarkinolutionView::Window::end_after_loop() {
+void KApp::Window::end_after_loop() {
 	CloseWindow();
 }
