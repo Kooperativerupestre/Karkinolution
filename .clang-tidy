@@ -31,7 +31,6 @@ HeaderFilterRegex: (karkinolution|app|shared|opsiamethystos)/
 FormatStyle: file
 
 CheckOptions:
-  modernize-deprecated-headers.CheckHeaderFile: true
   modernize-use-bool-literals.IgnoreMacros: false
   modernize-use-default-member-init.IgnoreMacros: false
   modernize-use-default-member-init.UseAssignment: true
