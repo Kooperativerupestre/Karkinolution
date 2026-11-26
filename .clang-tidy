@@ -26,7 +26,7 @@ ImplementationFileExtensions:
   - m
   - mm
 
-HeaderFilterRegex: (src|tests)/
+HeaderFilterRegex: (karkinolution|app|shared|opsiamethystos)/
 
 FormatStyle: file
 
