@@ -5,7 +5,7 @@ namespace KarkinolutionView {
 	namespace Window {
 
 		void init_inside_loop();
-		void init_before_loop(Presets::Screen screen_preset);
+		void init_before_loop(KApp::Presets::Screen screen_preset);
 
 		void end_inside_loop();
 		void end_after_loop();

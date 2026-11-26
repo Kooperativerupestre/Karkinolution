@@ -9,7 +9,7 @@ void KarkinolutionView::Window::init_inside_loop() {
 	ClearBackground(Opsiamethystos::Gui::Colors::translate(KShared::Colors::Presets::Cyan));
 }
 
-void KarkinolutionView::Window::init_before_loop(KarkinolutionView::Presets::Screen screen_preset) {
+void KarkinolutionView::Window::init_before_loop(KApp::Presets::Screen screen_preset) {
 	InitWindow(screen_preset.width, screen_preset.height, "Karkinolution");
 
 	SetTargetFPS(60);

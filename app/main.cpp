@@ -8,7 +8,6 @@
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
 
-#include <app/presets/aliases.hpp>
 #include <raylib.h>
 #include <stdexcept>
 #include <string>
@@ -21,7 +20,7 @@ namespace Components   = Opsiamethystos::Gui::Components;
 namespace Panel        = Opsiamethystos::Gui::Panel;
 
 int main() {
-	KPresets::Screen screen_preset{.width = 800, .height = 450};
+	KApp::Presets::Screen screen_preset{.width = 800, .height = 450};
 
 	KarkinolutionView::Window::init_before_loop(screen_preset);
 

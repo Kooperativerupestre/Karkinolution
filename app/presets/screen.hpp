@@ -1,10 +1,10 @@
 #pragma once
 
-namespace KarkinolutionView {
+namespace KApp {
 	namespace Presets {
 		struct Screen {
 				int width;
 				int height;
 		};
 	} // namespace Presets
-} // namespace KarkinolutionView
+} // namespace KApp
