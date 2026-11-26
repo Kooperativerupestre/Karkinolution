@@ -24,7 +24,9 @@ int main() {
 
 	Panel::Panel panel{
 		MathGeometry::Rectangle{MathGeometry::Position{400, 225}, MathGeometry::Width{800}, MathGeometry::Height{450}}};
-
+	panel.set_layout(Panel::Layout::Node{Panel::Layout::Stack{.direction   = Panel::Layout::Direction::HORIZONTAL,
+															  .cross_align = Panel::Layout::CrossAlign::STRETCH,
+															  .children    = {}}});
 	KApp::Synchronizer synchronizer{panel};
 
 
@@ -34,6 +36,9 @@ int main() {
 
 
 		panel.draw();
+		const auto result = panel.relayout();
+
+		assert(!result.overflowed);
 
 		KApp::Window::end_inside_loop();
 	}

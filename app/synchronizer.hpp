@@ -126,6 +126,32 @@ namespace KApp {
 				panel.add(components.share(0).value());
 				panel.add(components.share(1).value());
 				update_components();
+
+				namespace Layout = Opsiamethystos::Gui::Panel::Layout;
+
+				const auto label_id  = components.share(0).value()->get_id();
+				const auto button_id = components.share(1).value()->get_id();
+
+
+				const auto button_node =
+					std::make_shared<const Layout::Node>(Layout::Node{Layout::Leaf{button_id, [] {
+																					   return Layout::Size{100, 100};
+																				   }}});
+
+
+				namespace Font = Opsiamethystos::Gui::Components::Drivers::Font;
+
+				const auto label_node = std::make_shared<const Layout::Node>(
+					Layout::Node{Layout::Leaf{label_id, [] {
+												  const auto widest = Font::measure_text("Disconnected", 20);
+												  return Layout::Size{widest.width, 100};
+											  }}});
+
+				panel.set_layout(Layout::Node{
+					Layout::Stack{.direction   = Layout::Direction::HORIZONTAL,
+								  .spacing     = 10,
+								  .cross_align = Layout::CrossAlign::START,
+								  .children = {{Layout::Content{}, label_node}, {Layout::Fixed{100}, button_node}}}});
 			}
 
 			void run() {
