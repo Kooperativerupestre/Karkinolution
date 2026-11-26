@@ -27,8 +27,6 @@ int main() {
 
 	KApp::Synchronizer synchronizer{panel};
 
-	std::string connection_button_label{"Connect"};
-
 
 	while (!KApp::Window::should_window_close()) {
 
