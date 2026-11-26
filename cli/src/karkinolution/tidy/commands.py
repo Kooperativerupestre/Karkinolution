@@ -141,6 +141,23 @@ def default_build_dir(file: Path) -> Path:
     return debug_build
 
 
+def collect_tidy_source_files(paths: tuple[Path, ...]) -> list[Path]:
+    presets_file = find_config_file("CMakePresets.json")
+
+    if presets_file is None:
+        typer.echo("Could not find the project root (CMakePresets.json).", err=True)
+        raise typer.Exit(code=1)
+
+    excluded_paths = (
+        presets_file.parent / "karkinolution" / "testing",
+    )
+
+    return collect_source_files(
+        paths,
+        excluded_paths=excluded_paths,
+    )
+
+
 def group_files_by_build_dir(
     files: list[Path],
     build_dir: Path | None = None,
@@ -162,7 +179,7 @@ def check(
     config_file: Path | None = None,
     changed_since: str | None = None,
 ) -> None:
-    files = collect_source_files(paths)
+    files = collect_tidy_source_files(paths)
 
     if changed_since is not None:
         files = only_changed(files, changed_paths(changed_since))
@@ -187,7 +204,7 @@ def fix(
     build_dir: Path | None = None,
     config_file: Path | None = None,
 ) -> None:
-    files = collect_source_files(paths)
+    files = collect_tidy_source_files(paths)
     groups = group_files_by_build_dir(files, build_dir)
     for bdir, group_files in groups.items():
         run_tidy(

@@ -24,8 +24,20 @@ def is_forbidden_path(path: Path) -> bool:
     return any(part in FORBIDDEN_DIR_NAMES or part.startswith(BUILD_DIR_PREFIX) for part in resolved.parts)
 
 
-def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
+def collect_source_files(
+    paths: tuple[Path, ...],
+    excluded_paths: tuple[Path, ...] = (),
+) -> list[Path]:
     files: list[Path] = []
+
+    resolved_excluded_paths = tuple(path.resolve() for path in excluded_paths)
+
+    def is_excluded(path: Path) -> bool:
+        resolved = path.resolve()
+        return any(
+            resolved == excluded_path or resolved.is_relative_to(excluded_path)
+            for excluded_path in resolved_excluded_paths
+        )
 
     for path in paths:
         if not path.exists():
@@ -39,6 +51,9 @@ def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
             )
             raise typer.Exit(code=1)
 
+        if is_excluded(path):
+            continue
+
         if path.is_file():
             if path.suffix in SOURCE_EXTENSIONS:
                 files.append(path)
@@ -47,7 +62,11 @@ def collect_source_files(paths: tuple[Path, ...]) -> list[Path]:
 
         for root, dirs, filenames in os.walk(path):
             dirs[:] = [
-                d for d in dirs if d not in FORBIDDEN_DIR_NAMES and not d.startswith(BUILD_DIR_PREFIX)
+                d
+                for d in dirs
+                if d not in FORBIDDEN_DIR_NAMES
+                and not d.startswith(BUILD_DIR_PREFIX)
+                and not is_excluded(Path(root) / d)
             ]
             root_path = Path(root)
             for filename in filenames:
