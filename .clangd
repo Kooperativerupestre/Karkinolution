@@ -1,6 +1,5 @@
 If:
   PathMatch: karkinolution/.*
-  PathExclude: karkinolution/view/.*
 
 CompileFlags:
   CompilationDatabase: build
@@ -11,10 +10,21 @@ Diagnostics:
 ---
 
 If:
-  PathMatch: karkinolution/view/.*
+  PathMatch: opsiamethystos/.*
 
 CompileFlags:
-  CompilationDatabase: build-view
+  CompilationDatabase: build
+
+Diagnostics:
+  UnusedIncludes: None
+
+---
+
+If:
+  PathMatch: app/.*
+
+CompileFlags:
+  CompilationDatabase: build-app
 
 Diagnostics:
   UnusedIncludes: None
