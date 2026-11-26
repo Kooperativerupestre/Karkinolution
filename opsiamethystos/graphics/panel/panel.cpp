@@ -40,6 +40,34 @@ namespace Opsiamethystos {
 				return true;
 			}
 
+			void Panel::draw() const {
+				draw(origin_);
+			}
+
+			void Panel::draw(const Math::Geometry::Position &origin) const {
+				const auto visible_components = collides(bounds_);
+
+				for (const auto id : visible_components) {
+					const auto component = get(id);
+
+					if (!component) {
+						continue;
+					}
+
+					std::visit(
+						[&origin](auto &visible_component) {
+							using T = std::remove_cvref_t<decltype(visible_component)>;
+
+							if constexpr (std::is_same_v<T, Components::LowLevel::Button::RectangleButton>) {
+								visible_component.run(origin);
+							} else if constexpr (requires { visible_component.draw(origin); }) {
+								visible_component.draw(origin);
+							}
+						},
+						component->get_data());
+				}
+			}
+
 			// Removing the map entry first would lose the bound needed to remove the
 			// matching quadtree record, so the index is retired before ownership.
 			bool Panel::remove(Components::ComponentId id) {

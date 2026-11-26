@@ -32,6 +32,7 @@ namespace Karkinolution::Networking::ClientSide::World {
 			std::vector<Soil> soils;
 
 			std::optional<KShared::Math::Units::Size> size;
+			bool                                      has_loaded_;
 
 			template <CanRequestWorldScope T> SyncOutput sync_soil(T &client, SoilId id) {
 				if (!has_soil(id)) {
@@ -87,6 +88,14 @@ namespace Karkinolution::Networking::ClientSide::World {
 				return size.value();
 			}
 
+			bool has_loaded() const {
+				return has_loaded_;
+			}
+
+			bool can_load() const {
+				return !has_loaded_ && soils.empty() && !size.has_value();
+			}
+
 			template <CanRequestWorldScope T> void sync(T &client) {
 				sync_size(client);
 
@@ -101,6 +110,30 @@ namespace Karkinolution::Networking::ClientSide::World {
 					sync_soil(client, ids[i]);
 				}
 			}
+
+			template <CanRequestWorldScope T> bool load(T &client) {
+				if (!can_load()) {
+					return false;
+				}
+
+				const auto all_soil_ids = Interpreters::Soil::see_all_soils(client);
+
+				for (const auto id : all_soil_ids) {
+					const auto soil = Interpreters::Soil::see_soil(client, id);
+
+					assert(soil);
+
+					const auto has_added = add(soil.value());
+
+					assert(has_added);
+				}
+
+				const auto optional_size = Interpreters::Territory::see_territory(client);
+				assert(optional_size);
+				size        = optional_size.value();
+				has_loaded_ = true;
+				return true;
+			}
 	};
 
 	class EntitiesStorage {
@@ -108,6 +141,8 @@ namespace Karkinolution::Networking::ClientSide::World {
 
 			std::vector<Creature> creatures;
 			std::vector<Corpse>   corpses;
+
+			bool has_loaded_ = false;
 
 			template <CanRequestWorldScope T> SyncOutput sync_creature(T &client, OrganismId id) {
 				if (!has_creature(id)) {
@@ -208,6 +243,38 @@ namespace Karkinolution::Networking::ClientSide::World {
 			const std::vector<Corpse> &get_corpses() const {
 				return corpses;
 			}
+
+			bool has_loaded() const {
+				return has_loaded_;
+			}
+
+			bool can_load() const {
+				return !has_loaded_ && corpses.empty() && creatures.empty();
+			}
+
+			template <CanRequestWorldScope T> bool load(T &client) {
+				if (!can_load()) {
+					return false;
+				}
+				const auto all_corpse_ids   = Interpreters::Corpse::see_all_corpses(client);
+				const auto all_creature_ids = Interpreters::Creature::see_all_creatures(client);
+				for (size_t i = 0; i < all_corpse_ids.size(); i++) {
+					const auto corpse = Interpreters::Corpse::see_corpse(client, all_corpse_ids[i]);
+
+					assert(corpse);
+					const auto has_added = add(corpse);
+					assert(has_added);
+				}
+				for (size_t i = 0; i << all_creature_ids.size(); i++) {
+					const auto creature = Interpreters::Creature::see_creature(client, all_creature_ids[i]);
+
+					assert(creature);
+					const auto has_added = add(creature);
+					assert(has_added);
+				}
+				has_loaded_ = true;
+				return true;
+			}
 	};
 
 	class World {
@@ -218,11 +285,39 @@ namespace Karkinolution::Networking::ClientSide::World {
 
 			WorldId id;
 
+			bool has_loaded_ = false;
+
+			bool can_load() const {
+				return entities.can_load() && territory.can_load();
+			}
+
 		public:
 
 
 			World(WorldId id)
 				: id(id) {}
+
+			// load is an idempotent operation intended to synchronize the local world with the world stored on the
+			// server, performing the initial synchronization only once.
+			//
+			// Currently, this implementation assumes that, once a server-side World has been selected here, it will not
+			// be modified by any other client. This assumption is obviously false in the current architecture, where
+			// multiple clients may interact with the same World.
+			//
+			// I deliberately started with this simplified model before implementing more advanced synchronization
+			// mechanisms.
+			template <CanRequestWorldScope T> bool load(T &client) {
+				if (!can_load()) {
+					return false;
+				}
+
+				const auto entities_has_loaded  = entities.load(client);
+				const auto territory_has_loaded = territory.load(client);
+				assert(entities_has_loaded);
+				assert(territory_has_loaded);
+				has_loaded_ = true;
+				return true;
+			}
 
 			WorldId get_id() const {
 				return id;

@@ -46,6 +46,10 @@ namespace Opsiamethystos {
 
 							void set_text(std::string text);
 
+							void set_text_color(KShared::Colors::Color color) {
+								text_.set_color(std::move(color));
+							}
+
 							// Both children must accept the same slot. Restoring the rectangle when
 							// text rejects it keeps the compound component atomic.
 							bool set_slot(const Math::Geometry::Rectangle &slot) {

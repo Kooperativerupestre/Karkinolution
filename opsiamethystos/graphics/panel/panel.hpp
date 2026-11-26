@@ -91,6 +91,8 @@ namespace Opsiamethystos {
 						return origin_;
 					}
 
+					void draw() const;
+					void draw(const Math::Geometry::Position &origin) const;
 					// Replaces the pure layout tree and defers component mutation until the
 					// next relayout call, allowing multiple edits to be batched.
 					void set_layout(Layout::Node layout_root);

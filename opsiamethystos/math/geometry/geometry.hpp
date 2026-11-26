@@ -221,6 +221,12 @@ namespace Opsiamethystos {
 						, width(width)
 						, height(height) {}
 
+					template <typename T>
+					constexpr Rectangle(Position position, T width, T height)
+						: position(position)
+						, width(width)
+						, height(height) {}
+
 					// Layout performs arithmetic in edges because adjacent slots share exact
 					// boundaries. This is the sole conversion back to the center-plus-extents
 					// representation used by Geometry; callers must provide left < right and

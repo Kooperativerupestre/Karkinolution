@@ -62,6 +62,11 @@ namespace Opsiamethystos {
 							// A slot changes the stable maximum bound only after the current text
 							// fits inside it, allowing Panel to roll back without partial state.
 							bool set_slot(const Math::Geometry::Rectangle &slot);
+
+							void set_color(KShared::Colors::Color color) {
+								color = std::move(color);
+							}
+
 							void draw() const;
 							// Text is measured and stored locally; origin is added only for rendering
 							// so indexed/current bounds remain stable during panel dragging.

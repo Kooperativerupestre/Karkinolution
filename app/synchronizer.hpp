@@ -1,47 +1,168 @@
 #pragma once
 
-#include "app/creature_creator.hpp"
-#include "app/screen.hpp"
-#include "karkinolution/networking/client_side/client/client.hpp"
-#include "opsiamethystos/graphics/panel/panel.hpp"
+#include "app/aliases.hpp"
+#include "opsiamethystos/graphics/panel/components/component.hpp"
+#include "opsiamethystos/math/geometry/geometry.hpp"
+#include "shared/core/color.hpp"
 
-namespace KarkinolutionView {
-	class Synchronizer {
+#include <cstddef>
+#include <karkinolution/networking/client_side/world/world.hpp>
+#include <karkinolution/networking/client_side/world/worlds_manager.hpp>
+#include <memory>
+#include <opsiamethystos/graphics/models/models.hpp>
+
+namespace KApp {
+
+	class WorldEnvironment {
 		private:
 
-			Karkinolution::Networking::ClientSide::Client::RuntimeClient client;
-			CreatureCreator                                              creature_creator;
-			KarkinolutionView::Screen::State                             state{false};
-			KarkinolutionView::Screen::StateView                         state_view;
+			KApp::Client client;
+
+			WorldsManager worlds_manager;
 
 		public:
 
-			Synchronizer()
-				: creature_creator(client)
-				, state_view(state) {}
+			WorldEnvironment()
+				: client()
+				, worlds_manager(client) {}
 
-			explicit Synchronizer(Opsiamethystos::Gui::Panel::Panel &panel)
-				: creature_creator(client)
-				, state_view(state, panel) {}
-
-			void register_panel(Opsiamethystos::Gui::Panel::Panel &panel) {
-				state_view.register_panel(panel);
+			void connect() {
+				client.connect();
+				worlds_manager.sync_after_client_connects();
 			}
 
-			bool is_connected() const;
-			bool connect();
-			bool disconnect();
-			void create_creature();
-			void poll();
-
-			[[nodiscard]] const auto &creatures() const {
-				return creature_creator.creatures();
+			void disconnect() {
+				client.disconnect();
 			}
 
-			[[nodiscard]] const auto &territory_size() const {
-				return creature_creator.territory_size();
+			bool is_connected() const {
+				return client.is_connected();
 			}
 
-			void draw();
+			bool has_current_world() const {
+				return worlds_manager.has_current_world();
+			}
 	};
-} // namespace KarkinolutionView
+
+	class Viewer {
+		private:
+
+			WorldEnvironment &environment;
+
+			ComponentsStorage components;
+
+			Panel &panel;
+
+			void reserve_components() {
+
+				// Connection status label -> Label
+				components.emplace(
+					0,
+					Component{Label{Math::Geometry::Rectangle{Math::Geometry::Position{0.0f, 0.0f}, 160, 160},
+									"Disconnected",
+									KShared::Colors::Presets::White,
+									KShared::Colors::Presets::Green,
+									20}});
+
+				// Connect/Disconnect button -> RectangleButton
+				components.emplace(
+					1,
+					Component{Button{Math::Geometry::Rectangle{Math::Geometry::Position{0.0f, 0.0f}, 100, 100},
+									 [this]() {
+										 environment.connect();
+									 },
+									 ButtonStyles{KShared::Colors::Presets::White,
+												  KShared::Colors::Presets::DarkGray,
+												  KShared::Colors::Presets::Gray},
+									 "Connect",
+									 KShared::Colors::Presets::Green,
+									 20}});
+			}
+
+			template <typename T> T &get_component(std::size_t index) {
+				return std::get<T>(components.share(index).value()->get_data());
+			}
+
+			void update_components() {
+				// slot 0 -> connection status
+				{
+					auto &status = get_component<Label>(0);
+					if (environment.is_connected()) {
+
+						status.set_text("Connected");
+						status.set_text_color(KShared::Colors::Presets::Green);
+					}
+
+					else {
+						status.set_text("Disconnected");
+						status.set_text_color(KShared::Colors::Presets::Red);
+					}
+				}
+
+				// slot 1 -> connect/disconnect button
+
+				{
+					auto &button = get_component<Button>(1);
+
+					if (environment.is_connected()) {
+						button.set_text("Disconnect");
+						button.set_text_color(KShared::Colors::Presets::Red);
+					} else {
+						button.set_text("Connect");
+						button.set_text_color(KShared::Colors::Presets::Green);
+					}
+				}
+			}
+
+		public:
+
+			Viewer(WorldEnvironment &environment, Panel &panel)
+				: environment(environment)
+				, components(10)
+				, panel(panel) {
+
+				reserve_components();
+
+				panel.add(components.share(0).value());
+				panel.add(components.share(1).value());
+				update_components();
+			}
+
+			void run() {
+				update_components();
+			};
+	};
+
+	class Synchronizer {
+		private:
+
+
+			WorldEnvironment environment;
+			Viewer           viewer;
+
+		public:
+
+			Synchronizer(Panel &panel)
+				: viewer(environment, panel) {}
+
+			bool has_current_world() const {
+				return environment.has_current_world();
+			}
+
+			bool is_connected() const {
+				return environment.is_connected();
+			}
+
+			void connect() {
+				environment.connect();
+			}
+
+			void disconnect() {
+				environment.disconnect();
+			}
+
+			void run() {
+				viewer.run();
+			}
+	};
+} // namespace KApp

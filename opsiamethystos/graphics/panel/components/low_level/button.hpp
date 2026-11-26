@@ -141,6 +141,14 @@ namespace Opsiamethystos {
 									label.set_text(std::move(text));
 								}
 
+								void set_text_color(KShared::Colors::Color new_color) {
+									label.set_color(new_color);
+								}
+
+								void set_style(ButtonStyles new_style) {
+									style_ = new_style;
+								}
+
 								// A button is a rectangle plus a label, so slot changes must be atomic
 								// across both parts to avoid drawing a label outside its background.
 								bool set_slot(const Math::Geometry::Rectangle &slot) {
