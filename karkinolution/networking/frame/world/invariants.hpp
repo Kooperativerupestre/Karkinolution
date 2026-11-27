@@ -1,5 +1,5 @@
 #pragma once
-#include "karkinolution/networking/frame/world/errors.hpp"
+#include "karkinolution/networking/frame/errors.hpp"
 
 #include <cstdint>
 

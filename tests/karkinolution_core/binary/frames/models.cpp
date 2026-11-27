@@ -36,7 +36,7 @@ TEST(FrameModelConstructors, RequestStoresValidatedFields) {
 										   payload,
 										   Resource::CREATURE,
 										   Models::Request::WantExtra{}}),
-				 Karkinolution::Networking::Frames::World::FrameError);
+				 Karkinolution::Networking::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
@@ -47,7 +47,7 @@ TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
 	EXPECT_NO_THROW(
 		(Request{12, 34, RequestSubTypes::SEE, {}, Resource::TERRITORY, SeeExtra{.target = SeeTarget::ONE}}));
 	EXPECT_THROW((Request{12, 34, RequestSubTypes::SEE, {}, Resource::TERRITORY, SeeExtra{.target = SeeTarget::ALL}}),
-				 Karkinolution::Networking::Frames::World::FrameError);
+				 Karkinolution::Networking::Frames::FrameError);
 
 	constexpr Resource other_resources[] = {Resource::CREATURE,
 											Resource::EMBRYO,
@@ -61,7 +61,7 @@ TEST(FrameModelConstructors, TerritorySeeOnlyAcceptsOneTarget) {
 
 	EXPECT_THROW(
 		(Request{12, 34, RequestSubTypes::SEE, {}, Resource::TERRITORY, SeeExtra{.target = static_cast<SeeTarget>(0)}}),
-		Karkinolution::Networking::Frames::World::FrameError);
+		Karkinolution::Networking::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
@@ -76,7 +76,7 @@ TEST(FrameModelConstructors, ResponseStoresValidFieldsAndRejectsNoneWithAll) {
 
 	EXPECT_NO_THROW((Models::Response::Response{12, 34, ResponseSubTypes::NONE, payload, ResponseCardinality::ONE}));
 	EXPECT_THROW((Models::Response::Response{12, 34, ResponseSubTypes::NONE, payload, ResponseCardinality::ALL}),
-				 Karkinolution::Networking::Frames::World::FrameError);
+				 Karkinolution::Networking::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, TerritoryResponseOnlyAcceptsOneCardinality) {
@@ -84,7 +84,7 @@ TEST(FrameModelConstructors, TerritoryResponseOnlyAcceptsOneCardinality) {
 
 	EXPECT_NO_THROW((Response{12, 34, ResponseSubTypes::TERRITORY, {}, ResponseCardinality::ONE}));
 	EXPECT_THROW((Response{12, 34, ResponseSubTypes::TERRITORY, {}, ResponseCardinality::ALL}),
-				 Karkinolution::Networking::Frames::World::FrameError);
+				 Karkinolution::Networking::Frames::FrameError);
 }
 
 TEST(FrameModelConstructors, ErrorStoresFields) {

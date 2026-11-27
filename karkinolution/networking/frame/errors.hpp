@@ -2,7 +2,7 @@
 
 #include "shared/core/error.hpp"
 
-namespace Karkinolution::Networking::Frames::World {
+namespace Karkinolution::Networking::Frames {
 	class FrameError : public KShared::Errors::SimulationError {
 		public:
 
@@ -16,4 +16,4 @@ namespace Karkinolution::Networking::Frames::World {
 			explicit FrameInvariantError(const std::string &message)
 				: FrameError(message) {}
 	};
-} // namespace Karkinolution::Networking::Frames::World
+} // namespace Karkinolution::Networking::Frames
