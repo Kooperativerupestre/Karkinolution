@@ -100,11 +100,6 @@ namespace Karkinolution {
 
 					BytesArray::Soil serialize_soil(const Karkinolution::Terrain::Soil::SoilPiece &soil);
 
-					namespace Request {
-						std::array<std::byte, 8> make_see_soil(KShared::Core::Id::BaseIdType id);
-						std::array<std::byte, 1> make_see_all_soils();
-					} // namespace Request
-
 				} // namespace Soil
 			} // namespace SRI
 
@@ -129,9 +124,6 @@ namespace Karkinolution {
 					Interpreters::Models::Soil::Soil get_soil(const std::vector<std::byte> &payload,
 															  std::size_t                   offset);
 
-					namespace Request {
-						KShared::Core::Id::BaseIdType interpret_like_get_soil(const std::vector<std::byte> &payload);
-					} // namespace Request
 				} // namespace Soil
 			} // namespace DSI
 		} // namespace Frames::World::Interpreters

@@ -11,6 +11,11 @@
 
 ## Directory Structure
 
+Frame `interpreters/` serialize and deserialize simulation models. The parallel `message_interpreters/` layer owns
+payloads that belong to a specific message operation, such as request construction and protocol-only input models.
+Reuse a domain model when it already represents the data; define a message model only when the payload has a distinct
+shape or a reduced frame representation.
+
 ### Shared binary primitives
 
 Reusable byte primitives live under `shared/binary/` in the `KShared::Binary` namespace. This layer contains byte-range
@@ -173,6 +178,27 @@ with one boolean byte, `AutoConnect`, immediately after the call id. Its payload
 The server creates the world and, when `AutoConnect` is true, acquires its lease for the requesting connection while
 holding the shared simulation mutex. This makes creation and connection one atomic operation with respect to other
 connections. The response payload is a separate one-byte boolean indicating whether creation succeeded.
+
+## Create-creature request payload
+
+`CREATE CREATURE` has an 87-byte fixed payload. Optional values are represented by a one-byte presence flag followed by
+their reserved field slot:
+
+| Offset | Field | Size |
+|---:|---|---:|
+| 0 | Has gender | 1 |
+| 1 | Gender | 1 |
+| 2 | Has species | 1 |
+| 3 | Species | 1 |
+| 4 | Has position | 1 |
+| 5 | Position (`Vec2`) | 16 |
+| 21 | Has name | 1 |
+| 22 | Name size | 1 |
+| 23 | Name slot | 64 |
+
+The protocol `CreaturePreset` contains only the client-selectable values in this payload. It is not a second domain
+creature model; the server passes its decoded values to the existing creature creation API. The name size must not
+exceed the fixed name slot.
 
 ## Frame Size Calculations
 

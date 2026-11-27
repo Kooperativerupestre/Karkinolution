@@ -1,3 +1,5 @@
+#include "karkinolution/networking/frame/system/message_interpreters/system.hpp"
+
 #include "karkinolution/networking/frame/system/interpreter.hpp"
 #include "karkinolution/networking/frame/system/motor.hpp"
 #include "karkinolution/networking/frame/system/parser/internal.hpp"
@@ -12,7 +14,7 @@ namespace {
 } // namespace
 
 TEST(SystemFrames, RawSystemCallRoundTripsItsTypeSubtypeIdAndPayload) {
-	const auto payload = Interpreter::SystemCall::SRI::make_config(123);
+	const auto payload = MessageInterpreters::SystemCall::SRI::make_config(123);
 	const auto raw     = Motor::make_raw_system_call(SystemCallSubTypes::CONFIG, call_id, payload);
 
 	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
@@ -20,11 +22,11 @@ TEST(SystemFrames, RawSystemCallRoundTripsItsTypeSubtypeIdAndPayload) {
 
 	EXPECT_EQ(parsed.get_id(), call_id);
 	EXPECT_EQ(parsed.get_sub_type(), SystemCallSubTypes::CONFIG);
-	EXPECT_EQ(Interpreter::SystemCall::DSI::get_config(parsed.get_payload()), 123);
+	EXPECT_EQ(MessageInterpreters::SystemCall::DSI::get_config(parsed.get_payload()), 123);
 }
 
 TEST(SystemFrames, RawSystemOutputRoundTripsItsTypeSubtypeCallIdAndPayload) {
-	const auto payload = Interpreter::SystemOutput::SRI::make_config_output({.could_connect = true});
+	const auto payload = MessageInterpreters::SystemOutput::SRI::make_config_output({.could_connect = true});
 	const auto raw     = Motor::make_raw_system_output(SystemOutputSubTypes::ConfigOutput, call_id, payload);
 
 	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
@@ -40,7 +42,7 @@ TEST(SystemFrames, CreateWorldPreservesItsAutoConnectHeaderAndPresetPayload) {
 		.seed    = 42,
 		.size    = {.width = KShared::Math::Units::Width{100.0}, .height = KShared::Math::Units::Height{200.0}},
 		.epsilon = 5.0f};
-	const auto payload = Interpreter::SystemCall::SRI::make_create_world(preset);
+	const auto payload = MessageInterpreters::SystemCall::SRI::make_create_world(preset);
 	const auto raw     = Motor::make_raw_system_call(SystemCallSubTypes::CREATE_WORLD,
                                                  call_id,
                                                  payload,
@@ -50,17 +52,17 @@ TEST(SystemFrames, CreateWorldPreservesItsAutoConnectHeaderAndPresetPayload) {
 	const auto parsed = Parser::parse_system_call_frame(raw);
 	ASSERT_TRUE(std::holds_alternative<Models::SystemCall::CreateWorldExtra>(parsed.get_extra()));
 	EXPECT_TRUE(std::get<Models::SystemCall::CreateWorldExtra>(parsed.get_extra()).auto_connect);
-	EXPECT_EQ(Interpreter::SystemCall::DSI::get_create_world(parsed.get_payload()).seed, preset.seed);
-	EXPECT_DOUBLE_EQ(Interpreter::SystemCall::DSI::get_create_world(parsed.get_payload()).size.width.value,
+	EXPECT_EQ(MessageInterpreters::SystemCall::DSI::get_create_world(parsed.get_payload()).seed, preset.seed);
+	EXPECT_DOUBLE_EQ(MessageInterpreters::SystemCall::DSI::get_create_world(parsed.get_payload()).size.width.value,
 					 preset.size.width.value);
 }
 
 TEST(SystemFrames, WorldCreatedOutputRoundTripsItsBooleanPayload) {
-	const auto payload = Interpreter::SystemOutput::SRI::make_world_created({.world_created = true});
+	const auto payload = MessageInterpreters::SystemOutput::SRI::make_world_created({.world_created = true});
 	const auto raw     = Motor::make_raw_system_output(SystemOutputSubTypes::WorldCreated, call_id, payload);
 
 	ASSERT_EQ(Parser::has_frame(raw), Parser::Internal::FrameExistence::YES);
 	const auto parsed = Parser::parse_system_output_frame(raw);
 	EXPECT_EQ(parsed.get_sub_type(), SystemOutputSubTypes::WorldCreated);
-	EXPECT_TRUE(Interpreter::DSI::get_world_created(parsed.get_payload()).world_created);
+	EXPECT_TRUE(MessageInterpreters::DSI::get_world_created(parsed.get_payload()).world_created);
 }

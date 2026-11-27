@@ -36,9 +36,6 @@ namespace Karkinolution {
 					BytesArrays::Territory
 					serialize_territory(const Interpreters::Models::Territory::Territory &territory);
 
-					namespace Request {
-						std::array<std::byte, 0> make_see_territory();
-					} // namespace Request
 				} // namespace Territory
 			} // namespace SRI
 

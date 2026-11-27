@@ -124,16 +124,6 @@ SoilSRI::BytesArray::Soil SoilSRI::serialize_soil(const Karkinolution::Terrain::
 	return array;
 }
 
-// Request implementations
-
-std::array<std::byte, 8> SoilSRI::Request::make_see_soil(KShared::Core::Id::BaseIdType id) {
-	return KShared::Binary::Serializer::serialize(id);
-}
-
-std::array<std::byte, 1> SoilSRI::Request::make_see_all_soils() {
-	return {};
-}
-
 // DSI implementations
 std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::DamageComponent>
 SoilDSI::get_damage(const std::vector<std::byte> &payload, std::size_t offset) {
@@ -227,10 +217,4 @@ SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
 		get_type(payload, offset + SoilSRI::Layout::Type::OFFSET),
 		get_soil_properties(payload, offset + SoilSRI::Layout::PropertiesCount::OFFSET),
 		get_required_properties(payload, offset + SoilSRI::Layout::RequiredCapabilitiesCount::OFFSET)};
-}
-
-// Request implementations
-
-KShared::Core::Id::BaseIdType SoilDSI::Request::interpret_like_get_soil(const std::vector<std::byte> &payload) {
-	return KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0);
 }

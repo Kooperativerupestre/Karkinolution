@@ -1,7 +1,6 @@
 #pragma once
 
 #include "karkinolution/networking/frame/world/interpreters/models/creature.hpp"
-#include "karkinolution/organism/entities/creature/constructor.hpp"
 #include "karkinolution/organism/entities/genetics/genetic.hpp"
 #include "shared/binary/fields.hpp"
 #include "shared/core/id.hpp"
@@ -77,31 +76,6 @@ namespace Karkinolution {
 					BytesArrays::Creature
 					serialize_creature(const Karkinolution::Organisms::Entities::Creature::Creature &creature);
 
-					namespace Request {
-						namespace Layout {
-							namespace CreateCreature {
-								using HasGender   = KShared::Binary::Field<0, 1>;
-								using Gender      = KShared::Binary::Next<HasGender, 1>;
-								using HasSpecies  = KShared::Binary::Next<Gender, 1>;
-								using Species     = KShared::Binary::Next<HasSpecies, 1>;
-								using HasPosition = KShared::Binary::Next<Species, 1>;
-								using Position    = KShared::Binary::Next<HasPosition, VecSRI::Layout::TOTAL_SIZE>;
-								using HasName     = KShared::Binary::Next<Position, 1>;
-								using NameSize    = KShared::Binary::Next<HasName, 1>;
-								using Name        = KShared::Binary::Next<HasName, Creature::Layout::MAX_NAME_SIZE>;
-
-								inline constexpr std::size_t TOTAL_SIZE = Name::SIZE;
-							} // namespace CreateCreature
-						} // namespace Layout
-
-						std::array<std::byte, 8> make_see_creature(KShared::Core::Id::BaseIdType id);
-						std::array<std::byte, 1> make_see_all_creatures();
-						std::array<std::byte, Layout::CreateCreature::TOTAL_SIZE> make_create_creature(
-							std::optional<Karkinolution::Organisms::Entities::Creature::Gender>          gender,
-							std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
-							const std::optional<KShared::Math::Vec::Vec2>                               &position,
-							const std::optional<std::string>                                            &name);
-					} // namespace Request
 				} // namespace Creature
 			} // namespace SRI
 
@@ -133,15 +107,6 @@ namespace Karkinolution {
 					Interpreters::Models::Creature::IntentData get_intent(const std::vector<std::byte> &payload,
 																		  std::size_t                   offset);
 
-					namespace Request {
-
-
-						KShared::Core::Id::BaseIdType
-						interpret_like_get_creature(const std::vector<std::byte> &payload);
-						Karkinolution::Organisms::Entities::Creature::Constructor::CreatureBlueprint
-						interpret_like_create_creature(const std::vector<std::byte> &payload);
-
-					} // namespace Request
 				} // namespace Creature
 			} // namespace DSI
 		} // namespace Frames::World::Interpreters

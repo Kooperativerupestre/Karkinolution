@@ -8,6 +8,7 @@
 #include <karkinolution/networking/frame/world/core_aliases.hpp>
 #include <karkinolution/networking/frame/world/interpreters/corpse.hpp>
 #include <karkinolution/networking/frame/world/interpreters/models/corpse.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/corpse.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <optional>
 #include <shared/binary/deserializer.hpp>
@@ -16,7 +17,7 @@
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 	template <CanRequestWorldScope T> std::vector<KShared::Core::Id::BaseIdType> see_all_corpses(T &client) {
-		const auto payload = CorpseSRI::Request::make_see_all_corpses();
+		const auto payload = CorpseMessageSRI::make_see_all_corpses();
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::SEE,
             GENERIC_INTERPRETER_ID,
@@ -55,7 +56,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Corpse::Corpse>
 	see_corpse(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = CorpseSRI::Request::make_see_corpse(id);
+		const auto payload = CorpseMessageSRI::make_see_corpse(id);
 
 		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
 			RequestSubTypes::SEE,
@@ -86,7 +87,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Corpse::Corpse>
 	tick_corpse(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = CorpseSRI::Request::make_see_corpse(id);
+		const auto payload = CorpseMessageSRI::make_see_corpse(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::CYCLE,
             GENERIC_INTERPRETER_ID,
@@ -113,7 +114,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Corpse {
 	}
 
 	template <CanRequestWorldScope T> bool erase_corpse(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = CorpseSRI::Request::make_see_corpse(id);
+		const auto payload = CorpseMessageSRI::make_see_corpse(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::ERASE,
             GENERIC_INTERPRETER_ID,

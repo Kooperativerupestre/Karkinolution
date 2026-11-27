@@ -1,6 +1,7 @@
 #include "karkinolution/networking/client_side/world/worlds_manager.hpp"
 
 #include "karkinolution/networking/frame/system/interpreter.hpp"
+#include "karkinolution/networking/frame/system/message_interpreters/system.hpp"
 #include "karkinolution/networking/frame/system/motor.hpp"
 
 #include <atomic>
@@ -22,7 +23,7 @@ namespace {
 	using Karkinolution::Networking::ClientSide::World::WorldStorage;
 	using Karkinolution::Networking::Frames::System::SystemOutputSubTypes;
 	using Karkinolution::Networking::Frames::System::Interpreter::SRI::serialize;
-	using Karkinolution::Networking::Frames::System::Interpreter::SystemOutput::SRI::make_config_output;
+	using Karkinolution::Networking::Frames::System::MessageInterpreters::SystemOutput::SRI::make_config_output;
 	using Karkinolution::Networking::Frames::System::Motor::make_system_output;
 
 	class FakeClient {

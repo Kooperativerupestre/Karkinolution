@@ -15,10 +15,6 @@ TerritorySRI::BytesArrays::Territory TerritorySRI::serialize_territory(
 	return bytes;
 }
 
-std::array<std::byte, 0> TerritorySRI::Request::make_see_territory() {
-	return {};
-}
-
 Karkinolution::Networking::Frames::World::Interpreters::Models::Territory::Territory
 TerritoryDSI::deserialize_territory(const std::vector<std::byte> &payload, std::size_t offset) {
 	const auto size = UnitsDSI::deserialize_size(payload, offset + TerritorySRI::Layout::Size::OFFSET);

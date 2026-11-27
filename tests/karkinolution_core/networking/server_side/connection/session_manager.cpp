@@ -1,6 +1,7 @@
 #include "karkinolution/networking/server_side/connection/protocol_sessions/session_manager.hpp"
 
 #include "karkinolution/networking/frame/system/interpreter.hpp"
+#include "karkinolution/networking/frame/system/message_interpreters/system.hpp"
 #include "karkinolution/networking/frame/system/motor.hpp"
 #include "karkinolution/networking/scope/motor.hpp"
 #include "karkinolution/networking/server_side/connection/simulation_adapter/simulation_adapter.hpp"
@@ -44,7 +45,7 @@ TEST(SessionManager, RoutesSystemFramesAndWorldFramesWithoutForwardingScope) {
 	EXPECT_EQ(world_list_response.get_sub_type(), SystemOutputSubTypes::AllWorldIds);
 
 	const auto config_payload =
-		Karkinolution::Networking::Frames::System::Interpreter::SystemCall::SRI::make_config(world_id);
+		Karkinolution::Networking::Frames::System::MessageInterpreters::SystemCall::SRI::make_config(world_id);
 	manager.receive(make_system_frame(make_raw_system_call(SystemCallSubTypes::CONFIG, 2, config_payload)));
 	ASSERT_TRUE(manager.has_response());
 	const auto config_response =

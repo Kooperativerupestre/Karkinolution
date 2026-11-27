@@ -7,6 +7,7 @@
 
 #include <karkinolution/api/soil.hpp>
 #include <karkinolution/networking/frame/world/interpreters/soil.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/soil.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/server_side/api_adapter/soil.hpp>
 #include <ranges>
@@ -16,7 +17,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 	ResponseFrame see_soil(const Karkinolution::World::World &world,
 						   Frames::World::RequestId           request_id,
 						   const std::vector<std::byte>      &payload) {
-		const auto id = SoilDSI::Request::interpret_like_get_soil(payload);
+		const auto id = SoilMessageDSI::interpret_like_get_soil(payload);
 
 		auto soil = Karkinolution::API::Soil::see_soil(world, id);
 
@@ -33,7 +34,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 	ResponseFrame tick_soil(Karkinolution::World::World  &world,
 							Frames::World::RequestId      request_id,
 							const std::vector<std::byte> &payload) {
-		const auto id   = SoilDSI::Request::interpret_like_get_soil(payload);
+		const auto id   = SoilMessageDSI::interpret_like_get_soil(payload);
 		const auto soil = Karkinolution::API::Soil::tick(world, id);
 
 		if (!soil) {
@@ -50,7 +51,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Soil {
 	ResponseFrame erase_soil(Karkinolution::World::World  &world,
 							 Frames::World::RequestId      request_id,
 							 const std::vector<std::byte> &payload) {
-		const auto id = SoilDSI::Request::interpret_like_get_soil(payload);
+		const auto id = SoilMessageDSI::interpret_like_get_soil(payload);
 		return Karkinolution::Networking::Frames::World::Motor::make_boolean_response(
 			request_id,
 			Karkinolution::API::Soil::erase(world, id));

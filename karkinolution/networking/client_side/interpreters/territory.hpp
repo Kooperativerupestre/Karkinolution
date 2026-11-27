@@ -8,6 +8,7 @@
 #include "karkinolution/networking/frame/world/core_aliases.hpp"
 #include "karkinolution/networking/frame/world/interpreters/models/territory.hpp"
 #include "karkinolution/networking/frame/world/interpreters/territory.hpp"
+#include "karkinolution/networking/frame/world/message_interpreters/territory.hpp"
 #include "karkinolution/networking/frame/world/motor.hpp"
 
 #include <optional>
@@ -17,7 +18,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Territory {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Territory::Territory>
 	see_territory(T &client) {
-		const auto payload = TerritorySRI::Request::make_see_territory();
+		const auto payload = TerritoryMessageSRI::make_see_territory();
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::SEE,
             GENERIC_INTERPRETER_ID,

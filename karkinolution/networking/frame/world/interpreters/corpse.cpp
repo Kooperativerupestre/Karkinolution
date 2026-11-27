@@ -48,14 +48,6 @@ CorpseSRI::serialize_corpse(const Karkinolution::Organisms::Entities::Corpse::Co
 	return bytes;
 }
 
-std::array<std::byte, 8> CorpseSRI::Request::make_see_corpse(KShared::Core::Id::BaseIdType id) {
-	return KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(id);
-}
-
-std::array<std::byte, 1> CorpseSRI::Request::make_see_all_corpses() {
-	return {};
-}
-
 // DSI implementations
 KShared::Core::Id::BaseIdType CorpseDSI::get_id(const std::vector<std::byte> &payload, std::size_t offset) {
 	return KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, offset);
@@ -81,9 +73,4 @@ CorpseDSI::get_corpse(const std::vector<std::byte> &payload, std::size_t offset)
 		.position = get_position(payload, offset + CorpseSRI::Layout::PositionX::OFFSET),
 		.size     = get_size(payload, offset + CorpseSRI::Layout::Width::OFFSET),
 	};
-}
-
-KShared::Core::Id::BaseIdType CorpseDSI::Request::interpret_like_see_corpse(const std::vector<std::byte> &payload) {
-	return KShared::Core::Id::BaseIdType{
-		KShared::Binary::Deserializer::deserialize<KShared::Core::Id::BaseIdType>(payload, 0)};
 }

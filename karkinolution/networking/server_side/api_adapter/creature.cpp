@@ -7,6 +7,7 @@
 
 #include <format>
 #include <karkinolution/networking/frame/world/interpreters/creature.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/creature.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/frame/world/parser/parser.hpp>
 #include <karkinolution/networking/server_side/api_adapter/creature.hpp>
@@ -16,7 +17,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame see_creature(const Karkinolution::World::World &world,
 							   Frames::World::RequestId           request_id,
 							   const std::vector<std::byte>      &payload) {
-		const auto id = CreatureDSI::Request::interpret_like_get_creature(payload);
+		const auto id = CreatureMessageDSI::interpret_like_get_creature(payload);
 
 		auto creature = Karkinolution::API::Creature::see_creature(world, id);
 
@@ -46,13 +47,13 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame create_creature(Karkinolution::World::World  &world,
 								  Frames::World::RequestId      request_id,
 								  const std::vector<std::byte> &payload) {
-		const auto blueprint = CreatureDSI::Request::interpret_like_create_creature(payload);
+		const auto preset = CreatureMessageDSI::interpret_like_create_creature(payload);
 
 		auto creature = Karkinolution::API::Creature::make_creature(world,
-																	blueprint.gender,
-																	blueprint.specie,
-																	blueprint.position,
-																	blueprint.name);
+																	preset.gender,
+																	preset.specie,
+																	preset.position,
+																	preset.name);
 		if (!creature) {
 			return Karkinolution::Networking::Frames::World::Motor::make_none_response(request_id);
 		}
@@ -68,7 +69,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame tick_creature(Karkinolution::World::World  &world,
 								Frames::World::RequestId      request_id,
 								const std::vector<std::byte> &payload) {
-		const auto id       = CreatureDSI::Request::interpret_like_get_creature(payload);
+		const auto id       = CreatureMessageDSI::interpret_like_get_creature(payload);
 		const auto creature = Karkinolution::API::Creature::tick(world, id);
 
 		if (!creature) {
@@ -85,7 +86,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Creature {
 	ResponseFrame erase_creature(Karkinolution::World::World  &world,
 								 Frames::World::RequestId      request_id,
 								 const std::vector<std::byte> &payload) {
-		const auto id = CreatureDSI::Request::interpret_like_get_creature(payload);
+		const auto id = CreatureMessageDSI::interpret_like_get_creature(payload);
 		if (!Karkinolution::API::Creature::erase(world, id)) {
 			return Karkinolution::Networking::Frames::World::Motor::make_boolean_response(
 				request_id,

@@ -12,6 +12,7 @@
 #include <karkinolution/networking/frame/world/interpreters/properties.hpp>
 #include <karkinolution/networking/frame/world/interpreters/soil.hpp>
 #include <karkinolution/networking/frame/world/interpreters/territory.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/corpse.hpp>
 #include <karkinolution/organism/entities/creature/creature.hpp>
 #include <karkinolution/organism/entities/properties/properties.hpp>
 #include <karkinolution/terrain/soil/soil.hpp>
@@ -193,7 +194,7 @@ TEST(CorpseSerializeDeserializeRoundtrip, RequestDSI) {
 	const auto bytes = KShared::Binary::Serializer::serialize<KShared::Core::Id::BaseIdType>(corpse_id);
 	const std::vector<std::byte> buffer(bytes.begin(), bytes.end());
 
-	const auto interpreted_id = CorpseDSI::Request::interpret_like_see_corpse(buffer);
+	const auto interpreted_id = CorpseMessageDSI::interpret_like_see_corpse(buffer);
 
 	EXPECT_EQ(interpreted_id, corpse_id);
 }

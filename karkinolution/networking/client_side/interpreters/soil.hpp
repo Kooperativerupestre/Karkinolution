@@ -11,6 +11,7 @@
 #include <karkinolution/networking/frame/world/analyzer.hpp>
 #include <karkinolution/networking/frame/world/interpreters/models/soil.hpp>
 #include <karkinolution/networking/frame/world/interpreters/soil.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/soil.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <optional>
 #include <shared/binary/deserializer.hpp>
@@ -21,7 +22,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::Soil>
 	see_soil(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = SoilSRI::Request::make_see_soil(id);
+		const auto payload = SoilMessageSRI::make_see_soil(id);
 
 		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
 			RequestSubTypes::SEE,
@@ -49,7 +50,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 	}
 
 	template <CanRequestWorldScope T> std::vector<KShared::Core::Id::BaseIdType> see_all_soils(T &client) {
-		const auto payload = SoilSRI::Request::make_see_all_soils();
+		const auto payload = SoilMessageSRI::make_see_all_soils();
 
 		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
 			RequestSubTypes::SEE,
@@ -84,7 +85,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::Soil>
 	tick_soil(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = SoilSRI::Request::make_see_soil(id);
+		const auto payload = SoilMessageSRI::make_see_soil(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::CYCLE,
             GENERIC_INTERPRETER_ID,
@@ -111,7 +112,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Soil {
 	}
 
 	template <CanRequestWorldScope T> bool erase_soil(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = SoilSRI::Request::make_see_soil(id);
+		const auto payload = SoilMessageSRI::make_see_soil(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::ERASE,
             GENERIC_INTERPRETER_ID,

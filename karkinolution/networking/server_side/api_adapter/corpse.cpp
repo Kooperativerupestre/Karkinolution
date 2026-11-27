@@ -2,6 +2,7 @@
 
 #include <karkinolution/api/corpse.hpp>
 #include <karkinolution/networking/frame/world/interpreters/corpse.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/corpse.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <karkinolution/networking/server_side/api_adapter/corpse.hpp>
 #include <shared/binary/serializer.hpp>
@@ -11,7 +12,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 	ResponseFrame see_corpse(const Karkinolution::World::World &world,
 							 Frames::World::RequestId           request_id,
 							 const std::vector<std::byte>      &payload) {
-		const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
+		const auto id = CorpseMessageDSI::interpret_like_see_corpse(payload);
 
 		auto corpse = Karkinolution::API::Corpse::see_corpse(world, id);
 
@@ -41,7 +42,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 	ResponseFrame tick_corpse(Karkinolution::World::World  &world,
 							  Frames::World::RequestId      request_id,
 							  const std::vector<std::byte> &payload) {
-		const auto id     = CorpseDSI::Request::interpret_like_see_corpse(payload);
+		const auto id     = CorpseMessageDSI::interpret_like_see_corpse(payload);
 		const auto corpse = Karkinolution::API::Corpse::tick(world, id);
 
 		if (!corpse) {
@@ -58,7 +59,7 @@ namespace Karkinolution::Networking::ServerSide::APIBYA::Corpse {
 	ResponseFrame erase_corpse(Karkinolution::World::World  &world,
 							   Frames::World::RequestId      request_id,
 							   const std::vector<std::byte> &payload) {
-		const auto id = CorpseDSI::Request::interpret_like_see_corpse(payload);
+		const auto id = CorpseMessageDSI::interpret_like_see_corpse(payload);
 		return Karkinolution::Networking::Frames::World::Motor::make_boolean_response(
 			request_id,
 			Karkinolution::API::Corpse::erase(world, id));

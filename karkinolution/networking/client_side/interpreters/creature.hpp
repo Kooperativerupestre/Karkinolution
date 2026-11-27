@@ -9,6 +9,7 @@
 #include <karkinolution/networking/frame/world/core_aliases.hpp>
 #include <karkinolution/networking/frame/world/interpreters/creature.hpp>
 #include <karkinolution/networking/frame/world/interpreters/models/creature.hpp>
+#include <karkinolution/networking/frame/world/message_interpreters/creature.hpp>
 #include <karkinolution/networking/frame/world/motor.hpp>
 #include <optional>
 #include <shared/binary/deserializer.hpp>
@@ -17,7 +18,7 @@
 
 namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 	template <CanRequestWorldScope T> std::vector<KShared::Core::Id::BaseIdType> see_all_creatures(T &client) {
-		const auto payload = CreatureSRI::Request::make_see_all_creatures();
+		const auto payload = CreatureMessageSRI::make_see_all_creatures();
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::SEE,
             GENERIC_INTERPRETER_ID,
@@ -48,7 +49,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Creature::Creature>
 	see_creature(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = CreatureSRI::Request::make_see_creature(id);
+		const auto payload = CreatureMessageSRI::make_see_creature(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::SEE,
             GENERIC_INTERPRETER_ID,
@@ -81,13 +82,14 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 				  std::optional<Karkinolution::Organisms::Entities::Creature::CreatureSpecies> specie,
 				  const std::optional<KShared::Math::Vec::Vec2>                               &position,
 				  const std::optional<std::string>                                            &name) {
-		const auto payload = CreatureSRI::Request::make_create_creature(gender, specie, position, name);
-		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
-            RequestSubTypes::CREATE,
-            GENERIC_INTERPRETER_ID,
-            Resource::CREATURE,
-            std::vector<std::byte>(payload.begin(), payload.end()),
-            CreateExtra{});
+		const auto payload = CreatureMessageSRI::make_create_creature(
+			{.gender = gender, .specie = specie, .position = position, .name = name});
+		const auto built = Karkinolution::Networking::Frames::World::Motor::make_request(
+			RequestSubTypes::CREATE,
+			GENERIC_INTERPRETER_ID,
+			Resource::CREATURE,
+			std::vector<std::byte>(payload.begin(), payload.end()),
+			CreateExtra{});
 
 		const Client::WorldRequestData data{.sub_type = built.get_sub_type(),
 											.resource = built.get_resource(),
@@ -110,7 +112,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 	template <CanRequestWorldScope T>
 	std::optional<Karkinolution::Networking::Frames::World::Interpreters::Models::Creature::Creature>
 	tick_creature(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = CreatureSRI::Request::make_see_creature(id);
+		const auto payload = CreatureMessageSRI::make_see_creature(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::CYCLE,
             GENERIC_INTERPRETER_ID,
@@ -137,7 +139,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::Creature {
 	}
 
 	template <CanRequestWorldScope T> bool erase_creature(T &client, KShared::Core::Id::BaseIdType id) {
-		const auto payload = CreatureSRI::Request::make_see_creature(id);
+		const auto payload = CreatureMessageSRI::make_see_creature(id);
 		const auto built   = Karkinolution::Networking::Frames::World::Motor::make_request(
             RequestSubTypes::ERASE,
             GENERIC_INTERPRETER_ID,

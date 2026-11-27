@@ -3,6 +3,7 @@
 #include "karkinolution/networking/client_side/error.hpp"
 #include "karkinolution/networking/client_side/interpreters/concepts.hpp"
 #include "karkinolution/networking/frame/system/interpreter.hpp"
+#include "karkinolution/networking/frame/system/message_interpreters/system.hpp"
 
 #include <optional>
 #include <vector>
@@ -11,7 +12,7 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::System {
 	template <CanRequestSystemScope T>
 	bool create_world(T &client, const Karkinolution::World::WorldPreset &preset, bool auto_connect) {
 		const auto payload =
-			Karkinolution::Networking::Frames::System::Interpreter::SystemCall::SRI::make_create_world(preset);
+			Karkinolution::Networking::Frames::System::MessageInterpreters::SystemCall::SRI::make_create_world(preset);
 		const Client::SystemRequestData request{
 			.sub_type = Karkinolution::Networking::Frames::System::SystemCallSubTypes::CREATE_WORLD,
 			.payload  = {payload.begin(), payload.end()},
@@ -24,13 +25,14 @@ namespace Karkinolution::Networking::ClientSide::Interpreters::System {
 		if (output.get_sub_type() != Karkinolution::Networking::Frames::System::SystemOutputSubTypes::WorldCreated) {
 			throw ClientError("Unexpected system output subtype for create world");
 		}
-		return Karkinolution::Networking::Frames::System::Interpreter::DSI::get_world_created(output.get_payload())
+		return Karkinolution::Networking::Frames::System::MessageInterpreters::DSI::get_world_created(
+				   output.get_payload())
 			.world_created;
 	}
 
 	template <CanRequestSystemScope T> std::optional<bool> config(T &client, Karkinolution::World::WorldId world_id) {
 		const auto payload =
-			Karkinolution::Networking::Frames::System::Interpreter::SystemCall::SRI::make_config(world_id);
+			Karkinolution::Networking::Frames::System::MessageInterpreters::SystemCall::SRI::make_config(world_id);
 		const Client::SystemRequestData request{
 			.sub_type = Karkinolution::Networking::Frames::System::SystemCallSubTypes::CONFIG,
 			.payload  = {payload.begin(), payload.end()}};

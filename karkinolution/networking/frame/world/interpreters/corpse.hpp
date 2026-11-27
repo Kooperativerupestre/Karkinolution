@@ -61,10 +61,6 @@ namespace Karkinolution {
 					BytesArrays::Corpse
 					serialize_corpse(const Karkinolution::Organisms::Entities::Corpse::Corpse &corpse);
 
-					namespace Request {
-						std::array<std::byte, 8> make_see_corpse(KShared::Core::Id::BaseIdType id);
-						std::array<std::byte, 1> make_see_all_corpses();
-					} // namespace Request
 				} // namespace Corpse
 			} // namespace SRI
 
@@ -78,9 +74,6 @@ namespace Karkinolution {
 					Interpreters::Models::Corpse::Corpse get_corpse(const std::vector<std::byte> &payload,
 																	std::size_t                   offset);
 
-					namespace Request {
-						KShared::Core::Id::BaseIdType interpret_like_see_corpse(const std::vector<std::byte> &payload);
-					} // namespace Request
 				} // namespace Corpse
 			} // namespace DSI
 		} // namespace Frames::World::Interpreters
