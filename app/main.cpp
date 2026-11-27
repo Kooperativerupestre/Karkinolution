@@ -38,7 +38,8 @@ int main() {
 		panel.draw();
 		const auto result = panel.relayout();
 
-		assert(!result.overflowed);
+		assert(result.has_value());
+		assert(!result->overflowed);
 
 		KApp::Window::end_inside_loop();
 	}

@@ -35,6 +35,13 @@ namespace {
 		return std::make_shared<Components::Component>(Components::AllComponents{
 			LowLevel::Text{bounds, "rollback", White, KShared::Math::LV::CT::GreaterThanZeroValue<int>{10}, measure}});
 	}
+
+	std::shared_ptr<const Panel::Layout::Node> leaf_node(const Components::ComponentId &id) {
+		return std::make_shared<const Panel::Layout::Node>(
+			Panel::Layout::Node{Panel::Layout::Leaf{id, [] {
+														return Panel::Layout::Size{10, 10};
+													}}});
+	}
 } // namespace
 
 TEST(GuiPanel, SetBoundsMovesRectangleAndPreservesCollisionQueries) {
@@ -149,8 +156,12 @@ TEST(GuiPanel, RelayoutAppliesAssignmentsAndClearsDirtyFlag) {
 															  .cross_align = Panel::Layout::CrossAlign::STRETCH,
 															  .children    = {{Panel::Layout::Fixed{20}, child}}}});
 
-	EXPECT_TRUE(panel.relayout().applied);
-	EXPECT_FALSE(panel.relayout().applied);
+	const auto first_pass  = panel.relayout();
+	const auto second_pass = panel.relayout();
+	ASSERT_TRUE(first_pass.has_value());
+	ASSERT_TRUE(second_pass.has_value());
+	EXPECT_TRUE(first_pass->applied);
+	EXPECT_FALSE(second_pass->applied);
 	EXPECT_TRUE(panel.find_one_collision_in_area(::rectangle(-40, 0)).has_value());
 	EXPECT_TRUE(panel.find_one_collision_in_area(::rectangle(-30, 0)).has_value());
 }
@@ -179,7 +190,99 @@ TEST(GuiPanel, RelayoutRollsBackEarlierAssignmentsWhenALaterComponentRejects) {
 
 	const auto result = panel.relayout();
 
-	EXPECT_FALSE(result.applied);
+	ASSERT_FALSE(result.has_value());
+	EXPECT_EQ(result.error().code, Panel::LayoutErrorCode::COMPONENT_REJECTED_SLOT);
+	EXPECT_EQ(result.error().component, text_id);
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-30, 0)).has_value());
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(0, 0, 80, 30)).has_value());
+}
+
+TEST(GuiPanel, RelayoutReportsAnUnknownComponentReferencedByTheLayout) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   unknown = Components::gen_id(Components::ComponentType::RECTANGLE);
+
+	panel.set_layout(
+		Panel::Layout::Node{Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
+												 .children  = {{Panel::Layout::Fixed{20}, leaf_node(unknown)}}}});
+
+	const auto result = panel.relayout();
+
+	ASSERT_FALSE(result.has_value());
+	EXPECT_EQ(result.error().code, Panel::LayoutErrorCode::UNKNOWN_COMPONENT);
+	EXPECT_EQ(result.error().component, unknown);
+}
+
+TEST(GuiPanel, RelayoutReportsAComponentRemovedAfterSetLayoutAndMovesNothing) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   kept    = rectangle_component(rectangle(-30, 0));
+	const auto   removed = rectangle_component(rectangle(30, 0));
+
+	ASSERT_TRUE(panel.add(kept));
+	ASSERT_TRUE(panel.add(removed));
+	panel.set_layout(Panel::Layout::Node{
+		Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
+							 .children  = {{Panel::Layout::Fixed{20}, leaf_node(kept->get_id())},
+										   {Panel::Layout::Fixed{20}, leaf_node(removed->get_id())}}}});
+	ASSERT_TRUE(panel.remove(removed->get_id()));
+
+	const auto result = panel.relayout();
+
+	ASSERT_FALSE(result.has_value());
+	EXPECT_EQ(result.error().code, Panel::LayoutErrorCode::UNKNOWN_COMPONENT);
+	EXPECT_EQ(result.error().component, removed->get_id());
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-30, 0)).has_value());
+}
+
+TEST(GuiPanel, RelayoutWithoutALayoutIsNotAnErrorAndMovesNothing) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+
+	ASSERT_TRUE(panel.add(rectangle_component(rectangle(-30, 0))));
+	const auto result = panel.relayout();
+
+	ASSERT_TRUE(result.has_value());
+	EXPECT_FALSE(result->applied);
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-30, 0)).has_value());
+}
+
+TEST(GuiPanel, FailedRelayoutStaysPendingUntilTheLayoutIsFixed) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   text = text_component(rectangle(0, 0, 80, 30));
+
+	ASSERT_TRUE(panel.add(text));
+	const auto too_narrow = [&] {
+		return Panel::Layout::Node{
+			Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
+								 .children  = {{Panel::Layout::Fixed{1}, leaf_node(text->get_id())}}}};
+	};
+	panel.set_layout(too_narrow());
+
+	EXPECT_FALSE(panel.relayout().has_value());
+	EXPECT_FALSE(panel.relayout().has_value());
+
+	panel.set_layout(
+		Panel::Layout::Node{Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
+												 .children = {{Panel::Layout::Fixed{40}, leaf_node(text->get_id())}}}});
+	const auto fixed = panel.relayout();
+
+	ASSERT_TRUE(fixed.has_value());
+	EXPECT_TRUE(fixed->applied);
+}
+
+TEST(GuiPanel, RelayoutReportsOverflowWhileStillCommittingTheClampedSlots) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   first  = rectangle_component(rectangle(-30, 0));
+	const auto   second = rectangle_component(rectangle(30, 0));
+
+	ASSERT_TRUE(panel.add(first));
+	ASSERT_TRUE(panel.add(second));
+	panel.set_layout(Panel::Layout::Node{
+		Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
+							 .children  = {{Panel::Layout::Fixed{80}, leaf_node(first->get_id())},
+										   {Panel::Layout::Fixed{80}, leaf_node(second->get_id())}}}});
+
+	const auto result = panel.relayout();
+
+	ASSERT_TRUE(result.has_value());
+	EXPECT_TRUE(result->applied);
+	EXPECT_TRUE(result->overflowed);
 }

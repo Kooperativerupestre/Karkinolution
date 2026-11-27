@@ -2,9 +2,11 @@
 
 #include "opsiamethystos/graphics/panel/components/component.hpp"
 #include "opsiamethystos/graphics/panel/layout/layout.hpp"
+#include "opsiamethystos/graphics/panel/layout_error.hpp"
 #include "opsiamethystos/graphics/panel/quadtree/quadtree.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
+#include <expected>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -13,11 +15,13 @@
 namespace Opsiamethystos {
 	namespace Gui {
 		namespace Panel {
-			struct LayoutApplyResult {
-					// `applied` describes whether every assignment was committed. Overflow
-					// is reported independently because a valid clamped layout can still be
-					// useful to the caller.
-					bool applied    = false;
+			// Outcome of a layout pass that did not fail.
+			struct LayoutReport {
+					// True when a pass ran and every assignment was committed. False means there was
+					// nothing to apply: the layout is not pending, or the panel has no layout.
+					bool applied = false;
+					// True when the requested arrangement did not fit the panel. The slots were clamped
+					// to valid geometry and committed anyway, because a clamped layout is still useful.
 					bool overflowed = false;
 			};
 
@@ -43,6 +47,10 @@ namespace Opsiamethystos {
 					std::vector<Components::ComponentId> find_in_area(const Math::Geometry::Rectangle &area) const;
 
 					std::vector<Components::ComponentId> find_in_area(const Math::Geometry::Circle &area) const;
+
+					// Shared by set_bounds and relayout so both report the same failure reasons.
+					[[nodiscard]] std::expected<void, LayoutErrorCode>
+					try_set_bounds(Components::ComponentId id, const Math::Geometry::Rectangle &slot);
 
 					template <typename Area> bool intersects(Components::ComponentId id, const Area &area) const;
 
@@ -98,9 +106,11 @@ namespace Opsiamethystos {
 					void set_layout(Layout::Node layout_root);
 					// Marks the deferred layout pass dirty after a measure-affecting change.
 					void mark_layout_dirty() noexcept;
-					// Computes and atomically applies all assignments. A failed assignment
-					// restores every earlier assignment in reverse order.
-					[[nodiscard]] LayoutApplyResult relayout();
+					// Applies the pending layout to every component it references. Does nothing when
+					// no layout is pending. The pass is atomic: if any component cannot take its slot,
+					// every earlier assignment is rolled back and the error names the failing component.
+					// A failed pass leaves the layout pending, so the next call retries it.
+					[[nodiscard]] std::expected<LayoutReport, LayoutError> relayout();
 
 					// Returns the owned type-erased component, or an empty pointer for an
 					// unknown id. Ownership stays with the panel's map.

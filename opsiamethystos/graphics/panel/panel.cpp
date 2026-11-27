@@ -99,9 +99,9 @@ namespace Opsiamethystos {
 			// The validation pass prevents a malformed tree from changing only part of
 			// the panel. The application pass then reuses set_bounds for each atomic
 			// component/index update and records old slots for reverse rollback.
-			LayoutApplyResult Panel::relayout() {
+			std::expected<LayoutReport, LayoutError> Panel::relayout() {
 				if (!layout_dirty_ || !layout_root_) {
-					return {};
+					return LayoutReport{};
 				}
 
 				const Layout::Edges root_edges{bounds_.left().value,
@@ -111,9 +111,11 @@ namespace Opsiamethystos {
 				const auto          result = Layout::layout(root_edges, *layout_root_);
 
 				for (const auto &assignment : result.assignments) {
-					const auto entry = components_.find(assignment.id);
-					if (entry == components_.end() || !Math::Geometry::can_contain(bounds_, assignment.slot)) {
-						return {.applied = false, .overflowed = result.overflowed};
+					if (!components_.contains(assignment.id)) {
+						return std::unexpected(LayoutError{LayoutErrorCode::UNKNOWN_COMPONENT, assignment.id});
+					}
+					if (!Math::Geometry::can_contain(bounds_, assignment.slot)) {
+						return std::unexpected(LayoutError{LayoutErrorCode::SLOT_OUTSIDE_PANEL, assignment.id});
 					}
 				}
 
@@ -125,41 +127,45 @@ namespace Opsiamethystos {
 					}
 
 					const auto old_slot = entry->second.indexed_bound;
-					if (!set_bounds(assignment.id, assignment.slot)) {
+					if (const auto applied_slot = try_set_bounds(assignment.id, assignment.slot); !applied_slot) {
 						for (auto rollback = applied.rbegin(); rollback != applied.rend(); ++rollback) {
 							if (!set_bounds(rollback->first, rollback->second)) {
 								throw std::logic_error("Failed to roll back layout batch");
 							}
 						}
-						return {.applied = false, .overflowed = result.overflowed};
+						return std::unexpected(LayoutError{applied_slot.error(), assignment.id});
 					}
 					applied.emplace_back(assignment.id, old_slot);
 				}
 
 				layout_dirty_ = false;
-				return {.applied = true, .overflowed = result.overflowed};
+				return LayoutReport{.applied = true, .overflowed = result.overflowed};
 			}
 
 			// Quadtree::update removes the old record before inserting the new one.
 			// Therefore the Entry::indexed_bound value, rather than component geometry,
 			// is always used for both the update and any recovery operation.
-			bool Panel::set_bounds(Components::ComponentId id, const Math::Geometry::Rectangle &slot) {
+			std::expected<void, LayoutErrorCode> Panel::try_set_bounds(Components::ComponentId          id,
+																	   const Math::Geometry::Rectangle &slot) {
 				const auto entry = components_.find(id);
-				if (entry == components_.end() || !Math::Geometry::can_contain(bounds_, slot)) {
-					return false;
+				if (entry == components_.end()) {
+					return std::unexpected(LayoutErrorCode::UNKNOWN_COMPONENT);
+				}
+				if (!Math::Geometry::can_contain(bounds_, slot)) {
+					return std::unexpected(LayoutErrorCode::SLOT_OUTSIDE_PANEL);
 				}
 
 				const auto update = quadtree_.update(id, slot, entry->second.indexed_bound);
 
 				if (update == Quadtree::UpdateOutput::DOES_NOT_EXIST) {
-					return false;
+					return std::unexpected(LayoutErrorCode::INDEX_REJECTED_SLOT);
 				}
 				if (update == Quadtree::UpdateOutput::EXISTS_BUT_WAS_REMOVED) {
 					const bool restored = quadtree_.add(id, entry->second.indexed_bound);
 					if (!restored) {
 						throw std::logic_error("Failed to restore removed component bound");
 					}
-					return false;
+					return std::unexpected(LayoutErrorCode::INDEX_REJECTED_SLOT);
 				}
 
 				if (!entry->second.component->set_slot(slot)) {
@@ -168,11 +174,15 @@ namespace Opsiamethystos {
 					if (!rolled_back) {
 						throw std::logic_error("Failed to roll back component bound update");
 					}
-					return false;
+					return std::unexpected(LayoutErrorCode::COMPONENT_REJECTED_SLOT);
 				}
 
 				entry->second.indexed_bound = slot;
-				return true;
+				return {};
+			}
+
+			bool Panel::set_bounds(Components::ComponentId id, const Math::Geometry::Rectangle &slot) {
+				return try_set_bounds(id, slot).has_value();
 			}
 
 			// Resize computes all targets before mutating anything. Component updates are
