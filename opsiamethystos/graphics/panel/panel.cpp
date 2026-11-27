@@ -144,6 +144,10 @@ namespace Opsiamethystos {
 				return LayoutReport{.applied = true, .overflowed = result.overflowed};
 			}
 
+			std::expected<LayoutReport, LayoutError> Panel::update() {
+				return relayout();
+			}
+
 			// Quadtree::update removes the old record before inserting the new one.
 			// Therefore the Entry::indexed_bound value, rather than component geometry,
 			// is always used for both the update and any recovery operation.

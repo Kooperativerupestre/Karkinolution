@@ -307,3 +307,56 @@ TEST(GuiPanel, SetLayoutRejectsAnInvalidTreeAndKeepsThePreviousLayout) {
 	EXPECT_TRUE(result->applied);
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-40, 0)).has_value());
 }
+
+TEST(GuiPanel, UpdateAppliesAPendingLayoutOnceAndThenDoesNothing) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   component = rectangle_component(rectangle(30, 0));
+
+	ASSERT_TRUE(panel.add(component));
+	panel.set_layout(Panel::Layout::row({Panel::Layout::fixed(20, component)}));
+
+	const auto first  = panel.update();
+	const auto second = panel.update();
+
+	ASSERT_TRUE(first.has_value());
+	ASSERT_TRUE(second.has_value());
+	EXPECT_TRUE(first->applied);
+	EXPECT_FALSE(second->applied);
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-40, 0)).has_value());
+}
+
+TEST(GuiPanel, UpdateKeepsReportingAnErrorUntilTheMissingComponentIsAdded) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   late = rectangle_component(rectangle(30, 0));
+
+	panel.set_layout(Panel::Layout::row({Panel::Layout::fixed(20, late)}));
+
+	for (int frame = 0; frame < 3; ++frame) {
+		const auto result = panel.update();
+		ASSERT_FALSE(result.has_value());
+		EXPECT_EQ(result.error().code, Panel::LayoutErrorCode::UNKNOWN_COMPONENT);
+		EXPECT_EQ(result.error().component, late->get_id());
+	}
+
+	ASSERT_TRUE(panel.add(late));
+	const auto recovered = panel.update();
+
+	ASSERT_TRUE(recovered.has_value());
+	EXPECT_TRUE(recovered->applied);
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-40, 0)).has_value());
+}
+
+// Content slots equal the text's measured size, so a slot that exactly fits must be accepted.
+TEST(GuiPanel, UpdateAcceptsAContentSlotThatFitsTheTextExactly) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   text = text_component(rectangle(0, 0, 80, 30));
+
+	ASSERT_TRUE(panel.add(text));
+	panel.set_layout(
+		Panel::Layout::row({Panel::Layout::content(text)}, {.cross_align = Panel::Layout::CrossAlign::START}));
+
+	const auto result = panel.update();
+
+	ASSERT_TRUE(result.has_value());
+	EXPECT_TRUE(result->applied);
+}

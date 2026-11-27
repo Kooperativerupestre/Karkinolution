@@ -114,6 +114,12 @@ namespace Opsiamethystos {
 					// A failed pass leaves the layout pending, so the next call retries it.
 					[[nodiscard]] std::expected<LayoutReport, LayoutError> relayout();
 
+					// Per-frame entry point for layout: call it once before draw(). It applies whatever
+					// changed since the last frame (add, remove, set_layout, mark_layout_dirty) and is
+					// cheap when nothing is pending. Reports exactly what relayout() reports. draw() is
+					// const and cannot lay out on its own, which is why this call exists.
+					[[nodiscard]] std::expected<LayoutReport, LayoutError> update();
+
 					// Returns the owned type-erased component, or an empty pointer for an
 					// unknown id. Ownership stays with the panel's map.
 					[[nodiscard]]
