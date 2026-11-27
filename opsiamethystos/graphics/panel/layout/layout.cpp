@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <stdexcept>
 #include <unordered_set>
 
@@ -249,6 +250,16 @@ namespace Opsiamethystos {
 						}
 					}
 				} // namespace
+
+				Node leaf(std::shared_ptr<const Participant> participant) {
+					if (!participant) {
+						throw std::invalid_argument("layout leaf needs a participant");
+					}
+					const auto id = participant->layout_id();
+					return Node{Leaf{id, [participant = std::move(participant)] {
+										 return participant->preferred_size();
+									 }}};
+				}
 
 				void validate(const Node &root) {
 					std::unordered_set<Components::ComponentId> seen;

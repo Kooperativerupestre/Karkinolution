@@ -9,6 +9,7 @@
 #include "opsiamethystos/graphics/panel/components/low_level/rectangle.hpp"
 #include "opsiamethystos/graphics/panel/components/low_level/text.hpp"
 #include "opsiamethystos/graphics/panel/components/medium_level/grid.hpp"
+#include "opsiamethystos/graphics/panel/layout/layout.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 
 #include <algorithm>
@@ -38,7 +39,9 @@ namespace Opsiamethystos {
 											   MediumLevel::Grid>;
 			using Bound         = std::variant<Math::Geometry::Circle, Math::Geometry::Rectangle>;
 
-			class Component {
+			// Type-erased wrapper around every concrete component. It implements
+			// Layout::Participant, so a component can be placed in a layout declaration directly.
+			class Component : public Panel::Layout::Participant {
 				private:
 
 					AllComponents data_;
@@ -72,6 +75,27 @@ namespace Opsiamethystos {
 								return component.get_id();
 							},
 							data_);
+					}
+
+					[[nodiscard]]
+					Panel::Layout::Size preferred_size() const override {
+						return std::visit(
+							[](const auto &bound) -> Panel::Layout::Size {
+								if constexpr (std::same_as<std::remove_cvref_t<decltype(bound)>,
+														   Math::Geometry::Circle>) {
+									const double diameter = static_cast<double>(bound.radius.value()) * 2.0;
+									return {diameter, diameter};
+								} else {
+									return {static_cast<double>(bound.width.value()),
+											static_cast<double>(bound.height.value())};
+								}
+							},
+							get_current_bounds());
+					}
+
+					[[nodiscard]]
+					ComponentId layout_id() const override {
+						return get_id();
 					}
 
 					[[nodiscard]]

@@ -67,6 +67,29 @@ namespace Opsiamethystos {
 				// normalized to the layout minimum by the caller.
 				using Measure = std::function<Size()>;
 
+				// What the layout needs to know about anything it places: a stable identity and a
+				// preferred size. Components implement this interface, so layout declarations can take
+				// them directly while the layout itself never depends on concrete component types.
+				class Participant {
+					public:
+
+						virtual ~Participant() = default;
+
+						// The identity under which the panel registered the component.
+						[[nodiscard]] virtual Components::ComponentId layout_id() const = 0;
+						// The extent the participant would like to have. It is read on every layout
+						// pass, so it must reflect the participant's current state.
+						[[nodiscard]] virtual Size preferred_size() const = 0;
+
+					protected:
+
+						Participant()                               = default;
+						Participant(const Participant &)            = default;
+						Participant(Participant &&)                 = default;
+						Participant &operator=(const Participant &) = default;
+						Participant &operator=(Participant &&)      = default;
+				};
+
 				// A leaf is the only node that produces an assignment. Containers only
 				// describe how their descendants receive space and are never indexed.
 				struct Leaf {
@@ -109,6 +132,10 @@ namespace Opsiamethystos {
 						// slots are still clamped to valid geometry for transactional handling.
 						bool overflowed = false;
 				};
+
+				// Builds a leaf for a participant. The leaf keeps the participant alive and asks it for
+				// its preferred size on every pass. Throws std::invalid_argument for a null participant.
+				[[nodiscard]] Node leaf(std::shared_ptr<const Participant> participant);
 
 				// Checks that a tree is a valid declaration. A violation is a programming error, so it
 				// throws std::invalid_argument instead of being reported as a runtime result. Rejected:
