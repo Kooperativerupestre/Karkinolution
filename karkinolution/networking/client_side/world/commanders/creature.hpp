@@ -24,7 +24,10 @@ namespace Karkinolution::Networking::ClientSide::World::Commanders::Creature {
 			return std::nullopt;
 		}
 
-		return world.add(*output);
+		const auto has_added_to_world = world.add(output.value());
+
+		assert(has_added_to_world);
+		return output;
 	}
 
 	template <CanRequestWorldScope T> bool tick_creature(T &client, World &world, OrganismId id) {

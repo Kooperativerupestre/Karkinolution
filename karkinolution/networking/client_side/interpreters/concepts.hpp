@@ -25,11 +25,14 @@ namespace Karkinolution::Networking::ClientSide {
 		};
 
 	template <typename T>
-	concept AsClient = CanRequest<T> && requires(T &client) {
+	concept CanHandleConnection = requires(T &client) {
 		{ client.connect() };
 		{ client.disconnect() };
 		{ client.is_connected() } -> std::same_as<bool>;
 	};
+
+	template <typename T>
+	concept AsClient = CanRequest<T> && CanHandleConnection<T>;
 
 
 } // namespace Karkinolution::Networking::ClientSide

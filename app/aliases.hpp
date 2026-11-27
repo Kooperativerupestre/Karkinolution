@@ -25,4 +25,8 @@ namespace KApp {
 	using Component = Opsiamethystos::Gui::Components::Component;
 	using Opsiamethystos::Graphics::Panel::Components::ComponentsStorage;
 	using Opsiamethystos::Gui::Panel::Panel;
+	using WorldResponseResult  = Karkinolution::Networking::ClientSide::Client::WorldResponseResult;
+	using WorldRequestData     = Karkinolution::Networking::ClientSide::Client::WorldRequestData;
+	using SystemResponseResult = Karkinolution::Networking::ClientSide::Client::SystemResponseResult;
+	using SystemRequestData    = Karkinolution::Networking::ClientSide::Client::SystemRequestData;
 } // namespace KApp

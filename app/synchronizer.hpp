@@ -1,15 +1,22 @@
 #pragma once
 
 #include "app/aliases.hpp"
+#include "app/commanders/concepts.hpp"
 #include "opsiamethystos/graphics/panel/components/component.hpp"
+#include "opsiamethystos/graphics/panel/components/low_level/button.hpp"
+#include "opsiamethystos/graphics/panel/layout/layout.hpp"
 #include "opsiamethystos/math/geometry/geometry.hpp"
 #include "shared/core/color.hpp"
+#include "shared/functional/optional_reference.hpp"
 
+#include <app/commanders/creature.hpp>
 #include <cstddef>
+#include <iostream>
 #include <karkinolution/networking/client_side/world/world.hpp>
 #include <karkinolution/networking/client_side/world/worlds_manager.hpp>
 #include <memory>
 #include <opsiamethystos/graphics/models/models.hpp>
+#include <string>
 
 namespace KApp {
 
@@ -44,7 +51,33 @@ namespace KApp {
 			bool has_current_world() const {
 				return worlds_manager.has_current_world();
 			}
+
+			KShared::Functional::OptionalReference<World> get_current_world() {
+				return worlds_manager.see_current_world();
+			}
+
+			KShared::Functional::OptionalReference<const World> get_current_world() const {
+				return worlds_manager.see_current_world();
+			}
+
+			WorldResponseResult request_world_scope(const WorldRequestData &data) {
+				return client.request_world_scope(data);
+			}
+
+			SystemResponseResult request_system_scope(const SystemRequestData &data) {
+				return client.request_system_scope(data);
+			}
+
+			void throw_if_no_connected(const std::string &message) const {
+				if (!client.is_connected()) {
+					std::cerr << message << "\n";
+					assert(client.is_connected());
+				}
+			}
 	};
+
+	static_assert(Commanders::CanRequestWorldScope<WorldEnvironment>);
+	static_assert(Commanders::AsClient<WorldEnvironment>);
 
 	class Viewer {
 		private:
@@ -78,6 +111,26 @@ namespace KApp {
 												  KShared::Colors::Presets::Gray},
 									 "Connect",
 									 KShared::Colors::Presets::Green,
+									 20}});
+
+				// Create creature button
+
+
+				components.emplace(
+					2,
+					Component{Button{Math::Geometry::Rectangle{Math::Geometry::Position{0.0f, 0.0f}, 100, 100},
+									 [this]() {
+										 environment.throw_if_no_connected(
+											 "To make a creature, the environment should be connected");
+										 Commanders::Creature::make_creature(
+											 environment,
+											 environment.get_current_world().reference());
+									 },
+									 ButtonStyles{KShared::Colors::Presets::White,
+												  KShared::Colors::Presets::Gray,
+												  KShared::Colors::Presets::Purple},
+									 "Make creature",
+									 KShared::Colors::Presets::Gold,
 									 20}});
 			}
 
@@ -122,38 +175,38 @@ namespace KApp {
 				: environment(environment)
 				, components(10)
 				, panel(panel) {
-
 				reserve_components();
 
 				panel.add(components.share(0).value());
 				panel.add(components.share(1).value());
+				panel.add(components.share(2).value());
+
 				update_components();
 
 				namespace Layout = Opsiamethystos::Gui::Panel::Layout;
+				namespace Font   = Opsiamethystos::Gui::Components::Drivers::Font;
 
-				const auto label_id  = components.share(0).value()->get_id();
-				const auto button_id = components.share(1).value()->get_id();
+				const auto connection_status_label_id = components.share(0).value()->get_id();
 
+				const auto connect_button_node =
+					std::make_shared<const Layout::Node>(Layout::Node{Layout::leaf(components.share(1).value())});
 
-				const auto button_node =
-					std::make_shared<const Layout::Node>(Layout::Node{Layout::Leaf{button_id, [] {
-																					   return Layout::Size{100, 100};
-																				   }}});
-
-
-				namespace Font = Opsiamethystos::Gui::Components::Drivers::Font;
+				const auto make_creature_button_node =
+					std::make_shared<const Layout::Node>(Layout::Node{Layout::leaf(components.share(2).value())});
 
 				const auto label_node = std::make_shared<const Layout::Node>(
-					Layout::Node{Layout::Leaf{label_id, [] {
+					Layout::Node{Layout::Leaf{connection_status_label_id, [] {
 												  const auto widest = Font::measure_text("Disconnected", 20);
 												  return Layout::Size{widest.width, 100};
 											  }}});
 
-				panel.set_layout(Layout::Node{
-					Layout::Stack{.direction   = Layout::Direction::HORIZONTAL,
-								  .spacing     = 10,
-								  .cross_align = Layout::CrossAlign::START,
-								  .children = {{Layout::Content{}, label_node}, {Layout::Fixed{100}, button_node}}}});
+				panel.set_layout(
+					Layout::Node{Layout::Stack{.direction   = Layout::Direction::HORIZONTAL,
+											   .spacing     = 10,
+											   .cross_align = Layout::CrossAlign::START,
+											   .children    = {{Layout::Content{}, label_node},
+															   {Layout::Content{}, connect_button_node},
+															   {Layout::Content{}, make_creature_button_node}}}});
 			}
 
 			void run() {
