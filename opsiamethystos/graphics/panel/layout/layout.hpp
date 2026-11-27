@@ -137,6 +137,37 @@ namespace Opsiamethystos {
 				// its preferred size on every pass. Throws std::invalid_argument for a null participant.
 				[[nodiscard]] Node leaf(std::shared_ptr<const Participant> participant);
 
+				// Options shared by row() and column().
+				struct StackOptions {
+						// Space between the stack's edge and its children.
+						Insets padding{};
+						// Space between two neighbouring children.
+						double spacing{};
+						// Defaults to STRETCH, unlike a hand-built Stack. A container has no intrinsic
+						// size, so any other alignment would collapse a nested row or column to the
+						// minimum extent on the cross axis.
+						CrossAlign cross_align = CrossAlign::STRETCH;
+				};
+
+				// The builders below describe how a stack gives space to one child. fixed() asks for an
+				// exact extent on the main axis, content() for the child's preferred size, and fill()
+				// for a weighted share of what the other children leave over. Each takes either a
+				// participant (typically a component) or an already built node, and throws
+				// std::invalid_argument for a null participant or an invalid extent or weight.
+				[[nodiscard]] Child fixed(double extent, Node node);
+				[[nodiscard]] Child fixed(double extent, std::shared_ptr<const Participant> participant);
+				[[nodiscard]] Child content(Node node);
+				[[nodiscard]] Child content(std::shared_ptr<const Participant> participant);
+				[[nodiscard]] Child fill(Node node, double weight = 1.0);
+				[[nodiscard]] Child fill(std::shared_ptr<const Participant> participant, double weight = 1.0);
+
+				// A row places its children left to right, a column top to bottom. They throw
+				// std::invalid_argument when the result is not a valid declaration (see validate).
+				// Example, a label next to a button:
+				//   panel.set_layout(row({content(label), fixed(100, button)}, {.spacing = 10}));
+				[[nodiscard]] Node row(std::vector<Child> children, StackOptions options = {});
+				[[nodiscard]] Node column(std::vector<Child> children, StackOptions options = {});
+
 				// Checks that a tree is a valid declaration. A violation is a programming error, so it
 				// throws std::invalid_argument instead of being reported as a runtime result. Rejected:
 				// a child without a node, a Fixed extent that is not finite and greater than zero,

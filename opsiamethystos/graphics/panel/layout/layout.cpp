@@ -216,6 +216,17 @@ namespace Opsiamethystos {
 						return std::isfinite(value) && value >= 0.0;
 					}
 
+					void validate_policy(const SizePolicy &policy) {
+						if (const auto* fixed = std::get_if<Fixed>(&policy);
+							fixed != nullptr && !(std::isfinite(fixed->extent) && fixed->extent > 0.0)) {
+							throw std::invalid_argument("layout Fixed extent must be finite and greater than zero");
+						}
+						if (const auto* fill = std::get_if<Fill>(&policy);
+							fill != nullptr && !is_non_negative(fill->weight)) {
+							throw std::invalid_argument("layout Fill weight must be finite and non-negative");
+						}
+					}
+
 					void validate_node(const Node &node, std::unordered_set<Components::ComponentId> &seen) {
 						if (const auto* leaf = std::get_if<Leaf>(&node.value)) {
 							if (!seen.insert(leaf->id).second) {
@@ -238,16 +249,25 @@ namespace Opsiamethystos {
 							if (!child.node) {
 								throw std::invalid_argument("layout child has no node");
 							}
-							if (const auto* fixed = std::get_if<Fixed>(&child.policy);
-								fixed != nullptr && !(std::isfinite(fixed->extent) && fixed->extent > 0.0)) {
-								throw std::invalid_argument("layout Fixed extent must be finite and greater than zero");
-							}
-							if (const auto* fill = std::get_if<Fill>(&child.policy);
-								fill != nullptr && !is_non_negative(fill->weight)) {
-								throw std::invalid_argument("layout Fill weight must be finite and non-negative");
-							}
+							validate_policy(child.policy);
 							validate_node(*child.node, seen);
 						}
+					}
+
+					Child make_child(const SizePolicy &policy, Node node) {
+						validate_policy(policy);
+						return {policy, std::make_shared<const Node>(std::move(node))};
+					}
+
+					Node
+					make_stack(const Direction direction, std::vector<Child> children, const StackOptions &options) {
+						Node node{Stack{.direction   = direction,
+										.padding     = options.padding,
+										.spacing     = options.spacing,
+										.cross_align = options.cross_align,
+										.children    = std::move(children)}};
+						validate(node);
+						return node;
 					}
 				} // namespace
 
@@ -259,6 +279,38 @@ namespace Opsiamethystos {
 					return Node{Leaf{id, [participant = std::move(participant)] {
 										 return participant->preferred_size();
 									 }}};
+				}
+
+				Child fixed(const double extent, Node node) {
+					return make_child(Fixed{extent}, std::move(node));
+				}
+
+				Child fixed(const double extent, std::shared_ptr<const Participant> participant) {
+					return fixed(extent, leaf(std::move(participant)));
+				}
+
+				Child content(Node node) {
+					return make_child(Content{}, std::move(node));
+				}
+
+				Child content(std::shared_ptr<const Participant> participant) {
+					return content(leaf(std::move(participant)));
+				}
+
+				Child fill(Node node, const double weight) {
+					return make_child(Fill{weight}, std::move(node));
+				}
+
+				Child fill(std::shared_ptr<const Participant> participant, const double weight) {
+					return fill(leaf(std::move(participant)), weight);
+				}
+
+				Node row(std::vector<Child> children, StackOptions options) {
+					return make_stack(Direction::HORIZONTAL, std::move(children), options);
+				}
+
+				Node column(std::vector<Child> children, StackOptions options) {
+					return make_stack(Direction::VERTICAL, std::move(children), options);
 				}
 
 				void validate(const Node &root) {
