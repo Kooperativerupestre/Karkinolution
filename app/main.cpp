@@ -25,9 +25,6 @@ int main() {
 
 	Panel::Panel panel{
 		MathGeometry::Rectangle{MathGeometry::Position{400, 225}, MathGeometry::Width{800}, MathGeometry::Height{450}}};
-	panel.set_layout(Panel::Layout::Node{Panel::Layout::Stack{.direction   = Panel::Layout::Direction::HORIZONTAL,
-															  .cross_align = Panel::Layout::CrossAlign::STRETCH,
-															  .children    = {}}});
 	KApp::Synchronizer synchronizer{panel};
 
 
@@ -36,11 +33,13 @@ int main() {
 		KApp::Window::init_inside_loop();
 
 
-		panel.draw();
-		const auto result = panel.relayout();
+		const auto layout = panel.update();
+		if (!layout) {
+			throw std::runtime_error(std::string{Panel::to_string(layout.error().code)});
+		}
+		assert(!layout->overflowed);
 
-		assert(result.has_value());
-		assert(!result->overflowed);
+		panel.draw();
 
 		KApp::Window::end_inside_loop();
 	}

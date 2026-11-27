@@ -129,27 +129,15 @@ namespace KApp {
 				namespace Layout = Opsiamethystos::Gui::Panel::Layout;
 				namespace Font   = Opsiamethystos::Gui::Components::Drivers::Font;
 
-				const auto connection_status_label_id = components.share(0).value()->get_id();
+				// The status text switches between "Connected" and "Disconnected" and must always fit
+				// its slot, so the width of the widest one is reserved up front.
+				const auto status_width = Font::measure_text("Disconnected", 20).width;
 
-				const auto connect_button_node =
-					std::make_shared<const Layout::Node>(Layout::Node{Layout::leaf(components.share(1).value())});
-
-				const auto make_creature_button_node =
-					std::make_shared<const Layout::Node>(Layout::Node{Layout::leaf(components.share(2).value())});
-
-				const auto label_node = std::make_shared<const Layout::Node>(
-					Layout::Node{Layout::Leaf{connection_status_label_id, [] {
-												  const auto widest = Font::measure_text("Disconnected", 20);
-												  return Layout::Size{widest.width, 100};
-											  }}});
-
-				panel.set_layout(
-					Layout::Node{Layout::Stack{.direction   = Layout::Direction::HORIZONTAL,
-											   .spacing     = 10,
-											   .cross_align = Layout::CrossAlign::START,
-											   .children    = {{Layout::Content{}, label_node},
-															   {Layout::Content{}, connect_button_node},
-															   {Layout::Content{}, make_creature_button_node}}}});
+				panel.set_layout(Layout::row(
+					{Layout::content(Layout::leaf(components.share(0).value(), Layout::Size{status_width, 100})),
+					 Layout::content(components.share(1).value()),
+					 Layout::content(components.share(2).value())},
+					{.spacing = 10, .cross_align = Layout::CrossAlign::START}));
 			}
 
 			void run() {
