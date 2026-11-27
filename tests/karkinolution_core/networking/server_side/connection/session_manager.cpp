@@ -72,3 +72,30 @@ TEST(SessionManager, RejectsWorldFramesBeforeWorldAcquisition) {
 	EXPECT_THROW(manager.receive(make_world_frame(Karkinolution::Testing::Frame::make_see_creature_frame(1, 45))),
 				 std::runtime_error);
 }
+
+TEST(SessionManager, CreateWorldCallReturnsItsResultAndAcquiresTheWorldWhenRequested) {
+	WorldStorage      storage;
+	Simulation        simulation{storage};
+	SimulationAdapter adapter{simulation, 17};
+	SessionManager    manager{adapter};
+
+	const auto payload =
+		Karkinolution::Networking::Frames::System::MessageInterpreters::SystemCall::SRI::make_create_world(
+			Karkinolution::Testing::World::make_small_world_preset());
+	const auto extra =
+		Karkinolution::Networking::Frames::System::Models::SystemCall::CreateWorldExtra{.auto_connect = true};
+	manager.receive(make_system_frame(make_raw_system_call(SystemCallSubTypes::CREATE_WORLD, 3, payload, extra)));
+
+	ASSERT_TRUE(manager.has_response());
+	const auto response =
+		std::get<Karkinolution::Networking::Frames::System::Models::SystemOutput::SystemOutput>(manager.pop_response());
+	EXPECT_EQ(response.get_sub_type(), SystemOutputSubTypes::WorldCreated);
+	EXPECT_TRUE(
+		Karkinolution::Networking::Frames::System::MessageInterpreters::DSI::get_world_created(response.get_payload())
+			.world_created);
+
+	manager.receive(make_world_frame(Karkinolution::Testing::Frame::make_see_creature_frame(4, 45)));
+	ASSERT_TRUE(manager.has_response());
+	const auto world_response = std::get<ResponseFrame>(manager.pop_response());
+	EXPECT_EQ(world_response.get_request_id(), 4);
+}
