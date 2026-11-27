@@ -1,6 +1,9 @@
 #include "opsiamethystos/graphics/panel/layout/layout.hpp"
 
 #include <algorithm>
+#include <cmath>
+#include <stdexcept>
+#include <unordered_set>
 
 namespace Opsiamethystos {
 	namespace Gui {
@@ -207,7 +210,50 @@ namespace Opsiamethystos {
 							},
 							node.value);
 					}
+
+					bool is_non_negative(const double value) {
+						return std::isfinite(value) && value >= 0.0;
+					}
+
+					void validate_node(const Node &node, std::unordered_set<Components::ComponentId> &seen) {
+						if (const auto* leaf = std::get_if<Leaf>(&node.value)) {
+							if (!seen.insert(leaf->id).second) {
+								throw std::invalid_argument("layout lists the same component in more than one leaf");
+							}
+							return;
+						}
+
+						const auto &stack   = std::get<Stack>(node.value);
+						const auto &padding = stack.padding;
+						if (!is_non_negative(stack.spacing)) {
+							throw std::invalid_argument("layout spacing must be finite and non-negative");
+						}
+						if (!is_non_negative(padding.left) || !is_non_negative(padding.top)
+							|| !is_non_negative(padding.right) || !is_non_negative(padding.floor)) {
+							throw std::invalid_argument("layout padding must be finite and non-negative");
+						}
+
+						for (const auto &child : stack.children) {
+							if (!child.node) {
+								throw std::invalid_argument("layout child has no node");
+							}
+							if (const auto* fixed = std::get_if<Fixed>(&child.policy);
+								fixed != nullptr && !(std::isfinite(fixed->extent) && fixed->extent > 0.0)) {
+								throw std::invalid_argument("layout Fixed extent must be finite and greater than zero");
+							}
+							if (const auto* fill = std::get_if<Fill>(&child.policy);
+								fill != nullptr && !is_non_negative(fill->weight)) {
+								throw std::invalid_argument("layout Fill weight must be finite and non-negative");
+							}
+							validate_node(*child.node, seen);
+						}
+					}
 				} // namespace
+
+				void validate(const Node &root) {
+					std::unordered_set<Components::ComponentId> seen;
+					validate_node(root, seen);
+				}
 
 				LayoutResult layout(const Edges &box, const Node &root) {
 					// The result is local state only: identical input trees and boxes

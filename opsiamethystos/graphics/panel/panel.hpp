@@ -102,7 +102,9 @@ namespace Opsiamethystos {
 					void draw() const;
 					void draw(const Math::Geometry::Position &origin) const;
 					// Replaces the pure layout tree and defers component mutation until the
-					// next relayout call, allowing multiple edits to be batched.
+					// next relayout call, allowing multiple edits to be batched. Throws
+					// std::invalid_argument for an invalid tree (see Layout::validate); the previous
+					// layout is kept in that case.
 					void set_layout(Layout::Node layout_root);
 					// Marks the deferred layout pass dirty after a measure-affecting change.
 					void mark_layout_dirty() noexcept;

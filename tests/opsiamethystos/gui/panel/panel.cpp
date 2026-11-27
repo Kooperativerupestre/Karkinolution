@@ -286,3 +286,24 @@ TEST(GuiPanel, RelayoutReportsOverflowWhileStillCommittingTheClampedSlots) {
 	EXPECT_TRUE(result->applied);
 	EXPECT_TRUE(result->overflowed);
 }
+
+TEST(GuiPanel, SetLayoutRejectsAnInvalidTreeAndKeepsThePreviousLayout) {
+	Panel::Panel panel{rectangle(0, 0, 100, 100)};
+	const auto   component = rectangle_component(rectangle(30, 0));
+
+	ASSERT_TRUE(panel.add(component));
+	panel.set_layout(Panel::Layout::Node{
+		Panel::Layout::Stack{.direction   = Panel::Layout::Direction::HORIZONTAL,
+							 .cross_align = Panel::Layout::CrossAlign::STRETCH,
+							 .children    = {{Panel::Layout::Fixed{20}, leaf_node(component->get_id())}}}});
+
+	EXPECT_THROW(panel.set_layout(Panel::Layout::Node{
+					 Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
+										  .children  = {{Panel::Layout::Fixed{-1}, leaf_node(component->get_id())}}}}),
+				 std::invalid_argument);
+
+	const auto result = panel.relayout();
+	ASSERT_TRUE(result.has_value());
+	EXPECT_TRUE(result->applied);
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-40, 0)).has_value());
+}

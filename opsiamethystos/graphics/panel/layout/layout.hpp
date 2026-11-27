@@ -110,6 +110,13 @@ namespace Opsiamethystos {
 						bool overflowed = false;
 				};
 
+				// Checks that a tree is a valid declaration. A violation is a programming error, so it
+				// throws std::invalid_argument instead of being reported as a runtime result. Rejected:
+				// a child without a node, a Fixed extent that is not finite and greater than zero,
+				// a Fill weight, spacing or padding that is not finite and non-negative, and a
+				// component that appears in more than one leaf.
+				void validate(const Node &root);
+
 				// Performs a deterministic pure layout pass. The root box is expressed in
 				// edge coordinates, and the result contains one rectangular slot per leaf.
 				// It does not know about the panel, quadtree, component mutation, rendering,

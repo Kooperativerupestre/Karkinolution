@@ -88,6 +88,8 @@ namespace Opsiamethystos {
 			// Layout changes are cheap to stage and potentially expensive to apply;
 			// defer the pass so callers can edit the tree without partial updates.
 			void Panel::set_layout(Layout::Node layout_root) {
+				// Validate before storing so a rejected tree leaves the previous layout intact.
+				Layout::validate(layout_root);
 				layout_root_  = std::move(layout_root);
 				layout_dirty_ = true;
 			}
