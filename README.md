@@ -100,6 +100,8 @@ because the client and server use asynchronous I/O and synchronized shared state
 - [`docs/CLIENT.md`](docs/CLIENT.md): public C++ client API and lifecycle
 - [`PROTOCOL.md`](PROTOCOL.md): protocol overview
 - [`shared/binary/BINARY_CONVENTIONS.md`](shared/binary/BINARY_CONVENTIONS.md): SRI/DSI, layouts, offsets, and frame buffering
+- [`karkinolution/networking/frame/README.md`](karkinolution/networking/frame/README.md): frame architecture and request flow
+- [`karkinolution/networking/frame/FRAME_CONVENTIONS.md`](karkinolution/networking/frame/FRAME_CONVENTIONS.md): frame-specific protocol and layout rules
 - [`docs/commands.md`](docs/commands.md): development commands and CMake presets
 - [`CLI.md`](CLI.md): the `karkinolution` command-line tool
 - [`docs/rules.md`](docs/rules.md): architectural and coding rules

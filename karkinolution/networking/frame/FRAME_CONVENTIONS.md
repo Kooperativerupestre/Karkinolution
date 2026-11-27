@@ -1,4 +1,4 @@
-# Binary Conventions
+# Frame Conventions
 
 - **DSI**: Deserializer Interpreter
 - **SRI**: Serializer Interpreter
@@ -11,10 +11,10 @@
 
 ## Directory Structure
 
-Frame `interpreters/` serialize and deserialize simulation models. The parallel `message_interpreters/` layer owns
-payloads that belong to a specific message operation, such as request construction and protocol-only input models.
-Reuse a domain model when it already represents the data; define a message model only when the payload has a distinct
-shape or a reduced frame representation.
+Frame contracts, layouts, models, parsers, and motors live under `karkinolution/networking/frame/`, grouped by scope:
+`base/`, `system/`, and `world/`. Within system and world scopes, `interpreters/` serialize simulation models, while
+`message_interpreters/` own operation-specific payloads and protocol-only models. Reuse an existing model when it
+represents the exchanged data; define a message model only when the payload has a distinct or reduced shape.
 
 ### Shared binary primitives
 
@@ -23,27 +23,32 @@ constraints, byte append/padding helpers, generic serialization/deserialization,
 constraints, field layout helpers, and type-name helpers. It must not depend on protocol contracts or frame models, so
 the core, networking, client-side, and other modules can use the same binary mechanics.
 
-Protocol-specific aliases, validators, numeric-type mappings, interpreters, and frames remain under
-`karkinolution/binary/` in the `Karkinolution::Binary` namespace and may depend on `KShared::Binary`.
+Protocol-specific aliases, validators, numeric-type mappings, interpreters, and frames belong under
+`karkinolution/networking/frame/` and the relevant Karkinolution domain modules. They may depend on `KShared::Binary`,
+but shared binary primitives must not depend on frame contracts or domain models.
 
 - **Core**:
-  - `src/shared/binary/serializer.[hpp|cpp]`
-  - `src/shared/binary/deserializer.hpp`
+  - `shared/binary/serializer.[hpp|cpp]`
+  - `shared/binary/deserializer.hpp`
 - **Generic binary types**:
-  - `src/shared/binary/types/function_concepts.hpp`
-  - `src/shared/binary/types/list.hpp`
+  - `shared/binary/types/function_concepts.hpp`
+  - `shared/binary/types/list.hpp`
   - Generic list serialization belongs to `KShared::Binary::Types`; it must not depend on Karkinolution protocol
     contracts or domain models.
 - **Interpreters**:
-  - Domain interpreters: `src/karkinolution/binary/interpreters/<name>.[hpp|cpp]`
-  - Shared mathematical interpreters: `src/shared/binary/interpreters/<name>.[hpp|cpp]`
-  - Each `<name>.hpp` contains SRI and DSI definitions, as well as the global aliases `namespace <Name>SRI` and `namespace <Name>DSI` at the bottom of the file.
-  - Each `<name>.cpp` contains both SRI and DSI function implementations.
+  - Frame model interpreters: `karkinolution/networking/frame/<scope>/interpreters/<name>.[hpp|cpp]`
+  - Message payload interpreters: `karkinolution/networking/frame/<scope>/message_interpreters/<name>.[hpp|cpp]`
+  - Shared mathematical interpreters: `shared/binary/interpreters/<name>.[hpp|cpp]`
+  - Keep SRI and DSI declarations and implementations together by interpreter/domain, following the surrounding module's
+    namespace and alias conventions.
 - **Interpreter models**:
-  - Domain model types are declared in `src/karkinolution/binary/interpreters/models/<name>.hpp`.
-  - Domain model namespace is `Karkinolution::Binary::Interpreters::Models::<Domain>`.
+  - Frame representations of simulation models are declared under
+    `karkinolution/networking/frame/<scope>/interpreters/models/`.
+  - Message-only models are declared beside their operation codecs, commonly in
+    `karkinolution/networking/frame/<scope>/message_interpreters/models.hpp`.
+  - World frame model namespace is `Karkinolution::Networking::Frames::World::Interpreters::Models::<Domain>`.
   - Shared mathematical model namespace is `KShared::Binary::Interpreters::Models::<Domain>`.
-  - DSI declarations and implementations refer to these models; model types are not nested inside DSI namespaces.
+  - Model types are not nested inside SRI or DSI namespaces.
 
 ---
 
@@ -53,13 +58,15 @@ An SRI defines binary layout protocols and converts domain types into byte seque
 
 ### Conventions:
 1. **Namespace**: `<Domain>SRI` (e.g., `VecSRI`, `PhysicsUnitsSRI`, `StatsSRI`).
-2. **Offsets**: Define field offsets as `inline constexpr std::size_t TO_GET_<FIELD>_OFFSET` **only when representing compound or aggregator types** (e.g., `Size`, `Vec2`, `Stat`). Isolated primitive values or standalone wrappers (e.g., `Radius`, `Meter`, `Circumference`) must **not** define offset constants.
-3. **Fixed Buffer Types**: Define `using <Type>Bytes = std::array<std::byte, N>` for compound layouts.
+2. **Field Layouts**: Define ordered fields in `SRI::Layout` with `KShared::Binary::Field` and `KShared::Binary::Next`.
+   Reuse these aliases for both serialization and deserialization instead of duplicating offsets.
+3. **Fixed Buffer Types**: Define `using <Type>Bytes = std::array<std::byte, N>` for fixed-size layouts.
 4. **Protocol Documentation**: Document the exact byte layout protocol in the SRI header.
-5. **Functions**: `serialize_<entity>(<DomainType>)` returning `Serializer::Types::*Bytes` or fixed array.
+5. **Functions**: Accept the corresponding model and return its fixed byte array or variable-length byte sequence.
 6. **Implementation**:
    - Primitives: delegate to `Serializer::convert_<type>()` or `Serializer::serialize()`.
-   - Compounds: construct fixed array and append fields using `Deserializer::append_bytes(bytes, field_bytes, TO_GET_<FIELD>_OFFSET)`.
+   - Compounds: construct a fixed array and append fields with
+     `KShared::Binary::Utils::append_bytes(bytes, field_bytes, Layout::Field::OFFSET)`.
    - No Duplication: Do not define duplicate serializers for existing types; delegate directly to their domain SRI.
 
 ---
@@ -69,16 +76,17 @@ An SRI defines binary layout protocols and converts domain types into byte seque
 A DSI reads raw byte payloads and reconstructs domain objects.
 
 ### Conventions:
-1. **Namespace**: `<Domain>DSI` (e.g., `VecDSI`, `PhysicsUnitsDSI`, `StatsDSI`).
+1. **Namespace**: the corresponding DSI namespace or alias (e.g., `CreatureDSI`, `SoilDSI`, `VecDSI`).
 2. **No Protocol Comments**: Do not duplicate protocol layout comments in DSI; the protocol is defined in the SRI.
-3. **Reuse SRI Offsets**: Never redefine offset constants in DSI. Always `#include` the corresponding SRI header and reference `<Domain>SRI::TO_GET_<FIELD>_OFFSET` for compound aggregators. Isolated values do not use offset constants.
+3. **Reuse SRI Layouts**: Never redefine field offsets in DSI. Include the corresponding SRI header and reference
+   `<Domain>SRI::Layout::<Field>::OFFSET`.
 4. **Function Signatures**: Accept payload and an optional offset (defaults to 0):
    ```cpp
    <DomainType> deserialize_<entity>(const std::vector<std::byte> &payload, std::size_t offset = 0);
    ```
 5. **Implementation**:
    - Primitives: read with `Deserializer::read_<type>(payload, offset)`.
-   - Compounds: delegate each field using `offset + <Domain>SRI::TO_GET_<FIELD>_OFFSET`.
+   - Compounds: delegate each field using `offset + <Domain>SRI::Layout::<Field>::OFFSET`.
    - No Duplication: Do not define duplicate deserializers for existing types; delegate directly to their domain DSI.
 
 ---
@@ -102,9 +110,9 @@ BaseIdType SoilDSI::get_id(const std::vector<std::byte> &payload, std::size_t of
 }
 
 // Principal — adds field offset before calling auxiliaries
-Karkinolution::Binary::Interpreters::Models::Soil::Soil
+Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::Soil
 SoilDSI::get_soil(const std::vector<std::byte> &payload, std::size_t offset) {
-    return Karkinolution::Binary::Interpreters::Models::Soil::Soil{
+    return Karkinolution::Networking::Frames::World::Interpreters::Models::Soil::Soil{
         .id = get_id(payload, offset + SoilSRI::Layout::Id::OFFSET),
         // ...
     };
@@ -157,14 +165,11 @@ For **mid-level composite DSIs**, tests must prove that auxiliary getters **do**
 2. Call each auxiliary getter with the base offset of the block (not the field's absolute position).
 3. Assert the result matches the expected field value.
 
-### SO Pattern (Serialized output)
+### Serialized frame outputs
 
-A SO resolves the following problem: How can we know which sub type the serialized thing has? 
-
-#### Conventions
-
-.payload -> Bytes
-.sub_type (or sub_type())
+A serialized frame output has a subtype in its frame header and a payload encoded by the matching SRI. Keep subtype
+selection in the frame motor/processor path and payload encoding in its owning interpreter; do not encode the subtype
+again inside the payload.
 
 ## Create-world system call
 
@@ -204,16 +209,16 @@ exceed the fixed name slot.
 
 - The declared size counts bytes after the declared-size field, including the remaining fixed header and payload.
 - Each request operation, response, and error has its own fixed-header size and payload-size calculation.
-- `Request::<Operation>::FIXED_HEADER_SIZE` is the absolute offset of the payload start from the beginning of the
-  frame. It includes the declared-size field; do not add `TOTAL_HEADER_SIZE` to it again.
-- The parser-level size dispatchers receive the frame type and `Protocol::Detail::CodeVariant` subtype and route to the
-  corresponding request-operation, response, or error calculation.
+- `FIXED_HEADER_SIZE` constants in a scope's `layout.hpp` are the absolute payload-start offsets from the beginning of
+  the frame. They include the declared-size field; do not add the total header size to them again.
+- Scope-specific parser dispatchers route by frame type and subtype to the matching request, response, or error size
+  calculation.
 
 ## Creature cycle operation
 
 `CYCLE CREATURE <id>` uses the existing eight-byte creature ID payload and the `CYCLE` request operation. The server
-executes one creature motor tick through `CreatureAPI::tick`. A present creature is returned as a `CREATURE` response
-with cardinality `ONE`; an unknown or removed creature returns a `NONE` response.
+executes one creature motor tick through `Karkinolution::API::Creature::tick`. A present creature is returned as a
+`CREATURE` response with cardinality `ONE`; an unknown or removed creature returns a `NONE` response.
 
 `CYCLE SOIL <id>` follows the same layout and response cardinality. The server executes one soil motor tick and returns
 the updated soil as a `SOIL` response, or `NONE` when the soil ID is absent.
@@ -225,10 +230,9 @@ elements are only the resource IDs. Each element is one `int64_t` ID; the respon
 entity. This keeps enumeration separate from fetching mutable entity state through the corresponding `SEE ONE`
 operation.
 
-Exact payload layouts belong beside the SRI declaration that owns them. For example, the `CREATURE` response layout,
-its grouped transport data, field offsets, and total size are documented in the `CREATURE PROTOCOL` block in
-`karkinolution/binary/interpreters/creature.hpp`. This document defines reusable binary rules; it does not duplicate
-domain-specific layouts.
+The `CREATURE` response layout, its grouped transport data, field offsets, and total size are documented in the
+`CREATURE PROTOCOL` block in [`world/interpreters/creature.hpp`](world/interpreters/creature.hpp). This document
+defines reusable frame rules and protocol decisions; the owning SRI remains the source of truth for entity layouts.
 
 ## Frame Detection
 
@@ -238,3 +242,11 @@ domain-specific layouts.
   dispatch frame detection by frame type and subtype.
 - Frame extraction returns only the first complete frame from the buffer; buffer consumers are responsible for
   removing consumed bytes.
+
+## Related documentation
+
+- [Frame directory guide](README.md)
+- [System frame contract](system/contract.hpp)
+- [World frame contract](world/contract.hpp)
+- [Shared binary conventions](../../../shared/binary/BINARY_CONVENTIONS.md)
+- [Architecture and request flow](../../../docs/ARCHITECTURE.md)

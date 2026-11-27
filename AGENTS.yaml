@@ -50,9 +50,13 @@ workflow:
       purpose: "Client-side interpreter structure, namespaces, request flow, and error handling."
       when: "Read when the task involves implementing or modifying client-side interpreters or client internals."
 
-    - file: "karkinolution/binary/BINARY_CONVENTIONS.md"
-      purpose: "SRI/DSI structure, binary layouts, offset responsibility, and protocol test requirements."
+    - file: "karkinolution/networking/frame/FRAME_CONVENTIONS.md"
+      purpose: "Frame protocols, SRI/DSI ownership, binary layouts, offsets, and protocol test requirements."
       when: "Read when the task involves binary protocol, SRI/DSI, frame encoding, or binary validators."
+
+    - file: "karkinolution/networking/frame/README.md"
+      purpose: "Frame directory structure, layer responsibilities, and request flow."
+      when: "Read when the task involves frame architecture or frame-level request handling."
 
     - file: "karkinolution/api/HOW_TO_CREATE_API.md"
       purpose: "Architecture and verification requirements for client-accessible APIs."

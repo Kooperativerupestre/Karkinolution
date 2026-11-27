@@ -59,8 +59,9 @@ not be changed through abrupt API migrations.
 - generic list and interpreter infrastructure.
 
 It must not depend on Karkinolution frame contracts or simulation models. Protocol-specific serializers, deserializers,
-layouts, and frame models belong under `karkinolution/networking/frame/` or the domain binary directories. See
-[Binary Conventions](../shared/binary/BINARY_CONVENTIONS.md) for the offset and interpreter rules.
+layouts, and frame models belong under `karkinolution/networking/frame/`. See
+[Binary Conventions](../shared/binary/BINARY_CONVENTIONS.md) for shared byte and offset rules, and the
+[Frame Conventions](../karkinolution/networking/frame/FRAME_CONVENTIONS.md) for frame-specific protocol layouts.
 
 ## Karkinolution core
 
@@ -228,4 +229,6 @@ not depend on rendering details.
 - [Server connection and world acquisition](../karkinolution/networking/server_side/connection/README.md)
 - [How to create a domain API](../karkinolution/api/HOW_TO_CREATE_API.md)
 - [Binary conventions](../shared/binary/BINARY_CONVENTIONS.md)
+- [Frame directory guide](../karkinolution/networking/frame/README.md)
+- [Frame conventions](../karkinolution/networking/frame/FRAME_CONVENTIONS.md)
 - [Architecture history](architecture_history.md)

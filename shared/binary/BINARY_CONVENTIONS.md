@@ -172,5 +172,6 @@ layouts must follow.
 ## Related documentation
 
 - [System frame contract](../../karkinolution/networking/frame/system/contract.hpp)
-- [World frame binary conventions](../../karkinolution/networking/frame/world/BINARY_CONVENTIONS.md)
+- [Frame directory guide](../../karkinolution/networking/frame/README.md)
+- [Frame conventions](../../karkinolution/networking/frame/FRAME_CONVENTIONS.md)
 - [Architecture and request flow](../../docs/ARCHITECTURE.md)

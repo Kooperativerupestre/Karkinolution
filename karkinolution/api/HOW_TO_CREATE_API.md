@@ -11,7 +11,7 @@ must be available to a remote client.
 
 Start with the operation the domain needs, independent of how it will be transported.
 
-- Place the declaration and implementation in the existing `src/karkinolution/api/` domain organization.
+- Place the declaration and implementation in the existing `karkinolution/api/` domain organization.
 - Use the project's existing API namespace and naming conventions. Similar APIs may use different namespace styles;
   follow the conventions of the domain being changed rather than introducing a new style.
 - Accept and return domain values or domain model references as appropriate. Do not expose frame types, protocol codes,
@@ -25,16 +25,18 @@ Start with the operation the domain needs, independent of how it will be transpo
 
 Decide what data crosses the wire and define its binary representation separately from the domain API.
 
-- Add or extend the binary interpreter model in `src/karkinolution/binary/interpreters/models/` when a client-facing
-  representation is needed. A binary model represents exchanged data; it does not have to be the core domain type.
-- Add the domain SRI and DSI in `src/karkinolution/binary/interpreters/`. The SRI serializes domain or binary-model
-  values and constructs operation payloads; the DSI interprets incoming payloads and reconstructs values.
+- Add or extend a frame interpreter model under `karkinolution/networking/frame/<scope>/interpreters/models/` when a
+  simulation model needs a wire representation. For an operation-specific or reduced payload, use the scope's
+  `message_interpreters/` and its `models.hpp`; a message model need not be a core domain type.
+- Add the domain SRI and DSI under `karkinolution/networking/frame/<scope>/interpreters/`. Put request and other
+  operation-specific payload codecs under `message_interpreters/`. Reuse existing mathematical and byte interpreters.
 - Reuse existing unit, geometry, identity, and other interpreters instead of duplicating their encodings.
-- Document byte layouts and offset responsibilities according to
-  [`BINARY_CONVENTIONS.md`](../binary/BINARY_CONVENTIONS.md). Keep a wire-format decision with the protocol or binary
-  definition it governs, rather than duplicating it in unrelated documentation.
-- Choose stable protocol enum values and define the request resource, operation, response subtype, and cardinality
-  needed by the operation in `binary/protocol/contract.hpp`. Treat these values as protocol compatibility decisions.
+- Document shared byte and offset rules in
+  [`shared/binary/BINARY_CONVENTIONS.md`](../../shared/binary/BINARY_CONVENTIONS.md), and frame layouts and ownership in
+  [`FRAME_CONVENTIONS.md`](../networking/frame/FRAME_CONVENTIONS.md). Keep each wire-format decision with the protocol
+  definition it governs.
+- Choose stable protocol values and define the request resource, operation, response subtype, and cardinality in the
+  relevant scope's `contract.hpp`. Treat these values as protocol compatibility decisions.
 - Enforce subtype-specific request and response rules in the frame models, so invalid combinations cannot be
   represented as valid frames.
 
@@ -43,7 +45,7 @@ Decide what data crosses the wire and define its binary representation separatel
 The server path translates the request into domain inputs, calls the domain API, and translates its result back into a
 binary response.
 
-- Add an API binary adapter operation in `src/karkinolution/networking/api_adapter/`.
+- Add an API binary adapter operation in `karkinolution/networking/server_side/api_adapter/`.
 - In the adapter, interpret the request payload with the relevant DSI, call the domain API, serialize the result with
   the relevant SRI, and construct the response frame with the correct subtype and cardinality.
 - Keep this binary-to-domain-to-binary transition in the adapter. Do not put protocol decoding in the domain API or
@@ -53,11 +55,11 @@ binary response.
   applies; do not silently turn failures into successful responses.
 
 The API binary adapter's responsibility and rationale are described in
-[`APIBYA.md`](../networking/api_adapter/APIBYA.md).
+[`APIBYA.md`](../networking/server_side/api_adapter/APIBYA.md).
 
 ## 4. Expose the operation in the client-side interpreter
 
-Add a domain client-side interpreter under `src/karkinolution/networking/client_side/interpreters/`.
+Add a domain client-side interpreter under `karkinolution/networking/client_side/interpreters/`.
 
 - Build the request using the binary SRI and the protocol's resource, operation, target, payload, and extra fields.
 - Send it through the client and use the DSI to interpret the response payload.
@@ -75,7 +77,8 @@ Tests must match the claim they make.
 
 - Protect protocol and model invariants with focused tests that exercise valid and invalid combinations, relevant
   boundaries, and all applicable finite alternatives.
-- Test binary layouts and DSI offset behavior according to `BINARY_CONVENTIONS.md`.
+- Test shared binary behavior according to [`shared/binary/BINARY_CONVENTIONS.md`](../../shared/binary/BINARY_CONVENTIONS.md)
+  and frame protocols according to [`FRAME_CONVENTIONS.md`](../networking/frame/FRAME_CONVENTIONS.md).
 - When claiming that a client-accessible operation works end to end, use an integration test that exercises the real
   client, transport, server dispatch, adapter, domain API, response transport, and SDK interpretation involved in that
   path. A fake client or a direct adapter call does not prove that the complete integration works.
