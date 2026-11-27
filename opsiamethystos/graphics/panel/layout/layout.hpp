@@ -136,6 +136,10 @@ namespace Opsiamethystos {
 				// Builds a leaf for a participant. The leaf keeps the participant alive and asks it for
 				// its preferred size on every pass. Throws std::invalid_argument for a null participant.
 				[[nodiscard]] Node leaf(std::shared_ptr<const Participant> participant);
+				// Same, but the leaf reports `size` instead of the participant's preferred size. Use it
+				// when the cross-axis extent must not follow the content, for example a button that
+				// is always 100 high. Also throws when a dimension is not finite and non-negative.
+				[[nodiscard]] Node leaf(std::shared_ptr<const Participant> participant, Size size);
 
 				// Options shared by row() and column().
 				struct StackOptions {

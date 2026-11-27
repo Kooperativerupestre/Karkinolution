@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <limits>
 #include <memory>
 #include <opsiamethystos/graphics/panel/components/component.hpp>
 #include <opsiamethystos/graphics/panel/components/low_level/circle.hpp>
@@ -91,4 +92,30 @@ TEST(GuiLayoutParticipant, LeafKeepsTheParticipantAliveForAsLongAsTheLeafExists)
 
 TEST(GuiLayoutParticipant, LeafRejectsANullParticipant) {
 	EXPECT_THROW(static_cast<void>(Layout::leaf(nullptr)), std::invalid_argument);
+}
+
+TEST(GuiLayoutParticipant, LeafWithAnExplicitSizeIgnoresThePreferredSizeEvenWhenItChanges) {
+	const auto  text = text_component();
+	const auto  node = Layout::leaf(text, Layout::Size{50, 40});
+	const auto &leaf = std::get<Layout::Leaf>(node.value);
+
+	EXPECT_EQ(leaf.id, text->get_id());
+	EXPECT_EQ(leaf.measure().width, 50.0);
+
+	std::get<LowLevel::Text>(text->get_data()).set_text("abcdef");
+
+	EXPECT_EQ(leaf.measure().width, 50.0);
+	EXPECT_EQ(leaf.measure().height, 40.0);
+}
+
+TEST(GuiLayoutParticipant, LeafWithAnExplicitSizeRejectsNullParticipantsAndInvalidSizes) {
+	const auto   text         = text_component();
+	const double not_a_number = std::numeric_limits<double>::quiet_NaN();
+
+	EXPECT_THROW(static_cast<void>(Layout::leaf(nullptr, Layout::Size{1, 1})), std::invalid_argument);
+	EXPECT_THROW(static_cast<void>(Layout::leaf(text, Layout::Size{-1, 1})), std::invalid_argument);
+	EXPECT_THROW(static_cast<void>(Layout::leaf(text, Layout::Size{1, -1})), std::invalid_argument);
+	EXPECT_THROW(static_cast<void>(Layout::leaf(text, Layout::Size{not_a_number, 1})), std::invalid_argument);
+	EXPECT_THROW(static_cast<void>(Layout::leaf(text, Layout::Size{1, not_a_number})), std::invalid_argument);
+	EXPECT_NO_THROW(static_cast<void>(Layout::leaf(text, Layout::Size{0, 0})));
 }

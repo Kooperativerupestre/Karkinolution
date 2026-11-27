@@ -281,6 +281,18 @@ namespace Opsiamethystos {
 									 }}};
 				}
 
+				Node leaf(std::shared_ptr<const Participant> participant, const Size size) {
+					if (!participant) {
+						throw std::invalid_argument("layout leaf needs a participant");
+					}
+					if (!is_non_negative(size.width) || !is_non_negative(size.height)) {
+						throw std::invalid_argument("layout leaf size must be finite and non-negative");
+					}
+					return Node{Leaf{participant->layout_id(), [size] {
+										 return size;
+									 }}};
+				}
+
 				Child fixed(const double extent, Node node) {
 					return make_child(Fixed{extent}, std::move(node));
 				}
