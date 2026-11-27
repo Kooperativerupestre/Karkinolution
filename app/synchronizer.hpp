@@ -10,6 +10,7 @@
 #include "shared/functional/optional_reference.hpp"
 
 #include <app/commanders/creature.hpp>
+#include <app/world_environment.hpp>
 #include <cstddef>
 #include <iostream>
 #include <karkinolution/networking/client_side/world/world.hpp>
@@ -20,64 +21,6 @@
 
 namespace KApp {
 
-	class WorldEnvironment {
-		private:
-
-			KApp::Client client;
-
-			WorldsManager worlds_manager;
-
-		public:
-
-			WorldEnvironment()
-				: client()
-				, worlds_manager(client) {}
-
-			void connect() {
-				client.connect();
-				if (client.is_connected()) {
-					worlds_manager.sync_after_client_connects();
-				}
-			}
-
-			void disconnect() {
-				client.disconnect();
-			}
-
-			bool is_connected() const {
-				return client.is_connected();
-			}
-
-			bool has_current_world() const {
-				return worlds_manager.has_current_world();
-			}
-
-			KShared::Functional::OptionalReference<World> get_current_world() {
-				return worlds_manager.see_current_world();
-			}
-
-			KShared::Functional::OptionalReference<const World> get_current_world() const {
-				return worlds_manager.see_current_world();
-			}
-
-			WorldResponseResult request_world_scope(const WorldRequestData &data) {
-				return client.request_world_scope(data);
-			}
-
-			SystemResponseResult request_system_scope(const SystemRequestData &data) {
-				return client.request_system_scope(data);
-			}
-
-			void throw_if_no_connected(const std::string &message) const {
-				if (!client.is_connected()) {
-					std::cerr << message << "\n";
-					assert(client.is_connected());
-				}
-			}
-	};
-
-	static_assert(Commanders::CanRequestWorldScope<WorldEnvironment>);
-	static_assert(Commanders::AsClient<WorldEnvironment>);
 
 	class Viewer {
 		private:
