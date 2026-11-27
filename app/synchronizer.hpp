@@ -28,7 +28,9 @@ namespace KApp {
 
 			void connect() {
 				client.connect();
-				worlds_manager.sync_after_client_connects();
+				if (client.is_connected()) {
+					worlds_manager.sync_after_client_connects();
+				}
 			}
 
 			void disconnect() {
