@@ -36,8 +36,32 @@ TEST(GuiPanelReservedSpace, AMinimumKeepsTheSlotWideEnoughForTheWidestText) {
 	ASSERT_TRUE(panel.update().has_value());
 
 	EXPECT_NO_THROW(text.set_text("Connected"));
-	panel.mark_layout_dirty();
 	ASSERT_TRUE(panel.update().has_value());
 
 	EXPECT_NO_THROW(text.set_text("Disconnected"));
+}
+
+// The layout is recomputed from the current preferred sizes, so nobody has to tell the
+// panel that a text changed.
+TEST(GuiPanelReservedSpace, TheSlotFollowsATextThatShrinksWithoutTheCallerSayingSo) {
+	Panel::Panel panel{Geometry::Rectangle{Geometry::Position{0, 0}, Geometry::Width{800}, Geometry::Height{450}}};
+	const auto   label = std::make_shared<Components::Component>(Components::AllComponents{
+        LowLevel::Text{Geometry::Rectangle{Geometry::Position{0, 0}, Geometry::Width{400}, Geometry::Height{50}},
+                       "abcd",
+                       KShared::Colors::Presets::White,
+                       KShared::Math::LV::CT::GreaterThanZeroValue<int>{20},
+                       ten_per_character}});
+	auto        &text  = std::get<LowLevel::Text>(label->get_data());
+
+	ASSERT_TRUE(panel.add(label));
+	panel.set_layout(Layout::row({Layout::content(label)}, {.cross_align = Layout::CrossAlign::START}));
+	ASSERT_TRUE(panel.update()->applied);
+	EXPECT_FALSE(panel.update()->applied);
+
+	text.set_text("ab");
+
+	const auto after_change = panel.update();
+	ASSERT_TRUE(after_change.has_value());
+	EXPECT_TRUE(after_change->applied);
+	EXPECT_FALSE(panel.update()->applied);
 }

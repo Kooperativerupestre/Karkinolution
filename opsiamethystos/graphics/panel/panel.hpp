@@ -17,8 +17,8 @@ namespace Opsiamethystos {
 		namespace Panel {
 			// Outcome of a layout pass that did not fail.
 			struct LayoutReport {
-					// True when a pass ran and every assignment was committed. False means there was
-					// nothing to apply: the layout is not pending, or the panel has no layout.
+					// True when this pass moved or resized at least one component. False means every
+					// component already had its slot, or the panel has no layout. It is not an error.
 					bool applied = false;
 					// True when the requested arrangement did not fit the panel. The slots were clamped
 					// to valid geometry and committed anyway, because a clamped layout is still useful.
@@ -32,7 +32,6 @@ namespace Opsiamethystos {
 					Math::Geometry::Rectangle   bounds_;
 					Math::Geometry::Position    origin_;
 					std::optional<Layout::Node> layout_root_;
-					bool                        layout_dirty_ = false;
 
 					struct Entry {
 							// The indexed bound is the authoritative old value for quadtree
@@ -48,7 +47,7 @@ namespace Opsiamethystos {
 
 					std::vector<Components::ComponentId> find_in_area(const Math::Geometry::Circle &area) const;
 
-					// Shared by set_bounds and relayout so both report the same failure reasons.
+					// Shared by set_bounds and update so both report the same failure reasons.
 					[[nodiscard]] std::expected<void, LayoutErrorCode>
 					try_set_bounds(Components::ComponentId id, const Math::Geometry::Rectangle &slot);
 
@@ -101,23 +100,22 @@ namespace Opsiamethystos {
 
 					void draw() const;
 					void draw(const Math::Geometry::Position &origin) const;
-					// Replaces the pure layout tree and defers component mutation until the
-					// next relayout call, allowing multiple edits to be batched. Throws
+					// Stores the layout tree. No component moves until the next update(). Throws
 					// std::invalid_argument for an invalid tree (see Layout::validate); the previous
 					// layout is kept in that case.
 					void set_layout(Layout::Node layout_root);
-					// Marks the deferred layout pass dirty after a measure-affecting change.
-					void mark_layout_dirty() noexcept;
-					// Applies the pending layout to every component it references. Does nothing when
-					// no layout is pending. The pass is atomic: if any component cannot take its slot,
-					// every earlier assignment is rolled back and the error names the failing component.
-					// A failed pass leaves the layout pending, so the next call retries it.
-					[[nodiscard]] std::expected<LayoutReport, LayoutError> relayout();
 
-					// Per-frame entry point for layout: call it once before draw(). It applies whatever
-					// changed since the last frame (add, remove, set_layout, mark_layout_dirty) and is
-					// cheap when nothing is pending. Reports exactly what relayout() reports. draw() is
-					// const and cannot lay out on its own, which is why this call exists.
+					// The only call needed to keep the layout current: call it once per frame, before
+					// draw(). It recomputes the layout from the components' current preferred sizes,
+					// so adding, removing or changing a component and replacing the layout are all
+					// picked up without telling the panel. It moves only the components whose slot
+					// changed, so an unchanged frame costs arithmetic and nothing else.
+					//
+					// The pass is atomic: if a component cannot take its slot, every earlier change is
+					// rolled back and the error names the failing component. The next call starts from
+					// scratch, so a failure repeats until its cause is fixed. Does nothing when the
+					// panel has no layout. draw() is const and cannot lay out on its own, which is why
+					// this call exists.
 					[[nodiscard]] std::expected<LayoutReport, LayoutError> update();
 
 					// Returns the owned type-erased component, or an empty pointer for an

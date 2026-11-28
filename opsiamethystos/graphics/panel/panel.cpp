@@ -36,7 +36,6 @@ namespace Opsiamethystos {
 					return false;
 				}
 
-				layout_dirty_ = true;
 				return true;
 			}
 
@@ -81,28 +80,25 @@ namespace Opsiamethystos {
 				}
 
 				components_.erase(component);
-				layout_dirty_ = true;
 				return true;
 			}
 
-			// Layout changes are cheap to stage and potentially expensive to apply;
-			// defer the pass so callers can edit the tree without partial updates.
+			// Storing the tree does not touch any component; the next update() applies it,
+			// so callers can edit the tree without partial updates.
 			void Panel::set_layout(Layout::Node layout_root) {
 				// Validate before storing so a rejected tree leaves the previous layout intact.
 				Layout::validate(layout_root);
-				layout_root_  = std::move(layout_root);
-				layout_dirty_ = true;
+				layout_root_ = std::move(layout_root);
 			}
 
-			void Panel::mark_layout_dirty() noexcept {
-				layout_dirty_ = true;
-			}
-
+			// The layout is recomputed from the components' current preferred sizes on every
+			// call, so it never depends on the result of an earlier pass. Only slots that
+			// changed are applied, which keeps an unchanged frame down to arithmetic.
 			// The validation pass prevents a malformed tree from changing only part of
 			// the panel. The application pass then reuses set_bounds for each atomic
 			// component/index update and records old slots for reverse rollback.
-			std::expected<LayoutReport, LayoutError> Panel::relayout() {
-				if (!layout_dirty_ || !layout_root_) {
+			std::expected<LayoutReport, LayoutError> Panel::update() {
+				if (!layout_root_) {
 					return LayoutReport{};
 				}
 
@@ -140,12 +136,7 @@ namespace Opsiamethystos {
 					applied.emplace_back(assignment.id, old_slot);
 				}
 
-				layout_dirty_ = false;
-				return LayoutReport{.applied = true, .overflowed = result.overflowed};
-			}
-
-			std::expected<LayoutReport, LayoutError> Panel::update() {
-				return relayout();
+				return LayoutReport{.applied = !applied.empty(), .overflowed = result.overflowed};
 			}
 
 			// Quadtree::update removes the old record before inserting the new one.
@@ -260,10 +251,9 @@ namespace Opsiamethystos {
 				for (const auto &[id, target] : target_bounds) {
 					components_.at(id).indexed_bound = target;
 				}
-				quadtree_     = std::move(replacement);
-				bounds_       = local_bounds;
-				origin_       = bounds.position;
-				layout_dirty_ = false;
+				quadtree_ = std::move(replacement);
+				bounds_   = local_bounds;
+				origin_   = bounds.position;
 				return true;
 			}
 
