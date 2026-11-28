@@ -50,8 +50,9 @@ namespace Opsiamethystos {
 								text_.set_color(std::move(color));
 							}
 
-							// Both children must accept the same slot. Restoring the rectangle when
-							// text rejects it keeps the compound component atomic.
+							// Both children must accept the same slot. Restoring the rectangle if the
+							// text refuses keeps the compound atomic. Text accepts every slot today, so
+							// this guards against a future change, not a current case.
 							bool set_slot(const Math::Geometry::Rectangle &slot) {
 								const auto old_slot = rectangle_.get_bounds();
 								if (!rectangle_.set_slot(slot)) {

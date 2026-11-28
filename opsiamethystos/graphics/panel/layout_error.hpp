@@ -16,7 +16,7 @@ namespace Opsiamethystos {
 				UNKNOWN_COMPONENT,
 				// A computed slot is not contained by the panel boundary.
 				SLOT_OUTSIDE_PANEL,
-				// The component refused its slot, for example a Text wider than the slot.
+				// The component refused its slot, for example a Line, which has no rectangular slot.
 				COMPONENT_REJECTED_SLOT,
 				// The spatial index refused the new slot.
 				INDEX_REJECTED_SLOT

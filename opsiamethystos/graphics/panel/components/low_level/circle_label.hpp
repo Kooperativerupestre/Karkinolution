@@ -46,8 +46,9 @@ namespace Opsiamethystos {
 
 							void set_text(std::string text);
 
-							// Circle fitting and text fitting are one compound update. The old circle
-							// is reconstructed if the text cannot fit the proposed slot.
+							// The circle and the text are one compound update. The old circle is
+							// reconstructed if the text refuses the proposed slot; Text accepts every
+							// slot today, so this guards against a future change, not a current case.
 							bool set_slot(const Math::Geometry::Rectangle &slot) {
 								const auto old_slot = circle_.get_bounds();
 								if (!circle_.set_slot(slot)) {

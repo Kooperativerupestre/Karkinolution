@@ -4,19 +4,18 @@
 #include <opsiamethystos/drivers/font.hpp>
 #include <opsiamethystos/graphics/panel/components/low_level/text.hpp>
 #include <opsiamethystos/raylib_utils/colors.hpp>
-#include <stdexcept>
 #include <utility>
 
 namespace Opsiamethystos::Graphics::Panel::Components {
 
 	LowLevel::Text::Text(
-		const Opsiamethystos::Math::Geometry::Rectangle                                          &max_bound,
+		const Opsiamethystos::Math::Geometry::Rectangle                                          &slot,
 		std::string                                                                               text,
 		const KShared::Colors::Color                                                             &color,
 		GreaterThanZeroValue<int>                                                                 font_size,
 		std::function<Gui::Components::Drivers::Font::TextMeasurement(std::string_view, int32_t)> measure)
-		: max_bound_(max_bound)
-		, current_bound_(max_bound)
+		: slot_(slot)
+		, current_bound_(slot)
 		, text_()
 		, measure_(std::move(measure))
 		, color(color)
@@ -24,31 +23,26 @@ namespace Opsiamethystos::Graphics::Panel::Components {
 		set_text(std::move(text));
 	}
 
-	void LowLevel::Text::set_text(std::string text) {
-		const auto                      text_size = measure_(text, font_size.value());
-		const Math::Geometry::Rectangle candidate_bound{max_bound_.position,
-														Math::Geometry::Width{text_size.width},
-														Math::Geometry::Height{text_size.height}};
+	Math::Geometry::Rectangle LowLevel::Text::measured_bound(const std::string_view          text,
+															 const Math::Geometry::Position &center) const {
+		const auto text_size = measure_(text, font_size.value());
+		return Math::Geometry::Rectangle{center,
+										 Math::Geometry::Width{text_size.width},
+										 Math::Geometry::Height{text_size.height}};
+	}
 
-		if (!Math::Geometry::can_contain(max_bound_, candidate_bound)) {
-			throw std::invalid_argument("Text does not fit inside its maximum bound");
-		}
+	void LowLevel::Text::set_text(std::string text) {
+		const auto bound = measured_bound(text, slot_.position);
 
 		text_.swap(text);
-		current_bound_ = candidate_bound;
+		current_bound_ = bound;
 	}
 
 	bool LowLevel::Text::set_slot(const Math::Geometry::Rectangle &slot) {
-		const auto                      text_size = measure_(text_, font_size.value());
-		const Math::Geometry::Rectangle candidate_bound{slot.position,
-														Math::Geometry::Width{text_size.width},
-														Math::Geometry::Height{text_size.height}};
-		if (!Math::Geometry::can_contain(slot, candidate_bound)) {
-			return false;
-		}
+		const auto bound = measured_bound(text_, slot.position);
 
-		max_bound_     = slot;
-		current_bound_ = candidate_bound;
+		slot_          = slot;
+		current_bound_ = bound;
 		return true;
 	}
 

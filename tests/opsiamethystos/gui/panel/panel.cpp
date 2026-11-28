@@ -2,6 +2,7 @@
 #include <memory>
 #include <opsiamethystos/graphics/panel/components/component.hpp>
 #include <opsiamethystos/graphics/panel/components/low_level/circle.hpp>
+#include <opsiamethystos/graphics/panel/components/low_level/line.hpp>
 #include <opsiamethystos/graphics/panel/components/low_level/rectangle.hpp>
 #include <opsiamethystos/graphics/panel/components/low_level/text.hpp>
 #include <opsiamethystos/graphics/panel/panel.hpp>
@@ -26,6 +27,13 @@ namespace {
 
 	std::shared_ptr<Components::Component> circle_component(const Geometry::Circle &bounds) {
 		return std::make_shared<Components::Component>(Components::AllComponents{LowLevel::Circle{bounds, White}});
+	}
+
+	// A line has no rectangular slot, so it is the component that always refuses one.
+	std::shared_ptr<Components::Component> line_component(const Geometry::Position &begin,
+														  const Geometry::Position &end) {
+		return std::make_shared<Components::Component>(
+			Components::AllComponents{LowLevel::Line{begin, end, Geometry::Thickness{1}, White}});
 	}
 
 	std::shared_ptr<Components::Component> text_component(const Geometry::Rectangle &bounds) {
@@ -70,15 +78,16 @@ TEST(GuiPanel, SetBoundsRejectsUnknownAndOutOfBoundsSlots) {
 
 TEST(GuiPanel, SetBoundsRollsBackWhenTheComponentRejectsItsSlot) {
 	Panel::Panel panel{rectangle(0, 0, 100, 100)};
-	const auto   component  = text_component(rectangle(0, 0, 80, 30));
+	const auto   component  = line_component(Geometry::Position{-5, 0}, Geometry::Position{5, 0});
 	const auto   id         = component->get_id();
 	const auto   old_bounds = component->get_bounds();
 
 	ASSERT_TRUE(panel.add(component));
-	EXPECT_FALSE(panel.set_bounds(id, rectangle(0, 0, 1, 1)));
+	EXPECT_FALSE(panel.set_bounds(id, rectangle(20, 20, 4, 4)));
 
 	EXPECT_EQ(std::get<Geometry::Rectangle>(component->get_bounds()), std::get<Geometry::Rectangle>(old_bounds));
-	EXPECT_EQ(panel.collides(rectangle(39, 0, 2, 2)).size(), 1);
+	EXPECT_EQ(panel.collides(rectangle(0, 0, 2, 2)).size(), 1);
+	EXPECT_TRUE(panel.collides(rectangle(20, 20, 4, 4)).empty());
 }
 
 TEST(GuiPanel, ResizeRejectsBoundsThatWouldLoseAnIndexedComponent) {
@@ -169,32 +178,32 @@ TEST(GuiPanel, UpdateAppliesAssignmentsAndDoesNothingWhenNothingChanged) {
 TEST(GuiPanel, UpdateRollsBackEarlierAssignmentsWhenALaterComponentRejects) {
 	Panel::Panel panel{rectangle(0, 0, 100, 100)};
 	const auto   rectangle_component_ptr = rectangle_component(rectangle(-30, 0));
-	const auto   text_component_ptr      = text_component(rectangle(0, 0, 80, 30));
+	const auto   line_component_ptr      = line_component(Geometry::Position{0, 10}, Geometry::Position{20, 10});
 	const auto   rectangle_id            = rectangle_component_ptr->get_id();
-	const auto   text_id                 = text_component_ptr->get_id();
+	const auto   line_id                 = line_component_ptr->get_id();
 
 	ASSERT_TRUE(panel.add(rectangle_component_ptr));
-	ASSERT_TRUE(panel.add(text_component_ptr));
+	ASSERT_TRUE(panel.add(line_component_ptr));
 
 	const auto rectangle_child = std::make_shared<const Panel::Layout::Node>(
 		Panel::Layout::Node{Panel::Layout::Leaf{rectangle_id, [] {
 													return Panel::Layout::Size{10, 10};
 												}}});
-	const auto text_child = std::make_shared<const Panel::Layout::Node>(
-		Panel::Layout::Node{Panel::Layout::Leaf{text_id, [] {
+	const auto line_child = std::make_shared<const Panel::Layout::Node>(
+		Panel::Layout::Node{Panel::Layout::Leaf{line_id, [] {
 													return Panel::Layout::Size{10, 10};
 												}}});
 	panel.set_layout(Panel::Layout::Node{Panel::Layout::Stack{
 		.direction = Panel::Layout::Direction::HORIZONTAL,
-		.children  = {{Panel::Layout::Fixed{20}, rectangle_child}, {Panel::Layout::Fixed{1}, text_child}}}});
+		.children  = {{Panel::Layout::Fixed{20}, rectangle_child}, {Panel::Layout::Fixed{1}, line_child}}}});
 
 	const auto result = panel.update();
 
 	ASSERT_FALSE(result.has_value());
 	EXPECT_EQ(result.error().code, Panel::LayoutErrorCode::COMPONENT_REJECTED_SLOT);
-	EXPECT_EQ(result.error().component, text_id);
+	EXPECT_EQ(result.error().component, line_id);
 	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(-30, 0)).has_value());
-	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(0, 0, 80, 30)).has_value());
+	EXPECT_TRUE(panel.find_one_collision_in_area(rectangle(10, 10, 21, 1)).has_value());
 }
 
 TEST(GuiPanel, UpdateReportsAnUnknownComponentReferencedByTheLayout) {
@@ -246,22 +255,21 @@ TEST(GuiPanel, UpdateWithoutALayoutIsNotAnErrorAndMovesNothing) {
 
 TEST(GuiPanel, FailedUpdateKeepsFailingUntilTheLayoutIsFixed) {
 	Panel::Panel panel{rectangle(0, 0, 100, 100)};
-	const auto   text = text_component(rectangle(0, 0, 80, 30));
+	const auto   rectangle_ptr = rectangle_component(rectangle(30, 0));
+	const auto   line_ptr      = line_component(Geometry::Position{0, 10}, Geometry::Position{20, 10});
 
-	ASSERT_TRUE(panel.add(text));
-	const auto too_narrow = [&] {
-		return Panel::Layout::Node{
-			Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
-								 .children  = {{Panel::Layout::Fixed{1}, leaf_node(text->get_id())}}}};
-	};
-	panel.set_layout(too_narrow());
+	ASSERT_TRUE(panel.add(rectangle_ptr));
+	ASSERT_TRUE(panel.add(line_ptr));
+	panel.set_layout(Panel::Layout::row({Panel::Layout::fixed(20, rectangle_ptr), Panel::Layout::fixed(20, line_ptr)}));
 
-	EXPECT_FALSE(panel.update().has_value());
-	EXPECT_FALSE(panel.update().has_value());
+	for (int frame = 0; frame < 2; ++frame) {
+		const auto result = panel.update();
+		ASSERT_FALSE(result.has_value());
+		EXPECT_EQ(result.error().code, Panel::LayoutErrorCode::COMPONENT_REJECTED_SLOT);
+		EXPECT_EQ(result.error().component, line_ptr->get_id());
+	}
 
-	panel.set_layout(
-		Panel::Layout::Node{Panel::Layout::Stack{.direction = Panel::Layout::Direction::HORIZONTAL,
-												 .children = {{Panel::Layout::Fixed{40}, leaf_node(text->get_id())}}}});
+	panel.set_layout(Panel::Layout::row({Panel::Layout::fixed(20, rectangle_ptr)}));
 	const auto fixed = panel.update();
 
 	ASSERT_TRUE(fixed.has_value());

@@ -16,11 +16,12 @@ while exposing its stored alternative read-only. Layout-participating
 components receive slot updates through the panel; the panel is the only owner
 allowed to change their indexed bound.
 
-Text has a maximum bound for spatial indexing and a measured current bound for
-drawing and hit-testing. The current bound is centered in the maximum bound and
-must always fit inside it. The maximum bound is stable between layout passes
-and changes only through the panel. Updating text must leave both the old text
-and current bound unchanged when the new text does not fit.
+Text has a slot for spatial indexing and hit-testing and a measured current
+bound for drawing. The current bound is centered on the slot and may be larger
+than it: text never rejects a slot, and changing the text never fails for lack
+of space, so overflow is drawn as is. This keeps what a text can do independent
+of the slot of an earlier layout pass. The slot changes only through the panel.
+Clipping the overflow with a scissor region is a possible future mechanic.
 
 ## Board ownership
 

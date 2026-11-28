@@ -59,7 +59,7 @@ TEST(GuiLayoutParticipant, PreferredSizeIsTheCurrentBoundOfEachShape) {
 	EXPECT_EQ(rectangle->preferred_size().height, 12.0);
 	EXPECT_EQ(circle->preferred_size().width, 14.0);
 	EXPECT_EQ(circle->preferred_size().height, 14.0);
-	// Text reports its measured bound, not the larger maximum bound it was indexed with.
+	// Text reports its measured bound, not the larger slot it was indexed with.
 	EXPECT_EQ(text->preferred_size().width, 8.0);
 	EXPECT_EQ(text->preferred_size().height, 10.0);
 }
