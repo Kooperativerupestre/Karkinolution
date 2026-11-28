@@ -129,15 +129,15 @@ namespace KApp {
 				namespace Layout = Opsiamethystos::Gui::Panel::Layout;
 				namespace Font   = Opsiamethystos::Gui::Components::Drivers::Font;
 
-				// The status text switches between "Connected" and "Disconnected" and must always fit
-				// its slot, so the width of the widest one is reserved up front.
+				// The status text switches between "Connected" and "Disconnected". Reserving the width of
+				// the widest one keeps the slot stable, so the buttons next to it do not move.
 				const auto status_width = Font::measure_text("Disconnected", 20).width;
 
-				panel.set_layout(Layout::row(
-					{Layout::content(Layout::leaf(components.share(0).value(), Layout::Size{status_width, 100})),
-					 Layout::content(components.share(1).value()),
-					 Layout::content(components.share(2).value())},
-					{.spacing = 10, .cross_align = Layout::CrossAlign::START}));
+				panel.set_layout(
+					Layout::row({Layout::content(components.share(0).value(), {.width = status_width, .height = 100}),
+								 Layout::content(components.share(1).value()),
+								 Layout::content(components.share(2).value())},
+								{.spacing = 10, .cross_align = Layout::CrossAlign::START}));
 			}
 
 			void run() {
