@@ -87,6 +87,17 @@ namespace Opsiamethystos {
 							node.value);
 					}
 
+					// The size a child asks for. Only Content children carry a minimum, which turns
+					// the measurement into a floor so changing content does not move its neighbours.
+					Size measure_child(const Child &child) {
+						Size measured = child.node ? measure_node(*child.node) : Size{};
+						if (const auto* content = std::get_if<Content>(&child.policy)) {
+							measured.width  = std::max(measured.width, content->minimum.width);
+							measured.height = std::max(measured.height, content->minimum.height);
+						}
+						return measured;
+					}
+
 					void append_node(const Node &node, const Edges &box, LayoutResult &result);
 
 					// Stack arrangement is a two-step calculation:
@@ -126,7 +137,7 @@ namespace Opsiamethystos {
 										extents[index] = std::max(minimum_extent, policy.extent);
 										fixed_total += extents[index];
 									} else if constexpr (std::same_as<Policy, Content>) {
-										const auto measured = child.node ? measure_node(*child.node) : Size{};
+										const auto measured = measure_child(child);
 										extents[index] =
 											std::max(minimum_extent, vertical ? measured.height : measured.width);
 										fixed_total += extents[index];
@@ -161,9 +172,9 @@ namespace Opsiamethystos {
 						double cursor = main_box.start;
 						for (std::size_t index = 0; index < stack.children.size(); ++index) {
 							const auto  &child           = stack.children[index];
-							const double preferred_cross = child.node
-								? (vertical ? measure_node(*child.node).width : measure_node(*child.node).height)
-								: cross_box.end - cross_box.start;
+							const Size   measured        = measure_child(child);
+							const double preferred_cross = child.node ? (vertical ? measured.width : measured.height)
+																	  : cross_box.end - cross_box.start;
 							AxisBox      child_cross     = cross_box;
 							// Cross-axis alignment changes only the child box on the secondary
 							// axis. Its main-axis extent remains the result of policy resolution.
@@ -220,6 +231,10 @@ namespace Opsiamethystos {
 						if (const auto* fixed = std::get_if<Fixed>(&policy);
 							fixed != nullptr && !(std::isfinite(fixed->extent) && fixed->extent > 0.0)) {
 							throw std::invalid_argument("layout Fixed extent must be finite and greater than zero");
+						}
+						if (const auto* content = std::get_if<Content>(&policy); content != nullptr
+							&& !(is_non_negative(content->minimum.width) && is_non_negative(content->minimum.height))) {
+							throw std::invalid_argument("layout Content minimum must be finite and non-negative");
 						}
 						if (const auto* fill = std::get_if<Fill>(&policy);
 							fill != nullptr && !is_non_negative(fill->weight)) {
@@ -301,12 +316,12 @@ namespace Opsiamethystos {
 					return fixed(extent, leaf(std::move(participant)));
 				}
 
-				Child content(Node node) {
-					return make_child(Content{}, std::move(node));
+				Child content(Node node, const Size minimum) {
+					return make_child(Content{minimum}, std::move(node));
 				}
 
-				Child content(std::shared_ptr<const Participant> participant) {
-					return content(leaf(std::move(participant)));
+				Child content(std::shared_ptr<const Participant> participant, const Size minimum) {
+					return content(leaf(std::move(participant)), minimum);
 				}
 
 				Child fill(Node node, const double weight) {

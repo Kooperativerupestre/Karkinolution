@@ -53,7 +53,12 @@ namespace Opsiamethystos {
 						double extent;
 				};
 
-				struct Content {};
+				// The child takes its preferred size. `minimum` is a floor on both axes, so content
+				// that changes (a label that switches text) keeps a stable slot instead of shrinking
+				// and growing. The slot is max(preferred size, minimum); a zero minimum changes nothing.
+				struct Content {
+						Size minimum{};
+				};
 
 				struct Fill {
 						double weight = 1.0;
@@ -160,8 +165,11 @@ namespace Opsiamethystos {
 				// std::invalid_argument for a null participant or an invalid extent or weight.
 				[[nodiscard]] Child fixed(double extent, Node node);
 				[[nodiscard]] Child fixed(double extent, std::shared_ptr<const Participant> participant);
-				[[nodiscard]] Child content(Node node);
-				[[nodiscard]] Child content(std::shared_ptr<const Participant> participant);
+				// content() also takes a minimum size to reserve space for content that changes:
+				//   content(status_label, {.width = 120})
+				// Throws std::invalid_argument when a dimension is not finite and non-negative.
+				[[nodiscard]] Child content(Node node, Size minimum = {});
+				[[nodiscard]] Child content(std::shared_ptr<const Participant> participant, Size minimum = {});
 				[[nodiscard]] Child fill(Node node, double weight = 1.0);
 				[[nodiscard]] Child fill(std::shared_ptr<const Participant> participant, double weight = 1.0);
 
